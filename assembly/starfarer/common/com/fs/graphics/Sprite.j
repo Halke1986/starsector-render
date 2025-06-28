@@ -4,27 +4,27 @@
 .implements java/lang/Cloneable 
 .implements com/fs/util/DoNotObfuscate 
 .field protected transient texture Lcom/fs/graphics/Object; 
-.field protected width F 
-.field protected height F 
-.field protected texX F 
-.field protected texY F 
-.field protected texWidth F 
-.field protected texHeight F 
-.field protected angle F 
-.field protected color Ljava/awt/Color; 
-.field private alphaMult F 
-.field private colorUL Ljava/awt/Color; 
-.field private colorUR Ljava/awt/Color; 
-.field private colorLL Ljava/awt/Color; 
-.field private colorLR Ljava/awt/Color; 
-.field private centerX F 
-.field private centerY F 
-.field private offsetX I 
-.field private offsetY I 
-.field private blendSrc I 
-.field private blendDest I 
-.field private texClamp Z 
-.field private textureId Ljava/lang/String; 
+.field public width F
+.field public height F
+.field public texX F
+.field public texY F
+.field public texWidth F
+.field public texHeight F
+.field public angle F
+.field public color Ljava/awt/Color;
+.field public alphaMult F
+.field public colorUL Ljava/awt/Color;
+.field public colorUR Ljava/awt/Color;
+.field public colorLL Ljava/awt/Color;
+.field public colorLR Ljava/awt/Color;
+.field public centerX F
+.field public centerY F
+.field public offsetX I
+.field public offsetY I
+.field public blendSrc I
+.field public blendDest I
+.field public texClamp Z
+.field public textureId Ljava/lang/String;
 
 .method public <init> : ()V 
     .code stack 6 locals 1 
@@ -647,16 +647,35 @@ L21:
 .end method 
 
 .method public render : (FF)V 
-    .code stack 0 locals 3
-L0:     return
-L1:
+    .code stack 5 locals 3
+L0:     aload_0
+L1:     getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
+L4:     ifnonnull L8
+L7:     return
+
+        .stack same
+L8:     fload_1
+L9:     fload_2
+L10:    aload_0
+L11:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
+L14:    getfield Field com/fs/graphics/Object 'ö00000' I
+L17:    aload_0
+L18:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
+L21:    getfield Field com/fs/graphics/Object 'ô00000' I
+L24:    aload_0
+L25:    invokestatic Method com/genir/graphics/Renderer render (FFIILcom/fs/graphics/Sprite;)V
+L28:    return
+L29:
         .linenumbertable
-            L0 64
+            L0 32
+            L7 33
+            L8 36
+            L28 37
         .end linenumbertable
         .localvariabletable
-            0 is this Lcom/fs/graphics/Sprite; from L0 to L1
-            1 is var1 F from L0 to L1
-            2 is var2 F from L0 to L1
+            0 is this Lcom/fs/graphics/Sprite; from L0 to L29
+            1 is var1 F from L0 to L29
+            2 is var2 F from L0 to L29
         .end localvariabletable
     .end code 
 .end method 

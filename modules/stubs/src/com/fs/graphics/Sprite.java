@@ -1,7 +1,5 @@
 package com.fs.graphics;
 
-import com.genir.graphics.Renderer;
-
 import java.awt.*;
 
 public class Sprite {
@@ -27,12 +25,4 @@ public class Sprite {
     public int blendDest = 771;
     public boolean texClamp = false;
     public String textureId;
-
-    public void render(float var1, float var2) {
-        if (this.texture == null) {
-            return;
-        }
-
-        Renderer.render(var1, var2, texture.ö00000, texture.ô00000, this);
-    }
 }
