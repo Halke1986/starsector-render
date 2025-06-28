@@ -1,0 +1,1 @@
+python ../../../Krakatau/assemble.py -out ./jars/assembly/fs.common_obf.jar -r ./assembly/starfarer/common/
