@@ -702,213 +702,36 @@ L21:
 .end method 
 
 .method public renderNoBind : (FF)V 
-    .code stack 5 locals 4 
-L0:     aload_0 
-L1:     getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object; 
-L4:     ifnull L20 
-L7:     aload_0 
-L8:     getfield Field com/fs/graphics/Sprite texClamp Z 
-L11:    ifeq L21 
-L14:    invokestatic Method com/fs/graphics/util/B 'Ø00000' ()V 
-L17:    goto L21 
+    .code stack 5 locals 3
+L0:     aload_0
+L1:     getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
+L4:     ifnonnull L8
+L7:     return
 
-        .stack same 
-L20:    return 
-
-        .stack same 
-L21:    invokestatic Method org/lwjgl/opengl/GL11 glPushMatrix ()V 
-L24:    aload_0 
-L25:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
-L28:    invokevirtual Method java/awt/Color getRed ()I 
-L31:    i2b 
-L32:    aload_0 
-L33:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
-L36:    invokevirtual Method java/awt/Color getGreen ()I 
-L39:    i2b 
-L40:    aload_0 
-L41:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
-L44:    invokevirtual Method java/awt/Color getBlue ()I 
-L47:    i2b 
-L48:    aload_0 
-L49:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
-L52:    invokevirtual Method java/awt/Color getAlpha ()I 
-L55:    i2f 
-L56:    aload_0 
-L57:    getfield Field com/fs/graphics/Sprite alphaMult F 
-L60:    fmul 
-L61:    f2i 
-L62:    i2b 
-L63:    invokestatic Method org/lwjgl/opengl/GL11 glColor4ub (BBBB)V 
-L66:    fload_1 
-L67:    aload_0 
-L68:    getfield Field com/fs/graphics/Sprite offsetX I 
-L71:    i2f 
-L72:    fadd 
-L73:    fload_2 
-L74:    aload_0 
-L75:    getfield Field com/fs/graphics/Sprite offsetY I 
-L78:    i2f 
-L79:    fadd 
-L80:    fconst_0 
-L81:    invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
-L84:    aload_0 
-L85:    getfield Field com/fs/graphics/Sprite centerX F 
-L88:    ldc -1.0f 
-L90:    fcmpl 
-L91:    ifeq L147 
-L94:    aload_0 
-L95:    getfield Field com/fs/graphics/Sprite centerY F 
-L98:    ldc -1.0f 
-L100:   fcmpl 
-L101:   ifeq L147 
-L104:   aload_0 
-L105:   getfield Field com/fs/graphics/Sprite width F 
-L108:   fconst_2 
-L109:   fdiv 
-L110:   aload_0 
-L111:   getfield Field com/fs/graphics/Sprite height F 
-L114:   fconst_2 
-L115:   fdiv 
-L116:   fconst_0 
-L117:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
-L120:   aload_0 
-L121:   getfield Field com/fs/graphics/Sprite angle F 
-L124:   fconst_0 
-L125:   fconst_0 
-L126:   fconst_1 
-L127:   invokestatic Method org/lwjgl/opengl/GL11 glRotatef (FFFF)V 
-L130:   aload_0 
-L131:   getfield Field com/fs/graphics/Sprite centerX F 
-L134:   fneg 
-L135:   aload_0 
-L136:   getfield Field com/fs/graphics/Sprite centerY F 
-L139:   fneg 
-L140:   fconst_0 
-L141:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
-L144:   goto L191 
-
-        .stack same_extended 
-L147:   aload_0 
-L148:   getfield Field com/fs/graphics/Sprite width F 
-L151:   fconst_2 
-L152:   fdiv 
-L153:   aload_0 
-L154:   getfield Field com/fs/graphics/Sprite height F 
-L157:   fconst_2 
-L158:   fdiv 
-L159:   fconst_0 
-L160:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
-L163:   aload_0 
-L164:   getfield Field com/fs/graphics/Sprite angle F 
-L167:   fconst_0 
-L168:   fconst_0 
-L169:   fconst_1 
-L170:   invokestatic Method org/lwjgl/opengl/GL11 glRotatef (FFFF)V 
-L173:   aload_0 
-L174:   getfield Field com/fs/graphics/Sprite width F 
-L177:   fneg 
-L178:   fconst_2 
-L179:   fdiv 
-L180:   aload_0 
-L181:   getfield Field com/fs/graphics/Sprite height F 
-L184:   fneg 
-L185:   fconst_2 
-L186:   fdiv 
-L187:   fconst_0 
-L188:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
-
-        .stack same 
-L191:   sipush 3553 
-L194:   invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
-L197:   sipush 3042 
-L200:   invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
-L203:   aload_0 
-L204:   getfield Field com/fs/graphics/Sprite blendSrc I 
-L207:   aload_0 
-L208:   getfield Field com/fs/graphics/Sprite blendDest I 
-L211:   invokestatic Method org/lwjgl/opengl/GL11 glBlendFunc (II)V 
-L214:   ldc +0.0010000000474974513f 
-L216:   fstore_3 
-L217:   fconst_0 
-L218:   fstore_3 
-L219:   bipush 7 
-L221:   invokestatic Method org/lwjgl/opengl/GL11 glBegin (I)V 
-L224:   aload_0 
-L225:   getfield Field com/fs/graphics/Sprite texX F 
-L228:   fload_3 
-L229:   fadd 
-L230:   aload_0 
-L231:   getfield Field com/fs/graphics/Sprite texY F 
-L234:   fload_3 
-L235:   fadd 
-L236:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
-L239:   fconst_0 
-L240:   fconst_0 
-L241:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L244:   aload_0 
-L245:   getfield Field com/fs/graphics/Sprite texX F 
-L248:   fload_3 
-L249:   fadd 
-L250:   aload_0 
-L251:   getfield Field com/fs/graphics/Sprite texY F 
-L254:   aload_0 
-L255:   getfield Field com/fs/graphics/Sprite texHeight F 
-L258:   fadd 
-L259:   fload_3 
-L260:   fsub 
-L261:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
-L264:   fconst_0 
-L265:   aload_0 
-L266:   getfield Field com/fs/graphics/Sprite height F 
-L269:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L272:   aload_0 
-L273:   getfield Field com/fs/graphics/Sprite texX F 
-L276:   aload_0 
-L277:   getfield Field com/fs/graphics/Sprite texWidth F 
-L280:   fadd 
-L281:   fload_3 
-L282:   fsub 
-L283:   aload_0 
-L284:   getfield Field com/fs/graphics/Sprite texY F 
-L287:   aload_0 
-L288:   getfield Field com/fs/graphics/Sprite texHeight F 
-L291:   fadd 
-L292:   fload_3 
-L293:   fsub 
-L294:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
-L297:   aload_0 
-L298:   getfield Field com/fs/graphics/Sprite width F 
-L301:   aload_0 
-L302:   getfield Field com/fs/graphics/Sprite height F 
-L305:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L308:   aload_0 
-L309:   getfield Field com/fs/graphics/Sprite texX F 
-L312:   aload_0 
-L313:   getfield Field com/fs/graphics/Sprite texWidth F 
-L316:   fadd 
-L317:   fload_3 
-L318:   fsub 
-L319:   aload_0 
-L320:   getfield Field com/fs/graphics/Sprite texY F 
-L323:   fload_3 
-L324:   fadd 
-L325:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
-L328:   aload_0 
-L329:   getfield Field com/fs/graphics/Sprite width F 
-L332:   fconst_0 
-L333:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L336:   invokestatic Method org/lwjgl/opengl/GL11 glEnd ()V 
-L339:   sipush 3042 
-L342:   invokestatic Method org/lwjgl/opengl/GL11 glDisable (I)V 
-L345:   invokestatic Method org/lwjgl/opengl/GL11 glPopMatrix ()V 
-L348:   aload_0 
-L349:   getfield Field com/fs/graphics/Sprite texClamp Z 
-L352:   ifeq L358 
-L355:   invokestatic Method com/fs/graphics/util/B 'Ò00000' ()V 
-
-        .stack append Float 
-L358:   return 
-L359:   
+        .stack same
+L8:     fload_1
+L9:     fload_2
+L10:    aload_0
+L11:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
+L14:    getfield Field com/fs/graphics/Object 'ö00000' I
+L17:    aload_0
+L18:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
+L21:    getfield Field com/fs/graphics/Object 'ô00000' I
+L24:    aload_0
+L25:    invokestatic Method com/genir/graphics/Renderer render (FFIILcom/fs/graphics/Sprite;)V
+L28:    return
+L29:
+        .linenumbertable
+            L0 32
+            L7 33
+            L8 36
+            L28 37
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lcom/fs/graphics/Sprite; from L0 to L29
+            1 is var1 F from L0 to L29
+            2 is var2 F from L0 to L29
+        .end localvariabletable
     .end code 
 .end method 
 
