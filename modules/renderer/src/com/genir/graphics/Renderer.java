@@ -12,24 +12,16 @@ import java.util.Map;
 
 public class Renderer {
     static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
+    static int vanillaMode = 0;
 
     public static void beginLayer() {
         buffer = new HashMap<>();
     }
 
+//    public static void commitLayer() {
+//    }
+
     public static void commitLayer() {
-//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//        GL11.glLoadIdentity();
-//        GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-// setup once per frame (or once at init if window size doesn’t change)
-        GL11.glViewport(0, 0, 1920, 1200);
-
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
-
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -40,101 +32,49 @@ public class Renderer {
             List<Sprite> sprites = entry.getValue();
 
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, key.textureID);
+            GL11.glBlendFunc(key.blendSrc, key.blendDst);
             GL11.glColor4f(1, 1, 1, 1);
 
             FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
             FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
 
             for (Sprite s : sprites) {
-                // a 0.5×0.5 quad in NDC
-                vertexBuffer.put(-0.5f).put(-0.5f);
-                vertexBuffer.put(-0.5f).put(0.5f);
-                vertexBuffer.put(0.5f).put(0.5f);
-                vertexBuffer.put(0.5f).put(-0.5f);
+                float px = s.width / 2;
+                float py = s.height / 2;
 
-                // full‐texture UVs
-                //            tb.put(0).put(0);
-                //            tb.put(0).put(1);
-                //            tb.put(1).put(1);
-                //            tb.put(1).put(0);
+                float cx = px;
+                float cy = py;
 
-                textureBuffer
-                        .put(s.texX)
-                        .put(s.texY);
+                if (s.centerX != -1 && s.centerY != -1) {
+                    cx = s.centerX;
+                    cy = s.centerY;
+                }
 
-                textureBuffer
-                        .put(s.texX)
-                        .put(s.texY + s.texHeight);
+                float a = s.angle * (float) (Math.PI / 180);
+                float cos = (float) Math.cos(a);
+                float sin = (float) Math.sin(a);
 
-                textureBuffer
-                        .put(s.texX + s.texWidth)
-                        .put(s.texY + s.texHeight);
+                float[] vxs = {0f, 0f, s.width, s.width};
+                float[] vys = {0f, s.height, s.height, 0f};
 
-                textureBuffer
-                        .put(s.texX + s.texWidth)
-                        .put(s.texY);
+                float[] txs = {0f, 0f, s.texWidth, s.texWidth};
+                float[] tys = {0f, s.texHeight, s.texHeight, 0f};
+
+                for (int i = 0; i < 4; i++) {
+                    float vx = vxs[i] - cx;
+                    float vy = vys[i] - cy;
+
+                    float rx = cos * vx - sin * vy + px + s.offsetX;
+                    float ry = sin * vx + cos * vy + py + s.offsetY;
+
+                    vertexBuffer.put(rx).put(ry);
+
+                    float tx = txs[i] + s.texX;
+                    float ty = tys[i] + s.texY;
+
+                    textureBuffer.put(tx).put(ty);
+                }
             }
-
-            //for (Sprite s : sprites) {
-            //                float px = s.width / 2;
-            //                float py = s.height / 2;
-            //
-            //                float a = s.angle * (float) (Math.PI / 180);
-            //                float cos = (float) Math.cos(a);
-            //                float sin = (float) Math.sin(a);
-            //
-            //                {
-            //                    float vx = 0f - px;
-            //                    float vy = 0f - py;
-            //
-            //                    vertexBuffer
-            //                            .put(cos * vx - sin * vy + px + s.offsetX)
-            //                            .put(sin * vx + cos * vy + py + s.offsetY);
-            //
-            //                    textureBuffer
-            //                            .put(s.texX)
-            //                            .put(s.texY);
-            //                }
-            //
-            //                {
-            //                    float vx = 0f - px;
-            //                    float vy = s.height - py;
-            //
-            //                    vertexBuffer
-            //                            .put(cos * vx - sin * vy + px + s.offsetX)
-            //                            .put(sin * vx + cos * vy + py + s.offsetY);
-            //
-            //                    textureBuffer
-            //                            .put(s.texX)
-            //                            .put(s.texY + s.texHeight);
-            //                }
-            //
-            //                {
-            //                    float vx = s.width - px;
-            //                    float vy = s.height - py;
-            //
-            //                    vertexBuffer
-            //                            .put(cos * vx - sin * vy + px + s.offsetX)
-            //                            .put(sin * vx + cos * vy + py + s.offsetY);
-            //
-            //                    textureBuffer
-            //                            .put(s.texX + s.texWidth)
-            //                            .put(s.texY + s.texHeight);
-            //                }
-            //
-            //                {
-            //                    float vx = s.width - px;
-            //                    float vy = 0f - py;
-            //
-            //                    vertexBuffer
-            //                            .put(cos * vx - sin * vy + px + s.offsetX)
-            //                            .put(sin * vx + cos * vy + py + s.offsetY);
-            //
-            //                    textureBuffer
-            //                            .put(s.texX + s.texWidth)
-            //                            .put(s.texY);
-            //                }
-            //            }
 
             vertexBuffer.flip();
             textureBuffer.flip();
@@ -148,6 +88,64 @@ public class Renderer {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+    }
+
+    private static void initState() {
+        vanillaMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+
+//        // 1) Allocate a direct FloatBuffer for 16 floats (once, e.g. static field)
+//        FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);
+//
+//        // 2) Ask OpenGL to write the current projection matrix into it
+//        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, projBuf);
+//
+//        // 3) Flip or rewind so you can read from the start
+//        projBuf.rewind();
+//
+//        // 4) Copy into a Java array for easy indexing
+//        float[] m = new float[16];
+//        projBuf.get(m);
+//
+//        // 5) Log it row‐by‐row (remember: OpenGL is column-major internally,
+//        // but we print here as human-readable rows)
+//        for (int row = 0; row < 4; row++) {
+//            // elements at indices 0+row, 4+row, 8+row, 12+row
+//            logger().info(String.format(
+//                    "[ % .4f  % .4f  % .4f  % .4f ]",
+//                    m[0 * 4 + row], m[1 * 4 + row], m[2 * 4 + row], m[3 * 4 + row]
+//            ));
+//        }
+//
+//        logger().info("    ");
+
+
+//        GL11.glMatrixMode(GL11.GL_PROJECTION);
+//        GL11.glPushMatrix();
+//        GL11.glLoadIdentity();
+
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//        GL11.glPushMatrix();
+//        GL11.glLoadIdentity();
+
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+    }
+
+    private static void revertState() {
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+
+//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//        GL11.glPopMatrix();
+
+//        GL11.glMatrixMode(GL11.GL_PROJECTION);
+//        GL11.glPopMatrix();
+
+        GL11.glMatrixMode(vanillaMode);
     }
 
     public static void render(float x, float y, int ö00000, int ô00000, com.fs.graphics.Sprite sprite) {
