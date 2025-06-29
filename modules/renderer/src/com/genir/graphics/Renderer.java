@@ -18,6 +18,15 @@ public class Renderer {
     }
 
     public static void commitLayer() {
+//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//        GL11.glLoadIdentity();
+//        GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+// setup once per frame (or once at init if window size doesn’t change)
+        GL11.glViewport(0, 0, 1920, 1200);
+
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
 
@@ -31,73 +40,101 @@ public class Renderer {
             List<Sprite> sprites = entry.getValue();
 
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, key.textureID);
-            GL11.glBlendFunc(key.blendSrc, key.blendDst);
-
-            GL11.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
+            GL11.glColor4f(1, 1, 1, 1);
 
             FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
             FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
 
             for (Sprite s : sprites) {
-                float px = s.width / 2;
-                float py = s.height / 2;
+                // a 0.5×0.5 quad in NDC
+                vertexBuffer.put(-0.5f).put(-0.5f);
+                vertexBuffer.put(-0.5f).put(0.5f);
+                vertexBuffer.put(0.5f).put(0.5f);
+                vertexBuffer.put(0.5f).put(-0.5f);
 
-                float a = s.angle * (float) (Math.PI / 180);
-                float cos = (float) Math.cos(a);
-                float sin = (float) Math.sin(a);
+                // full‐texture UVs
+                //            tb.put(0).put(0);
+                //            tb.put(0).put(1);
+                //            tb.put(1).put(1);
+                //            tb.put(1).put(0);
 
-                {
-                    float vx = 0f - px;
-                    float vy = 0f - py;
+                textureBuffer
+                        .put(s.texX)
+                        .put(s.texY);
 
-                    vertexBuffer
-                            .put(cos * vx - sin * vy + px + s.offsetX)
-                            .put(sin * vx + cos * vy + py + s.offsetY);
+                textureBuffer
+                        .put(s.texX)
+                        .put(s.texY + s.texHeight);
 
-                    textureBuffer
-                            .put(s.texX)
-                            .put(s.texY);
-                }
+                textureBuffer
+                        .put(s.texX + s.texWidth)
+                        .put(s.texY + s.texHeight);
 
-                {
-                    float vx = 0f - px;
-                    float vy = s.height - py;
-
-                    vertexBuffer
-                            .put(cos * vx - sin * vy + px + s.offsetX)
-                            .put(sin * vx + cos * vy + py + s.offsetY);
-
-                    textureBuffer
-                            .put(s.texX)
-                            .put(s.texY + s.texHeight);
-                }
-
-                {
-                    float vx = s.width - px;
-                    float vy = s.height - py;
-
-                    vertexBuffer
-                            .put(cos * vx - sin * vy + px + s.offsetX)
-                            .put(sin * vx + cos * vy + py + s.offsetY);
-
-                    textureBuffer
-                            .put(s.texX + s.texWidth)
-                            .put(s.texY + s.texHeight);
-                }
-
-                {
-                    float vx = s.width - px;
-                    float vy = 0f - py;
-
-                    vertexBuffer
-                            .put(cos * vx - sin * vy + px + s.offsetX)
-                            .put(sin * vx + cos * vy + py + s.offsetY);
-
-                    textureBuffer
-                            .put(s.texX + s.texWidth)
-                            .put(s.texY);
-                }
+                textureBuffer
+                        .put(s.texX + s.texWidth)
+                        .put(s.texY);
             }
+
+            //for (Sprite s : sprites) {
+            //                float px = s.width / 2;
+            //                float py = s.height / 2;
+            //
+            //                float a = s.angle * (float) (Math.PI / 180);
+            //                float cos = (float) Math.cos(a);
+            //                float sin = (float) Math.sin(a);
+            //
+            //                {
+            //                    float vx = 0f - px;
+            //                    float vy = 0f - py;
+            //
+            //                    vertexBuffer
+            //                            .put(cos * vx - sin * vy + px + s.offsetX)
+            //                            .put(sin * vx + cos * vy + py + s.offsetY);
+            //
+            //                    textureBuffer
+            //                            .put(s.texX)
+            //                            .put(s.texY);
+            //                }
+            //
+            //                {
+            //                    float vx = 0f - px;
+            //                    float vy = s.height - py;
+            //
+            //                    vertexBuffer
+            //                            .put(cos * vx - sin * vy + px + s.offsetX)
+            //                            .put(sin * vx + cos * vy + py + s.offsetY);
+            //
+            //                    textureBuffer
+            //                            .put(s.texX)
+            //                            .put(s.texY + s.texHeight);
+            //                }
+            //
+            //                {
+            //                    float vx = s.width - px;
+            //                    float vy = s.height - py;
+            //
+            //                    vertexBuffer
+            //                            .put(cos * vx - sin * vy + px + s.offsetX)
+            //                            .put(sin * vx + cos * vy + py + s.offsetY);
+            //
+            //                    textureBuffer
+            //                            .put(s.texX + s.texWidth)
+            //                            .put(s.texY + s.texHeight);
+            //                }
+            //
+            //                {
+            //                    float vx = s.width - px;
+            //                    float vy = 0f - py;
+            //
+            //                    vertexBuffer
+            //                            .put(cos * vx - sin * vy + px + s.offsetX)
+            //                            .put(sin * vx + cos * vy + py + s.offsetY);
+            //
+            //                    textureBuffer
+            //                            .put(s.texX + s.texWidth)
+            //                            .put(s.texY);
+            //                }
+            //            }
 
             vertexBuffer.flip();
             textureBuffer.flip();
