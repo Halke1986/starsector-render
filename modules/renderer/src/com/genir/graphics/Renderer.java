@@ -7,6 +7,7 @@ import com.fs.starfarer.combat.entities.CustomCombatEntity;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -57,6 +58,7 @@ public class Renderer {
     private static void renderLayer() {
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
 
@@ -66,10 +68,10 @@ public class Renderer {
 
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, key.textureID);
             GL11.glBlendFunc(key.blendSrc, key.blendDst);
-            GL11.glColor4f(1, 1, 1, 1);
 
             FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
             FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
+            ByteBuffer colorBuffer = BufferUtils.createByteBuffer(sprites.size() * 4 * 4);
 
             for (Sprite s : sprites) {
                 float px = s.width / 2;
@@ -106,19 +108,24 @@ public class Renderer {
                     float ty = tys[i] + s.texY;
 
                     textureBuffer.put(tx).put(ty);
+
+                    colorBuffer.put(s.r).put(s.g).put(s.b).put(s.a);
                 }
             }
 
             vertexBuffer.flip();
             textureBuffer.flip();
+            colorBuffer.flip();
 
             GL11.glVertexPointer(2, 0, vertexBuffer);
             GL11.glTexCoordPointer(2, 0, textureBuffer);
+            GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
             GL11.glDrawArrays(GL11.GL_QUADS, 0, sprites.size() * 4);
         }
 
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
     }
@@ -134,8 +141,7 @@ public class Renderer {
         quad.r = (byte) sprite.color.getRed();
         quad.g = (byte) sprite.color.getGreen();
         quad.b = (byte) sprite.color.getBlue();
-        quad.a = (byte) sprite.color.getAlpha();
-        quad.alphaMult = sprite.alphaMult;
+        quad.a = (byte) (sprite.color.getAlpha() * sprite.alphaMult);
         quad.offsetX = sprite.offsetX + x;
         quad.offsetY = sprite.offsetY + y;
         quad.centerX = sprite.centerX;
@@ -212,7 +218,6 @@ public class Renderer {
         byte g;
         byte b;
         byte a;
-        float alphaMult;
 
         // Always zero.
         float offsetX;
