@@ -9,19 +9,18 @@ import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.genir.graphics.Debug.logger;
-
 public class Renderer {
     private static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
+
     private static CombatEngineLayers currentLayer = null;
+    private static Object currentEntity = null;
 
     public static void beginLayer(int layerOrdinal) {
         currentLayer = CombatEngineLayers.values()[layerOrdinal];
-
-//        logger().info(layerOrdinal + "  " + currentLayer.name());
 
         buffer = new HashMap<>();
     }
@@ -33,15 +32,26 @@ public class Renderer {
     }
 
     public static void beginEntity(Object entity) {
-        if (entity instanceof CustomCombatEntity) {
-            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
-            logger().info(currentLayer.name() + "  " + plugin.getClass().getName() + "  " + (plugin instanceof RoilingSwarmEffect));
-        } else {
-            logger().info(currentLayer.name() + "  " + entity.getClass().getName());
-        }
+        currentEntity = entity;
     }
 
     public static void commitEntity() {
+        currentEntity = null;
+    }
+
+    public static void render(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+        if (currentEntity instanceof CustomCombatEntity) {
+            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) currentEntity).getPlugin();
+
+            if (plugin instanceof RoilingSwarmEffect) {
+                arrayRender(x, y, textureID, sprite);
+                return;
+            }
+
+            //            logger().info(currentLayer.name() + "  " + plugin.getClass().getName() + "  " + (plugin instanceof RoilingSwarmEffect));
+        }
+
+        vanillaRender(x, y, textureID, sprite);
     }
 
     private static void renderLayer() {
@@ -113,42 +123,34 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
     }
 
-    public static void render(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
-        vanillaRender(x, y, textureID, sprite);
-        return;
+    public static void arrayRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+        SpriteIndex idx = new SpriteIndex(
+                textureID,
+                sprite.blendSrc,
+                sprite.blendDest
+        );
 
-//        if (currentLayer == null) {
-//            vanillaRender(x, y, ô00000, sprite);
-//            return;
-//        }
-//
-//        SpriteIndex idx = new SpriteIndex(
-//                ô00000,
-//                sprite.blendSrc,
-//                sprite.blendDest
-//        );
-//
-//        Sprite quad = new Sprite();
-//        quad.r = (byte) sprite.color.getRed();
-//        quad.g = (byte) sprite.color.getGreen();
-//        quad.b = (byte) sprite.color.getBlue();
-//        quad.a = (byte) sprite.color.getAlpha();
-//        quad.alphaMult = sprite.alphaMult;
-//        quad.offsetX = sprite.offsetX + x;
-//        quad.offsetY = sprite.offsetY + y;
-//        quad.centerX = sprite.centerX;
-//        quad.centerY = sprite.centerY;
-//        quad.width = sprite.width;
-//        quad.height = sprite.height;
-//        quad.angle = sprite.angle;
-//        quad.texX = sprite.texX;
-//        quad.texY = sprite.texY;
-//        quad.texWidth = sprite.texWidth;
-//        quad.texHeight = sprite.texHeight;
-//
-//        List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
-//
-//        quads.add(quad);
+        Sprite quad = new Sprite();
+        quad.r = (byte) sprite.color.getRed();
+        quad.g = (byte) sprite.color.getGreen();
+        quad.b = (byte) sprite.color.getBlue();
+        quad.a = (byte) sprite.color.getAlpha();
+        quad.alphaMult = sprite.alphaMult;
+        quad.offsetX = sprite.offsetX + x;
+        quad.offsetY = sprite.offsetY + y;
+        quad.centerX = sprite.centerX;
+        quad.centerY = sprite.centerY;
+        quad.width = sprite.width;
+        quad.height = sprite.height;
+        quad.angle = sprite.angle;
+        quad.texX = sprite.texX;
+        quad.texY = sprite.texY;
+        quad.texWidth = sprite.texWidth;
+        quad.texHeight = sprite.texHeight;
+
+        List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
+
+        quads.add(quad);
     }
 
     public static void vanillaRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
