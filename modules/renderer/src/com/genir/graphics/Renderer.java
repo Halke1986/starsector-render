@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,10 +14,12 @@ import java.util.Map;
 
 public class Renderer {
     static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
-    static int vanillaMode = 0;
 
     public static void beginLayer(int layerOrdinal) {
-        logger().info(CombatEngineLayers.values()[layerOrdinal].name());
+        logger().info(layerOrdinal + "  " + CombatEngineLayers.values()[layerOrdinal].name());
+
+//        logMatrix(GL11.GL_MODELVIEW_MATRIX);
+//        logViewport();
 
         buffer = new HashMap<>();
     }
@@ -29,6 +32,9 @@ public class Renderer {
 //        GL11.glMatrixMode(GL11.GL_MODELVIEW);
 //        GL11.glPushMatrix();
 //        GL11.glLoadIdentity();
+
+//        logMatrix(GL11.GL_MODELVIEW_MATRIX);
+//        logViewport();
 
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -75,6 +81,17 @@ public class Renderer {
                     float rx = cos * vx - sin * vy + px + s.offsetX;
                     float ry = sin * vx + cos * vy + py + s.offsetY;
 
+                    //[  0.0012   0.0000  -0.0000  -3.6625 ]
+                    //[  0.0000   0.0020  -0.0000   0.0923 ]
+                    //[  0.0000   0.0000  -0.0003   0.0000 ]
+                    //[  0.0000   0.0000  -0.0000   1.0000 ]
+
+                    float qx = rx * 0.0012f -3.6625f;
+                    float qy = rx * 0.0020f +0.0923f;
+
+//                    logger().info(vxs[i] + "  " + vys[i] + " --> " + qx + "  " + qy);
+//                    logger().info(vxs[i] + "  " + vys[i] + " --> " + qx + "  " + qy);
+
                     vertexBuffer.put(rx).put(ry);
 
                     float tx = txs[i] + s.texX;
@@ -82,6 +99,8 @@ public class Renderer {
 
                     textureBuffer.put(tx).put(ty);
                 }
+
+//                logger().info("    ");
 
 //                vertexBuffer.put( -0.5f ).put( -0.5f );
 //                vertexBuffer.put( -0.5f ).put(  0.5f );
@@ -109,62 +128,50 @@ public class Renderer {
 //        GL11.glPopMatrix();
     }
 
-    private static void initState() {
-        vanillaMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+    private static void logMatrix(int pname) {
+        // 1) Allocate a direct FloatBuffer for 16 floats (once, e.g. static field)
+        FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);
 
-//        // 1) Allocate a direct FloatBuffer for 16 floats (once, e.g. static field)
-//        FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);
-//
-//        // 2) Ask OpenGL to write the current projection matrix into it
-//        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, projBuf);
-//
-//        // 3) Flip or rewind so you can read from the start
-//        projBuf.rewind();
-//
-//        // 4) Copy into a Java array for easy indexing
-//        float[] m = new float[16];
-//        projBuf.get(m);
-//
-//        // 5) Log it row‐by‐row (remember: OpenGL is column-major internally,
-//        // but we print here as human-readable rows)
-//        for (int row = 0; row < 4; row++) {
-//            // elements at indices 0+row, 4+row, 8+row, 12+row
-//            logger().info(String.format(
-//                    "[ % .4f  % .4f  % .4f  % .4f ]",
-//                    m[0 * 4 + row], m[1 * 4 + row], m[2 * 4 + row], m[3 * 4 + row]
-//            ));
-//        }
-//
-//        logger().info("    ");
+        // 2) Ask OpenGL to write the current projection matrix into it
+        GL11.glGetFloat(pname, projBuf);
 
+        // 3) Flip or rewind so you can read from the start
+        projBuf.rewind();
 
-//        GL11.glMatrixMode(GL11.GL_PROJECTION);
-//        GL11.glPushMatrix();
-//        GL11.glLoadIdentity();
+        // 4) Copy into a Java array for easy indexing
+        float[] m = new float[16];
+        projBuf.get(m);
 
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//        GL11.glPushMatrix();
-//        GL11.glLoadIdentity();
+        // 5) Log it row‐by‐row (remember: OpenGL is column-major internally,
+        // but we print here as human-readable rows)
+        for (int row = 0; row < 4; row++) {
+            // elements at indices 0+row, 4+row, 8+row, 12+row
+            logger().info(String.format(
+                    "[ % .4f  % .4f  % .4f  % .4f ]",
+                    m[0 * 4 + row], m[1 * 4 + row], m[2 * 4 + row], m[3 * 4 + row]
+            ));
+        }
 
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
+        logger().info("    ");
     }
 
-    private static void revertState() {
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+    private static void logViewport() {
+        // Allocate a direct IntBuffer of size 4 (once, e.g. as a static field)
+        IntBuffer vp = BufferUtils.createIntBuffer(16);
 
-//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//        GL11.glPopMatrix();
+        // Ask OpenGL to write the current viewport into that buffer
+        GL11.glGetInteger(GL11.GL_VIEWPORT, vp);
 
-//        GL11.glMatrixMode(GL11.GL_PROJECTION);
-//        GL11.glPopMatrix();
+        // Reset buffer position so you can read from it
+        vp.rewind();
 
-        GL11.glMatrixMode(vanillaMode);
+        // Read them back out
+        int x = vp.get();   // viewport x origin
+        int y = vp.get();   // viewport y origin
+        int width = vp.get();   // viewport width
+        int height = vp.get();   // viewport height
+
+        logger().info("Viewport = " + x + " " + y + " " + width + " " + height);
     }
 
     public static void render(float x, float y, int ö00000, int ô00000, com.fs.graphics.Sprite sprite) {
@@ -195,6 +202,8 @@ public class Renderer {
         List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
 
         quads.add(quad);
+
+        logMatrix(GL11.GL_MODELVIEW_MATRIX);
 
 //        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ô00000);
 //
