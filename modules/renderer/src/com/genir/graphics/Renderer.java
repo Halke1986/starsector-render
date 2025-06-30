@@ -48,8 +48,6 @@ public class Renderer {
                 arrayRender(x, y, textureID, sprite);
                 return;
             }
-
-            //            logger().info(currentLayer.name() + "  " + plugin.getClass().getName() + "  " + (plugin instanceof RoilingSwarmEffect));
         }
 
         vanillaRender(x, y, textureID, sprite);
@@ -62,6 +60,19 @@ public class Renderer {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
 
+        int maxSprites = 0;
+        for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
+            List<Sprite> sprites = entry.getValue();
+
+            if (sprites.size() > maxSprites) {
+                maxSprites = sprites.size();
+            }
+        }
+
+        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
+        FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
+        ByteBuffer colorBuffer = BufferUtils.createByteBuffer(maxSprites * 4 * 4);
+
         for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
             SpriteIndex key = entry.getKey();
             List<Sprite> sprites = entry.getValue();
@@ -69,9 +80,9 @@ public class Renderer {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, key.textureID);
             GL11.glBlendFunc(key.blendSrc, key.blendDst);
 
-            FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
-            FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(sprites.size() * 4 * 2);
-            ByteBuffer colorBuffer = BufferUtils.createByteBuffer(sprites.size() * 4 * 4);
+            vertexBuffer.clear();
+            textureBuffer.clear();
+            colorBuffer.clear();
 
             for (Sprite s : sprites) {
                 float px = s.width / 2;
@@ -130,7 +141,7 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
     }
 
-    public static void arrayRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+    private static void arrayRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
         SpriteIndex idx = new SpriteIndex(
                 textureID,
                 sprite.blendSrc,
@@ -159,7 +170,7 @@ public class Renderer {
         quads.add(quad);
     }
 
-    public static void vanillaRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+    private static void vanillaRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         GL11.glPushMatrix();
