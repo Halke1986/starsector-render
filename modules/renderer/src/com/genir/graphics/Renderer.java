@@ -13,15 +13,21 @@ import java.util.Map;
 import static com.genir.graphics.Debug.logger;
 
 public class Renderer {
-    static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
+    private static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
+    private static CombatEngineLayers currentLayer = null;
+
 
     public static void beginLayer(int layerOrdinal) {
-        logger().info(layerOrdinal + "  " + CombatEngineLayers.values()[layerOrdinal].name());
+        currentLayer = CombatEngineLayers.values()[layerOrdinal];
+
+        logger().info(layerOrdinal + "  " + currentLayer.name());
 
         buffer = new HashMap<>();
     }
 
     public static void commitLayer() {
+        currentLayer = null;
+
         renderLayer();
     }
 
@@ -102,6 +108,11 @@ public class Renderer {
     }
 
     public static void render(float x, float y, int ö00000, int ô00000, com.fs.graphics.Sprite sprite) {
+        if (currentLayer == null) {
+            vanillaRender(x, y, ô00000, sprite);
+            return;
+        }
+
         SpriteIndex idx = new SpriteIndex(
                 ô00000,
                 sprite.blendSrc,
@@ -129,54 +140,54 @@ public class Renderer {
         List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
 
         quads.add(quad);
-
-//        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ô00000);
-//
-//        GL11.glPushMatrix();
-//
-//        GL11.glColor4ub(
-//                (byte) sprite.color.getRed(),
-//                (byte) sprite.color.getGreen(),
-//                (byte) sprite.color.getBlue(),
-//                (byte) ((int) ((float) sprite.color.getAlpha() * sprite.alphaMult))
-//        );
-//
-//        GL11.glTranslatef(x + (float) sprite.offsetX, y + (float) sprite.offsetY, 0.0F);
-//
-//        if (sprite.centerX != -1.0F && sprite.centerY != -1.0F) {
-//            GL11.glTranslatef(sprite.width / 2.0F, sprite.height / 2.0F, 0.0F);
-//            GL11.glRotatef(sprite.angle, 0.0F, 0.0F, 1.0F);
-//            GL11.glTranslatef(-sprite.centerX, -sprite.centerY, 0.0F);
-//        } else {
-//            GL11.glTranslatef(sprite.width / 2.0F, sprite.height / 2.0F, 0.0F);
-//            GL11.glRotatef(sprite.angle, 0.0F, 0.0F, 1.0F);
-//            GL11.glTranslatef(-sprite.width / 2.0F, -sprite.height / 2.0F, 0.0F);
-//        }
-//
-//
-//        GL11.glEnable(GL11.GL_TEXTURE_2D);
-//        GL11.glEnable(GL11.GL_BLEND);
-//        GL11.glBlendFunc(sprite.blendSrc, sprite.blendDest);
-//
-//        GL11.glBegin(GL11.GL_QUADS);
-//
-//        GL11.glTexCoord2f(sprite.texX, sprite.texY);
-//        GL11.glVertex2f(0.0F, 0.0F);
-//
-//        GL11.glTexCoord2f(sprite.texX, sprite.texY + sprite.texHeight);
-//        GL11.glVertex2f(0.0F, sprite.height);
-//
-//        GL11.glTexCoord2f(sprite.texX + sprite.texWidth, sprite.texY + sprite.texHeight);
-//        GL11.glVertex2f(sprite.width, sprite.height);
-//
-//        GL11.glTexCoord2f(sprite.texX + sprite.texWidth, sprite.texY);
-//        GL11.glVertex2f(sprite.width, 0.0F);
-//
-//        GL11.glEnd();
-//        GL11.glDisable(GL11.GL_BLEND);
-//        GL11.glPopMatrix();
     }
 
+    public static void vanillaRender(float x, float y, int ô00000, com.fs.graphics.Sprite sprite) {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ô00000);
+
+        GL11.glPushMatrix();
+
+        GL11.glColor4ub(
+                (byte) sprite.color.getRed(),
+                (byte) sprite.color.getGreen(),
+                (byte) sprite.color.getBlue(),
+                (byte) ((int) ((float) sprite.color.getAlpha() * sprite.alphaMult))
+        );
+
+        GL11.glTranslatef(x + (float) sprite.offsetX, y + (float) sprite.offsetY, 0.0F);
+
+        if (sprite.centerX != -1.0F && sprite.centerY != -1.0F) {
+            GL11.glTranslatef(sprite.width / 2.0F, sprite.height / 2.0F, 0.0F);
+            GL11.glRotatef(sprite.angle, 0.0F, 0.0F, 1.0F);
+            GL11.glTranslatef(-sprite.centerX, -sprite.centerY, 0.0F);
+        } else {
+            GL11.glTranslatef(sprite.width / 2.0F, sprite.height / 2.0F, 0.0F);
+            GL11.glRotatef(sprite.angle, 0.0F, 0.0F, 1.0F);
+            GL11.glTranslatef(-sprite.width / 2.0F, -sprite.height / 2.0F, 0.0F);
+        }
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(sprite.blendSrc, sprite.blendDest);
+
+        GL11.glBegin(GL11.GL_QUADS);
+
+        GL11.glTexCoord2f(sprite.texX, sprite.texY);
+        GL11.glVertex2f(0.0F, 0.0F);
+
+        GL11.glTexCoord2f(sprite.texX, sprite.texY + sprite.texHeight);
+        GL11.glVertex2f(0.0F, sprite.height);
+
+        GL11.glTexCoord2f(sprite.texX + sprite.texWidth, sprite.texY + sprite.texHeight);
+        GL11.glVertex2f(sprite.width, sprite.height);
+
+        GL11.glTexCoord2f(sprite.texX + sprite.texWidth, sprite.texY);
+        GL11.glVertex2f(sprite.width, 0.0F);
+
+        GL11.glEnd();
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glPopMatrix();
+    }
 
     record SpriteIndex(
             int textureID,
