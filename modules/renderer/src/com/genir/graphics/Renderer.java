@@ -1,6 +1,9 @@
 package com.genir.graphics;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
+import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
+import com.fs.starfarer.combat.entities.CustomCombatEntity;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -18,7 +21,7 @@ public class Renderer {
     public static void beginLayer(int layerOrdinal) {
         currentLayer = CombatEngineLayers.values()[layerOrdinal];
 
-        logger().info(layerOrdinal + "  " + currentLayer.name());
+//        logger().info(layerOrdinal + "  " + currentLayer.name());
 
         buffer = new HashMap<>();
     }
@@ -30,7 +33,12 @@ public class Renderer {
     }
 
     public static void beginEntity(Object entity) {
-        logger().info(entity.getClass().getName());
+        if (entity instanceof CustomCombatEntity) {
+            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
+            logger().info(currentLayer.name() + "  " + plugin.getClass().getName() + "  " + (plugin instanceof RoilingSwarmEffect));
+        } else {
+            logger().info(currentLayer.name() + "  " + entity.getClass().getName());
+        }
     }
 
     public static void commitEntity() {

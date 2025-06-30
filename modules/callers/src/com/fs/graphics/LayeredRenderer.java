@@ -24,20 +24,25 @@ public class LayeredRenderer<T extends Enum<T>, V> {
                 continue;
             }
 
-            Renderer.beginLayer(layer.ordinal());
-
-            List<LayeredRenderable<T, V>> entities = getList(layer);
-            if (entities == null) {
-                continue;
-            }
-
-            for (LayeredRenderable<T, V> entity : entities) {
-                Renderer.beginEntity(entity);
-                entity.render(layer, viewport);
-                Renderer.commitEntity();
-            }
-
-            Renderer.commitLayer();
+            renderOnly(viewport, layer);
         }
+    }
+
+    // REPLACED METHOD
+    public void renderOnly(V viewport, T layer) {
+        Renderer.beginLayer(layer.ordinal());
+
+        List<LayeredRenderable<T, V>> entities = getList(layer);
+        if (entities == null) {
+            return;
+        }
+
+        for (LayeredRenderable<T, V> entity : entities) {
+            Renderer.beginEntity(entity);
+            entity.render(layer, viewport);
+            Renderer.commitEntity();
+        }
+
+        Renderer.commitLayer();
     }
 }
