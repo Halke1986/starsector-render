@@ -84,93 +84,119 @@ L85:
     .end code 
 .end method 
 
-.method public varargs renderExcluding : (Ljava/lang/Object;[Ljava/lang/Enum;)V 
-    .signature (TV;[TT;)V 
-    .code stack 3 locals 9 
-L0:     aload_0 
-L1:     getfield Field com/fs/graphics/LayeredRenderer layerEnumClass Ljava/lang/Class; 
-L4:     invokestatic Method java/util/EnumSet allOf (Ljava/lang/Class;)Ljava/util/EnumSet; 
-L7:     astore_3 
-L8:     new java/util/LinkedHashSet 
-L11:    dup 
-L12:    invokespecial Method java/util/LinkedHashSet <init> ()V 
-L15:    astore 4 
-L17:    aload_2 
-L18:    ifnull L33 
-L21:    aload 4 
-L23:    aload_2 
-L24:    invokestatic Method java/util/Arrays asList ([Ljava/lang/Object;)Ljava/util/List; 
-L27:    invokeinterface InterfaceMethod java/util/Set addAll (Ljava/util/Collection;)Z 2 
-L32:    pop 
+.method public final varargs renderExcluding : (Ljava/lang/Object;[Ljava/lang/Enum;)V
+    .code stack 3 locals 10
+L0:     aload_0
+L1:     getfield Field com/fs/graphics/LayeredRenderer layerEnumClass Ljava/lang/Class;
+L4:     invokestatic Method java/util/EnumSet allOf (Ljava/lang/Class;)Ljava/util/EnumSet;
+L7:     astore_3
+L8:     aload_2
+L9:     invokestatic Method java/util/Arrays asList ([Ljava/lang/Object;)Ljava/util/List;
+L12:    astore 4
+L14:    aload_3
+L15:    invokevirtual Method java/util/EnumSet iterator ()Ljava/util/Iterator;
+L18:    astore 5
 
-        .stack append Object java/util/EnumSet Object java/util/Set 
-L33:    aload_3 
-L34:    invokevirtual Method java/util/EnumSet iterator ()Ljava/util/Iterator; 
-L37:    astore 6 
-L39:    goto L117 
+        .stack append Object java/util/EnumSet Object java/util/List Object java/util/Iterator
+L20:    aload 5
+L22:    invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1
+L27:    ifeq L139
+L30:    aload 5
+L32:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
+L37:    checkcast java/lang/Enum
+L40:    astore 6
+L42:    aload 4
+L44:    aload 6
+L46:    invokeinterface InterfaceMethod java/util/List contains (Ljava/lang/Object;)Z 2
+L51:    ifeq L57
+L54:    goto L20
 
-        .stack full 
-            locals Object com/fs/graphics/LayeredRenderer Object java/lang/Object Object [Ljava/lang/Enum; Object java/util/EnumSet Object java/util/Set Top Object java/util/Iterator 
-            stack 
-        .end stack
+        .stack append Object java/lang/Enum
+L57:    aload 6
+L59:    invokevirtual Method java/lang/Enum ordinal ()I
+L62:    invokestatic Method com/genir/graphics/Renderer beginLayer (I)V
+L65:    aload_0
+L66:    aload 6
+L68:    invokevirtual Method com/fs/graphics/LayeredRenderer getList (Ljava/lang/Enum;)Ljava/util/List;
+L71:    astore 7
+L73:    aload 7
+L75:    ifnonnull L81
+L78:    goto L20
 
-L42:    aload 6
-L44:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
-L49:    checkcast java/lang/Enum 
-L52:    astore 5
+        .stack append Object java/util/List
+L81:    aload 7
+L83:    invokeinterface InterfaceMethod java/util/List iterator ()Ljava/util/Iterator; 1
+L88:    astore 8
 
-        aload 5
-        invokevirtual Method java/lang/Enum ordinal ()I
-        invokestatic Method com/genir/graphics/Renderer beginLayer (I)V
+        .stack append Object java/util/Iterator
+L90:    aload 8
+L92:    invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1
+L97:    ifeq L133
+L100:   aload 8
+L102:   invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
+L107:   checkcast com/fs/graphics/LayeredRenderable
+L110:   astore 9
+L112:   aload 9
+L114:   invokestatic Method com/genir/graphics/Renderer beginEntity (Ljava/lang/Object;)V
+L117:   aload 9
+L119:   aload 6
+L121:   aload_1
+L122:   invokeinterface InterfaceMethod com/fs/graphics/LayeredRenderable render (Ljava/lang/Enum;Ljava/lang/Object;)V 3
+L127:   invokestatic Method com/genir/graphics/Renderer commitEntity ()V
+L130:   goto L90
 
-L54:    aload 4
-L56:    aload 5
+        .stack chop 1
+L133:   invokestatic Method com/genir/graphics/Renderer commitLayer ()V
+L136:   goto L20
 
-L58:    invokeinterface InterfaceMethod java/util/Set contains (Ljava/lang/Object;)Z 2 
-L63:    ifeq L69 
-L66:    goto L117 
-
-        .stack full 
-            locals Object com/fs/graphics/LayeredRenderer Object java/lang/Object Object [Ljava/lang/Enum; Object java/util/EnumSet Object java/util/Set Object java/lang/Enum Object java/util/Iterator 
-            stack 
-        .end stack 
-L69:    aload_0 
-L70:    aload 5 
-L72:    invokevirtual Method com/fs/graphics/LayeredRenderer getList (Ljava/lang/Enum;)Ljava/util/List; 
-L75:    invokeinterface InterfaceMethod java/util/List iterator ()Ljava/util/Iterator; 1 
-L80:    astore 8 
-L82:    goto L107 
-
-        .stack full 
-            locals Object com/fs/graphics/LayeredRenderer Object java/lang/Object Object [Ljava/lang/Enum; Object java/util/EnumSet Object java/util/Set Object java/lang/Enum Object java/util/Iterator Top Object java/util/Iterator 
-            stack 
-        .end stack 
-L85:    aload 8 
-L87:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1 
-L92:    checkcast com/fs/graphics/LayeredRenderable 
-L95:    astore 7 
-L97:    aload 7 
-L99:    aload 5 
-L101:   aload_1 
-L102:   invokeinterface InterfaceMethod com/fs/graphics/LayeredRenderable render (Ljava/lang/Enum;Ljava/lang/Object;)V 3 
-
-        .stack same 
-L107:   aload 8 
-L109:   invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1 
-L114:   ifne L85
-
-        invokestatic Method com/genir/graphics/Renderer commitLayer ()V
-
-        .stack full 
-            locals Object com/fs/graphics/LayeredRenderer Object java/lang/Object Object [Ljava/lang/Enum; Object java/util/EnumSet Object java/util/Set Top Object java/util/Iterator 
-            stack 
-        .end stack 
-L117:   aload 6 
-L119:   invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1 
-L124:   ifne L42 
-L127:   return 
-L128:   
-    .end code 
+        .stack chop 3
+L139:   return
+L140:
+        .linenumbertable
+            L0 19
+            L8 20
+            L14 22
+            L42 23
+            L54 24
+            L57 27
+            L65 29
+            L73 30
+            L78 31
+            L81 34
+            L112 35
+            L117 36
+            L127 37
+            L130 38
+            L133 40
+            L136 41
+            L139 42
+        .end linenumbertable
+        .localvariabletable
+            9 is entity Lcom/fs/graphics/LayeredRenderable; from L112 to L130
+            7 is entities Ljava/util/List; from L73 to L136
+            6 is layer Ljava/lang/Enum; from L42 to L136
+            0 is this Lcom/fs/graphics/LayeredRenderer; from L0 to L140
+            1 is viewport Ljava/lang/Object; from L0 to L140
+            2 is exclude [Ljava/lang/Enum; from L0 to L140
+            3 is allLayers Ljava/util/EnumSet; from L8 to L140
+            4 is excludedLayers Ljava/util/List; from L14 to L140
+        .end localvariabletable
+        .localvariabletypetable
+            9 is entity Lcom/fs/graphics/LayeredRenderable<TT;TV;>; from L112 to L130
+            7 is entities Ljava/util/List<Lcom/fs/graphics/LayeredRenderable<TT;TV;>;>; from L73 to L136
+            6 is layer TT; from L42 to L136
+            0 is this Lcom/fs/graphics/LayeredRenderer<TT;TV;>; from L0 to L140
+            1 is viewport TV; from L0 to L140
+            2 is exclude [TT; from L0 to L140
+            3 is allLayers Ljava/util/EnumSet<TT;>; from L8 to L140
+            4 is excludedLayers Ljava/util/List<TT;>; from L14 to L140
+        .end localvariabletypetable
+    .end code
+    .signature (TV;[TT;)V
+    .runtime visible annotations
+        .annotation Ljava/lang/SafeVarargs;
+        .end annotation
+    .end runtime
 .end method 
 
 .method public renderOnly : (Ljava/lang/Object;Ljava/lang/Enum;)V 

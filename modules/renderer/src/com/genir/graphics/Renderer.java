@@ -22,6 +22,17 @@ public class Renderer {
     }
 
     public static void commitLayer() {
+        renderLayer();
+    }
+
+    public static void beginEntity(Object entity) {
+        logger().info(entity.getClass().getName());
+    }
+
+    public static void commitEntity() {
+    }
+
+    private static void renderLayer() {
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glEnable(GL11.GL_TEXTURE_2D);

@@ -28,6 +28,7 @@ public class Sprite {
     public boolean texClamp = false;
     public String textureId;
 
+    // REPLACED METHOD
     public void render(float var1, float var2) {
         if (this.texture == null) {
             return;
