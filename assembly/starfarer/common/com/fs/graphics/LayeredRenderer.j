@@ -114,16 +114,18 @@ L39:    goto L117
             stack 
         .end stack
 
-
-L42:    invokestatic Method com/genir/graphics/Renderer beginLayer ()V
-
-        aload 6
-
-L44:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1 
+L42:    aload 6
+L44:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
 L49:    checkcast java/lang/Enum 
-L52:    astore 5 
-L54:    aload 4 
-L56:    aload 5 
+L52:    astore 5
+
+        aload 5
+        invokevirtual Method java/lang/Enum ordinal ()I
+        invokestatic Method com/genir/graphics/Renderer beginLayer (I)V
+
+L54:    aload 4
+L56:    aload 5
+
 L58:    invokeinterface InterfaceMethod java/util/Set contains (Ljava/lang/Object;)Z 2 
 L63:    ifeq L69 
 L66:    goto L117 

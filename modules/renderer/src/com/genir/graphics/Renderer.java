@@ -1,5 +1,6 @@
 package com.genir.graphics;
 
+import com.fs.starfarer.api.combat.CombatEngineLayers;
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -14,7 +15,9 @@ public class Renderer {
     static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
     static int vanillaMode = 0;
 
-    public static void beginLayer() {
+    public static void beginLayer(int layerOrdinal) {
+        logger().info(CombatEngineLayers.values()[layerOrdinal].name());
+
         buffer = new HashMap<>();
     }
 
