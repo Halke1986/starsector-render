@@ -17,6 +17,11 @@ import java.util.Map;
 public class Renderer {
     private static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
 
+    private static int maxSprites = 0;
+    private static FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(0);
+    private static FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(0);
+    private static ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
+
     private static CombatEngineLayers currentLayer = null;
     private static Object currentEntity = null;
 
@@ -60,18 +65,7 @@ public class Renderer {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
 
-        int maxSprites = 0;
-        for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
-            List<Sprite> sprites = entry.getValue();
-
-            if (sprites.size() > maxSprites) {
-                maxSprites = sprites.size();
-            }
-        }
-
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
-        FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
-        ByteBuffer colorBuffer = BufferUtils.createByteBuffer(maxSprites * 4 * 4);
+        initBuffers();
 
         for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
             SpriteIndex key = entry.getKey();
@@ -90,7 +84,6 @@ public class Renderer {
 
                 float cx = px;
                 float cy = py;
-
                 if (s.centerX != -1 && s.centerY != -1) {
                     cx = s.centerX;
                     cy = s.centerY;
@@ -103,8 +96,7 @@ public class Renderer {
                 float[] vxs = {0f, 0f, s.width, s.width};
                 float[] vys = {0f, s.height, s.height, 0f};
 
-                float[] txs = {0f, 0f, s.texWidth, s.texWidth};
-                float[] tys = {0f, s.texHeight, s.texHeight, 0f};
+                float[] vertexes = new float[8];
 
                 for (int i = 0; i < 4; i++) {
                     float vx = vxs[i] - cx;
@@ -113,15 +105,27 @@ public class Renderer {
                     float rx = cos * vx - sin * vy + px + s.offsetX;
                     float ry = sin * vx + cos * vy + py + s.offsetY;
 
-                    vertexBuffer.put(rx).put(ry);
-
-                    float tx = txs[i] + s.texX;
-                    float ty = tys[i] + s.texY;
-
-                    textureBuffer.put(tx).put(ty);
-
-                    colorBuffer.put(s.r).put(s.g).put(s.b).put(s.a);
+                    vertexes[i * 2] = rx;
+                    vertexes[i * 2 + 1] = ry;
                 }
+
+                float[] texCoords = {
+                        s.texX, s.texY,
+                        s.texX, s.texY + s.texHeight,
+                        s.texX + s.texWidth, s.texY + s.texHeight,
+                        s.texX + s.texWidth, s.texY,
+                };
+
+                byte[] colors = {
+                        s.r, s.g, s.b, s.a,
+                        s.r, s.g, s.b, s.a,
+                        s.r, s.g, s.b, s.a,
+                        s.r, s.g, s.b, s.a,
+                };
+
+                vertexBuffer.put(vertexes);
+                textureBuffer.put(texCoords);
+                colorBuffer.put(colors);
             }
 
             vertexBuffer.flip();
@@ -139,6 +143,29 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+    }
+
+    private static void initBuffers() {
+        int currentMaxSprites = 0;
+        for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
+            List<Sprite> sprites = entry.getValue();
+
+            if (sprites.size() > currentMaxSprites) {
+                currentMaxSprites = sprites.size();
+            }
+        }
+
+        if (currentMaxSprites > maxSprites) {
+            maxSprites = currentMaxSprites;
+
+            vertexBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
+            textureBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
+            colorBuffer = BufferUtils.createByteBuffer(maxSprites * 4 * 4);
+        }
+
+        vertexBuffer.clear();
+        textureBuffer.clear();
+        colorBuffer.clear();
     }
 
     private static void arrayRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
