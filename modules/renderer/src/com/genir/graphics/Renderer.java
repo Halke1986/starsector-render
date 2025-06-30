@@ -18,10 +18,15 @@ public class Renderer {
         buffer = new HashMap<>();
     }
 
-//    public static void commitLayer() {
-//    }
-
     public static void commitLayer() {
+//        GL11.glMatrixMode(GL11.GL_PROJECTION);
+//        GL11.glPushMatrix();
+//        GL11.glLoadIdentity();
+//
+//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//        GL11.glPushMatrix();
+//        GL11.glLoadIdentity();
+
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -74,6 +79,11 @@ public class Renderer {
 
                     textureBuffer.put(tx).put(ty);
                 }
+
+//                vertexBuffer.put( -0.5f ).put( -0.5f );
+//                vertexBuffer.put( -0.5f ).put(  0.5f );
+//                vertexBuffer.put(  0.5f ).put(  0.5f );
+//                vertexBuffer.put(  0.5f ).put( -0.5f );
             }
 
             vertexBuffer.flip();
@@ -88,6 +98,12 @@ public class Renderer {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+
+//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//        GL11.glPopMatrix();
+//
+//        GL11.glMatrixMode(GL11.GL_PROJECTION);
+//        GL11.glPopMatrix();
     }
 
     private static void initState() {
