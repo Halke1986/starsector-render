@@ -34,6 +34,6 @@ public class Sprite {
             return;
         }
 
-        Renderer.render(var1, var2, texture.ö00000, texture.ô00000, this);
+        Renderer.render(var1, var2, texture.ô00000, this);
     }
 }

@@ -647,7 +647,7 @@ L21:
 .end method 
 
 .method public render : (FF)V 
-    .code stack 5 locals 3
+    .code stack 4 locals 3
 L0:     aload_0
 L1:     getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
 L4:     ifnonnull L8
@@ -658,24 +658,21 @@ L8:     fload_1
 L9:     fload_2
 L10:    aload_0
 L11:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
-L14:    getfield Field com/fs/graphics/Object 'ö00000' I
+L14:    getfield Field com/fs/graphics/Object 'ô00000' I
 L17:    aload_0
-L18:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
-L21:    getfield Field com/fs/graphics/Object 'ô00000' I
-L24:    aload_0
-L25:    invokestatic Method com/genir/graphics/Renderer render (FFIILcom/fs/graphics/Sprite;)V
-L28:    return
-L29:
+L18:    invokestatic Method com/genir/graphics/Renderer render (FFILcom/fs/graphics/Sprite;)V
+L21:    return
+L22:
         .linenumbertable
-            L0 32
-            L7 33
-            L8 36
-            L28 37
+            L0 33
+            L7 34
+            L8 37
+            L21 38
         .end linenumbertable
         .localvariabletable
-            0 is this Lcom/fs/graphics/Sprite; from L0 to L29
-            1 is var1 F from L0 to L29
-            2 is var2 F from L0 to L29
+            0 is this Lcom/fs/graphics/Sprite; from L0 to L22
+            1 is var1 F from L0 to L22
+            2 is var2 F from L0 to L22
         .end localvariabletable
     .end code 
 .end method 
@@ -701,8 +698,8 @@ L21:
     .end code 
 .end method 
 
-.method public renderNoBind : (FF)V 
-    .code stack 5 locals 3
+.method public renderNoBind : (FF)V
+    .code stack 4 locals 3
 L0:     aload_0
 L1:     getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
 L4:     ifnonnull L8
@@ -713,24 +710,21 @@ L8:     fload_1
 L9:     fload_2
 L10:    aload_0
 L11:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
-L14:    getfield Field com/fs/graphics/Object 'ö00000' I
+L14:    getfield Field com/fs/graphics/Object 'ô00000' I
 L17:    aload_0
-L18:    getfield Field com/fs/graphics/Sprite texture Lcom/fs/graphics/Object;
-L21:    getfield Field com/fs/graphics/Object 'ô00000' I
-L24:    aload_0
-L25:    invokestatic Method com/genir/graphics/Renderer render (FFIILcom/fs/graphics/Sprite;)V
-L28:    return
-L29:
+L18:    invokestatic Method com/genir/graphics/Renderer render (FFILcom/fs/graphics/Sprite;)V
+L21:    return
+L22:
         .linenumbertable
-            L0 32
-            L7 33
-            L8 36
-            L28 37
+            L0 33
+            L7 34
+            L8 37
+            L21 38
         .end linenumbertable
         .localvariabletable
-            0 is this Lcom/fs/graphics/Sprite; from L0 to L29
-            1 is var1 F from L0 to L29
-            2 is var2 F from L0 to L29
+            0 is this Lcom/fs/graphics/Sprite; from L0 to L22
+            1 is var1 F from L0 to L22
+            2 is var2 F from L0 to L22
         .end localvariabletable
     .end code 
 .end method 

@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import static com.genir.graphics.Debug.logger;
 public class Renderer {
     private static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
     private static CombatEngineLayers currentLayer = null;
-
 
     public static void beginLayer(int layerOrdinal) {
         currentLayer = CombatEngineLayers.values()[layerOrdinal];
@@ -107,43 +105,46 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
     }
 
-    public static void render(float x, float y, int ö00000, int ô00000, com.fs.graphics.Sprite sprite) {
-        if (currentLayer == null) {
-            vanillaRender(x, y, ô00000, sprite);
-            return;
-        }
+    public static void render(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+        vanillaRender(x, y, textureID, sprite);
+        return;
 
-        SpriteIndex idx = new SpriteIndex(
-                ô00000,
-                sprite.blendSrc,
-                sprite.blendDest
-        );
-
-        Sprite quad = new Sprite();
-        quad.r = (byte) sprite.color.getRed();
-        quad.g = (byte) sprite.color.getGreen();
-        quad.b = (byte) sprite.color.getBlue();
-        quad.a = (byte) sprite.color.getAlpha();
-        quad.alphaMult = sprite.alphaMult;
-        quad.offsetX = sprite.offsetX + x;
-        quad.offsetY = sprite.offsetY + y;
-        quad.centerX = sprite.centerX;
-        quad.centerY = sprite.centerY;
-        quad.width = sprite.width;
-        quad.height = sprite.height;
-        quad.angle = sprite.angle;
-        quad.texX = sprite.texX;
-        quad.texY = sprite.texY;
-        quad.texWidth = sprite.texWidth;
-        quad.texHeight = sprite.texHeight;
-
-        List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
-
-        quads.add(quad);
+//        if (currentLayer == null) {
+//            vanillaRender(x, y, ô00000, sprite);
+//            return;
+//        }
+//
+//        SpriteIndex idx = new SpriteIndex(
+//                ô00000,
+//                sprite.blendSrc,
+//                sprite.blendDest
+//        );
+//
+//        Sprite quad = new Sprite();
+//        quad.r = (byte) sprite.color.getRed();
+//        quad.g = (byte) sprite.color.getGreen();
+//        quad.b = (byte) sprite.color.getBlue();
+//        quad.a = (byte) sprite.color.getAlpha();
+//        quad.alphaMult = sprite.alphaMult;
+//        quad.offsetX = sprite.offsetX + x;
+//        quad.offsetY = sprite.offsetY + y;
+//        quad.centerX = sprite.centerX;
+//        quad.centerY = sprite.centerY;
+//        quad.width = sprite.width;
+//        quad.height = sprite.height;
+//        quad.angle = sprite.angle;
+//        quad.texX = sprite.texX;
+//        quad.texY = sprite.texY;
+//        quad.texWidth = sprite.texWidth;
+//        quad.texHeight = sprite.texHeight;
+//
+//        List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
+//
+//        quads.add(quad);
     }
 
-    public static void vanillaRender(float x, float y, int ô00000, com.fs.graphics.Sprite sprite) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ô00000);
+    public static void vanillaRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         GL11.glPushMatrix();
 
