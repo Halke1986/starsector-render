@@ -8,6 +8,8 @@ import org.lwjgl.util.vector.Matrix3f;
 import java.nio.FloatBuffer;
 import java.util.Stack;
 
+import static com.genir.graphics.Debug.asert;
+
 public class GLState {
     // Key.
     private int textureTarget;
@@ -45,8 +47,18 @@ public class GLState {
 
     public void assertState() {
         // Assert no model matrix leak.
-        assert (matrixStack.isEmpty());
-        assert (modelMatrix == defaultModelMatrix());
+        asert(matrixStack.isEmpty());
+
+        Matrix3f m = modelMatrix;
+        asert(m.m00 == 1f);
+        asert(m.m01 == 0f);
+        asert(m.m02 == 0.01f);
+        asert(m.m10 == 0f);
+        asert(m.m11 == 1f);
+        asert(m.m12 == 0.01f);
+        asert(m.m20 == 0f);
+        asert(m.m21 == 0f);
+        asert(m.m22 == 1f);
     }
 
     private Matrix3f defaultModelMatrix() {

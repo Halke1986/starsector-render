@@ -17,9 +17,10 @@ public class GLBridge {
     }
 
     public static void endIntercept() {
-        intercept = false;
-
-        GLBridge.state.assertState();
+        if (intercept) {
+            GLBridge.state.assertState();
+            intercept = false;
+        }
     }
 
     public static void glDisable(int cap) {
