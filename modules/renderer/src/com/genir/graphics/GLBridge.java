@@ -8,18 +8,19 @@ import java.nio.IntBuffer;
 
 public class GLBridge {
     private static boolean intercept = false;
+    public static GLState state = new GLState();
 
     public static void startIntercept() {
         intercept = true;
     }
 
     public static void endIntercept() {
-        intercept = true;
+        intercept = false;
     }
 
     public static void glDisable(int cap) {
         if (intercept) {
-            throw new UnsupportedOperationException("glDisable");
+            state.glDisable(cap);
         } else {
             GL11.glDisable(cap);
         }
@@ -27,7 +28,7 @@ public class GLBridge {
 
     public static void glEnable(int cap) {
         if (intercept) {
-            throw new UnsupportedOperationException("glEnable");
+            state.glEnable(cap);
         } else {
             GL11.glEnable(cap);
         }
@@ -35,7 +36,7 @@ public class GLBridge {
 
     public static void glBlendFunc(int sfactor, int dfactor) {
         if (intercept) {
-            throw new UnsupportedOperationException("glBlendFunc");
+            state.glBlendFunc(sfactor, dfactor);
         } else {
             GL11.glBlendFunc(sfactor, dfactor);
         }
@@ -43,7 +44,7 @@ public class GLBridge {
 
     public static void glBegin(int mode) {
         if (intercept) {
-            throw new UnsupportedOperationException("glBegin");
+            state.glBegin(mode);
         } else {
             GL11.glBegin(mode);
         }
@@ -51,7 +52,7 @@ public class GLBridge {
 
     public static void glEnd() {
         if (intercept) {
-            throw new UnsupportedOperationException("glEnd");
+            state.glEnd();
         } else {
             GL11.glEnd();
         }
@@ -67,7 +68,7 @@ public class GLBridge {
 
     public static void glVertex2f(float x, float y) {
         if (intercept) {
-            throw new UnsupportedOperationException("glVertex2f");
+            state.glVertex2f(x, y);
         } else {
             GL11.glVertex2f(x, y);
         }
@@ -75,7 +76,7 @@ public class GLBridge {
 
     public static void glPushMatrix() {
         if (intercept) {
-            throw new UnsupportedOperationException("glPushMatrix");
+            state.glPushMatrix();
         } else {
             GL11.glPushMatrix();
         }
@@ -83,7 +84,7 @@ public class GLBridge {
 
     public static void glPopMatrix() {
         if (intercept) {
-            throw new UnsupportedOperationException("glPopMatrix");
+            state.glPopMatrix();
         } else {
             GL11.glPopMatrix();
         }
@@ -91,7 +92,7 @@ public class GLBridge {
 
     public static void glTranslatef(float x, float y, float z) {
         if (intercept) {
-            throw new UnsupportedOperationException("glTranslatef");
+            state.glTranslatef(x, y, z);
         } else {
             GL11.glTranslatef(x, y, z);
         }
@@ -99,7 +100,7 @@ public class GLBridge {
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         if (intercept) {
-            throw new UnsupportedOperationException("glColor4ub");
+            state.glColor4ub(red, green, blue, alpha);
         } else {
             GL11.glColor4ub(red, green, blue, alpha);
         }
@@ -123,7 +124,7 @@ public class GLBridge {
 
     public static void glRotatef(float angle, float x, float y, float z) {
         if (intercept) {
-            throw new UnsupportedOperationException("glRotatef");
+            state.glRotatef(angle, x, y, z);
         } else {
             GL11.glRotatef(angle, x, y, z);
         }
@@ -131,7 +132,7 @@ public class GLBridge {
 
     public static void glTexCoord2f(float s, float t) {
         if (intercept) {
-            throw new UnsupportedOperationException("glTexCoord2f");
+            state.glTexCoord2f(s, t);
         } else {
             GL11.glTexCoord2f(s, t);
         }
@@ -387,7 +388,7 @@ public class GLBridge {
 
     public static void glBindTexture(int target, int texture) {
         if (intercept) {
-            throw new UnsupportedOperationException("glBindTexture");
+            state.glBindTexture(target, texture);
         } else {
             GL11.glBindTexture(target, texture);
         }

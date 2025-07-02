@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Renderer {
-    private static Map<SpriteIndex, List<Sprite>> buffer = new HashMap<>();
+    private static Map<QuadContext, List<Quad>> buffer = new HashMap<>();
 
     private static int maxSprites = 0;
     private static FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(0);
@@ -23,7 +23,7 @@ public class Renderer {
     private static ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
 
     private static CombatEngineLayers currentLayer = null;
-    private static Object currentEntity = null;
+//    private static Object currentEntity = null;
 
     public static void beginLayer(int layerOrdinal) {
         currentLayer = CombatEngineLayers.values()[layerOrdinal];
@@ -38,25 +38,43 @@ public class Renderer {
     }
 
     public static void beginEntity(Object entity) {
-        currentEntity = entity;
-    }
-
-    public static void commitEntity() {
-        currentEntity = null;
-    }
-
-    public static void render(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
-        if (currentEntity instanceof CustomCombatEntity) {
-            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) currentEntity).getPlugin();
+        if (entity instanceof CustomCombatEntity) {
+            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
 
             if (plugin instanceof RoilingSwarmEffect) {
-                arrayRender(x, y, textureID, sprite);
-                return;
+                GLBridge.startIntercept();
+                GLBridge.state.init();
             }
         }
 
-        vanillaRender(x, y, textureID, sprite);
+//        currentEntity = entity;
     }
+
+    public static void commitEntity() {
+        GLBridge.endIntercept();
+        GLBridge.state.assertState();
+
+//        currentEntity = null;
+    }
+
+    public static void addQuad(QuadContext ctx, Quad q) {
+        List<Quad> quads = buffer.computeIfAbsent(ctx, k -> new LinkedList<>());
+
+        quads.add(q);
+    }
+
+//    public static void render(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
+//        if (currentEntity instanceof CustomCombatEntity) {
+//            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) currentEntity).getPlugin();
+//
+//            if (plugin instanceof RoilingSwarmEffect) {
+//                arrayRender(x, y, textureID, sprite);
+//                return;
+//            }
+//        }
+//
+//        vanillaRender(x, y, textureID, sprite);
+//    }
 
     private static void renderLayer() {
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
@@ -67,64 +85,27 @@ public class Renderer {
 
         initBuffers();
 
-        for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
-            SpriteIndex key = entry.getKey();
-            List<Sprite> sprites = entry.getValue();
+        for (Map.Entry<QuadContext, List<Quad>> entry : buffer.entrySet()) {
+            QuadContext key = entry.getKey();
+            List<Quad> quads = entry.getValue();
 
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, key.textureID);
-            GL11.glBlendFunc(key.blendSrc, key.blendDst);
+            GL11.glBindTexture(key.textureTarget, key.textureID);
+            GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
 
             vertexBuffer.clear();
             textureBuffer.clear();
             colorBuffer.clear();
 
-            for (Sprite s : sprites) {
-                float px = s.width / 2;
-                float py = s.height / 2;
-
-                float cx = px;
-                float cy = py;
-                if (s.centerX != -1 && s.centerY != -1) {
-                    cx = s.centerX;
-                    cy = s.centerY;
-                }
-
-                float a = s.angle * (float) (Math.PI / 180);
-                float cos = (float) Math.cos(a);
-                float sin = (float) Math.sin(a);
-
-                float[] vxs = {0f, 0f, s.width, s.width};
-                float[] vys = {0f, s.height, s.height, 0f};
-
-                float[] vertexes = new float[8];
-
-                for (int i = 0; i < 4; i++) {
-                    float vx = vxs[i] - cx;
-                    float vy = vys[i] - cy;
-
-                    float rx = cos * vx - sin * vy + px + s.offsetX;
-                    float ry = sin * vx + cos * vy + py + s.offsetY;
-
-                    vertexes[i * 2] = rx;
-                    vertexes[i * 2 + 1] = ry;
-                }
-
-                float[] texCoords = {
-                        s.texX, s.texY,
-                        s.texX, s.texY + s.texHeight,
-                        s.texX + s.texWidth, s.texY + s.texHeight,
-                        s.texX + s.texWidth, s.texY,
-                };
-
+            for (Quad q : quads) {
                 byte[] colors = {
-                        s.r, s.g, s.b, s.a,
-                        s.r, s.g, s.b, s.a,
-                        s.r, s.g, s.b, s.a,
-                        s.r, s.g, s.b, s.a,
+                        q.color[0], q.color[1], q.color[2], q.color[3],
+                        q.color[0], q.color[1], q.color[2], q.color[3],
+                        q.color[0], q.color[1], q.color[2], q.color[3],
+                        q.color[0], q.color[1], q.color[2], q.color[3],
                 };
 
-                vertexBuffer.put(vertexes);
-                textureBuffer.put(texCoords);
+                vertexBuffer.put(q.vertexes);
+                textureBuffer.put(q.texCoord);
                 colorBuffer.put(colors);
             }
 
@@ -135,7 +116,7 @@ public class Renderer {
             GL11.glVertexPointer(2, 0, vertexBuffer);
             GL11.glTexCoordPointer(2, 0, textureBuffer);
             GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
-            GL11.glDrawArrays(GL11.GL_QUADS, 0, sprites.size() * 4);
+            GL11.glDrawArrays(GL11.GL_QUADS, 0, quads.size() * 4);
         }
 
         GL11.glDisable(GL11.GL_BLEND);
@@ -147,8 +128,8 @@ public class Renderer {
 
     private static void initBuffers() {
         int currentMaxSprites = 0;
-        for (Map.Entry<SpriteIndex, List<Sprite>> entry : buffer.entrySet()) {
-            List<Sprite> sprites = entry.getValue();
+        for (Map.Entry<QuadContext, List<Quad>> entry : buffer.entrySet()) {
+            List<Quad> sprites = entry.getValue();
 
             if (sprites.size() > currentMaxSprites) {
                 currentMaxSprites = sprites.size();
@@ -168,111 +149,17 @@ public class Renderer {
         colorBuffer.clear();
     }
 
-    private static void arrayRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
-        SpriteIndex idx = new SpriteIndex(
-                textureID,
-                sprite.blendSrc,
-                sprite.blendDest
-        );
-
-        Sprite quad = new Sprite();
-        quad.r = (byte) sprite.color.getRed();
-        quad.g = (byte) sprite.color.getGreen();
-        quad.b = (byte) sprite.color.getBlue();
-        quad.a = (byte) (sprite.color.getAlpha() * sprite.alphaMult);
-        quad.offsetX = sprite.offsetX + x;
-        quad.offsetY = sprite.offsetY + y;
-        quad.centerX = sprite.centerX;
-        quad.centerY = sprite.centerY;
-        quad.width = sprite.width;
-        quad.height = sprite.height;
-        quad.angle = sprite.angle;
-        quad.texX = sprite.texX;
-        quad.texY = sprite.texY;
-        quad.texWidth = sprite.texWidth;
-        quad.texHeight = sprite.texHeight;
-
-        List<Sprite> quads = buffer.computeIfAbsent(idx, k -> new LinkedList<>());
-
-        quads.add(quad);
-    }
-
-    private static void vanillaRender(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-
-        GL11.glPushMatrix();
-
-        GL11.glColor4ub(
-                (byte) sprite.color.getRed(),
-                (byte) sprite.color.getGreen(),
-                (byte) sprite.color.getBlue(),
-                (byte) ((int) ((float) sprite.color.getAlpha() * sprite.alphaMult))
-        );
-
-        GL11.glTranslatef(x + (float) sprite.offsetX, y + (float) sprite.offsetY, 0.0F);
-
-        if (sprite.centerX != -1.0F && sprite.centerY != -1.0F) {
-            GL11.glTranslatef(sprite.width / 2.0F, sprite.height / 2.0F, 0.0F);
-            GL11.glRotatef(sprite.angle, 0.0F, 0.0F, 1.0F);
-            GL11.glTranslatef(-sprite.centerX, -sprite.centerY, 0.0F);
-        } else {
-            GL11.glTranslatef(sprite.width / 2.0F, sprite.height / 2.0F, 0.0F);
-            GL11.glRotatef(sprite.angle, 0.0F, 0.0F, 1.0F);
-            GL11.glTranslatef(-sprite.width / 2.0F, -sprite.height / 2.0F, 0.0F);
-        }
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(sprite.blendSrc, sprite.blendDest);
-
-        GL11.glBegin(GL11.GL_QUADS);
-
-        GL11.glTexCoord2f(sprite.texX, sprite.texY);
-        GL11.glVertex2f(0.0F, 0.0F);
-
-        GL11.glTexCoord2f(sprite.texX, sprite.texY + sprite.texHeight);
-        GL11.glVertex2f(0.0F, sprite.height);
-
-        GL11.glTexCoord2f(sprite.texX + sprite.texWidth, sprite.texY + sprite.texHeight);
-        GL11.glVertex2f(sprite.width, sprite.height);
-
-        GL11.glTexCoord2f(sprite.texX + sprite.texWidth, sprite.texY);
-        GL11.glVertex2f(sprite.width, 0.0F);
-
-        GL11.glEnd();
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
-    }
-
-    record SpriteIndex(
+    public record QuadContext(
+            int textureTarget,
             int textureID,
-            int blendSrc,
-            int blendDst) {
+            int blendSfactor,
+            int blendDfactor) {
     }
 
-    private static class Sprite {
-        // Color
-        byte r;
-        byte g;
-        byte b;
-        byte a;
+    public static class Quad {
+        byte[] color;
 
-        // Always zero.
-        float offsetX;
-        float offsetY;
-
-        // Rotation pivot.
-        float centerX;
-        float centerY;
-
-        float width;
-        float height;
-
-        float angle;
-
-        float texX;
-        float texY;
-        float texWidth;
-        float texHeight;
+        FloatBuffer texCoord;
+        FloatBuffer vertexes;
     }
 }
