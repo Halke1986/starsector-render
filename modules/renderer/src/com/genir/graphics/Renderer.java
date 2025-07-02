@@ -141,7 +141,7 @@ public class Renderer {
     public static class Quad {
         byte[] color;
 
-        FloatBuffer texCoord;
-        FloatBuffer vertexes;
+        float[] texCoord;
+        float[] vertexes;
     }
 }

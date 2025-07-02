@@ -5,7 +5,6 @@ import com.genir.graphics.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
-import java.nio.FloatBuffer;
 import java.util.Stack;
 
 import static com.genir.graphics.Debug.asert;
@@ -19,11 +18,12 @@ public class GLState {
     private int blendDfactor;
 
     // Quad.
-    private byte[] color;
-    private FloatBuffer texCoord;
-    private FloatBuffer vertexes;
-
     private int mode;
+    private byte[] color;
+    private float[] texCoord;
+    private float[] vertexes;
+    private int texNum;
+    private int vertexNum;
 
     private Stack<Matrix3f> matrixStack;
     private Matrix3f modelMatrix;
@@ -35,18 +35,12 @@ public class GLState {
         blendSfactor = -1;
         blendDfactor = -1;
 
-        color = null;
-        texCoord = null;
-        vertexes = null;
-
-        mode = -1;
-
         modelMatrix = defaultModelMatrix();
         matrixStack = new Stack<>();
     }
 
     public void assertState() {
-        // Assert no model matrix leak.
+        // assert no model matrix leak.
         asert(matrixStack.isEmpty());
 
         Matrix3f m = modelMatrix;
@@ -78,44 +72,6 @@ public class GLState {
     public void glDisable(int cap) {
     }
 
-    public void glBegin(int mode) {
-        assert (mode == GL11.GL_QUADS);
-
-        this.mode = mode;
-
-        texCoord = FloatBuffer.allocate(4 * 2);
-        vertexes = FloatBuffer.allocate(4 * 2);
-    }
-
-    // Add a finished quad to renderer array.
-    public void glEnd() {
-        assert (mode == GL11.GL_QUADS);
-
-        assert (textureTarget != 1);
-        assert (textureID != 1);
-        assert (blendSfactor != 1);
-        assert (blendDfactor != 1);
-
-        assert (color != null);
-
-        texCoord.flip();
-        vertexes.flip();
-
-        QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor);
-        Quad q = new Quad();
-        q.color = color;
-        q.texCoord = texCoord;
-        q.vertexes = vertexes;
-
-        Renderer.addQuad(ctx, q);
-
-        color = null;
-        texCoord = null;
-        vertexes = null;
-
-        mode = -1;
-    }
-
     public void glBindTexture(int target, int texture) {
         textureTarget = target;
         textureID = texture;
@@ -139,7 +95,7 @@ public class GLState {
     }
 
     public void glTranslatef(float x, float y, float z) {
-        assert (z == 0f);
+        asert(z == 0f);
 
         Matrix3f t = new Matrix3f();
         t.m00 = 1f;
@@ -153,9 +109,9 @@ public class GLState {
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        assert (x == 0f);
-        assert (y == 0f);
-        assert (z == 1f);
+        asert(x == 0f);
+        asert(y == 0f);
+        asert(z == 1f);
 
         float a = angle * (float) (Math.PI / 180);
         float cos = (float) Math.cos(a);
@@ -173,21 +129,83 @@ public class GLState {
     }
 
     public void glTexCoord2f(float s, float t) {
-        assert (mode == GL11.GL_QUADS);
+        asert(mode == GL11.GL_QUADS);
 
-        texCoord.put(s);
-        texCoord.put(t);
+        if (texNum == 4) {
+            commitQuad();
+            beginQuad();
+        }
+
+        texCoord[texNum * 2] = s;
+        texCoord[texNum * 2 + 1] = t;
+
+        texNum++;
     }
 
     public void glVertex2f(float x, float y) {
-        assert (mode == GL11.GL_QUADS);
+        asert(mode == GL11.GL_QUADS);
+
+        if (vertexNum == 4) {
+            commitQuad();
+            beginQuad();
+        }
 
         Matrix3f m = modelMatrix;
 
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;
 
-        vertexes.put(u);
-        vertexes.put(v);
+        vertexes[vertexNum * 2] = u;
+        vertexes[vertexNum * 2 + 1] = v;
+
+        vertexNum++;
+    }
+
+    public void glBegin(int mode) {
+        asert(mode == GL11.GL_QUADS);
+
+        this.mode = mode;
+
+        beginQuad();
+    }
+
+    public void glEnd() {
+        asert(mode == GL11.GL_QUADS);
+
+        if (vertexNum == 4) {
+            commitQuad();
+        }
+
+        mode = -1;
+    }
+
+    private void beginQuad() {
+        texCoord = new float[8];
+        vertexes = new float[8];
+
+        texNum = 0;
+        vertexNum = 0;
+    }
+
+    private void commitQuad() {
+        asert(textureTarget != -1);
+        asert(textureID != -1);
+        asert(blendSfactor != -1);
+        asert(blendDfactor != -1);
+
+        asert(texNum == 4);
+        asert(vertexNum == 4);
+
+        asert(color != null);
+        asert(texCoord != null);
+        asert(vertexes != null);
+
+        QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor);
+        Quad q = new Quad();
+        q.color = color;
+        q.texCoord = texCoord;
+        q.vertexes = vertexes;
+
+        Renderer.addQuad(ctx, q);
     }
 }
