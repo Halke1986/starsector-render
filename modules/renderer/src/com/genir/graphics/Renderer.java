@@ -22,17 +22,19 @@ public class Renderer {
     private static FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(0);
     private static ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
 
-    private static CombatEngineLayers currentLayer = null;
+    private static String currentLayer = "";
 
     public static void beginLayer(CombatEngineLayers layer) {
-        currentLayer = layer;
+        beginLayer(layer.name());
+    }
 
+    public static void beginLayer(String layer) {
+        currentLayer = layer;
         buffer = new HashMap<>();
     }
 
     public static void commitLayer() {
-        currentLayer = null;
-
+        currentLayer = "";
         renderLayer();
     }
 
@@ -42,14 +44,12 @@ public class Renderer {
 
             if (plugin instanceof RoilingSwarmEffect) {
                 GLBridge.startIntercept();
-                GLBridge.state.init();
             }
         }
     }
 
     public static void commitEntity() {
         GLBridge.endIntercept();
-        GLBridge.state.assertState();
     }
 
     public static void addQuad(QuadContext ctx, Quad q) {

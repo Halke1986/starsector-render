@@ -12,10 +12,14 @@ public class GLBridge {
 
     public static void startIntercept() {
         intercept = true;
+
+        GLBridge.state.init();
     }
 
     public static void endIntercept() {
         intercept = false;
+
+        GLBridge.state.assertState();
     }
 
     public static void glDisable(int cap) {

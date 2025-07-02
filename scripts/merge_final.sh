@@ -10,6 +10,7 @@ zipmerge -s ./jars/final/starfarer_obf.jar ./jars/bridged/starfarer_obf.jar
 
 # Merge overriden methods
 zipmerge -s ./jars/final/fs.common_obf.jar ./jars/methods/fs.common_obf.jar
+zipmerge -s ./jars/final/starfarer_obf.jar ./jars/methods/starfarer_obf.jar
 
-# Merge rendered
+# Merge renderer
 zipmerge -s ./jars/final/fs.common_obf.jar ./jars/compile/renderer.jar

@@ -16,7 +16,13 @@ public class CombatRenderer {
                     CombatEngineLayers.JUST_BELOW_WIDGETS
             );
 
+
+            Renderer.beginLayer("DebrisSystem");
+            GLBridge.startIntercept();
             engine.getDebrisSystem().render(0.0F, 0.0F);
+            GLBridge.endIntercept();
+            Renderer.commitLayer();
+
             engine.getExplosionSystem().render(0.0F, 0.0F);
             engine.getSmoothParticles().render(0.0F, 0.0F);
             engine.getNebulaParticles().render(0.0F, 0.0F);
