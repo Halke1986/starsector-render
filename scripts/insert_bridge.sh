@@ -65,7 +65,6 @@ find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/op
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glCallList ^invokestatic Method com/genir/graphics/GLBridge glCallList ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glGenLists ^invokestatic Method com/genir/graphics/GLBridge glGenLists ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glNewList ^invokestatic Method com/genir/graphics/GLBridge glNewList ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glVertexPointer ^invokestatic Method com/genir/graphics/GLBridge glVertexPointer ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDeleteLists ^invokestatic Method com/genir/graphics/GLBridge glDeleteLists ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glInterleavedArrays ^invokestatic Method com/genir/graphics/GLBridge glInterleavedArrays ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glArrayElement ^invokestatic Method com/genir/graphics/GLBridge glArrayElement ^g' {} +
