@@ -122,14 +122,14 @@ L64:    goto L20
 L67:    return
 L68:
         .linenumbertable
-            L0 19
-            L8 20
-            L14 22
-            L42 23
-            L54 24
-            L57 27
-            L64 28
-            L67 29
+            L0 20
+            L8 21
+            L14 23
+            L42 24
+            L54 25
+            L57 28
+            L64 29
+            L67 30
         .end linenumbertable
         .localvariabletable
             6 is layer Ljava/lang/Enum; from L42 to L64
@@ -153,13 +153,13 @@ L68:
         .annotation Ljava/lang/SafeVarargs;
         .end annotation
     .end runtime
-.end method 
+.end method
 
-.method public renderOnly : (Ljava/lang/Object;Ljava/lang/Enum;)V 
+.method public renderOnly : (Ljava/lang/Object;Ljava/lang/Enum;)V
     .code stack 3 locals 6
 L0:     aload_2
-L1:     invokevirtual Method java/lang/Enum ordinal ()I
-L4:     invokestatic Method com/genir/graphics/Renderer beginLayer (I)V
+L1:     checkcast com/fs/starfarer/api/combat/CombatEngineLayers
+L4:     invokestatic Method com/genir/graphics/Renderer beginLayer (Lcom/fs/starfarer/api/combat/CombatEngineLayers;)V
 L7:     aload_0
 L8:     aload_2
 L9:     invokevirtual Method com/fs/graphics/LayeredRenderer getList (Ljava/lang/Enum;)Ljava/util/List;
@@ -195,17 +195,17 @@ L68:    invokestatic Method com/genir/graphics/Renderer commitLayer ()V
 L71:    return
 L72:
         .linenumbertable
-            L0 33
-            L7 35
-            L13 36
-            L17 37
-            L18 40
-            L48 41
-            L53 42
-            L62 43
-            L65 44
-            L68 46
-            L71 47
+            L0 34
+            L7 36
+            L13 37
+            L17 38
+            L18 41
+            L48 42
+            L53 43
+            L62 44
+            L65 45
+            L68 47
+            L71 48
         .end linenumbertable
         .localvariabletable
             5 is entity Lcom/fs/graphics/LayeredRenderable; from L48 to L65

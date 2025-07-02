@@ -24,8 +24,8 @@ public class Renderer {
 
     private static CombatEngineLayers currentLayer = null;
 
-    public static void beginLayer(int layerOrdinal) {
-        currentLayer = CombatEngineLayers.values()[layerOrdinal];
+    public static void beginLayer(CombatEngineLayers layer) {
+        currentLayer = layer;
 
         buffer = new HashMap<>();
     }
