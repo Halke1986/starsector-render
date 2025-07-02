@@ -24,6 +24,7 @@ public class GLState {
     private int mode;
 
     private Stack<Matrix3f> matrixStack;
+    private Matrix3f modelMatrix;
 
     public void init() {
         textureTarget = -1;
@@ -38,14 +39,14 @@ public class GLState {
 
         mode = -1;
 
+        modelMatrix = defaultModelMatrix();
         matrixStack = new Stack<>();
-        matrixStack.push(defaultModelMatrix());
     }
 
     public void assertState() {
         // Assert no model matrix leak.
-        assert (matrixStack.size() == 1);
-        assert (matrixStack.lastElement() == defaultModelMatrix());
+        assert (matrixStack.isEmpty());
+        assert (modelMatrix == defaultModelMatrix());
     }
 
     private Matrix3f defaultModelMatrix() {
@@ -114,12 +115,11 @@ public class GLState {
     }
 
     public void glPushMatrix() {
-        Matrix3f newMatrix = Matrix3f.load(matrixStack.lastElement(), null);
-        matrixStack.push(newMatrix);
+        matrixStack.push(Matrix3f.load(modelMatrix, null));
     }
 
     public void glPopMatrix() {
-        matrixStack.pop();
+        modelMatrix = matrixStack.pop();
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -136,8 +136,7 @@ public class GLState {
         t.m12 = y;
         t.m22 = 1f;
 
-        Matrix3f m = matrixStack.lastElement();
-//        Matrix3f.mul(m, t, m);
+        Matrix3f m = modelMatrix;
         Matrix3f.mul(t, m, m);
     }
 
@@ -157,8 +156,7 @@ public class GLState {
         r.m11 = cos;
         r.m22 = 1f;
 
-        Matrix3f m = matrixStack.lastElement();
-//        Matrix3f.mul(m, r, m);
+        Matrix3f m = modelMatrix;
         Matrix3f.mul(r, m, m);
     }
 
@@ -172,7 +170,7 @@ public class GLState {
     public void glVertex2f(float x, float y) {
         assert (mode == GL11.GL_QUADS);
 
-        Matrix3f m = matrixStack.lastElement();
+        Matrix3f m = modelMatrix;
 
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;

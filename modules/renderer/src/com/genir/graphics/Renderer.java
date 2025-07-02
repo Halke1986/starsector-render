@@ -23,7 +23,6 @@ public class Renderer {
     private static ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
 
     private static CombatEngineLayers currentLayer = null;
-//    private static Object currentEntity = null;
 
     public static void beginLayer(int layerOrdinal) {
         currentLayer = CombatEngineLayers.values()[layerOrdinal];
@@ -46,15 +45,11 @@ public class Renderer {
                 GLBridge.state.init();
             }
         }
-
-//        currentEntity = entity;
     }
 
     public static void commitEntity() {
         GLBridge.endIntercept();
         GLBridge.state.assertState();
-
-//        currentEntity = null;
     }
 
     public static void addQuad(QuadContext ctx, Quad q) {
@@ -62,19 +57,6 @@ public class Renderer {
 
         quads.add(q);
     }
-
-//    public static void render(float x, float y, int textureID, com.fs.graphics.Sprite sprite) {
-//        if (currentEntity instanceof CustomCombatEntity) {
-//            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) currentEntity).getPlugin();
-//
-//            if (plugin instanceof RoilingSwarmEffect) {
-//                arrayRender(x, y, textureID, sprite);
-//                return;
-//            }
-//        }
-//
-//        vanillaRender(x, y, textureID, sprite);
-//    }
 
     private static void renderLayer() {
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
