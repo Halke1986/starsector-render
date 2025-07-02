@@ -169,7 +169,7 @@ L0:     aload_0
 L1:     getfield Field com/fs/graphics/Object 'ö00000' I 
 L4:     aload_0 
 L5:     getfield Field com/fs/graphics/Object 'ô00000' I 
-L8:     invokestatic Method org/lwjgl/opengl/GL11 glBindTexture (II)V 
+L8:     invokestatic Method com/genir/graphics/GLBridge glBindTexture (II)V 
 L11:    return 
 L12:    
     .end code 
@@ -179,7 +179,7 @@ L12:
     .code stack 2 locals 2 
 L0:     iload_0 
 L1:     iload_1 
-L2:     invokestatic Method org/lwjgl/opengl/GL11 glBindTexture (II)V 
+L2:     invokestatic Method com/genir/graphics/GLBridge glBindTexture (II)V 
 L5:     return 
 L6:     
     .end code 

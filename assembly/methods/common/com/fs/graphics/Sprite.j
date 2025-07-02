@@ -743,7 +743,7 @@ L14:    goto L18
 L17:    return 
 
         .stack same 
-L18:    invokestatic Method org/lwjgl/opengl/GL11 glPushMatrix ()V 
+L18:    invokestatic Method com/genir/graphics/GLBridge glPushMatrix ()V 
 L21:    aload_0 
 L22:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
 L25:    invokevirtual Method java/awt/Color getRed ()I 
@@ -765,7 +765,7 @@ L54:    getfield Field com/fs/graphics/Sprite alphaMult F
 L57:    fmul 
 L58:    f2i 
 L59:    i2b 
-L60:    invokestatic Method org/lwjgl/opengl/GL11 glColor4ub (BBBB)V 
+L60:    invokestatic Method com/genir/graphics/GLBridge glColor4ub (BBBB)V 
 L63:    aload_0 
 L64:    getfield Field com/fs/graphics/Sprite offsetX I 
 L67:    i2f 
@@ -773,22 +773,22 @@ L68:    aload_0
 L69:    getfield Field com/fs/graphics/Sprite offsetY I 
 L72:    i2f 
 L73:    fconst_0 
-L74:    invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L74:    invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L77:    sipush 3553 
-L80:    invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L80:    invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L83:    sipush 3042 
-L86:    invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L86:    invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L89:    aload_0 
 L90:    getfield Field com/fs/graphics/Sprite blendSrc I 
 L93:    aload_0 
 L94:    getfield Field com/fs/graphics/Sprite blendDest I 
-L97:    invokestatic Method org/lwjgl/opengl/GL11 glBlendFunc (II)V 
+L97:    invokestatic Method com/genir/graphics/GLBridge glBlendFunc (II)V 
 L100:   ldc +0.0010000000474974513f 
 L102:   fstore 9 
 L104:   fconst_0 
 L105:   fstore 9 
 L107:   bipush 6 
-L109:   invokestatic Method org/lwjgl/opengl/GL11 glBegin (I)V 
+L109:   invokestatic Method com/genir/graphics/GLBridge glBegin (I)V 
 L112:   fload_1 
 L113:   fload_3 
 L114:   fadd 
@@ -827,10 +827,10 @@ L164:   fadd
 L165:   fstore 13 
 L167:   fload 12 
 L169:   fload 13 
-L171:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L171:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L174:   fload 10 
 L176:   fload 11 
-L178:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L178:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L181:   aload_0 
 L182:   getfield Field com/fs/graphics/Sprite texX F 
 L185:   fload 9 
@@ -839,10 +839,10 @@ L188:   aload_0
 L189:   getfield Field com/fs/graphics/Sprite texY F 
 L192:   fload 9 
 L194:   fadd 
-L195:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L195:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L198:   fload_1 
 L199:   fload_2 
-L200:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L200:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L203:   aload_0 
 L204:   getfield Field com/fs/graphics/Sprite texX F 
 L207:   fload 9 
@@ -854,10 +854,10 @@ L215:   getfield Field com/fs/graphics/Sprite texHeight F
 L218:   fadd 
 L219:   fload 9 
 L221:   fsub 
-L222:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L222:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L225:   fload_3 
 L226:   fload 4 
-L228:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L228:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L231:   aload_0 
 L232:   getfield Field com/fs/graphics/Sprite texX F 
 L235:   aload_0 
@@ -872,10 +872,10 @@ L248:   getfield Field com/fs/graphics/Sprite texHeight F
 L251:   fadd 
 L252:   fload 9 
 L254:   fsub 
-L255:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L255:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L258:   fload 5 
 L260:   fload 6 
-L262:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L262:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L265:   aload_0 
 L266:   getfield Field com/fs/graphics/Sprite texX F 
 L269:   aload_0 
@@ -887,10 +887,10 @@ L277:   aload_0
 L278:   getfield Field com/fs/graphics/Sprite texY F 
 L281:   fload 9 
 L283:   fadd 
-L284:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L284:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L287:   fload 7 
 L289:   fload 8 
-L291:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L291:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L294:   aload_0 
 L295:   getfield Field com/fs/graphics/Sprite texX F 
 L298:   fload 9 
@@ -899,14 +899,14 @@ L301:   aload_0
 L302:   getfield Field com/fs/graphics/Sprite texY F 
 L305:   fload 9 
 L307:   fadd 
-L308:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L308:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L311:   fload_1 
 L312:   fload_2 
-L313:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L316:   invokestatic Method org/lwjgl/opengl/GL11 glEnd ()V 
+L313:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
+L316:   invokestatic Method com/genir/graphics/GLBridge glEnd ()V 
 L319:   sipush 3042 
-L322:   invokestatic Method org/lwjgl/opengl/GL11 glDisable (I)V 
-L325:   invokestatic Method org/lwjgl/opengl/GL11 glPopMatrix ()V 
+L322:   invokestatic Method com/genir/graphics/GLBridge glDisable (I)V 
+L325:   invokestatic Method com/genir/graphics/GLBridge glPopMatrix ()V 
 L328:   return 
 L329:   
     .end code 
@@ -1014,7 +1014,7 @@ L14:    goto L18
 L17:    return 
 
         .stack same 
-L18:    invokestatic Method org/lwjgl/opengl/GL11 glPushMatrix ()V 
+L18:    invokestatic Method com/genir/graphics/GLBridge glPushMatrix ()V 
 L21:    aload_0 
 L22:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
 L25:    invokevirtual Method java/awt/Color getRed ()I 
@@ -1036,7 +1036,7 @@ L54:    getfield Field com/fs/graphics/Sprite alphaMult F
 L57:    fmul 
 L58:    f2i 
 L59:    i2b 
-L60:    invokestatic Method org/lwjgl/opengl/GL11 glColor4ub (BBBB)V 
+L60:    invokestatic Method com/genir/graphics/GLBridge glColor4ub (BBBB)V 
 L63:    fload_1 
 L64:    aload_0 
 L65:    getfield Field com/fs/graphics/Sprite offsetX I 
@@ -1048,29 +1048,29 @@ L72:    getfield Field com/fs/graphics/Sprite offsetY I
 L75:    i2f 
 L76:    fadd 
 L77:    fconst_0 
-L78:    invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L78:    invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L81:    sipush 3553 
-L84:    invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L84:    invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L87:    iload_3 
 L88:    ifeq L97 
 L91:    sipush 3042 
-L94:    invokestatic Method org/lwjgl/opengl/GL11 glDisable (I)V 
+L94:    invokestatic Method com/genir/graphics/GLBridge glDisable (I)V 
 
         .stack same_extended 
 L97:    ldc +0.0010000000474974513f 
 L99:    fstore 4 
 L101:   bipush 7 
-L103:   invokestatic Method org/lwjgl/opengl/GL11 glBegin (I)V 
+L103:   invokestatic Method com/genir/graphics/GLBridge glBegin (I)V 
 L106:   fconst_0 
 L107:   fload 4 
 L109:   fadd 
 L110:   fconst_0 
 L111:   fload 4 
 L113:   fadd 
-L114:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L114:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L117:   fconst_0 
 L118:   fconst_0 
-L119:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L119:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L122:   fconst_0 
 L123:   fload 4 
 L125:   fadd 
@@ -1078,11 +1078,11 @@ L126:   aload_0
 L127:   getfield Field com/fs/graphics/Sprite texHeight F 
 L130:   fload 4 
 L132:   fsub 
-L133:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L133:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L136:   fconst_0 
 L137:   aload_0 
 L138:   getfield Field com/fs/graphics/Sprite height F 
-L141:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L141:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L144:   aload_0 
 L145:   getfield Field com/fs/graphics/Sprite texWidth F 
 L148:   fload 4 
@@ -1091,12 +1091,12 @@ L151:   aload_0
 L152:   getfield Field com/fs/graphics/Sprite texHeight F 
 L155:   fload 4 
 L157:   fsub 
-L158:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L158:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L161:   aload_0 
 L162:   getfield Field com/fs/graphics/Sprite width F 
 L165:   aload_0 
 L166:   getfield Field com/fs/graphics/Sprite height F 
-L169:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L169:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L172:   aload_0 
 L173:   getfield Field com/fs/graphics/Sprite texWidth F 
 L176:   fload 4 
@@ -1104,13 +1104,13 @@ L178:   fsub
 L179:   fconst_0 
 L180:   fload 4 
 L182:   fadd 
-L183:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L183:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L186:   aload_0 
 L187:   getfield Field com/fs/graphics/Sprite width F 
 L190:   fconst_0 
-L191:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L194:   invokestatic Method org/lwjgl/opengl/GL11 glEnd ()V 
-L197:   invokestatic Method org/lwjgl/opengl/GL11 glPopMatrix ()V 
+L191:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
+L194:   invokestatic Method com/genir/graphics/GLBridge glEnd ()V 
+L197:   invokestatic Method com/genir/graphics/GLBridge glPopMatrix ()V 
 L200:   return 
 L201:   
     .end code 
@@ -1144,7 +1144,7 @@ L32:    goto L36
 L35:    return 
 
         .stack same 
-L36:    invokestatic Method org/lwjgl/opengl/GL11 glPushMatrix ()V 
+L36:    invokestatic Method com/genir/graphics/GLBridge glPushMatrix ()V 
 L39:    fload_1 
 L40:    aload_0 
 L41:    getfield Field com/fs/graphics/Sprite offsetX I 
@@ -1156,7 +1156,7 @@ L48:    getfield Field com/fs/graphics/Sprite offsetY I
 L51:    i2f 
 L52:    fadd 
 L53:    fconst_0 
-L54:    invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L54:    invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L57:    aload_0 
 L58:    getfield Field com/fs/graphics/Sprite centerX F 
 L61:    ldc -1.0f 
@@ -1176,13 +1176,13 @@ L84:    getfield Field com/fs/graphics/Sprite height F
 L87:    fconst_2 
 L88:    fdiv 
 L89:    fconst_0 
-L90:    invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L90:    invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L93:    aload_0 
 L94:    getfield Field com/fs/graphics/Sprite angle F 
 L97:    fconst_0 
 L98:    fconst_0 
 L99:    fconst_1 
-L100:   invokestatic Method org/lwjgl/opengl/GL11 glRotatef (FFFF)V 
+L100:   invokestatic Method com/genir/graphics/GLBridge glRotatef (FFFF)V 
 L103:   aload_0 
 L104:   getfield Field com/fs/graphics/Sprite centerX F 
 L107:   fneg 
@@ -1190,7 +1190,7 @@ L108:   aload_0
 L109:   getfield Field com/fs/graphics/Sprite centerY F 
 L112:   fneg 
 L113:   fconst_0 
-L114:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L114:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L117:   goto L164 
 
         .stack same_extended 
@@ -1203,13 +1203,13 @@ L127:   getfield Field com/fs/graphics/Sprite height F
 L130:   fconst_2 
 L131:   fdiv 
 L132:   fconst_0 
-L133:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L133:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L136:   aload_0 
 L137:   getfield Field com/fs/graphics/Sprite angle F 
 L140:   fconst_0 
 L141:   fconst_0 
 L142:   fconst_1 
-L143:   invokestatic Method org/lwjgl/opengl/GL11 glRotatef (FFFF)V 
+L143:   invokestatic Method com/genir/graphics/GLBridge glRotatef (FFFF)V 
 L146:   aload_0 
 L147:   getfield Field com/fs/graphics/Sprite width F 
 L150:   fneg 
@@ -1221,35 +1221,35 @@ L157:   fneg
 L158:   fconst_2 
 L159:   fdiv 
 L160:   fconst_0 
-L161:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L161:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 
         .stack same 
 L164:   sipush 3553 
-L167:   invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L167:   invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L170:   sipush 3042 
-L173:   invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L173:   invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L176:   aload_0 
 L177:   getfield Field com/fs/graphics/Sprite blendSrc I 
 L180:   aload_0 
 L181:   getfield Field com/fs/graphics/Sprite blendDest I 
-L184:   invokestatic Method org/lwjgl/opengl/GL11 glBlendFunc (II)V 
+L184:   invokestatic Method com/genir/graphics/GLBridge glBlendFunc (II)V 
 L187:   ldc +0.0010000000474974513f 
 L189:   fstore_3 
 L190:   bipush 7 
-L192:   invokestatic Method org/lwjgl/opengl/GL11 glBegin (I)V 
+L192:   invokestatic Method com/genir/graphics/GLBridge glBegin (I)V 
 L195:   fconst_0 
 L196:   fload_3 
 L197:   fadd 
 L198:   fconst_0 
 L199:   fload_3 
 L200:   fadd 
-L201:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L201:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L204:   aload_0 
 L205:   getfield Field com/fs/graphics/Sprite colorLL Ljava/awt/Color; 
 L208:   invokestatic Method com/fs/graphics/util/B 'Ò00000' (Ljava/awt/Color;)V 
 L211:   fconst_0 
 L212:   fconst_0 
-L213:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L213:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L216:   fconst_0 
 L217:   fload_3 
 L218:   fadd 
@@ -1257,14 +1257,14 @@ L219:   aload_0
 L220:   getfield Field com/fs/graphics/Sprite texHeight F 
 L223:   fload_3 
 L224:   fsub 
-L225:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L225:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L228:   aload_0 
 L229:   getfield Field com/fs/graphics/Sprite colorUL Ljava/awt/Color; 
 L232:   invokestatic Method com/fs/graphics/util/B 'Ò00000' (Ljava/awt/Color;)V 
 L235:   fconst_0 
 L236:   aload_0 
 L237:   getfield Field com/fs/graphics/Sprite height F 
-L240:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L240:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L243:   aload_0 
 L244:   getfield Field com/fs/graphics/Sprite texWidth F 
 L247:   fload_3 
@@ -1273,7 +1273,7 @@ L249:   aload_0
 L250:   getfield Field com/fs/graphics/Sprite texHeight F 
 L253:   fload_3 
 L254:   fsub 
-L255:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L255:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L258:   aload_0 
 L259:   getfield Field com/fs/graphics/Sprite colorUR Ljava/awt/Color; 
 L262:   invokestatic Method com/fs/graphics/util/B 'Ò00000' (Ljava/awt/Color;)V 
@@ -1281,7 +1281,7 @@ L265:   aload_0
 L266:   getfield Field com/fs/graphics/Sprite width F 
 L269:   aload_0 
 L270:   getfield Field com/fs/graphics/Sprite height F 
-L273:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L273:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L276:   aload_0 
 L277:   getfield Field com/fs/graphics/Sprite texWidth F 
 L280:   fload_3 
@@ -1289,18 +1289,18 @@ L281:   fsub
 L282:   fconst_0 
 L283:   fload_3 
 L284:   fadd 
-L285:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L285:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L288:   aload_0 
 L289:   getfield Field com/fs/graphics/Sprite colorLR Ljava/awt/Color; 
 L292:   invokestatic Method com/fs/graphics/util/B 'Ò00000' (Ljava/awt/Color;)V 
 L295:   aload_0 
 L296:   getfield Field com/fs/graphics/Sprite width F 
 L299:   fconst_0 
-L300:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L303:   invokestatic Method org/lwjgl/opengl/GL11 glEnd ()V 
+L300:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
+L303:   invokestatic Method com/genir/graphics/GLBridge glEnd ()V 
 L306:   sipush 3042 
-L309:   invokestatic Method org/lwjgl/opengl/GL11 glDisable (I)V 
-L312:   invokestatic Method org/lwjgl/opengl/GL11 glPopMatrix ()V 
+L309:   invokestatic Method com/genir/graphics/GLBridge glDisable (I)V 
+L312:   invokestatic Method com/genir/graphics/GLBridge glPopMatrix ()V 
 L315:   return 
 L316:   
     .end code 
@@ -1389,7 +1389,7 @@ L19:    goto L23
 L22:    return 
 
         .stack same 
-L23:    invokestatic Method org/lwjgl/opengl/GL11 glPushMatrix ()V 
+L23:    invokestatic Method com/genir/graphics/GLBridge glPushMatrix ()V 
 L26:    aload_0 
 L27:    getfield Field com/fs/graphics/Sprite color Ljava/awt/Color; 
 L30:    invokevirtual Method java/awt/Color getRed ()I 
@@ -1411,7 +1411,7 @@ L59:    getfield Field com/fs/graphics/Sprite alphaMult F
 L62:    fmul 
 L63:    f2i 
 L64:    i2b 
-L65:    invokestatic Method org/lwjgl/opengl/GL11 glColor4ub (BBBB)V 
+L65:    invokestatic Method com/genir/graphics/GLBridge glColor4ub (BBBB)V 
 L68:    fload_1 
 L69:    aload_0 
 L70:    getfield Field com/fs/graphics/Sprite offsetX I 
@@ -1423,7 +1423,7 @@ L77:    getfield Field com/fs/graphics/Sprite offsetY I
 L80:    i2f 
 L81:    fadd 
 L82:    fconst_0 
-L83:    invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L83:    invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L86:    aload_0 
 L87:    getfield Field com/fs/graphics/Sprite centerX F 
 L90:    ldc -1.0f 
@@ -1443,13 +1443,13 @@ L113:   getfield Field com/fs/graphics/Sprite height F
 L116:   fconst_2 
 L117:   fdiv 
 L118:   fconst_0 
-L119:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L119:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L122:   aload_0 
 L123:   getfield Field com/fs/graphics/Sprite angle F 
 L126:   fconst_0 
 L127:   fconst_0 
 L128:   fconst_1 
-L129:   invokestatic Method org/lwjgl/opengl/GL11 glRotatef (FFFF)V 
+L129:   invokestatic Method com/genir/graphics/GLBridge glRotatef (FFFF)V 
 L132:   aload_0 
 L133:   getfield Field com/fs/graphics/Sprite centerX F 
 L136:   fneg 
@@ -1457,7 +1457,7 @@ L137:   aload_0
 L138:   getfield Field com/fs/graphics/Sprite centerY F 
 L141:   fneg 
 L142:   fconst_0 
-L143:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L143:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L146:   goto L193 
 
         .stack same_extended 
@@ -1470,13 +1470,13 @@ L156:   getfield Field com/fs/graphics/Sprite height F
 L159:   fconst_2 
 L160:   fdiv 
 L161:   fconst_0 
-L162:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L162:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 L165:   aload_0 
 L166:   getfield Field com/fs/graphics/Sprite angle F 
 L169:   fconst_0 
 L170:   fconst_0 
 L171:   fconst_1 
-L172:   invokestatic Method org/lwjgl/opengl/GL11 glRotatef (FFFF)V 
+L172:   invokestatic Method com/genir/graphics/GLBridge glRotatef (FFFF)V 
 L175:   aload_0 
 L176:   getfield Field com/fs/graphics/Sprite width F 
 L179:   fneg 
@@ -1488,22 +1488,22 @@ L186:   fneg
 L187:   fconst_2 
 L188:   fdiv 
 L189:   fconst_0 
-L190:   invokestatic Method org/lwjgl/opengl/GL11 glTranslatef (FFF)V 
+L190:   invokestatic Method com/genir/graphics/GLBridge glTranslatef (FFF)V 
 
         .stack same 
 L193:   sipush 3553 
-L196:   invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L196:   invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L199:   sipush 3042 
-L202:   invokestatic Method org/lwjgl/opengl/GL11 glEnable (I)V 
+L202:   invokestatic Method com/genir/graphics/GLBridge glEnable (I)V 
 L205:   aload_0 
 L206:   getfield Field com/fs/graphics/Sprite blendSrc I 
 L209:   aload_0 
 L210:   getfield Field com/fs/graphics/Sprite blendDest I 
-L213:   invokestatic Method org/lwjgl/opengl/GL11 glBlendFunc (II)V 
+L213:   invokestatic Method com/genir/graphics/GLBridge glBlendFunc (II)V 
 L216:   ldc +0.0010000000474974513f 
 L218:   fstore 8 
 L220:   bipush 7 
-L222:   invokestatic Method org/lwjgl/opengl/GL11 glBegin (I)V 
+L222:   invokestatic Method com/genir/graphics/GLBridge glBegin (I)V 
 L225:   fload_3 
 L226:   aload_0 
 L227:   getfield Field com/fs/graphics/Sprite texWidth F 
@@ -1516,7 +1516,7 @@ L237:   getfield Field com/fs/graphics/Sprite texHeight F
 L240:   fmul 
 L241:   fload 8 
 L243:   fadd 
-L244:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L244:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L247:   fload_3 
 L248:   aload_0 
 L249:   getfield Field com/fs/graphics/Sprite width F 
@@ -1525,7 +1525,7 @@ L253:   fload 4
 L255:   aload_0 
 L256:   getfield Field com/fs/graphics/Sprite height F 
 L259:   fmul 
-L260:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L260:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L263:   fload_3 
 L264:   aload_0 
 L265:   getfield Field com/fs/graphics/Sprite texWidth F 
@@ -1540,7 +1540,7 @@ L278:   getfield Field com/fs/graphics/Sprite texHeight F
 L281:   fmul 
 L282:   fload 8 
 L284:   fsub 
-L285:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L285:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L288:   fload_3 
 L289:   aload_0 
 L290:   getfield Field com/fs/graphics/Sprite width F 
@@ -1551,7 +1551,7 @@ L298:   fadd
 L299:   aload_0 
 L300:   getfield Field com/fs/graphics/Sprite height F 
 L303:   fmul 
-L304:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L304:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L307:   fload_3 
 L308:   fload 5 
 L310:   fadd 
@@ -1568,7 +1568,7 @@ L325:   getfield Field com/fs/graphics/Sprite texHeight F
 L328:   fmul 
 L329:   fload 8 
 L331:   fsub 
-L332:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L332:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L335:   fload_3 
 L336:   fload 5 
 L338:   fadd 
@@ -1581,7 +1581,7 @@ L348:   fadd
 L349:   aload_0 
 L350:   getfield Field com/fs/graphics/Sprite height F 
 L353:   fmul 
-L354:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
+L354:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
 L357:   fload_3 
 L358:   fload 5 
 L360:   fadd 
@@ -1596,7 +1596,7 @@ L372:   getfield Field com/fs/graphics/Sprite texHeight F
 L375:   fmul 
 L376:   fload 8 
 L378:   fadd 
-L379:   invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f (FF)V 
+L379:   invokestatic Method com/genir/graphics/GLBridge glTexCoord2f (FF)V 
 L382:   fload_3 
 L383:   fload 5 
 L385:   fadd 
@@ -1607,11 +1607,11 @@ L391:   fload 4
 L393:   aload_0 
 L394:   getfield Field com/fs/graphics/Sprite height F 
 L397:   fmul 
-L398:   invokestatic Method org/lwjgl/opengl/GL11 glVertex2f (FF)V 
-L401:   invokestatic Method org/lwjgl/opengl/GL11 glEnd ()V 
+L398:   invokestatic Method com/genir/graphics/GLBridge glVertex2f (FF)V 
+L401:   invokestatic Method com/genir/graphics/GLBridge glEnd ()V 
 L404:   sipush 3042 
-L407:   invokestatic Method org/lwjgl/opengl/GL11 glDisable (I)V 
-L410:   invokestatic Method org/lwjgl/opengl/GL11 glPopMatrix ()V 
+L407:   invokestatic Method com/genir/graphics/GLBridge glDisable (I)V 
+L410:   invokestatic Method com/genir/graphics/GLBridge glPopMatrix ()V 
 L413:   return 
 L414:   
     .end code 
