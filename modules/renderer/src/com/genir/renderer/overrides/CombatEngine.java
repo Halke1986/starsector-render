@@ -61,8 +61,9 @@ public class CombatEngine {
             engine.getHitParticlesGroup().render(0.0F, 0.0F);
             commitParticleLayer();
 
-            // TODO NegativeParticle renders wrong
+            beginParticleLayer("NegativeParticles");
             engine.getNegativeParticles().render(0.0F, 0.0F);
+            commitParticleLayer();
 
             beginParticleLayer("NegativeNebulaParticles");
             engine.getNegativeNebulaParticles().render(0.0F, 0.0F); // UNUSED

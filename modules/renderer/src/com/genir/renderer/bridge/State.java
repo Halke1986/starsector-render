@@ -1,7 +1,9 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.Renderer.Quad;
-import com.genir.renderer.bridge.Renderer.QuadContext;
+import com.genir.renderer.Default;
+import com.genir.renderer.Renderer;
+import com.genir.renderer.Renderer.Quad;
+import com.genir.renderer.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
@@ -13,11 +15,12 @@ public class State {
     private final Renderer renderer;
 
     // Key.
-    private int textureTarget;
-    private int textureID;
+    private int textureTarget = -1;
+    private int textureID = -1;
 
-    private int blendSfactor;
-    private int blendDfactor;
+    private int blendSfactor = -1;
+    private int blendDfactor = -1;
+    private int blendEquation = Default.blendEquation;
 
     // Quad.
     private int mode;
@@ -27,22 +30,11 @@ public class State {
     private int texNum;
     private int vertexNum;
 
-    private Stack<Matrix3f> matrixStack;
-    private Matrix3f modelMatrix;
+    private final Stack<Matrix3f> matrixStack = new Stack<>();
+    private Matrix3f modelMatrix = Default.modelMatrix();
 
     public State(Renderer renderer) {
         this.renderer = renderer;
-    }
-
-    public void init() {
-        textureTarget = -1;
-        textureID = -1;
-
-        blendSfactor = -1;
-        blendDfactor = -1;
-
-        modelMatrix = defaultModelMatrix();
-        matrixStack = new Stack<>();
     }
 
     public void assertState() {
@@ -70,11 +62,10 @@ public class State {
         return defaultMatrix;
     }
 
-    // TODO manage state
     public void glEnable(int cap) {
+        asert(cap == GL11.GL_TEXTURE_2D || cap == GL11.GL_BLEND);
     }
 
-    // TODO manage state
     public void glDisable(int cap) {
     }
 
@@ -86,6 +77,10 @@ public class State {
     public void glBlendFunc(int sfactor, int dfactor) {
         blendSfactor = sfactor;
         blendDfactor = dfactor;
+    }
+
+    public void glBlendEquation(int mode) {
+        blendEquation = mode;
     }
 
     public void glPushMatrix() {
@@ -206,7 +201,7 @@ public class State {
         asert(texCoord != null);
         asert(vertexes != null);
 
-        QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor);
+        QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
         Quad q = new Quad(color, texCoord, vertexes);
 
         renderer.addQuad(ctx, q);

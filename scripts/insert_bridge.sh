@@ -74,3 +74,5 @@ find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/op
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glMultMatrix ^invokestatic Method com/genir/renderer/bridge/GL11 glMultMatrix ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glEndList ^invokestatic Method com/genir/renderer/bridge/GL11 glEndList ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDisableClientState ^invokestatic Method com/genir/renderer/bridge/GL11 glDisableClientState ^g' {} +
+
+find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL14 glBlendEquation ^invokestatic Method com/genir/renderer/bridge/GL14 glBlendEquation ^g' {} +

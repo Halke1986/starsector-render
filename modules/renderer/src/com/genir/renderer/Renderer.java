@@ -1,8 +1,9 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-
+import com.genir.renderer.bridge.GL14;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -46,11 +47,11 @@ public class Renderer {
             return;
         }
 
-        org.lwjgl.opengl.GL11.glEnableClientState(org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY);
-        org.lwjgl.opengl.GL11.glEnableClientState(org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY);
-        org.lwjgl.opengl.GL11.glEnableClientState(org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
-        org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
-        org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_BLEND);
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
 
         initBuffers();
 
@@ -58,8 +59,9 @@ public class Renderer {
             QuadContext key = entry.getKey();
             List<Quad> quads = entry.getValue();
 
-            org.lwjgl.opengl.GL11.glBindTexture(key.textureTarget, key.textureID);
-            org.lwjgl.opengl.GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
+            GL11.glBindTexture(key.textureTarget, key.textureID);
+            GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
+            GL14.glBlendEquation(key.blendEquation);
 
             vertexBuffer.clear();
             textureBuffer.clear();
@@ -82,17 +84,18 @@ public class Renderer {
             textureBuffer.flip();
             colorBuffer.flip();
 
-            org.lwjgl.opengl.GL11.glVertexPointer(2, 0, vertexBuffer);
-            org.lwjgl.opengl.GL11.glTexCoordPointer(2, 0, textureBuffer);
-            org.lwjgl.opengl.GL11.glColorPointer(4, org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
-            org.lwjgl.opengl.GL11.glDrawArrays(org.lwjgl.opengl.GL11.GL_QUADS, 0, quads.size() * 4);
+            GL11.glVertexPointer(2, 0, vertexBuffer);
+            GL11.glTexCoordPointer(2, 0, textureBuffer);
+            GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
+            GL11.glDrawArrays(GL11.GL_QUADS, 0, quads.size() * 4);
         }
 
-        org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_BLEND);
-        org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
-        org.lwjgl.opengl.GL11.glDisableClientState(org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
-        org.lwjgl.opengl.GL11.glDisableClientState(org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY);
-        org.lwjgl.opengl.GL11.glDisableClientState(org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+        GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        GL14.glBlendEquation(Default.blendEquation);
     }
 
     private void initBuffers() {
@@ -122,7 +125,8 @@ public class Renderer {
             int textureTarget,
             int textureID,
             int blendSfactor,
-            int blendDfactor) {
+            int blendDfactor,
+            int blendEquation) {
     }
 
     public record Quad(

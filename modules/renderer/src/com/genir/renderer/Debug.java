@@ -1,6 +1,5 @@
 package com.genir.renderer;
 
-import com.genir.renderer.bridge.Renderer;
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;

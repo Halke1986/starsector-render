@@ -1,12 +1,13 @@
 package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.genir.renderer.Renderer;
 
 public class Bridge {
     static boolean intercept = false;
 
     static Renderer renderer = new Renderer();
-    static State state = new State(renderer);
+    static State state;
 
     public static void beginLayer(CombatEngineLayers layer) {
         beginLayer(layer.name());
@@ -21,7 +22,7 @@ public class Bridge {
     }
 
     public static void startIntercept() {
-        state.init();
+        state = new State(renderer);
         intercept = true;
     }
 
@@ -32,5 +33,6 @@ public class Bridge {
 
         intercept = false;
         state.assertState();
+        state = null;
     }
 }
