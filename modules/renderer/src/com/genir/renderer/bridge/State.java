@@ -9,8 +9,6 @@ import org.lwjgl.util.vector.Matrix3f;
 
 import java.util.Stack;
 
-import static com.genir.renderer.Debug.asert;
-
 public class State {
     private final Renderer renderer;
 
@@ -39,18 +37,18 @@ public class State {
 
     public void assertState() {
         // assert no model matrix leak.
-        asert(matrixStack.isEmpty());
+        assert (matrixStack.isEmpty());
 
         Matrix3f m = modelMatrix;
-        asert(m.m00 == 1f);
-        asert(m.m01 == 0f);
-        asert(m.m02 == 0.01f);
-        asert(m.m10 == 0f);
-        asert(m.m11 == 1f);
-        asert(m.m12 == 0.01f);
-        asert(m.m20 == 0f);
-        asert(m.m21 == 0f);
-        asert(m.m22 == 1f);
+        assert (m.m00 == 1f);
+        assert (m.m01 == 0f);
+        assert (m.m02 == 0.01f);
+        assert (m.m10 == 0f);
+        assert (m.m11 == 1f);
+        assert (m.m12 == 0.01f);
+        assert (m.m20 == 0f);
+        assert (m.m21 == 0f);
+        assert (m.m22 == 1f);
     }
 
     private Matrix3f defaultModelMatrix() {
@@ -63,7 +61,7 @@ public class State {
     }
 
     public void glEnable(int cap) {
-        asert(cap == GL11.GL_TEXTURE_2D || cap == GL11.GL_BLEND);
+        assert (cap == GL11.GL_TEXTURE_2D || cap == GL11.GL_BLEND);
     }
 
     public void glDisable(int cap) {
@@ -96,7 +94,7 @@ public class State {
     }
 
     public void glTranslatef(float x, float y, float z) {
-        asert(z == 0f);
+        assert (z == 0f);
 
         Matrix3f t = new Matrix3f();
         t.m00 = 1f;
@@ -110,9 +108,9 @@ public class State {
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        asert(x == 0f);
-        asert(y == 0f);
-        asert(z == 1f);
+        assert (x == 0f);
+        assert (y == 0f);
+        assert (z == 1f);
 
         float a = angle * (float) (Math.PI / 180);
         float cos = (float) Math.cos(a);
@@ -130,7 +128,7 @@ public class State {
     }
 
     public void glTexCoord2f(float s, float t) {
-        asert(mode == GL11.GL_QUADS);
+        assert (mode == GL11.GL_QUADS);
 
         if (texNum == 4) {
             commitQuad();
@@ -144,7 +142,7 @@ public class State {
     }
 
     public void glVertex2f(float x, float y) {
-        asert(mode == GL11.GL_QUADS);
+        assert (mode == GL11.GL_QUADS);
 
         if (vertexNum == 4) {
             commitQuad();
@@ -163,7 +161,7 @@ public class State {
     }
 
     public void glBegin(int mode) {
-        asert(mode == GL11.GL_QUADS);
+        assert (mode == GL11.GL_QUADS);
 
         this.mode = mode;
 
@@ -171,7 +169,7 @@ public class State {
     }
 
     public void glEnd() {
-        asert(mode == GL11.GL_QUADS);
+        assert (mode == GL11.GL_QUADS);
 
         if (vertexNum == 4) {
             commitQuad();
@@ -189,17 +187,17 @@ public class State {
     }
 
     private void commitQuad() {
-        asert(textureTarget != -1);
-        asert(textureID != -1);
-        asert(blendSfactor != -1);
-        asert(blendDfactor != -1);
+        assert (textureTarget != -1);
+        assert (textureID != -1);
+        assert (blendSfactor != -1);
+        assert (blendDfactor != -1);
 
-        asert(texNum == 4);
-        asert(vertexNum == 4);
+        assert (texNum == 4);
+        assert (vertexNum == 4);
 
-        asert(color != null);
-        asert(texCoord != null);
-        asert(vertexes != null);
+        assert (color != null);
+        assert (texCoord != null);
+        assert (vertexes != null);
 
         QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
         Quad q = new Quad(color, texCoord, vertexes);

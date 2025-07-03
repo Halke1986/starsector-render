@@ -28,12 +28,6 @@ public class Debug {
         }
     }
 
-    public static void asert(boolean val) {
-        if (!val) {
-            throw new AssertionError("false");
-        }
-    }
-
     public static void logMatrix(int pname) {
         // 1) Allocate a direct FloatBuffer for 16 floats (once, e.g. static field)
         FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);
