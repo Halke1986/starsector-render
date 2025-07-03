@@ -103,15 +103,11 @@ public class State {
     public void glTranslatef(float x, float y, float z) {
         assert (z == 0f);
 
-        Matrix3f t = new Matrix3f();
-        t.m00 = 1f;
-        t.m02 = x;
-        t.m11 = 1f;
-        t.m12 = y;
-        t.m22 = 1f;
-
         Matrix3f m = matrixStack[matrixIdx];
-        Matrix3f.mul(t, m, m);
+
+        m.m02 = x * m.m00 + y * m.m01 + m.m02;
+        m.m12 = x * m.m10 + y * m.m11 + m.m12;
+        m.m22 = x * m.m20 + y * m.m21 + m.m22;
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
@@ -123,15 +119,14 @@ public class State {
         float cos = (float) Math.cos(a);
         float sin = (float) Math.sin(a);
 
-        Matrix3f r = new Matrix3f();
-        r.m00 = cos;
-        r.m01 = -sin;
-        r.m10 = sin;
-        r.m11 = cos;
-        r.m22 = 1f;
-
         Matrix3f m = matrixStack[matrixIdx];
-        Matrix3f.mul(r, m, m);
+
+        m.m00 = cos * m.m00 + sin * m.m01;
+        m.m01 = -sin * m.m00 + cos * m.m01;
+        m.m10 = cos * m.m10 + sin * m.m11;
+        m.m11 = -sin * m.m10 + cos * m.m11;
+        m.m20 = cos * m.m20 + sin * m.m21;
+        m.m21 = -sin * m.m20 + cos * m.m21;
     }
 
     public void glTexCoord2f(float s, float t) {
