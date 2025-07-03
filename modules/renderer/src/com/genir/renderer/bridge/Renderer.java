@@ -1,11 +1,8 @@
-package com.genir.graphics;
+package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
-import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
-import com.fs.starfarer.combat.entities.CustomCombatEntity;
+
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -15,59 +12,45 @@ import java.util.List;
 import java.util.Map;
 
 public class Renderer {
-    private static Map<QuadContext, List<Quad>> buffer = new HashMap<>();
+    private Map<QuadContext, List<Quad>> buffer = new HashMap<>();
 
-    private static int maxSprites = 0;
-    private static FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(0);
-    private static FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(0);
-    private static ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
+    private int maxSprites = 0;
+    private FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(0);
+    private FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(0);
+    private ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
 
-    private static String currentLayer = "";
+    private String currentLayer = "";
 
-    public static void beginLayer(CombatEngineLayers layer) {
+    public void beginLayer(CombatEngineLayers layer) {
         beginLayer(layer.name());
     }
 
-    public static void beginLayer(String layer) {
+    public void beginLayer(String layer) {
         currentLayer = layer;
         buffer = new HashMap<>();
     }
 
-    public static void commitLayer() {
+    public void commitLayer() {
         currentLayer = "";
         renderLayer();
     }
 
-    public static void beginEntity(Object entity) {
-        if (entity instanceof CustomCombatEntity) {
-            CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
-
-            if (plugin instanceof RoilingSwarmEffect) {
-                GLBridge.startIntercept();
-            }
-        }
-    }
-
-    public static void commitEntity() {
-        GLBridge.endIntercept();
-    }
-
-    public static void addQuad(QuadContext ctx, Quad q) {
+    public void addQuad(QuadContext ctx, Quad q) {
         List<Quad> quads = buffer.computeIfAbsent(ctx, k -> new LinkedList<>());
 
         quads.add(q);
     }
 
-    private static void renderLayer() {
+    private void renderLayer() {
         if (buffer.isEmpty()) {
             return;
         }
 
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
+        org.lwjgl.opengl.GL11.glEnableClientState(org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY);
+        org.lwjgl.opengl.GL11.glEnableClientState(org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY);
+        org.lwjgl.opengl.GL11.glEnableClientState(org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
+        org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_BLEND);
 
         initBuffers();
 
@@ -75,8 +58,8 @@ public class Renderer {
             QuadContext key = entry.getKey();
             List<Quad> quads = entry.getValue();
 
-            GL11.glBindTexture(key.textureTarget, key.textureID);
-            GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
+            org.lwjgl.opengl.GL11.glBindTexture(key.textureTarget, key.textureID);
+            org.lwjgl.opengl.GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
 
             vertexBuffer.clear();
             textureBuffer.clear();
@@ -99,20 +82,20 @@ public class Renderer {
             textureBuffer.flip();
             colorBuffer.flip();
 
-            GL11.glVertexPointer(2, 0, vertexBuffer);
-            GL11.glTexCoordPointer(2, 0, textureBuffer);
-            GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
-            GL11.glDrawArrays(GL11.GL_QUADS, 0, quads.size() * 4);
+            org.lwjgl.opengl.GL11.glVertexPointer(2, 0, vertexBuffer);
+            org.lwjgl.opengl.GL11.glTexCoordPointer(2, 0, textureBuffer);
+            org.lwjgl.opengl.GL11.glColorPointer(4, org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
+            org.lwjgl.opengl.GL11.glDrawArrays(org.lwjgl.opengl.GL11.GL_QUADS, 0, quads.size() * 4);
         }
 
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-        GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_BLEND);
+        org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glDisableClientState(org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
+        org.lwjgl.opengl.GL11.glDisableClientState(org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY);
+        org.lwjgl.opengl.GL11.glDisableClientState(org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY);
     }
 
-    private static void initBuffers() {
+    private void initBuffers() {
         int currentMaxSprites = 0;
         for (Map.Entry<QuadContext, List<Quad>> entry : buffer.entrySet()) {
             List<Quad> sprites = entry.getValue();
@@ -142,10 +125,9 @@ public class Renderer {
             int blendDfactor) {
     }
 
-    public static class Quad {
-        byte[] color;
-
-        float[] texCoord;
-        float[] vertexes;
+    public record Quad(
+            byte[] color,
+            float[] texCoord,
+            float[] vertexes) {
     }
 }

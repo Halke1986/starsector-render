@@ -6,7 +6,6 @@ import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.renderers.FloatingTextManager;
 import com.fs.starfarer.renderers.damage.DebrisParticleSystem;
 import com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
-import com.genir.graphics.CombatRenderer;
 
 public class CombatEngine {
     // $FF: renamed from: OÔ0000 com.fs.graphics.particle.DynamicParticleGroup
@@ -96,6 +95,6 @@ public class CombatEngine {
 
     // REPLACED METHOD
     public void render(boolean var1) {
-        CombatRenderer.render(var1, this);
+        com.genir.renderer.overrides.CombatEngine.render(var1, this);
     }
 }

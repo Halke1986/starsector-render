@@ -1,7 +1,7 @@
 package com.fs.graphics;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.genir.graphics.Renderer;
+import com.fs.starfarer.combat.CombatViewport;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -31,19 +31,11 @@ public class LayeredRenderer<T extends Enum<T>, V> {
 
     // REPLACED METHOD
     public void renderOnly(V viewport, T layer) {
-        Renderer.beginLayer((CombatEngineLayers) layer);
-
         List<LayeredRenderable<T, V>> entities = getList(layer);
-        if (entities == null) {
-            return;
-        }
 
-        for (LayeredRenderable<T, V> entity : entities) {
-            Renderer.beginEntity(entity);
-            entity.render(layer, viewport);
-            Renderer.commitEntity();
-        }
-
-        Renderer.commitLayer();
+        com.genir.renderer.overrides.LayeredRenderer.renderOnly(
+                (CombatViewport) viewport,
+                (CombatEngineLayers) layer,
+                (List) entities);
     }
 }

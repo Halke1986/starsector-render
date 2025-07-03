@@ -1,18 +1,18 @@
-package com.genir.graphics;
+package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.fs.starfarer.combat.CombatEngine;
+import com.genir.renderer.bridge.Bridge;
 
-public class CombatRenderer {
-    public static void render(boolean var1, CombatEngine engine) {
+public class CombatEngine {
+    public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
         if (!engine.isDestroyed()) {
-            beginLayer("GlowyContrailParticles");
+            beginParticleLayer("GlowyContrailParticles");
             engine.getGlowyContrailParticles().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("SmokyContrailParticles");
+            beginParticleLayer("SmokyContrailParticles");
             engine.getSmokyContrailParticles().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
             engine.getRenderer().renderExcluding(
                     engine.getViewport(),
@@ -21,56 +21,56 @@ public class CombatRenderer {
                     CombatEngineLayers.JUST_BELOW_WIDGETS
             );
 
-            beginLayer("DebrisSystem");
+            beginParticleLayer("DebrisSystem");
             engine.getDebrisSystem().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("ExplosionSystem");
+            beginParticleLayer("ExplosionSystem");
             engine.getExplosionSystem().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("SmoothParticles");
+            beginParticleLayer("SmoothParticles");
             engine.getSmoothParticles().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("NebulaParticles");
+            beginParticleLayer("NebulaParticles");
             engine.getNebulaParticles().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("NebulaSmoothParticles");
+            beginParticleLayer("NebulaSmoothParticles");
             engine.getNebulaSmoothParticles().render(0.0F, 0.0F); // UNUSED
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("SwirlyNebulaParticles");
+            beginParticleLayer("SwirlyNebulaParticles");
             engine.getSwirlyNebulaParticles().render(0.0F, 0.0F); // UNUSED
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("ExplosionParticles");
+            beginParticleLayer("ExplosionParticles");
             engine.getExplosionParticles().render(0.0F, 0.0F); // UNUSED
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("SmokeParticles");
+            beginParticleLayer("SmokeParticles");
             engine.getSmokeParticles().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("NebulaSmokeParticles");
+            beginParticleLayer("NebulaSmokeParticles");
             engine.getNebulaSmokeParticles().render(0.0F, 0.0F); // UNUSED
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("HitParticles");
+            beginParticleLayer("HitParticles");
             engine.getHitParticlesGroup().render(0.0F, 0.0F);
-            commitLayer();
+            commitParticleLayer();
 
             // TODO NegativeParticle renders wrong
             engine.getNegativeParticles().render(0.0F, 0.0F);
 
-            beginLayer("NegativeNebulaParticles");
+            beginParticleLayer("NegativeNebulaParticles");
             engine.getNegativeNebulaParticles().render(0.0F, 0.0F); // UNUSED
-            commitLayer();
+            commitParticleLayer();
 
-            beginLayer("NegativeSwirlyNebulaParticles");
+            beginParticleLayer("NegativeSwirlyNebulaParticles");
             engine.getNegativeSwirlyNebulaParticles().render(0.0F, 0.0F); // UNUSED
-            commitLayer();
+            commitParticleLayer();
 
             engine.getRenderer().renderOnly(engine.getViewport(), CombatEngineLayers.ABOVE_PARTICLES_LOWER);
             engine.getRenderer().renderOnly(engine.getViewport(), CombatEngineLayers.ABOVE_PARTICLES);
@@ -82,13 +82,13 @@ public class CombatRenderer {
         }
     }
 
-    private static void beginLayer(String layer) {
-        Renderer.beginLayer(layer);
-        GLBridge.startIntercept();
+    private static void beginParticleLayer(String layer) {
+        Bridge.beginLayer(layer);
+        Bridge.startIntercept();
     }
 
-    private static void commitLayer() {
-        GLBridge.endIntercept();
-        Renderer.commitLayer();
+    private static void commitParticleLayer() {
+        Bridge.endIntercept();
+        Bridge.commitLayer();
     }
 }

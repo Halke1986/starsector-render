@@ -2724,12 +2724,12 @@ L9:
     .code stack 2 locals 2
 L0:     iload_1
 L1:     aload_0
-L2:     invokestatic Method com/genir/graphics/CombatRenderer render (ZLcom/fs/starfarer/combat/CombatEngine;)V
+L2:     invokestatic Method com/genir/renderer/overrides/CombatEngine render (ZLcom/fs/starfarer/combat/CombatEngine;)V
 L5:     return
 L6:
         .linenumbertable
-            L0 99
-            L5 100
+            L0 98
+            L5 99
         .end linenumbertable
         .localvariabletable
             0 is this Lcom/fs/starfarer/combat/CombatEngine; from L0 to L6

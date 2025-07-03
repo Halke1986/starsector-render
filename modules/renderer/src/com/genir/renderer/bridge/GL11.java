@@ -1,33 +1,18 @@
-package com.genir.graphics;
-
-import org.lwjgl.opengl.GL11;
+package com.genir.renderer.bridge;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class GLBridge {
-    private static boolean intercept = false;
-    public static GLState state = new GLState();
+import static com.genir.renderer.bridge.Bridge.intercept;
+import static com.genir.renderer.bridge.Bridge.state;
 
-    public static void startIntercept() {
-        intercept = true;
-
-        GLBridge.state.init();
-    }
-
-    public static void endIntercept() {
-        if (intercept) {
-            GLBridge.state.assertState();
-            intercept = false;
-        }
-    }
-
+public class GL11 {
     public static void glDisable(int cap) {
         if (intercept) {
             state.glDisable(cap);
         } else {
-            GL11.glDisable(cap);
+            org.lwjgl.opengl.GL11.glDisable(cap);
         }
     }
 
@@ -35,7 +20,7 @@ public class GLBridge {
         if (intercept) {
             state.glEnable(cap);
         } else {
-            GL11.glEnable(cap);
+            org.lwjgl.opengl.GL11.glEnable(cap);
         }
     }
 
@@ -43,7 +28,7 @@ public class GLBridge {
         if (intercept) {
             state.glBlendFunc(sfactor, dfactor);
         } else {
-            GL11.glBlendFunc(sfactor, dfactor);
+            org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
         }
     }
 
@@ -51,7 +36,7 @@ public class GLBridge {
         if (intercept) {
             state.glBegin(mode);
         } else {
-            GL11.glBegin(mode);
+            org.lwjgl.opengl.GL11.glBegin(mode);
         }
     }
 
@@ -59,7 +44,7 @@ public class GLBridge {
         if (intercept) {
             state.glEnd();
         } else {
-            GL11.glEnd();
+            org.lwjgl.opengl.GL11.glEnd();
         }
     }
 
@@ -67,7 +52,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glHint");
         } else {
-            GL11.glHint(target, mode);
+            org.lwjgl.opengl.GL11.glHint(target, mode);
         }
     }
 
@@ -75,7 +60,7 @@ public class GLBridge {
         if (intercept) {
             state.glVertex2f(x, y);
         } else {
-            GL11.glVertex2f(x, y);
+            org.lwjgl.opengl.GL11.glVertex2f(x, y);
         }
     }
 
@@ -83,7 +68,7 @@ public class GLBridge {
         if (intercept) {
             state.glPushMatrix();
         } else {
-            GL11.glPushMatrix();
+            org.lwjgl.opengl.GL11.glPushMatrix();
         }
     }
 
@@ -91,7 +76,7 @@ public class GLBridge {
         if (intercept) {
             state.glPopMatrix();
         } else {
-            GL11.glPopMatrix();
+            org.lwjgl.opengl.GL11.glPopMatrix();
         }
     }
 
@@ -99,7 +84,7 @@ public class GLBridge {
         if (intercept) {
             state.glTranslatef(x, y, z);
         } else {
-            GL11.glTranslatef(x, y, z);
+            org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
         }
     }
 
@@ -107,7 +92,7 @@ public class GLBridge {
         if (intercept) {
             state.glColor4ub(red, green, blue, alpha);
         } else {
-            GL11.glColor4ub(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
         }
     }
 
@@ -115,7 +100,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glScalef");
         } else {
-            GL11.glScalef(x, y, z);
+            org.lwjgl.opengl.GL11.glScalef(x, y, z);
         }
     }
 
@@ -123,7 +108,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColorMask");
         } else {
-            GL11.glColorMask(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
         }
     }
 
@@ -131,7 +116,7 @@ public class GLBridge {
         if (intercept) {
             state.glRotatef(angle, x, y, z);
         } else {
-            GL11.glRotatef(angle, x, y, z);
+            org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
         }
     }
 
@@ -139,7 +124,7 @@ public class GLBridge {
         if (intercept) {
             state.glTexCoord2f(s, t);
         } else {
-            GL11.glTexCoord2f(s, t);
+            org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
         }
     }
 
@@ -147,7 +132,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glLineWidth");
         } else {
-            GL11.glLineWidth(width);
+            org.lwjgl.opengl.GL11.glLineWidth(width);
         }
     }
 
@@ -155,7 +140,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glStencilFunc");
         } else {
-            GL11.glStencilFunc(func, ref, mask);
+            org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
         }
     }
 
@@ -163,7 +148,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glDeleteTextures");
         } else {
-            GL11.glDeleteTextures(textures);
+            org.lwjgl.opengl.GL11.glDeleteTextures(textures);
         }
     }
 
@@ -171,7 +156,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glDeleteTextures");
         } else {
-            GL11.glDeleteTextures(texture);
+            org.lwjgl.opengl.GL11.glDeleteTextures(texture);
         }
     }
 
@@ -179,7 +164,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glPolygonMode");
         } else {
-            GL11.glPolygonMode(face, mode);
+            org.lwjgl.opengl.GL11.glPolygonMode(face, mode);
         }
     }
 
@@ -187,7 +172,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glGetInteger");
         } else {
-            GL11.glGetInteger(pname, params);
+            org.lwjgl.opengl.GL11.glGetInteger(pname, params);
         }
     }
 
@@ -195,7 +180,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glGetInteger");
         } else {
-            return GL11.glGetInteger(pname);
+            return org.lwjgl.opengl.GL11.glGetInteger(pname);
         }
     }
 
@@ -203,7 +188,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glViewport");
         } else {
-            GL11.glViewport(x, y, width, height);
+            org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
         }
     }
 
@@ -211,7 +196,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glGetString");
         } else {
-            return GL11.glGetString(name);
+            return org.lwjgl.opengl.GL11.glGetString(name);
         }
     }
 
@@ -219,7 +204,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glFlush");
         } else {
-            GL11.glFlush();
+            org.lwjgl.opengl.GL11.glFlush();
         }
     }
 
@@ -227,7 +212,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glFinish");
         } else {
-            GL11.glFinish();
+            org.lwjgl.opengl.GL11.glFinish();
         }
     }
 
@@ -235,7 +220,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glScissor");
         } else {
-            GL11.glScissor(x, y, width, height);
+            org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
         }
     }
 
@@ -243,7 +228,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glStencilOp");
         } else {
-            GL11.glStencilOp(fail, zfail, zpass);
+            org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
         }
     }
 
@@ -251,7 +236,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glAlphaFunc");
         } else {
-            GL11.glAlphaFunc(func, ref);
+            org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
         }
     }
 
@@ -259,7 +244,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glReadPixels");
         } else {
-            GL11.glReadPixels(x, y, width, height, format, type, pixels);
+            org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
         }
     }
 
@@ -267,7 +252,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glGenTextures");
         } else {
-            GL11.glGenTextures(textures);
+            org.lwjgl.opengl.GL11.glGenTextures(textures);
         }
     }
 
@@ -275,7 +260,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTexParameteri");
         } else {
-            GL11.glTexParameteri(target, pname, param);
+            org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
         }
     }
 
@@ -283,7 +268,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glPointSize");
         } else {
-            GL11.glPointSize(size);
+            org.lwjgl.opengl.GL11.glPointSize(size);
         }
     }
 
@@ -291,7 +276,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glShadeModel");
         } else {
-            GL11.glShadeModel(mode);
+            org.lwjgl.opengl.GL11.glShadeModel(mode);
         }
     }
 
@@ -299,7 +284,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glLight");
         } else {
-            GL11.glLight(light, pname, params);
+            org.lwjgl.opengl.GL11.glLight(light, pname, params);
         }
     }
 
@@ -307,7 +292,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glMaterial");
         } else {
-            GL11.glMaterial(face, pname, params);
+            org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
         }
     }
 
@@ -315,7 +300,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glMateriali");
         } else {
-            GL11.glMateriali(face, pname, param);
+            org.lwjgl.opengl.GL11.glMateriali(face, pname, param);
         }
     }
 
@@ -323,7 +308,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColor3ub");
         } else {
-            GL11.glColor3ub(red, green, blue);
+            org.lwjgl.opengl.GL11.glColor3ub(red, green, blue);
         }
     }
 
@@ -331,7 +316,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glNormal3f");
         } else {
-            GL11.glNormal3f(nx, ny, nz);
+            org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
         }
     }
 
@@ -339,7 +324,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glVertex3d");
         } else {
-            GL11.glVertex3d(x, y, z);
+            org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
         }
     }
 
@@ -347,7 +332,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColor3d");
         } else {
-            GL11.glColor3d(red, green, blue);
+            org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
         }
     }
 
@@ -355,7 +340,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTexEnvf");
         } else {
-            GL11.glTexEnvf(target, pname, param);
+            org.lwjgl.opengl.GL11.glTexEnvf(target, pname, param);
         }
     }
 
@@ -363,7 +348,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColor4f");
         } else {
-            GL11.glColor4f(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
         }
     }
 
@@ -371,7 +356,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glMatrixMode");
         } else {
-            GL11.glMatrixMode(mode);
+            org.lwjgl.opengl.GL11.glMatrixMode(mode);
         }
     }
 
@@ -379,7 +364,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glLoadIdentity");
         } else {
-            GL11.glLoadIdentity();
+            org.lwjgl.opengl.GL11.glLoadIdentity();
         }
     }
 
@@ -387,7 +372,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glIsEnabled");
         } else {
-            return GL11.glIsEnabled(cap);
+            return org.lwjgl.opengl.GL11.glIsEnabled(cap);
         }
     }
 
@@ -395,7 +380,7 @@ public class GLBridge {
         if (intercept) {
             state.glBindTexture(target, texture);
         } else {
-            GL11.glBindTexture(target, texture);
+            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
     }
 
@@ -403,7 +388,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTexImage2D");
         } else {
-            GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+            org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
         }
     }
 
@@ -411,7 +396,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTexSubImage2D");
         } else {
-            GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels_buffer_offset);
+            org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels_buffer_offset);
         }
     }
 
@@ -419,7 +404,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTexCoordPointer");
         } else {
-            GL11.glTexCoordPointer(size, stride, pointer);
+            org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer);
         }
     }
 
@@ -427,7 +412,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTexCoordPointer");
         } else {
-            GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
+            org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
         }
     }
 
@@ -435,7 +420,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColorPointer");
         } else {
-            GL11.glColorPointer(size, unsigned, stride, pointer);
+            org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer);
         }
     }
 
@@ -443,7 +428,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColorPointer");
         } else {
-            GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
+            org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
         }
     }
 
@@ -451,7 +436,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glVertex3f");
         } else {
-            GL11.glVertex3f(x, y, z);
+            org.lwjgl.opengl.GL11.glVertex3f(x, y, z);
         }
     }
 
@@ -459,7 +444,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColorMaterial");
         } else {
-            GL11.glColorMaterial(face, mode);
+            org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
         }
     }
 
@@ -467,7 +452,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glColor3f");
         } else {
-            GL11.glColor3f(red, green, blue);
+            org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
         }
     }
 
@@ -475,7 +460,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glDrawArrays");
         } else {
-            GL11.glDrawArrays(mode, first, count);
+            org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
         }
     }
 
@@ -483,7 +468,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glOrtho");
         } else {
-            GL11.glOrtho(left, right, bottom, top, zNear, zFar);
+            org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
         }
     }
 
@@ -491,7 +476,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glClear");
         } else {
-            GL11.glClear(mask);
+            org.lwjgl.opengl.GL11.glClear(mask);
         }
     }
 
@@ -499,7 +484,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glClearColor");
         } else {
-            GL11.glClearColor(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
         }
     }
 
@@ -507,7 +492,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glPushAttrib");
         } else {
-            GL11.glPushAttrib(mask);
+            org.lwjgl.opengl.GL11.glPushAttrib(mask);
         }
     }
 
@@ -515,7 +500,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glPopAttrib");
         } else {
-            GL11.glPopAttrib();
+            org.lwjgl.opengl.GL11.glPopAttrib();
         }
     }
 
@@ -523,7 +508,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glCallList");
         } else {
-            GL11.glCallList(list);
+            org.lwjgl.opengl.GL11.glCallList(list);
         }
     }
 
@@ -531,7 +516,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glGenLists");
         } else {
-            return GL11.glGenLists(range);
+            return org.lwjgl.opengl.GL11.glGenLists(range);
         }
     }
 
@@ -539,7 +524,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glNewList");
         } else {
-            GL11.glNewList(list, mode);
+            org.lwjgl.opengl.GL11.glNewList(list, mode);
         }
     }
 
@@ -547,7 +532,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glVertexPointer");
         } else {
-            GL11.glVertexPointer(size, stride, pointer);
+            org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
         }
     }
 
@@ -555,7 +540,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glVertexPointer");
         } else {
-            GL11.glVertexPointer(size, stride, pointer);
+            org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
         }
     }
 
@@ -563,7 +548,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glVertexPointer");
         } else {
-            GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
+            org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
         }
     }
 
@@ -571,7 +556,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glDeleteLists");
         } else {
-            GL11.glDeleteLists(list, range);
+            org.lwjgl.opengl.GL11.glDeleteLists(list, range);
         }
     }
 
@@ -579,7 +564,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glInterleavedArrays");
         } else {
-            GL11.glInterleavedArrays(format, stride, pointer);
+            org.lwjgl.opengl.GL11.glInterleavedArrays(format, stride, pointer);
         }
     }
 
@@ -587,7 +572,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glArrayElement");
         } else {
-            GL11.glArrayElement(i);
+            org.lwjgl.opengl.GL11.glArrayElement(i);
         }
     }
 
@@ -595,7 +580,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glDrawElements");
         } else {
-            GL11.glDrawElements(mode, indices);
+            org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
         }
     }
 
@@ -603,7 +588,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glTranslated");
         } else {
-            GL11.glTranslated(x, y, z);
+            org.lwjgl.opengl.GL11.glTranslated(x, y, z);
         }
     }
 
@@ -611,7 +596,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glEnableClientState");
         } else {
-            GL11.glEnableClientState(cap);
+            org.lwjgl.opengl.GL11.glEnableClientState(cap);
         }
     }
 
@@ -619,7 +604,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glMultMatrix");
         } else {
-            GL11.glMultMatrix(m);
+            org.lwjgl.opengl.GL11.glMultMatrix(m);
         }
     }
 
@@ -627,7 +612,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glEndList");
         } else {
-            GL11.glEndList();
+            org.lwjgl.opengl.GL11.glEndList();
         }
     }
 
@@ -635,7 +620,7 @@ public class GLBridge {
         if (intercept) {
             throw new UnsupportedOperationException("glDisableClientState");
         } else {
-            GL11.glDisableClientState(cap);
+            org.lwjgl.opengl.GL11.glDisableClientState(cap);
         }
     }
 }

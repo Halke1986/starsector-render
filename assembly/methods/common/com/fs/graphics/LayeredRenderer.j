@@ -156,70 +156,35 @@ L68:
 .end method
 
 .method public renderOnly : (Ljava/lang/Object;Ljava/lang/Enum;)V
-    .code stack 3 locals 6
-L0:     aload_2
-L1:     checkcast com/fs/starfarer/api/combat/CombatEngineLayers
-L4:     invokestatic Method com/genir/graphics/Renderer beginLayer (Lcom/fs/starfarer/api/combat/CombatEngineLayers;)V
-L7:     aload_0
-L8:     aload_2
-L9:     invokevirtual Method com/fs/graphics/LayeredRenderer getList (Ljava/lang/Enum;)Ljava/util/List;
-L12:    astore_3
-L13:    aload_3
-L14:    ifnonnull L18
-L17:    return
-
-        .stack append Object java/util/List
-L18:    aload_3
-L19:    invokeinterface InterfaceMethod java/util/List iterator ()Ljava/util/Iterator; 1
-L24:    astore 4
-
-        .stack append Object java/util/Iterator
-L26:    aload 4
-L28:    invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1
-L33:    ifeq L68
-L36:    aload 4
-L38:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
-L43:    checkcast com/fs/graphics/LayeredRenderable
-L46:    astore 5
-L48:    aload 5
-L50:    invokestatic Method com/genir/graphics/Renderer beginEntity (Ljava/lang/Object;)V
-L53:    aload 5
-L55:    aload_2
-L56:    aload_1
-L57:    invokeinterface InterfaceMethod com/fs/graphics/LayeredRenderable render (Ljava/lang/Enum;Ljava/lang/Object;)V 3
-L62:    invokestatic Method com/genir/graphics/Renderer commitEntity ()V
-L65:    goto L26
-
-        .stack chop 1
-L68:    invokestatic Method com/genir/graphics/Renderer commitLayer ()V
-L71:    return
-L72:
+    .code stack 3 locals 4
+L0:     aload_0
+L1:     aload_2
+L2:     invokevirtual Method com/fs/graphics/LayeredRenderer getList (Ljava/lang/Enum;)Ljava/util/List;
+L5:     astore_3
+L6:     aload_1
+L7:     checkcast com/fs/starfarer/combat/CombatViewport
+L10:    aload_2
+L11:    checkcast com/fs/starfarer/api/combat/CombatEngineLayers
+L14:    aload_3
+L15:    invokestatic Method com/genir/renderer/overrides/LayeredRenderer renderOnly (Lcom/fs/starfarer/combat/CombatViewport;Lcom/fs/starfarer/api/combat/CombatEngineLayers;Ljava/util/List;)V
+L18:    return
+L19:
         .linenumbertable
             L0 34
-            L7 36
-            L13 37
-            L17 38
-            L18 41
-            L48 42
-            L53 43
-            L62 44
-            L65 45
-            L68 47
-            L71 48
+            L6 36
+            L18 40
         .end linenumbertable
         .localvariabletable
-            5 is entity Lcom/fs/graphics/LayeredRenderable; from L48 to L65
-            0 is this Lcom/fs/graphics/LayeredRenderer; from L0 to L72
-            1 is viewport Ljava/lang/Object; from L0 to L72
-            2 is layer Ljava/lang/Enum; from L0 to L72
-            3 is entities Ljava/util/List; from L13 to L72
+            0 is this Lcom/fs/graphics/LayeredRenderer; from L0 to L19
+            1 is viewport Ljava/lang/Object; from L0 to L19
+            2 is layer Ljava/lang/Enum; from L0 to L19
+            3 is entities Ljava/util/List; from L6 to L19
         .end localvariabletable
         .localvariabletypetable
-            5 is entity Lcom/fs/graphics/LayeredRenderable<TT;TV;>; from L48 to L65
-            0 is this Lcom/fs/graphics/LayeredRenderer<TT;TV;>; from L0 to L72
-            1 is viewport TV; from L0 to L72
-            2 is layer TT; from L0 to L72
-            3 is entities Ljava/util/List<Lcom/fs/graphics/LayeredRenderable<TT;TV;>;>; from L13 to L72
+            0 is this Lcom/fs/graphics/LayeredRenderer<TT;TV;>; from L0 to L19
+            1 is viewport TV; from L0 to L19
+            2 is layer TT; from L0 to L19
+            3 is entities Ljava/util/List<Lcom/fs/graphics/LayeredRenderable<TT;TV;>;>; from L6 to L19
         .end localvariabletypetable
     .end code
     .signature (TV;TT;)V

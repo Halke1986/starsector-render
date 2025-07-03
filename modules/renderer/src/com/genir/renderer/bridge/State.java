@@ -1,15 +1,17 @@
-package com.genir.graphics;
+package com.genir.renderer.bridge;
 
-import com.genir.graphics.Renderer.Quad;
-import com.genir.graphics.Renderer.QuadContext;
+import com.genir.renderer.bridge.Renderer.Quad;
+import com.genir.renderer.bridge.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
 import java.util.Stack;
 
-import static com.genir.graphics.Debug.asert;
+import static com.genir.renderer.Debug.asert;
 
-public class GLState {
+public class State {
+    private final Renderer renderer;
+
     // Key.
     private int textureTarget;
     private int textureID;
@@ -27,6 +29,10 @@ public class GLState {
 
     private Stack<Matrix3f> matrixStack;
     private Matrix3f modelMatrix;
+
+    public State(Renderer renderer) {
+        this.renderer = renderer;
+    }
 
     public void init() {
         textureTarget = -1;
@@ -201,11 +207,8 @@ public class GLState {
         asert(vertexes != null);
 
         QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor);
-        Quad q = new Quad();
-        q.color = color;
-        q.texCoord = texCoord;
-        q.vertexes = vertexes;
+        Quad q = new Quad(color, texCoord, vertexes);
 
-        Renderer.addQuad(ctx, q);
+        renderer.addQuad(ctx, q);
     }
 }

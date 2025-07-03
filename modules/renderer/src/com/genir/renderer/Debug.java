@@ -1,5 +1,6 @@
-package com.genir.graphics;
+package com.genir.renderer;
 
+import com.genir.renderer.bridge.Renderer;
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -61,6 +62,6 @@ public class Debug {
     }
 
     public static Logger logger() {
-        return Logger.getLogger(com.genir.graphics.Renderer.class);
+        return Logger.getLogger(Renderer.class);
     }
 }
