@@ -8,6 +8,26 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class Debug {
+    public static void checkStack() {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        boolean found = false;
+
+        for (StackTraceElement element : stackTraceElements) {
+            if (element.getClassName().contains("DynamicParticleGroup")) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            for (StackTraceElement element : stackTraceElements) {
+                logger().info(element.getClassName());
+            }
+            logger().info(" ");
+        }
+    }
+
     public static void asert(boolean val) {
         if (!val) {
             throw new AssertionError("false");
