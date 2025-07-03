@@ -7,8 +7,6 @@ import com.genir.renderer.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
-import java.util.Stack;
-
 public class State {
     private final Renderer renderer;
 
@@ -28,18 +26,21 @@ public class State {
     private int texNum;
     private int vertexNum;
 
-    private final Stack<Matrix3f> matrixStack = new Stack<>();
-    private Matrix3f modelMatrix = Default.modelMatrix();
+    // Model matrix.
+    private final Matrix3f[] matrixStack = new Matrix3f[8];
+    private int matrixIdx = 0;
 
     public State(Renderer renderer) {
         this.renderer = renderer;
+
+        matrixStack[0] = Default.modelMatrix();
     }
 
     public void assertState() {
         // assert no model matrix leak.
-        assert (matrixStack.isEmpty());
+        assert (matrixIdx == 0);
 
-        Matrix3f m = modelMatrix;
+        Matrix3f m = matrixStack[matrixIdx];
         assert (m.m00 == 1f);
         assert (m.m01 == 0f);
         assert (m.m02 == 0.01f);
@@ -82,11 +83,17 @@ public class State {
     }
 
     public void glPushMatrix() {
-        matrixStack.push(Matrix3f.load(modelMatrix, null));
+        int next = matrixIdx + 1;
+        if (matrixStack[next] == null) {
+            matrixStack[next] = new Matrix3f();
+        }
+
+        Matrix3f.load(matrixStack[matrixIdx], matrixStack[next]);
+        matrixIdx++;
     }
 
     public void glPopMatrix() {
-        modelMatrix = matrixStack.pop();
+        matrixIdx--;
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -103,7 +110,7 @@ public class State {
         t.m12 = y;
         t.m22 = 1f;
 
-        Matrix3f m = modelMatrix;
+        Matrix3f m = matrixStack[matrixIdx];
         Matrix3f.mul(t, m, m);
     }
 
@@ -123,7 +130,7 @@ public class State {
         r.m11 = cos;
         r.m22 = 1f;
 
-        Matrix3f m = modelMatrix;
+        Matrix3f m = matrixStack[matrixIdx];
         Matrix3f.mul(r, m, m);
     }
 
@@ -149,7 +156,7 @@ public class State {
             beginQuad();
         }
 
-        Matrix3f m = modelMatrix;
+        Matrix3f m = matrixStack[matrixIdx];
 
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;
