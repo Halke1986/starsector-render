@@ -5,8 +5,10 @@ import com.genir.renderer.Renderer;
 
 public class Bridge {
     static boolean intercept = false;
+    static boolean layerActive = false;
 
     static Renderer renderer = new Renderer();
+    static ModelView modelView = new ModelView();
     static State state;
 
     public static void beginLayer(CombatEngineLayers layer) {
@@ -14,25 +16,26 @@ public class Bridge {
     }
 
     public static void beginLayer(String layer) {
-        renderer.beginLayer(layer);
+        layerActive = true;
+        renderer.beginLayer();
     }
 
     public static void commitLayer() {
         renderer.commitLayer();
+        layerActive = false;
     }
 
     public static void startIntercept() {
-        state = new State(renderer);
-        intercept = true;
+        if (layerActive) {
+            state = new State(renderer, modelView);
+            intercept = true;
+        }
     }
 
     public static void endIntercept() {
-        if (!intercept) {
-            return;
+        if (intercept) {
+            intercept = false;
+            state = null;
         }
-
-        intercept = false;
-        state.assertState();
-        state = null;
     }
 }

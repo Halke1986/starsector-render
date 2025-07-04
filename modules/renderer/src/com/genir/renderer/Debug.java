@@ -28,6 +28,15 @@ public class Debug {
         }
     }
 
+    public static void logStack() {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        for (StackTraceElement element : stackTraceElements) {
+            logger().info(element.getClassName());
+        }
+        logger().info(" ");
+    }
+
     public static void logMatrix(int pname) {
         // 1) Allocate a direct FloatBuffer for 16 floats (once, e.g. static field)
         FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);

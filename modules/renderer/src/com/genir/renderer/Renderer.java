@@ -1,6 +1,5 @@
 package com.genir.renderer;
 
-import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.GL14;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -20,19 +19,11 @@ public class Renderer {
     private FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(0);
     private ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
 
-    private String currentLayer = "";
-
-    public void beginLayer(CombatEngineLayers layer) {
-        beginLayer(layer.name());
-    }
-
-    public void beginLayer(String layer) {
-        currentLayer = layer;
+    public void beginLayer() {
         buffer = new HashMap<>();
     }
 
     public void commitLayer() {
-        currentLayer = "";
         renderLayer();
     }
 

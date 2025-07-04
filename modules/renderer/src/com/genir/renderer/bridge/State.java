@@ -27,38 +27,11 @@ public class State {
     private int vertexNum;
 
     // Model matrix.
-    private final Matrix3f[] matrixStack = new Matrix3f[8];
-    private int matrixIdx = 0;
+    private final ModelView matrixStack;
 
-    public State(Renderer renderer) {
+    public State(Renderer renderer, ModelView matrixStack) {
         this.renderer = renderer;
-
-        matrixStack[0] = Default.modelMatrix();
-    }
-
-    public void assertState() {
-        // assert no model matrix leak.
-        assert (matrixIdx == 0);
-
-        Matrix3f m = matrixStack[matrixIdx];
-        assert (m.m00 == 1f);
-        assert (m.m01 == 0f);
-        assert (m.m02 == 0.01f);
-        assert (m.m10 == 0f);
-        assert (m.m11 == 1f);
-        assert (m.m12 == 0.01f);
-        assert (m.m20 == 0f);
-        assert (m.m21 == 0f);
-        assert (m.m22 == 1f);
-    }
-
-    private Matrix3f defaultModelMatrix() {
-        Matrix3f defaultMatrix = new Matrix3f();
-        defaultMatrix.setIdentity();
-        defaultMatrix.m02 = 0.01f;
-        defaultMatrix.m12 = 0.01f;
-
-        return defaultMatrix;
+        this.matrixStack = matrixStack;
     }
 
     public void glEnable(int cap) {
@@ -82,54 +55,8 @@ public class State {
         blendEquation = mode;
     }
 
-    public void glPushMatrix() {
-        int next = matrixIdx + 1;
-        if (matrixStack[next] == null) {
-            matrixStack[next] = new Matrix3f();
-        }
-
-        Matrix3f.load(matrixStack[matrixIdx], matrixStack[next]);
-        matrixIdx++;
-    }
-
-    public void glPopMatrix() {
-        matrixIdx--;
-    }
-
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         color = new byte[]{red, green, blue, alpha};
-    }
-
-    public void glTranslatef(float x, float y, float z) {
-        assert (z == 0f);
-
-        Matrix3f m = matrixStack[matrixIdx];
-
-        m.m02 = x * m.m00 + y * m.m01 + m.m02;
-        m.m12 = x * m.m10 + y * m.m11 + m.m12;
-        m.m22 = x * m.m20 + y * m.m21 + m.m22;
-    }
-
-    public void glRotatef(float angle, float x, float y, float z) {
-        assert (x == 0f);
-        assert (y == 0f);
-        assert (z == 1f);
-
-        float a = angle * (float) (Math.PI / 180);
-        float cos = (float) Math.cos(a);
-        float sin = (float) Math.sin(a);
-
-        Matrix3f m = matrixStack[matrixIdx];
-
-        float mm00 = m.m00;
-        float mm10 = m.m10;
-        float mm20 = m.m20;
-        m.m00 = cos * m.m00 + sin * m.m01;
-        m.m01 = -sin * mm00 + cos * m.m01;
-        m.m10 = cos * m.m10 + sin * m.m11;
-        m.m11 = -sin * mm10 + cos * m.m11;
-        m.m20 = cos * m.m20 + sin * m.m21;
-        m.m21 = -sin * mm20 + cos * m.m21;
     }
 
     public void glTexCoord2f(float s, float t) {
@@ -154,7 +81,7 @@ public class State {
             beginQuad();
         }
 
-        Matrix3f m = matrixStack[matrixIdx];
+        Matrix3f m = matrixStack.getMatrix();
 
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;

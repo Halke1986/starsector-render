@@ -4,10 +4,13 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.Bridge.intercept;
-import static com.genir.renderer.bridge.Bridge.state;
+import static com.genir.renderer.Debug.logStack;
+import static com.genir.renderer.Debug.logger;
+import static com.genir.renderer.bridge.Bridge.*;
 
 public class GL11 {
+    private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
+
     public static void glDisable(int cap) {
         if (intercept) {
             state.glDisable(cap);
@@ -64,27 +67,61 @@ public class GL11 {
         }
     }
 
+    public static void glMatrixMode(int mode) {
+        matrixMode = mode;
+
+        if (!intercept) {
+            org.lwjgl.opengl.GL11.glMatrixMode(mode);
+        }
+    }
+
     public static void glPushMatrix() {
-        if (intercept) {
-            state.glPushMatrix();
-        } else {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glPushMatrix();
+        }
+
+        if (!intercept) {
             org.lwjgl.opengl.GL11.glPushMatrix();
         }
     }
 
     public static void glPopMatrix() {
-        if (intercept) {
-            state.glPopMatrix();
-        } else {
+        if (!intercept) {
             org.lwjgl.opengl.GL11.glPopMatrix();
+        }
+
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glPopMatrix();
         }
     }
 
     public static void glTranslatef(float x, float y, float z) {
-        if (intercept) {
-            state.glTranslatef(x, y, z);
-        } else {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glTranslatef(x, y, z);
+        }
+
+        if (!intercept) {
             org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
+        }
+    }
+
+    public static void glScalef(float x, float y, float z) {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glScalef(x, y, z);
+        }
+
+        if (!intercept) {
+            org.lwjgl.opengl.GL11.glScalef(x, y, z);
+        }
+    }
+
+    public static void glRotatef(float angle, float x, float y, float z) {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glRotatef(angle, x, y, z);
+        }
+
+        if (!intercept) {
+            org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
         }
     }
 
@@ -96,27 +133,11 @@ public class GL11 {
         }
     }
 
-    public static void glScalef(float x, float y, float z) {
-        if (intercept) {
-            throw new UnsupportedOperationException("glScalef");
-        } else {
-            org.lwjgl.opengl.GL11.glScalef(x, y, z);
-        }
-    }
-
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         if (intercept) {
             throw new UnsupportedOperationException("glColorMask");
         } else {
             org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
-        }
-    }
-
-    public static void glRotatef(float angle, float x, float y, float z) {
-        if (intercept) {
-            state.glRotatef(angle, x, y, z);
-        } else {
-            org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
         }
     }
 
@@ -349,14 +370,6 @@ public class GL11 {
             throw new UnsupportedOperationException("glColor4f");
         } else {
             org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
-        }
-    }
-
-    public static void glMatrixMode(int mode) {
-        if (intercept) {
-            throw new UnsupportedOperationException("glMatrixMode");
-        } else {
-            org.lwjgl.opengl.GL11.glMatrixMode(mode);
         }
     }
 
