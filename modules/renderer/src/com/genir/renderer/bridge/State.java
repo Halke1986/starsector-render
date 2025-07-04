@@ -121,12 +121,15 @@ public class State {
 
         Matrix3f m = matrixStack[matrixIdx];
 
+        float mm00 = m.m00;
+        float mm10 = m.m10;
+        float mm20 = m.m20;
         m.m00 = cos * m.m00 + sin * m.m01;
-        m.m01 = -sin * m.m00 + cos * m.m01;
+        m.m01 = -sin * mm00 + cos * m.m01;
         m.m10 = cos * m.m10 + sin * m.m11;
-        m.m11 = -sin * m.m10 + cos * m.m11;
+        m.m11 = -sin * mm10 + cos * m.m11;
         m.m20 = cos * m.m20 + sin * m.m21;
-        m.m21 = -sin * m.m20 + cos * m.m21;
+        m.m21 = -sin * mm20 + cos * m.m21;
     }
 
     public void glTexCoord2f(float s, float t) {
