@@ -4,32 +4,26 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.Debug.logStack;
-import static com.genir.renderer.Debug.logger;
-import static com.genir.renderer.bridge.Bridge.*;
+import static com.genir.renderer.bridge.State.*;
 
 public class GL11 {
     private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
 
     public static void glDisable(int cap) {
-        if (intercept) {
-            state.glDisable(cap);
-        } else {
+        if (!intercept) {
             org.lwjgl.opengl.GL11.glDisable(cap);
         }
     }
 
     public static void glEnable(int cap) {
-        if (intercept) {
-            state.glEnable(cap);
-        } else {
+        if (!intercept) {
             org.lwjgl.opengl.GL11.glEnable(cap);
         }
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
         if (intercept) {
-            state.glBlendFunc(sfactor, dfactor);
+            quads.glBlendFunc(sfactor, dfactor);
         } else {
             org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
         }
@@ -37,7 +31,7 @@ public class GL11 {
 
     public static void glBegin(int mode) {
         if (intercept) {
-            state.glBegin(mode);
+            quads.glBegin(mode);
         } else {
             org.lwjgl.opengl.GL11.glBegin(mode);
         }
@@ -45,7 +39,7 @@ public class GL11 {
 
     public static void glEnd() {
         if (intercept) {
-            state.glEnd();
+            quads.glEnd();
         } else {
             org.lwjgl.opengl.GL11.glEnd();
         }
@@ -61,7 +55,7 @@ public class GL11 {
 
     public static void glVertex2f(float x, float y) {
         if (intercept) {
-            state.glVertex2f(x, y);
+            quads.glVertex2f(x, y);
         } else {
             org.lwjgl.opengl.GL11.glVertex2f(x, y);
         }
@@ -127,7 +121,7 @@ public class GL11 {
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         if (intercept) {
-            state.glColor4ub(red, green, blue, alpha);
+            quads.glColor4ub(red, green, blue, alpha);
         } else {
             org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
         }
@@ -143,7 +137,7 @@ public class GL11 {
 
     public static void glTexCoord2f(float s, float t) {
         if (intercept) {
-            state.glTexCoord2f(s, t);
+            quads.glTexCoord2f(s, t);
         } else {
             org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
         }
@@ -391,7 +385,7 @@ public class GL11 {
 
     public static void glBindTexture(int target, int texture) {
         if (intercept) {
-            state.glBindTexture(target, texture);
+            quads.glBindTexture(target, texture);
         } else {
             org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
