@@ -7,6 +7,8 @@ import com.genir.renderer.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
+import static com.genir.renderer.Debug.asert;
+
 public class Quads {
     private final Renderer renderer;
 
@@ -53,7 +55,7 @@ public class Quads {
     }
 
     public void glTexCoord2f(float s, float t) {
-        assert (mode == GL11.GL_QUADS);
+        asert(mode != -1);
 
         if (texNum == 4) {
             commitQuad();
@@ -67,7 +69,7 @@ public class Quads {
     }
 
     public void glVertex2f(float x, float y) {
-        assert (mode == GL11.GL_QUADS);
+        asert(mode != -1);
 
         if (vertexNum == 4) {
             commitQuad();
@@ -86,7 +88,7 @@ public class Quads {
     }
 
     public void glBegin(int mode) {
-        assert (mode == GL11.GL_QUADS);
+        asert(mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
 
         this.mode = mode;
 
@@ -94,7 +96,7 @@ public class Quads {
     }
 
     public void glEnd() {
-        assert (mode == GL11.GL_QUADS);
+        asert(mode != -1);
 
         if (vertexNum == 4) {
             commitQuad();
@@ -112,17 +114,17 @@ public class Quads {
     }
 
     private void commitQuad() {
-        assert (textureTarget != -1);
-        assert (textureID != -1);
-        assert (blendSfactor != -1);
-        assert (blendDfactor != -1);
+        asert(textureTarget != -1);
+        asert(textureID != -1);
+        asert(blendSfactor != -1);
+        asert(blendDfactor != -1);
 
-        assert (texNum == 4);
-        assert (vertexNum == 4);
+        asert(texNum == 4);
+        asert(vertexNum == 4);
 
-        assert (color != null);
-        assert (texCoord != null);
-        assert (vertexes != null);
+        asert(color != null);
+        asert(texCoord != null);
+        asert(vertexes != null);
 
         QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
         Quad q = new Quad(color, texCoord, vertexes);

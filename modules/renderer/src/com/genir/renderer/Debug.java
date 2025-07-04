@@ -3,6 +3,7 @@ package com.genir.renderer;
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix3f;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -35,6 +36,35 @@ public class Debug {
             logger().info(element.getClassName());
         }
         logger().info(" ");
+    }
+
+    public static Matrix3f loadModelMatrix() {
+        // 1) Allocate a direct FloatBuffer for 16 floats (once, e.g. static field)
+        FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);
+
+        // 2) Ask OpenGL to write the current projection matrix into it
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, projBuf);
+
+        // 3) Flip or rewind so you can read from the start
+        projBuf.rewind();
+
+        // 4) Copy into a Java array for easy indexing
+        float[] g = new float[16];
+        projBuf.get(g);
+
+        Matrix3f m = new Matrix3f();
+
+        m.m00 = g[0];
+        m.m01 = g[4];
+        m.m02 = g[12];
+        m.m10 = g[1];
+        m.m11 = g[5];
+        m.m12 = g[13];
+        m.m20 = g[3];
+        m.m21 = g[7];
+        m.m22 = g[15];
+
+        return m;
     }
 
     public static void logMatrix(int pname) {
@@ -81,6 +111,12 @@ public class Debug {
         int height = vp.get();   // viewport height
 
         logger().info("Viewport = " + x + " " + y + " " + width + " " + height);
+    }
+
+    public static void asert(boolean val) {
+        if (!val) {
+            throw new AssertionError("false");
+        }
     }
 
     public static Logger logger() {
