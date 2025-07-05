@@ -400,6 +400,14 @@ public class GL11 {
         }
     }
 
+    public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
+        if (interceptor != null) {
+            throw new UnsupportedOperationException("glTexSubImage2D");
+        } else {
+            org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+        }
+    }
+
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {
         if (interceptor != null) {
             throw new UnsupportedOperationException("glTexSubImage2D");
