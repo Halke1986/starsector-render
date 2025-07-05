@@ -21,6 +21,7 @@ public class Interceptor {
     // State.
     private int mode;
     private final ModelView matrixStack;
+    private final byte[] color = new byte[4];
 
     // Quad.
     private final byte[] colors = new byte[16];
@@ -49,22 +50,10 @@ public class Interceptor {
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        colors[0] = red;
-        colors[1] = green;
-        colors[2] = blue;
-        colors[3] = alpha;
-        colors[4] = red;
-        colors[5] = green;
-        colors[6] = blue;
-        colors[7] = alpha;
-        colors[8] = red;
-        colors[9] = green;
-        colors[10] = blue;
-        colors[11] = alpha;
-        colors[12] = red;
-        colors[13] = green;
-        colors[14] = blue;
-        colors[15] = alpha;
+        color[0] = red;
+        color[1] = green;
+        color[2] = blue;
+        color[3] = alpha;
     }
 
     public void glBegin(int mode) {
@@ -103,11 +92,17 @@ public class Interceptor {
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;
 
-        addVertex(u, v, vertexNum, vertices);
+        int idx = addVertex(u, v, vertexNum, vertices);
         vertexNum++;
+
+        // Define vertex color.
+        colors[idx * 4] = color[0];
+        colors[idx * 4 + 1] = color[1];
+        colors[idx * 4 + 2] = color[2];
+        colors[idx * 4 + 3] = color[3];
     }
 
-    private void addVertex(float x, float y, int vertexNum, float[] buffer) {
+    private int addVertex(float x, float y, int vertexNum, float[] buffer) {
         int idx = vertexNum;
 
         if (mode == GL11.GL_QUADS) {
@@ -116,7 +111,7 @@ public class Interceptor {
                 idx = 0;
             }
         } else { // GL_QUAD_STRIP
-            if (vertexNum >= 4 && vertexNum % 2 == 0) {
+            if (vertexNum == 4) {
                 commitStrip();
             }
 
@@ -127,6 +122,8 @@ public class Interceptor {
 
         buffer[idx * 2] = x;
         buffer[idx * 2 + 1] = y;
+
+        return idx;
     }
 
     private void commitQuad() {
@@ -177,6 +174,16 @@ public class Interceptor {
         v[1] = v[7];
         v[2] = v[4];
         v[3] = v[5];
+
+        byte[] c = colors;
+        c[0] = c[12];
+        c[1] = c[13];
+        c[2] = c[14];
+        c[3] = c[15];
+        c[4] = c[8];
+        c[5] = c[9];
+        c[6] = c[10];
+        c[7] = c[11];
 
         texNum = 2;
         vertexNum = 2;

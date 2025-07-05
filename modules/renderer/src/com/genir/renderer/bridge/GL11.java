@@ -46,19 +46,20 @@ public class GL11 {
         }
     }
 
-    public static void glHint(int target, int mode) {
-        if (interceptor != null) {
-            throw new UnsupportedOperationException("glHint");
-        } else {
-            org.lwjgl.opengl.GL11.glHint(target, mode);
-        }
-    }
 
     public static void glVertex2f(float x, float y) {
         if (interceptor != null) {
             interceptor.glVertex2f(x, y);
         } else {
             org.lwjgl.opengl.GL11.glVertex2f(x, y);
+        }
+    }
+
+    public static void glTexCoord2f(float s, float t) {
+        if (interceptor != null) {
+            interceptor.glTexCoord2f(s, t);
+        } else {
+            org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
         }
     }
 
@@ -128,19 +129,19 @@ public class GL11 {
         }
     }
 
+    public static void glHint(int target, int mode) {
+        if (interceptor != null) {
+            throw new UnsupportedOperationException("glHint");
+        } else {
+            org.lwjgl.opengl.GL11.glHint(target, mode);
+        }
+    }
+
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         if (interceptor != null) {
             throw new UnsupportedOperationException("glColorMask");
         } else {
             org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
-        }
-    }
-
-    public static void glTexCoord2f(float s, float t) {
-        if (interceptor != null) {
-            interceptor.glTexCoord2f(s, t);
-        } else {
-            org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
         }
     }
 
