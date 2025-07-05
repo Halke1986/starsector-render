@@ -9,7 +9,7 @@ import org.lwjgl.util.vector.Matrix3f;
 
 import static com.genir.renderer.Debug.asert;
 
-public class Quads {
+public class Interceptor {
     private final Renderer renderer;
 
     // Key.
@@ -31,7 +31,7 @@ public class Quads {
     // Model matrix.
     private final ModelView matrixStack;
 
-    public Quads(Renderer renderer, ModelView matrixStack) {
+    public Interceptor(Renderer renderer, ModelView matrixStack) {
         this.renderer = renderer;
         this.matrixStack = matrixStack;
     }

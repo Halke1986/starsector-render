@@ -4,12 +4,11 @@ import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.Renderer;
 
 public class State {
-    static boolean intercept = false;
     static boolean layerActive = false;
 
     static Renderer renderer = new Renderer();
     static ModelView modelView = new ModelView();
-    static Quads quads;
+    static Interceptor interceptor;
 
     public static void beginLayer(CombatEngineLayers layer) {
         beginLayer(layer.name());
@@ -27,15 +26,11 @@ public class State {
 
     public static void beginIntercept() {
         if (layerActive) {
-            quads = new Quads(renderer, modelView);
-            intercept = true;
+            interceptor = new Interceptor(renderer, modelView);
         }
     }
 
     public static void endIntercept() {
-        if (intercept) {
-            intercept = false;
-            quads = null;
-        }
+        interceptor = null;
     }
 }

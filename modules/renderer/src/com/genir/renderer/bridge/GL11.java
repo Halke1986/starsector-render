@@ -4,49 +4,50 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.State.*;
+import static com.genir.renderer.bridge.State.interceptor;
+import static com.genir.renderer.bridge.State.modelView;
 
 public class GL11 {
     private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
 
     public static void glDisable(int cap) {
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glDisable(cap);
         }
     }
 
     public static void glEnable(int cap) {
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glEnable(cap);
         }
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
-        if (intercept) {
-            quads.glBlendFunc(sfactor, dfactor);
+        if (interceptor != null) {
+            interceptor.glBlendFunc(sfactor, dfactor);
         } else {
             org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
         }
     }
 
     public static void glBegin(int mode) {
-        if (intercept) {
-            quads.glBegin(mode);
+        if (interceptor != null) {
+            interceptor.glBegin(mode);
         } else {
             org.lwjgl.opengl.GL11.glBegin(mode);
         }
     }
 
     public static void glEnd() {
-        if (intercept) {
-            quads.glEnd();
+        if (interceptor != null) {
+            interceptor.glEnd();
         } else {
             org.lwjgl.opengl.GL11.glEnd();
         }
     }
 
     public static void glHint(int target, int mode) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glHint");
         } else {
             org.lwjgl.opengl.GL11.glHint(target, mode);
@@ -54,8 +55,8 @@ public class GL11 {
     }
 
     public static void glVertex2f(float x, float y) {
-        if (intercept) {
-            quads.glVertex2f(x, y);
+        if (interceptor != null) {
+            interceptor.glVertex2f(x, y);
         } else {
             org.lwjgl.opengl.GL11.glVertex2f(x, y);
         }
@@ -64,7 +65,7 @@ public class GL11 {
     public static void glMatrixMode(int mode) {
         matrixMode = mode;
 
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glMatrixMode(mode);
         }
     }
@@ -74,13 +75,13 @@ public class GL11 {
             modelView.glPushMatrix();
         }
 
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glPushMatrix();
         }
     }
 
     public static void glPopMatrix() {
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glPopMatrix();
         }
 
@@ -94,7 +95,7 @@ public class GL11 {
             modelView.glTranslatef(x, y, z);
         }
 
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
         }
     }
@@ -104,7 +105,7 @@ public class GL11 {
             modelView.glScalef(x, y, z);
         }
 
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glScalef(x, y, z);
         }
     }
@@ -114,21 +115,21 @@ public class GL11 {
             modelView.glRotatef(angle, x, y, z);
         }
 
-        if (!intercept) {
+        if (interceptor == null) {
             org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
         }
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        if (intercept) {
-            quads.glColor4ub(red, green, blue, alpha);
+        if (interceptor != null) {
+            interceptor.glColor4ub(red, green, blue, alpha);
         } else {
             org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
         }
     }
 
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColorMask");
         } else {
             org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
@@ -136,15 +137,15 @@ public class GL11 {
     }
 
     public static void glTexCoord2f(float s, float t) {
-        if (intercept) {
-            quads.glTexCoord2f(s, t);
+        if (interceptor != null) {
+            interceptor.glTexCoord2f(s, t);
         } else {
             org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
         }
     }
 
     public static void glLineWidth(float width) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glLineWidth");
         } else {
             org.lwjgl.opengl.GL11.glLineWidth(width);
@@ -152,7 +153,7 @@ public class GL11 {
     }
 
     public static void glStencilFunc(int func, int ref, int mask) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glStencilFunc");
         } else {
             org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
@@ -160,7 +161,7 @@ public class GL11 {
     }
 
     public static void glDeleteTextures(IntBuffer textures) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glDeleteTextures");
         } else {
             org.lwjgl.opengl.GL11.glDeleteTextures(textures);
@@ -168,7 +169,7 @@ public class GL11 {
     }
 
     public static void glDeleteTextures(int texture) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glDeleteTextures");
         } else {
             org.lwjgl.opengl.GL11.glDeleteTextures(texture);
@@ -176,7 +177,7 @@ public class GL11 {
     }
 
     public static void glPolygonMode(int face, int mode) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glPolygonMode");
         } else {
             org.lwjgl.opengl.GL11.glPolygonMode(face, mode);
@@ -184,7 +185,7 @@ public class GL11 {
     }
 
     public static void glGetInteger(int pname, IntBuffer params) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glGetInteger");
         } else {
             org.lwjgl.opengl.GL11.glGetInteger(pname, params);
@@ -192,7 +193,7 @@ public class GL11 {
     }
 
     public static int glGetInteger(int pname) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glGetInteger");
         } else {
             return org.lwjgl.opengl.GL11.glGetInteger(pname);
@@ -200,7 +201,7 @@ public class GL11 {
     }
 
     public static void glViewport(int x, int y, int width, int height) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glViewport");
         } else {
             org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
@@ -208,7 +209,7 @@ public class GL11 {
     }
 
     public static String glGetString(int name) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glGetString");
         } else {
             return org.lwjgl.opengl.GL11.glGetString(name);
@@ -216,7 +217,7 @@ public class GL11 {
     }
 
     public static void glFlush() {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glFlush");
         } else {
             org.lwjgl.opengl.GL11.glFlush();
@@ -224,7 +225,7 @@ public class GL11 {
     }
 
     public static void glFinish() {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glFinish");
         } else {
             org.lwjgl.opengl.GL11.glFinish();
@@ -232,7 +233,7 @@ public class GL11 {
     }
 
     public static void glScissor(int x, int y, int width, int height) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glScissor");
         } else {
             org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
@@ -240,7 +241,7 @@ public class GL11 {
     }
 
     public static void glStencilOp(int fail, int zfail, int zpass) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glStencilOp");
         } else {
             org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
@@ -248,7 +249,7 @@ public class GL11 {
     }
 
     public static void glAlphaFunc(int func, float ref) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glAlphaFunc");
         } else {
             org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
@@ -256,7 +257,7 @@ public class GL11 {
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glReadPixels");
         } else {
             org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
@@ -264,7 +265,7 @@ public class GL11 {
     }
 
     public static void glGenTextures(IntBuffer textures) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glGenTextures");
         } else {
             org.lwjgl.opengl.GL11.glGenTextures(textures);
@@ -272,7 +273,7 @@ public class GL11 {
     }
 
     public static void glTexParameteri(int target, int pname, int param) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTexParameteri");
         } else {
             org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
@@ -280,7 +281,7 @@ public class GL11 {
     }
 
     public static void glPointSize(float size) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glPointSize");
         } else {
             org.lwjgl.opengl.GL11.glPointSize(size);
@@ -288,7 +289,7 @@ public class GL11 {
     }
 
     public static void glShadeModel(int mode) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glShadeModel");
         } else {
             org.lwjgl.opengl.GL11.glShadeModel(mode);
@@ -296,7 +297,7 @@ public class GL11 {
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glLight");
         } else {
             org.lwjgl.opengl.GL11.glLight(light, pname, params);
@@ -304,7 +305,7 @@ public class GL11 {
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glMaterial");
         } else {
             org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
@@ -312,7 +313,7 @@ public class GL11 {
     }
 
     public static void glMateriali(int face, int pname, int param) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glMateriali");
         } else {
             org.lwjgl.opengl.GL11.glMateriali(face, pname, param);
@@ -320,7 +321,7 @@ public class GL11 {
     }
 
     public static void glColor3ub(byte red, byte green, byte blue) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColor3ub");
         } else {
             org.lwjgl.opengl.GL11.glColor3ub(red, green, blue);
@@ -328,7 +329,7 @@ public class GL11 {
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glNormal3f");
         } else {
             org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
@@ -336,7 +337,7 @@ public class GL11 {
     }
 
     public static void glVertex3d(double x, double y, double z) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glVertex3d");
         } else {
             org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
@@ -344,7 +345,7 @@ public class GL11 {
     }
 
     public static void glColor3d(double red, double green, double blue) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColor3d");
         } else {
             org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
@@ -352,7 +353,7 @@ public class GL11 {
     }
 
     public static void glTexEnvf(int target, int pname, float param) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTexEnvf");
         } else {
             org.lwjgl.opengl.GL11.glTexEnvf(target, pname, param);
@@ -360,7 +361,7 @@ public class GL11 {
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColor4f");
         } else {
             org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
@@ -368,7 +369,7 @@ public class GL11 {
     }
 
     public static void glLoadIdentity() {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glLoadIdentity");
         } else {
             org.lwjgl.opengl.GL11.glLoadIdentity();
@@ -376,7 +377,7 @@ public class GL11 {
     }
 
     public static boolean glIsEnabled(int cap) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glIsEnabled");
         } else {
             return org.lwjgl.opengl.GL11.glIsEnabled(cap);
@@ -384,15 +385,15 @@ public class GL11 {
     }
 
     public static void glBindTexture(int target, int texture) {
-        if (intercept) {
-            quads.glBindTexture(target, texture);
+        if (interceptor != null) {
+            interceptor.glBindTexture(target, texture);
         } else {
             org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTexImage2D");
         } else {
             org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
@@ -400,7 +401,7 @@ public class GL11 {
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTexSubImage2D");
         } else {
             org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels_buffer_offset);
@@ -408,7 +409,7 @@ public class GL11 {
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTexCoordPointer");
         } else {
             org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer);
@@ -416,7 +417,7 @@ public class GL11 {
     }
 
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTexCoordPointer");
         } else {
             org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
@@ -424,7 +425,7 @@ public class GL11 {
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColorPointer");
         } else {
             org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer);
@@ -432,7 +433,7 @@ public class GL11 {
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColorPointer");
         } else {
             org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
@@ -440,7 +441,7 @@ public class GL11 {
     }
 
     public static void glVertex3f(float x, float y, float z) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glVertex3f");
         } else {
             org.lwjgl.opengl.GL11.glVertex3f(x, y, z);
@@ -448,7 +449,7 @@ public class GL11 {
     }
 
     public static void glColorMaterial(int face, int mode) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColorMaterial");
         } else {
             org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
@@ -456,7 +457,7 @@ public class GL11 {
     }
 
     public static void glColor3f(float red, float green, float blue) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glColor3f");
         } else {
             org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
@@ -464,7 +465,7 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glDrawArrays");
         } else {
             org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
@@ -472,7 +473,7 @@ public class GL11 {
     }
 
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glOrtho");
         } else {
             org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
@@ -480,7 +481,7 @@ public class GL11 {
     }
 
     public static void glClear(int mask) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glClear");
         } else {
             org.lwjgl.opengl.GL11.glClear(mask);
@@ -488,7 +489,7 @@ public class GL11 {
     }
 
     public static void glClearColor(float red, float green, float blue, float alpha) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glClearColor");
         } else {
             org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
@@ -496,7 +497,7 @@ public class GL11 {
     }
 
     public static void glPushAttrib(int mask) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glPushAttrib");
         } else {
             org.lwjgl.opengl.GL11.glPushAttrib(mask);
@@ -504,7 +505,7 @@ public class GL11 {
     }
 
     public static void glPopAttrib() {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glPopAttrib");
         } else {
             org.lwjgl.opengl.GL11.glPopAttrib();
@@ -512,7 +513,7 @@ public class GL11 {
     }
 
     public static void glCallList(int list) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glCallList");
         } else {
             org.lwjgl.opengl.GL11.glCallList(list);
@@ -520,7 +521,7 @@ public class GL11 {
     }
 
     public static int glGenLists(int range) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glGenLists");
         } else {
             return org.lwjgl.opengl.GL11.glGenLists(range);
@@ -528,7 +529,7 @@ public class GL11 {
     }
 
     public static void glNewList(int list, int mode) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glNewList");
         } else {
             org.lwjgl.opengl.GL11.glNewList(list, mode);
@@ -536,7 +537,7 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glVertexPointer");
         } else {
             org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
@@ -544,7 +545,7 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, IntBuffer pointer) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glVertexPointer");
         } else {
             org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
@@ -552,7 +553,7 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glVertexPointer");
         } else {
             org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
@@ -560,7 +561,7 @@ public class GL11 {
     }
 
     public static void glDeleteLists(int list, int range) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glDeleteLists");
         } else {
             org.lwjgl.opengl.GL11.glDeleteLists(list, range);
@@ -568,7 +569,7 @@ public class GL11 {
     }
 
     public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glInterleavedArrays");
         } else {
             org.lwjgl.opengl.GL11.glInterleavedArrays(format, stride, pointer);
@@ -576,7 +577,7 @@ public class GL11 {
     }
 
     public static void glArrayElement(int i) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glArrayElement");
         } else {
             org.lwjgl.opengl.GL11.glArrayElement(i);
@@ -584,7 +585,7 @@ public class GL11 {
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glDrawElements");
         } else {
             org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
@@ -592,7 +593,7 @@ public class GL11 {
     }
 
     public static void glTranslated(double x, double y, double z) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glTranslated");
         } else {
             org.lwjgl.opengl.GL11.glTranslated(x, y, z);
@@ -600,7 +601,7 @@ public class GL11 {
     }
 
     public static void glEnableClientState(int cap) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glEnableClientState");
         } else {
             org.lwjgl.opengl.GL11.glEnableClientState(cap);
@@ -608,7 +609,7 @@ public class GL11 {
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glMultMatrix");
         } else {
             org.lwjgl.opengl.GL11.glMultMatrix(m);
@@ -616,7 +617,7 @@ public class GL11 {
     }
 
     public static void glEndList() {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glEndList");
         } else {
             org.lwjgl.opengl.GL11.glEndList();
@@ -624,7 +625,7 @@ public class GL11 {
     }
 
     public static void glDisableClientState(int cap) {
-        if (intercept) {
+        if (interceptor != null) {
             throw new UnsupportedOperationException("glDisableClientState");
         } else {
             org.lwjgl.opengl.GL11.glDisableClientState(cap);
