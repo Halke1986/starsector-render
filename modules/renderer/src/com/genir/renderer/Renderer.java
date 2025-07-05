@@ -1,39 +1,26 @@
 package com.genir.renderer;
 
 import com.genir.renderer.bridge.GL14;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public class Renderer {
-    private Map<QuadContext, List<Quad>> buffer = new HashMap<>();
-
-    private int maxSprites = 0;
-    private FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(0);
-    private FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(0);
-    private ByteBuffer colorBuffer = BufferUtils.createByteBuffer(0);
+    private final Stack<QuadBuffer> quadsPool = new Stack<>();
+    private Map<QuadContext, QuadBuffer> buffer = new HashMap<>();
 
     public void beginLayer() {
+        for (Map.Entry<QuadContext, QuadBuffer> entry : buffer.entrySet()) {
+            QuadBuffer quads = entry.getValue();
+            quadsPool.push(quads);
+        }
+
         buffer = new HashMap<>();
     }
 
     public void commitLayer() {
-        renderLayer();
-    }
-
-    public void addQuad(QuadContext ctx, Quad q) {
-        List<Quad> quads = buffer.computeIfAbsent(ctx, k -> new LinkedList<>());
-
-        quads.add(q);
-    }
-
-    private void renderLayer() {
         if (buffer.isEmpty()) {
             return;
         }
@@ -44,40 +31,19 @@ public class Renderer {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
 
-        initBuffers();
-
-        for (Map.Entry<QuadContext, List<Quad>> entry : buffer.entrySet()) {
+        for (Map.Entry<QuadContext, QuadBuffer> entry : buffer.entrySet()) {
             QuadContext key = entry.getKey();
-            List<Quad> quads = entry.getValue();
+            QuadBuffer quads = entry.getValue();
 
             GL11.glBindTexture(key.textureTarget, key.textureID);
             GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
             GL14.glBlendEquation(key.blendEquation);
 
-            vertexBuffer.clear();
-            textureBuffer.clear();
-            colorBuffer.clear();
+            QuadBuffer.Buffers buffers = quads.getBuffers();
 
-            for (Quad q : quads) {
-                byte[] colors = {
-                        q.color[0], q.color[1], q.color[2], q.color[3],
-                        q.color[0], q.color[1], q.color[2], q.color[3],
-                        q.color[0], q.color[1], q.color[2], q.color[3],
-                        q.color[0], q.color[1], q.color[2], q.color[3],
-                };
-
-                vertexBuffer.put(q.vertexes);
-                textureBuffer.put(q.texCoord);
-                colorBuffer.put(colors);
-            }
-
-            vertexBuffer.flip();
-            textureBuffer.flip();
-            colorBuffer.flip();
-
-            GL11.glVertexPointer(2, 0, vertexBuffer);
-            GL11.glTexCoordPointer(2, 0, textureBuffer);
-            GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colorBuffer);
+            GL11.glVertexPointer(2, 0, buffers.vertices());
+            GL11.glTexCoordPointer(2, 0, buffers.texCoord());
+            GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
             GL11.glDrawArrays(GL11.GL_QUADS, 0, quads.size() * 4);
         }
 
@@ -89,27 +55,17 @@ public class Renderer {
         GL14.glBlendEquation(Default.blendEquation);
     }
 
-    private void initBuffers() {
-        int currentMaxSprites = 0;
-        for (Map.Entry<QuadContext, List<Quad>> entry : buffer.entrySet()) {
-            List<Quad> sprites = entry.getValue();
-
-            if (sprites.size() > currentMaxSprites) {
-                currentMaxSprites = sprites.size();
-            }
+    public QuadBuffer getQuads(QuadContext ctx) {
+        QuadBuffer quads = buffer.get(ctx);
+        if (quads != null) {
+            return quads;
         }
 
-        if (currentMaxSprites > maxSprites) {
-            maxSprites = currentMaxSprites;
+        QuadBuffer newQuads = (quadsPool.isEmpty()) ? new QuadBuffer() : quadsPool.pop();
+        buffer.put(ctx, newQuads);
 
-            vertexBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
-            textureBuffer = BufferUtils.createFloatBuffer(maxSprites * 4 * 2);
-            colorBuffer = BufferUtils.createByteBuffer(maxSprites * 4 * 4);
-        }
-
-        vertexBuffer.clear();
-        textureBuffer.clear();
-        colorBuffer.clear();
+        newQuads.clear();
+        return newQuads;
     }
 
     public record QuadContext(
@@ -118,11 +74,5 @@ public class Renderer {
             int blendSfactor,
             int blendDfactor,
             int blendEquation) {
-    }
-
-    public record Quad(
-            byte[] color,
-            float[] texCoord,
-            float[] vertexes) {
     }
 }

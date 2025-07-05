@@ -2,7 +2,6 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.Default;
 import com.genir.renderer.Renderer;
-import com.genir.renderer.Renderer.Quad;
 import com.genir.renderer.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
@@ -22,11 +21,11 @@ public class Interceptor {
 
     // Quad.
     private int mode;
-    private byte[] color;
-    private float[] texCoord;
-    private float[] vertexes;
-    private int texNum;
-    private int vertexNum;
+    private final byte[] colors = new byte[16];
+    private final float[] texCoords = new float[8];
+    private final float[] vertices = new float[8];
+    private int texNum = 0;
+    private int vertexNum = 0;
 
     // Model matrix.
     private final ModelView matrixStack;
@@ -51,7 +50,22 @@ public class Interceptor {
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        color = new byte[]{red, green, blue, alpha};
+        colors[0] = red;
+        colors[1] = green;
+        colors[2] = blue;
+        colors[3] = alpha;
+        colors[4] = red;
+        colors[5] = green;
+        colors[6] = blue;
+        colors[7] = alpha;
+        colors[8] = red;
+        colors[9] = green;
+        colors[10] = blue;
+        colors[11] = alpha;
+        colors[12] = red;
+        colors[13] = green;
+        colors[14] = blue;
+        colors[15] = alpha;
     }
 
     public void glTexCoord2f(float s, float t) {
@@ -59,11 +73,10 @@ public class Interceptor {
 
         if (texNum == 4) {
             commitQuad();
-            beginQuad();
         }
 
-        texCoord[texNum * 2] = s;
-        texCoord[texNum * 2 + 1] = t;
+        texCoords[texNum * 2] = s;
+        texCoords[texNum * 2 + 1] = t;
 
         texNum++;
     }
@@ -73,7 +86,6 @@ public class Interceptor {
 
         if (vertexNum == 4) {
             commitQuad();
-            beginQuad();
         }
 
         Matrix3f m = matrixStack.getMatrix();
@@ -81,8 +93,8 @@ public class Interceptor {
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;
 
-        vertexes[vertexNum * 2] = u;
-        vertexes[vertexNum * 2 + 1] = v;
+        vertices[vertexNum * 2] = u;
+        vertices[vertexNum * 2 + 1] = v;
 
         vertexNum++;
     }
@@ -91,8 +103,6 @@ public class Interceptor {
         asert(mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
 
         this.mode = mode;
-
-        beginQuad();
     }
 
     public void glEnd() {
@@ -105,14 +115,6 @@ public class Interceptor {
         mode = -1;
     }
 
-    private void beginQuad() {
-        texCoord = new float[8];
-        vertexes = new float[8];
-
-        texNum = 0;
-        vertexNum = 0;
-    }
-
     private void commitQuad() {
         asert(textureTarget != -1);
         asert(textureID != -1);
@@ -122,13 +124,10 @@ public class Interceptor {
         asert(texNum == 4);
         asert(vertexNum == 4);
 
-        asert(color != null);
-        asert(texCoord != null);
-        asert(vertexes != null);
-
         QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
-        Quad q = new Quad(color, texCoord, vertexes);
+        renderer.getQuads(ctx).addQuad(colors, texCoords, vertices);
 
-        renderer.addQuad(ctx, q);
+        texNum = 0;
+        vertexNum = 0;
     }
 }
