@@ -52,6 +52,7 @@ public class Renderer {
             GL11.glTexCoordPointer(2, 0, buffers.texCoord());
             GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
 
+//            GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
             GL11.glDrawArrays(GL11.GL_QUADS, 0, vertexBuffer.size());
         }
 

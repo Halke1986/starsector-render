@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
 import static com.genir.renderer.Debug.asert;
+import static com.genir.renderer.Debug.logger;
 
 public class Interceptor {
     private final Renderer renderer;
@@ -13,7 +14,6 @@ public class Interceptor {
     private final ModelView matrixStack;
 
     // State.
-    private int mode;
     private final byte[] color = new byte[4];
     private final float[] texCoord = new float[2];
 
@@ -32,17 +32,11 @@ public class Interceptor {
     }
 
     public void glBegin(int mode) {
-        asert (mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
+        logger().info(mode);
 
-        this.mode = mode;
+        asert(ctx.mode == GL11.GL_QUADS || ctx.mode == GL11.GL_QUAD_STRIP || ctx.mode == GL11.GL_TRIANGLE_STRIP || ctx.mode == GL11.GL_TRIANGLE_FAN);
 
         vertexNum = 0;
-    }
-
-    public void glEnd() {
-        asert (mode != -1);
-
-        mode = -1;
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -58,7 +52,7 @@ public class Interceptor {
     }
 
     public void glVertex2f(float x, float y) {
-        asert (mode != -1);
+        asert(ctx.mode != -1);
 
         Matrix3f m = matrixStack.getMatrix();
 
@@ -88,16 +82,21 @@ public class Interceptor {
      * At which position in the buffer should the vertex be stored.
      */
     private int vertexIndex() {
-        if (mode == GL11.GL_QUADS) {
-            return vertexNum % 4;
-        } else { // GL_QUAD_STRIP
-            if (vertexNum < 2) {
-                // Initial Quad.
-                return vertexNum;
-            } else {
-                // Subsequent Quads. Reverse the order of the vertex pair.
-                return (vertexNum + 1) % 2 + 2;
-            }
+        switch (ctx.mode) {
+            case GL11.GL_QUADS:
+                return vertexNum % 4;
+            case GL11.GL_QUAD_STRIP:
+                if (vertexNum < 2) {
+                    // Initial Quad.
+                    return vertexNum;
+                } else {
+                    // Subsequent Quads. Reverse the order of the vertex pair.
+                    return (vertexNum + 1) % 2 + 2;
+                }
+            case GL11.GL_TRIANGLE_FAN, GL11.GL_TRIANGLE_STRIP:
+                return Math.min(vertexNum, 2);
+            default:
+                return 0;
         }
     }
 
@@ -106,14 +105,27 @@ public class Interceptor {
             return;
         }
 
-        if (mode == GL11.GL_QUADS) {
-            if (vertexNum % 4 == 0) {
-                commitQuad();
-            }
-        } else { // GL_QUAD_STRIP
-            if (vertexNum >= 4 && vertexNum % 2 == 0) {
-                commitQuadsStrip();
-            }
+        switch (ctx.mode) {
+            case GL11.GL_QUADS:
+                if (vertexNum % 4 == 0) {
+                    commitQuad();
+                }
+                break;
+            case GL11.GL_QUAD_STRIP:
+                if (vertexNum >= 4 && vertexNum % 2 == 0) {
+                    commitQuadStrip();
+                }
+                break;
+            case GL11.GL_TRIANGLE_FAN:
+                if (vertexNum >= 3) {
+                    commitTriangleFan();
+                }
+                break;
+            case GL11.GL_TRIANGLE_STRIP:
+                if (vertexNum >= 3) {
+                    commitTriangleStrip();
+                }
+                break;
         }
     }
 
@@ -122,7 +134,7 @@ public class Interceptor {
         buffer.addVertices(colors, texCoords, vertices, 4);
     }
 
-    private void commitQuadsStrip() {
+    private void commitQuadStrip() {
         VertexBuffer buffer = renderer.getVertexBuffer(ctx);
         buffer.addVertices(colors, texCoords, vertices, 4);
 
@@ -144,6 +156,60 @@ public class Interceptor {
         c[1] = c[13];
         c[2] = c[14];
         c[3] = c[15];
+        c[4] = c[8];
+        c[5] = c[9];
+        c[6] = c[10];
+        c[7] = c[11];
+    }
+
+    private void commitTriangleStrip() {
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, 3);
+
+        // Rotate buffers.
+        float[] t = texCoords;
+        float[] v = vertices;
+        byte[] c = colors;
+
+        if (vertexNum % 2 == 0) {
+            t[2] = t[4];
+            t[3] = t[5];
+
+            v[2] = v[4];
+            v[3] = v[5];
+
+            c[4] = c[8];
+            c[5] = c[9];
+            c[6] = c[10];
+            c[7] = c[11];
+        } else {
+            t[0] = t[4];
+            t[1] = t[5];
+
+            v[0] = v[4];
+            v[1] = v[5];
+
+            c[0] = c[8];
+            c[1] = c[9];
+            c[2] = c[10];
+            c[3] = c[11];
+        }
+    }
+
+    private void commitTriangleFan() {
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, 3);
+
+        // Rotate buffers.
+        float[] t = texCoords;
+        t[2] = t[4];
+        t[3] = t[5];
+
+        float[] v = vertices;
+        v[2] = v[4];
+        v[3] = v[5];
+
+        byte[] c = colors;
         c[4] = c[8];
         c[5] = c[9];
         c[6] = c[10];

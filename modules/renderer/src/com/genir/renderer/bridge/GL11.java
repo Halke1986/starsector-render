@@ -19,22 +19,6 @@ public class GL11 {
         }
     }
 
-    public static void glBegin(int mode) {
-        if (interceptor != null) {
-            interceptor.glBegin(mode);
-        } else {
-            org.lwjgl.opengl.GL11.glBegin(mode);
-        }
-    }
-
-    public static void glEnd() {
-        if (interceptor != null) {
-            interceptor.glEnd();
-        } else {
-            org.lwjgl.opengl.GL11.glEnd();
-        }
-    }
-
     public static void glVertex2f(float x, float y) {
         if (interceptor != null) {
             interceptor.glVertex2f(x, y);
@@ -104,6 +88,24 @@ public class GL11 {
             interceptor.glColor4ub(red, green, blue, alpha);
         } else {
             org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
+        }
+    }
+
+    public static void glBegin(int mode) {
+        renderContext.glBegin(mode);
+
+        if (interceptor != null) {
+            interceptor.glBegin(mode);
+        } else {
+            org.lwjgl.opengl.GL11.glBegin(mode);
+        }
+    }
+
+    public static void glEnd() {
+        renderContext.glEnd();
+
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glEnd();
         }
     }
 

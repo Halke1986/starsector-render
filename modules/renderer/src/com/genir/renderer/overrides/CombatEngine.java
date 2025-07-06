@@ -68,17 +68,17 @@ public class CombatEngine {
 
         beginLayer("NegativeSwirlyNebulaParticles");
         engine.getNegativeSwirlyNebulaParticles().render(0.0F, 0.0F); // UNUSED
-        commitLayer();
 
-//        beginLayer(ABOVE_PARTICLES_LOWER);
+        beginLayer(ABOVE_PARTICLES_LOWER);
         engine.getRenderer().renderOnly(engine.getViewport(), ABOVE_PARTICLES_LOWER);
 
-//        beginLayer(ABOVE_PARTICLES);
+        beginLayer(ABOVE_PARTICLES);
         engine.getRenderer().renderOnly(engine.getViewport(), ABOVE_PARTICLES);
 
-//        beginLayer(JUST_BELOW_WIDGETS);
+        beginLayer(JUST_BELOW_WIDGETS);
         engine.getRenderer().renderOnly(engine.getViewport(), JUST_BELOW_WIDGETS);
 
+        commitLayer();
         if (var1) {
             engine.renderFloatingTextManager();
         }
