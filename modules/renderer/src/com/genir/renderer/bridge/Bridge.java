@@ -20,11 +20,15 @@ public class Bridge {
 
     public static void beginLayer(String layer) {
         layerActive = true;
-        renderer.beginLayer();
+        renderer.beginLayer(layer);
     }
 
     public static void commitLayer() {
         renderer.commitLayer();
+        layerActive = false;
+    }
+
+    public static void dropLayer() {
         layerActive = false;
     }
 

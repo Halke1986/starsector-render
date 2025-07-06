@@ -7,20 +7,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import static com.genir.renderer.Debug.logger;
+
 public class Renderer {
     private final Stack<VertexBuffer> bufferPool = new Stack<>();
     private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
+    private String layer = "";
 
-    public void beginLayer() {
+    public void beginLayer(String layer) {
+        // Put back quad buffers into pool for later reuse.
         for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
             VertexBuffer buffer = entry.getValue();
             bufferPool.push(buffer);
         }
 
-        buffers = new HashMap<>();
+        this.buffers = new HashMap<>();
+        this.layer = layer;
     }
 
     public void commitLayer() {
+        logLayer();
+
         if (buffers.isEmpty()) {
             return;
         }
@@ -67,5 +74,18 @@ public class Renderer {
 
         newBuffer.clear();
         return newBuffer;
+    }
+
+    private void logLayer() {
+        int entities = 0;
+        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
+            VertexBuffer quads = entry.getValue();
+
+            entities += quads.size();
+        }
+
+        logger().info(layer + ": " + buffers.size() + " " + entities);
+
+//        logStack();
     }
 }

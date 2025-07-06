@@ -5,6 +5,8 @@ import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
+import static com.genir.renderer.Debug.asert;
+
 public class Interceptor {
     private final Renderer renderer;
     private final RenderContext ctx;
@@ -30,7 +32,7 @@ public class Interceptor {
     }
 
     public void glBegin(int mode) {
-        assert (mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
+        asert (mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
 
         this.mode = mode;
 
@@ -38,7 +40,7 @@ public class Interceptor {
     }
 
     public void glEnd() {
-        assert (mode != -1);
+        asert (mode != -1);
 
         mode = -1;
     }
@@ -56,7 +58,7 @@ public class Interceptor {
     }
 
     public void glVertex2f(float x, float y) {
-        assert (mode != -1);
+        asert (mode != -1);
 
         Matrix3f m = matrixStack.getMatrix();
 

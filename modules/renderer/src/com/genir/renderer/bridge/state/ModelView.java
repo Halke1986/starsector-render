@@ -2,6 +2,10 @@ package com.genir.renderer.bridge.state;
 
 import org.lwjgl.util.vector.Matrix3f;
 
+/**
+ * Assume 2D transformations in Z plane only.
+ * Will fail for 3D transformation such as during planet rendering.
+ */
 public class ModelView {
     private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
     private final Matrix3f[] stack = new Matrix3f[16];
