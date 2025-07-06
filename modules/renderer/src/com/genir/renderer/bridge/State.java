@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.genir.renderer.Renderer;
 
 public class State {
     static boolean layerActive = false;

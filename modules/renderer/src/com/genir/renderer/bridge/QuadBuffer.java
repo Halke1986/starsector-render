@@ -1,4 +1,4 @@
-package com.genir.renderer;
+package com.genir.renderer.bridge;
 
 import org.lwjgl.BufferUtils;
 

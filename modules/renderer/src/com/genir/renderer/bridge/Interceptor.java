@@ -1,8 +1,5 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.Default;
-import com.genir.renderer.Renderer;
-import com.genir.renderer.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
@@ -10,11 +7,7 @@ public class Interceptor {
     private final Renderer renderer;
 
     // Key.
-    private int textureTarget = -1;
-    private int textureID = -1;
-    private int blendSfactor = -1;
-    private int blendDfactor = -1;
-    private int blendEquation = Default.blendEquation;
+    RenderContext ctx = new RenderContext();
 
     // State.
     private int mode;
@@ -34,17 +27,17 @@ public class Interceptor {
     }
 
     public void glBindTexture(int target, int texture) {
-        textureTarget = target;
-        textureID = texture;
+        ctx.textureTarget = target;
+        ctx.textureID = texture;
     }
 
     public void glBlendFunc(int sfactor, int dfactor) {
-        blendSfactor = sfactor;
-        blendDfactor = dfactor;
+        ctx.blendSfactor = sfactor;
+        ctx.blendDfactor = dfactor;
     }
 
     public void glBlendEquation(int mode) {
-        blendEquation = mode;
+        ctx.blendEquation = mode;
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -130,16 +123,16 @@ public class Interceptor {
             return;
         }
 
-        assert (textureTarget != -1);
-        assert (textureID != -1);
-        assert (blendSfactor != -1);
-        assert (blendDfactor != -1);
+        assert (ctx.textureTarget != -1);
+        assert (ctx.textureID != -1);
+        assert (ctx.blendSfactor != -1);
+        assert (ctx.blendDfactor != -1);
 
         assert (texNum == 4);
         assert (vertexNum == 4);
 
-        QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
-        renderer.getQuads(ctx).addQuad(colors, texCoords, vertices);
+        QuadBuffer buffer = renderer.getQuads(ctx);
+        buffer.addQuad(colors, texCoords, vertices);
 
         texNum = 0;
         vertexNum = 0;
@@ -150,17 +143,17 @@ public class Interceptor {
             return;
         }
 
-        assert (textureTarget != -1);
-        assert (textureID != -1);
-        assert (blendSfactor != -1);
-        assert (blendDfactor != -1);
+        assert (ctx.textureTarget != -1);
+        assert (ctx.textureID != -1);
+        assert (ctx.blendSfactor != -1);
+        assert (ctx.blendDfactor != -1);
 
         assert (texNum == vertexNum);
         assert (vertexNum >= 4);
         assert (vertexNum % 2 == 0);
 
-        QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
-        renderer.getQuads(ctx).addQuad(colors, texCoords, vertices);
+        QuadBuffer buffer = renderer.getQuads(ctx);
+        buffer.addQuad(colors, texCoords, vertices);
 
         float[] t = texCoords;
         t[0] = t[6];
