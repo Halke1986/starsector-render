@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;

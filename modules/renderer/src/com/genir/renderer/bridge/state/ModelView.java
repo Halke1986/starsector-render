@@ -1,8 +1,9 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.state;
 
 import org.lwjgl.util.vector.Matrix3f;
 
 public class ModelView {
+    private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
     private final Matrix3f[] stack = new Matrix3f[16];
     private int matrixIdx = 0;
 
@@ -15,7 +16,15 @@ public class ModelView {
         return stack[matrixIdx];
     }
 
+    public void glMatrixMode(int mode) {
+        matrixMode = mode;
+    }
+
     public void glPushMatrix() {
+        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            return;
+        }
+
         int next = matrixIdx + 1;
         if (stack[next] == null) {
             stack[next] = new Matrix3f();
@@ -26,6 +35,10 @@ public class ModelView {
     }
 
     public void glPopMatrix() {
+        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            return;
+        }
+
         // GL_STACK_UNDERFLOW
         if (matrixIdx == 0) {
             return;
@@ -35,7 +48,9 @@ public class ModelView {
     }
 
     public void glTranslatef(float x, float y, float z) {
-        assert (z == 0f);
+        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            return;
+        }
 
         Matrix3f m = stack[matrixIdx];
 
@@ -45,9 +60,9 @@ public class ModelView {
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        assert (x == 0f);
-        assert (y == 0f);
-        assert (z == 1f);
+        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            return;
+        }
 
         float a = angle * (float) (Math.PI / 180);
         float cos = (float) Math.cos(a);
@@ -67,7 +82,9 @@ public class ModelView {
     }
 
     public void glScalef(float x, float y, float z) {
-        assert (z == 1f);
+        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            return;
+        }
 
         Matrix3f m = stack[matrixIdx];
 

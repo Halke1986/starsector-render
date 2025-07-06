@@ -1,13 +1,18 @@
 package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.genir.renderer.bridge.state.ModelView;
+import com.genir.renderer.bridge.state.RenderContext;
 
 public class Bridge {
     static boolean layerActive = false;
 
     static Renderer renderer = new Renderer();
-    static ModelView modelView = new ModelView();
     static Interceptor interceptor;
+
+    // GL state.
+    public static final ModelView modelView = new ModelView();
+    public static final RenderContext renderContext = new RenderContext();
 
     public static void beginLayer(CombatEngineLayers layer) {
         beginLayer(layer.name());
@@ -25,7 +30,7 @@ public class Bridge {
 
     public static void beginIntercept() {
         if (layerActive) {
-            interceptor = new Interceptor(renderer, modelView);
+            interceptor = new Interceptor(renderer, renderContext, modelView);
         }
     }
 

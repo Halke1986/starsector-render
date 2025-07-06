@@ -1,14 +1,28 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.state;
 
 public class RenderContext {
     // Texture.
-    public int textureTarget = -1;
-    public int textureID = -1;
+    public int textureTarget;
+    public int textureID;
 
     // Blend.
-    public int blendSfactor = -1;
-    public int blendDfactor = -1;
-    public int blendEquation = Default.blendEquation;
+    public int blendSfactor;
+    public int blendDfactor;
+    public int blendEquation;
+
+    public void glBindTexture(int target, int texture) {
+        textureTarget = target;
+        textureID = texture;
+    }
+
+    public void glBlendFunc(int sfactor, int dfactor) {
+        blendSfactor = sfactor;
+        blendDfactor = dfactor;
+    }
+
+    public void glBlendEquation(int mode) {
+        blendEquation = mode;
+    }
 
     @Override
     public boolean equals(Object o) {

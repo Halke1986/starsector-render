@@ -4,29 +4,18 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.Bridge.interceptor;
-import static com.genir.renderer.bridge.Bridge.modelView;
+import static com.genir.renderer.bridge.Bridge.*;
 
 public class GL11 {
-    private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
-
-    public static void glDisable(int cap) {
-        if (interceptor == null) {
-            org.lwjgl.opengl.GL11.glDisable(cap);
-        }
-    }
-
     public static void glEnable(int cap) {
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glEnable(cap);
         }
     }
 
-    public static void glBlendFunc(int sfactor, int dfactor) {
-        if (interceptor != null) {
-            interceptor.glBlendFunc(sfactor, dfactor);
-        } else {
-            org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
+    public static void glDisable(int cap) {
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glDisable(cap);
         }
     }
 
@@ -46,7 +35,6 @@ public class GL11 {
         }
     }
 
-
     public static void glVertex2f(float x, float y) {
         if (interceptor != null) {
             interceptor.glVertex2f(x, y);
@@ -64,7 +52,7 @@ public class GL11 {
     }
 
     public static void glMatrixMode(int mode) {
-        matrixMode = mode;
+        modelView.glMatrixMode(mode);
 
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glMatrixMode(mode);
@@ -72,9 +60,7 @@ public class GL11 {
     }
 
     public static void glPushMatrix() {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glPushMatrix();
-        }
+        modelView.glPushMatrix();
 
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glPushMatrix();
@@ -82,19 +68,15 @@ public class GL11 {
     }
 
     public static void glPopMatrix() {
+        modelView.glPopMatrix();
+
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glPopMatrix();
-        }
-
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glPopMatrix();
         }
     }
 
     public static void glTranslatef(float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glTranslatef(x, y, z);
-        }
+        modelView.glTranslatef(x, y, z);
 
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
@@ -102,9 +84,7 @@ public class GL11 {
     }
 
     public static void glScalef(float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glScalef(x, y, z);
-        }
+        modelView.glScalef(x, y, z);
 
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glScalef(x, y, z);
@@ -112,9 +92,7 @@ public class GL11 {
     }
 
     public static void glRotatef(float angle, float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glRotatef(angle, x, y, z);
-        }
+        modelView.glRotatef(angle, x, y, z);
 
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
@@ -126,6 +104,22 @@ public class GL11 {
             interceptor.glColor4ub(red, green, blue, alpha);
         } else {
             org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
+        }
+    }
+
+    public static void glBindTexture(int target, int texture) {
+        renderContext.glBindTexture(target, texture);
+
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+        }
+    }
+
+    public static void glBlendFunc(int sfactor, int dfactor) {
+        renderContext.glBlendFunc(sfactor, dfactor);
+
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
         }
     }
 
@@ -382,14 +376,6 @@ public class GL11 {
             throw new UnsupportedOperationException("glIsEnabled");
         } else {
             return org.lwjgl.opengl.GL11.glIsEnabled(cap);
-        }
-    }
-
-    public static void glBindTexture(int target, int texture) {
-        if (interceptor != null) {
-            interceptor.glBindTexture(target, texture);
-        } else {
-            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
     }
 

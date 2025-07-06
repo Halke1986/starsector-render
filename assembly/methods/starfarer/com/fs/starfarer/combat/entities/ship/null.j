@@ -521,7 +521,7 @@ L1:     getfield Field com/fs/starfarer/combat/entities/ship/null 'new.new' Lcom
 L4:     getstatic Field com/fs/starfarer/combat/entities/ship/null$o 'Ó00000' Lcom/fs/starfarer/combat/entities/ship/null$o; 
 L7:     if_acmpeq L18
 
-        invokestatic Method com/genir/renderer/bridge/State beginIntercept ()V
+        invokestatic Method com/genir/renderer/bridge/Bridge beginIntercept ()V
 
 L10:    aload_0
 L11:    getfield Field com/fs/starfarer/combat/entities/ship/null 'ÓO0000' Lcom/fs/starfarer/combat/entities/G;
@@ -529,7 +529,7 @@ L11:    getfield Field com/fs/starfarer/combat/entities/ship/null 'ÓO0000' Lcom
 L14:    fload_1
 L15:    invokevirtual Method com/fs/starfarer/combat/entities/G o00000 (F)V
 
-        invokestatic Method com/genir/renderer/bridge/State endIntercept ()V
+        invokestatic Method com/genir/renderer/bridge/Bridge endIntercept ()V
 
         .stack same
 L18:    return 

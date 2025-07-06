@@ -1,15 +1,17 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.state.ModelView;
+import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
 public class Interceptor {
     private final Renderer renderer;
+    private final RenderContext ctx;
     private final ModelView matrixStack;
 
     // State.
     private int mode;
-    RenderContext ctx = new RenderContext();
     private final byte[] color = new byte[4];
     private final float[] texCoord = new float[2];
 
@@ -21,8 +23,9 @@ public class Interceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public Interceptor(Renderer renderer, ModelView matrixStack) {
+    public Interceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
         this.renderer = renderer;
+        this.ctx = ctx;
         this.matrixStack = matrixStack;
     }
 
@@ -38,20 +41,6 @@ public class Interceptor {
         assert (mode != -1);
 
         mode = -1;
-    }
-
-    public void glBindTexture(int target, int texture) {
-        ctx.textureTarget = target;
-        ctx.textureID = texture;
-    }
-
-    public void glBlendFunc(int sfactor, int dfactor) {
-        ctx.blendSfactor = sfactor;
-        ctx.blendDfactor = dfactor;
-    }
-
-    public void glBlendEquation(int mode) {
-        ctx.blendEquation = mode;
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
