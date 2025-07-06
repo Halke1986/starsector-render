@@ -7,20 +7,20 @@ import java.util.Map;
 import java.util.Stack;
 
 public class Renderer {
-    private final Stack<QuadBuffer> quadsPool = new Stack<>();
-    private Map<RenderContext, QuadBuffer> buffer = new HashMap<>();
+    private final Stack<VertexBuffer> bufferPool = new Stack<>();
+    private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
 
     public void beginLayer() {
-        for (Map.Entry<RenderContext, QuadBuffer> entry : buffer.entrySet()) {
-            QuadBuffer quads = entry.getValue();
-            quadsPool.push(quads);
+        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
+            VertexBuffer buffer = entry.getValue();
+            bufferPool.push(buffer);
         }
 
-        buffer = new HashMap<>();
+        buffers = new HashMap<>();
     }
 
     public void commitLayer() {
-        if (buffer.isEmpty()) {
+        if (buffers.isEmpty()) {
             return;
         }
 
@@ -30,20 +30,21 @@ public class Renderer {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
 
-        for (Map.Entry<RenderContext, QuadBuffer> entry : buffer.entrySet()) {
-            RenderContext key = entry.getKey();
-            QuadBuffer quads = entry.getValue();
+        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
+            RenderContext ctx = entry.getKey();
+            VertexBuffer vertexBuffer = entry.getValue();
 
-            GL11.glBindTexture(key.textureTarget, key.textureID);
-            GL11.glBlendFunc(key.blendSfactor, key.blendDfactor);
-            GL14.glBlendEquation(key.blendEquation);
+            GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
+            GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
+            GL14.glBlendEquation(ctx.blendEquation);
 
-            QuadBuffer.Buffers buffers = quads.getBuffers();
+            VertexBuffer.Buffers buffers = vertexBuffer.getBuffers();
 
             GL11.glVertexPointer(2, 0, buffers.vertices());
             GL11.glTexCoordPointer(2, 0, buffers.texCoord());
             GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
-            GL11.glDrawArrays(GL11.GL_QUADS, 0, quads.size() * 4);
+
+            GL11.glDrawArrays(GL11.GL_QUADS, 0, vertexBuffer.size());
         }
 
         GL11.glDisable(GL11.GL_BLEND);
@@ -54,16 +55,16 @@ public class Renderer {
         GL14.glBlendEquation(Default.blendEquation);
     }
 
-    public QuadBuffer getQuads(RenderContext ctx) {
-        QuadBuffer quads = buffer.get(ctx);
-        if (quads != null) {
-            return quads;
+    public VertexBuffer getVertexBuffer(RenderContext ctx) {
+        VertexBuffer buffer = buffers.get(ctx);
+        if (buffer != null) {
+            return buffer;
         }
 
-        QuadBuffer newQuads = (quadsPool.isEmpty()) ? new QuadBuffer() : quadsPool.pop();
-        buffer.put(ctx.copy(), newQuads);
+        VertexBuffer newBuffer = (bufferPool.isEmpty()) ? new VertexBuffer() : bufferPool.pop();
+        buffers.put(ctx.copy(), newBuffer);
 
-        newQuads.clear();
-        return newQuads;
+        newBuffer.clear();
+        return newBuffer;
     }
 }

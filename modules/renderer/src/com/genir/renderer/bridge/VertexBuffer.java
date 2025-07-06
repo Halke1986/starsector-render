@@ -5,9 +5,9 @@ import org.lwjgl.BufferUtils;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-public class QuadBuffer {
-    private int numQuads = 0;
-    private int maxQuads = 0;
+public class VertexBuffer {
+    private int numVertices = 0;
+    private int maxVertices = 0;
 
     private ByteBuffer colors = BufferUtils.createByteBuffer(0);
     private FloatBuffer texCoord = BufferUtils.createFloatBuffer(0);
@@ -18,7 +18,7 @@ public class QuadBuffer {
         texCoord.clear();
         vertices.clear();
 
-        numQuads = 0;
+        numVertices = 0;
     }
 
     public Buffers getBuffers() {
@@ -30,38 +30,35 @@ public class QuadBuffer {
     }
 
     public int size() {
-        return numQuads;
+        return numVertices;
     }
 
-    public void addQuad(byte[] colors, float[] texCoord, float[] vertices) {
-        assert (colors.length == 16);
-        assert (texCoord.length == 8);
-        assert (vertices.length == 8);
+    public void addVertices(byte[] colors, float[] texCoord, float[] vertices, int vertexNumber) {
+        numVertices += vertexNumber;
 
-        numQuads++;
-        if (numQuads > maxQuads) {
-            maxQuads = Math.max(16, maxQuads * 2);
+        if (numVertices > maxVertices) {
+            maxVertices = numVertices * 2;
 
             this.colors = growByteBuffer(this.colors);
             this.texCoord = growFloatBuffer(this.texCoord);
             this.vertices = growFloatBuffer(this.vertices);
         }
 
-        this.colors.put(colors);
-        this.texCoord.put(texCoord);
-        this.vertices.put(vertices);
+        this.colors.put(colors, 0, vertexNumber * 4);
+        this.texCoord.put(texCoord, 0, vertexNumber * 2);
+        this.vertices.put(vertices, 0, vertexNumber * 2);
     }
 
-    private FloatBuffer growFloatBuffer(FloatBuffer src) {
-        FloatBuffer newBuffer = BufferUtils.createFloatBuffer(maxQuads * 8);
+    private ByteBuffer growByteBuffer(ByteBuffer src) {
+        ByteBuffer newBuffer = BufferUtils.createByteBuffer(maxVertices * 4);
 
         src.flip();
         newBuffer.put(src);
         return newBuffer;
     }
 
-    private ByteBuffer growByteBuffer(ByteBuffer src) {
-        ByteBuffer newBuffer = BufferUtils.createByteBuffer(maxQuads * 16);
+    private FloatBuffer growFloatBuffer(FloatBuffer src) {
+        FloatBuffer newBuffer = BufferUtils.createFloatBuffer(maxVertices * 2);
 
         src.flip();
         newBuffer.put(src);

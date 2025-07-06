@@ -5,25 +5,39 @@ import org.lwjgl.util.vector.Matrix3f;
 
 public class Interceptor {
     private final Renderer renderer;
-
-    // Key.
-    RenderContext ctx = new RenderContext();
+    private final ModelView matrixStack;
 
     // State.
     private int mode;
-    private final ModelView matrixStack;
+    RenderContext ctx = new RenderContext();
     private final byte[] color = new byte[4];
+    private final float[] texCoord = new float[2];
 
-    // Quad.
+    // Buffers.
     private final byte[] colors = new byte[16];
     private final float[] texCoords = new float[8];
     private final float[] vertices = new float[8];
-    private int texNum = 0;
+
+    // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
     public Interceptor(Renderer renderer, ModelView matrixStack) {
         this.renderer = renderer;
         this.matrixStack = matrixStack;
+    }
+
+    public void glBegin(int mode) {
+        assert (mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
+
+        this.mode = mode;
+
+        vertexNum = 0;
+    }
+
+    public void glEnd() {
+        assert (mode != -1);
+
+        mode = -1;
     }
 
     public void glBindTexture(int target, int texture) {
@@ -47,28 +61,9 @@ public class Interceptor {
         color[3] = alpha;
     }
 
-    public void glBegin(int mode) {
-        assert (mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
-
-        this.mode = mode;
-
-        texNum = 0;
-        vertexNum = 0;
-    }
-
-    public void glEnd() {
-        assert (mode != -1);
-
-        mode = -1;
-    }
-
     public void glTexCoord2f(float s, float t) {
-        assert (mode != -1);
-
-        addVertex(s, t, texNum, texCoords);
-        texNum++;
-
-        commit();
+        texCoord[0] = s;
+        texCoord[1] = t;
     }
 
     public void glVertex2f(float x, float y) {
@@ -79,82 +74,68 @@ public class Interceptor {
         float u = x * m.m00 + y * m.m01 + m.m02;
         float v = x * m.m10 + y * m.m11 + m.m12;
 
-        int idx = addVertex(u, v, vertexNum, vertices);
-        vertexNum++;
+        int idx = vertexIndex();
+
+        vertices[idx * 2 + 0] = u;
+        vertices[idx * 2 + 1] = v;
+
+        // Define vertex texture.
+        texCoords[idx * 2 + 0] = texCoord[0];
+        texCoords[idx * 2 + 1] = texCoord[1];
 
         // Define vertex color.
-        int offset = idx * 4;
-        colors[offset] = color[0];
-        colors[offset + 1] = color[1];
-        colors[offset + 2] = color[2];
-        colors[offset + 3] = color[3];
+        colors[idx * 4 + 0] = color[0];
+        colors[idx * 4 + 1] = color[1];
+        colors[idx * 4 + 2] = color[2];
+        colors[idx * 4 + 3] = color[3];
 
+        vertexNum++;
         commit();
     }
 
-    private int addVertex(float x, float y, int vertexNum, float[] buffer) {
-        int idx = vertexNum;
-
-        if (mode == GL11.GL_QUAD_STRIP && vertexNum >= 2) {
-            idx = (vertexNum + 1) % 2 + 2;
+    /**
+     * At which position in the buffer should the vertex be stored.
+     */
+    private int vertexIndex() {
+        if (mode == GL11.GL_QUADS) {
+            return vertexNum % 4;
+        } else { // GL_QUAD_STRIP
+            if (vertexNum < 2) {
+                // Initial Quad.
+                return vertexNum;
+            } else {
+                // Subsequent Quads. Reverse the order of the vertex pair.
+                return (vertexNum + 1) % 2 + 2;
+            }
         }
-
-        buffer[idx * 2] = x;
-        buffer[idx * 2 + 1] = y;
-
-        return idx;
     }
 
     private void commit() {
-        assert (texNum <= 4);
-        assert (vertexNum <= 4);
+        if (vertexNum == 0) {
+            return;
+        }
 
-        if (texNum == 4 && vertexNum == 4) {
-            if (mode == GL11.GL_QUADS) {
+        if (mode == GL11.GL_QUADS) {
+            if (vertexNum % 4 == 0) {
                 commitQuad();
-            } else { // GL_QUAD_STRIP
-                commitStrip();
+            }
+        } else { // GL_QUAD_STRIP
+            if (vertexNum >= 4 && vertexNum % 2 == 0) {
+                commitQuadsStrip();
             }
         }
     }
 
     private void commitQuad() {
-        if (texNum == 0 && vertexNum == 0) {
-            return;
-        }
-
-        assert (ctx.textureTarget != -1);
-        assert (ctx.textureID != -1);
-        assert (ctx.blendSfactor != -1);
-        assert (ctx.blendDfactor != -1);
-
-        assert (texNum == 4);
-        assert (vertexNum == 4);
-
-        QuadBuffer buffer = renderer.getQuads(ctx);
-        buffer.addQuad(colors, texCoords, vertices);
-
-        texNum = 0;
-        vertexNum = 0;
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, 4);
     }
 
-    private void commitStrip() {
-        if (texNum == 0 && vertexNum == 0) {
-            return;
-        }
+    private void commitQuadsStrip() {
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, 4);
 
-        assert (ctx.textureTarget != -1);
-        assert (ctx.textureID != -1);
-        assert (ctx.blendSfactor != -1);
-        assert (ctx.blendDfactor != -1);
-
-        assert (texNum == vertexNum);
-        assert (vertexNum >= 4);
-        assert (vertexNum % 2 == 0);
-
-        QuadBuffer buffer = renderer.getQuads(ctx);
-        buffer.addQuad(colors, texCoords, vertices);
-
+        // Rotate buffers.
         float[] t = texCoords;
         t[0] = t[6];
         t[1] = t[7];
@@ -176,8 +157,6 @@ public class Interceptor {
         c[5] = c[9];
         c[6] = c[10];
         c[7] = c[11];
-
-        texNum = 2;
-        vertexNum = 2;
     }
 }
+
