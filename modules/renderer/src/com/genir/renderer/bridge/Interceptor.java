@@ -6,8 +6,6 @@ import com.genir.renderer.Renderer.QuadContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
-import static com.genir.renderer.Debug.asert;
-
 public class Interceptor {
     private final Renderer renderer;
 
@@ -57,7 +55,7 @@ public class Interceptor {
     }
 
     public void glBegin(int mode) {
-        asert(mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
+        assert (mode == GL11.GL_QUADS || mode == GL11.GL_QUAD_STRIP);
 
         this.mode = mode;
 
@@ -66,26 +64,22 @@ public class Interceptor {
     }
 
     public void glEnd() {
-        asert(mode != -1);
-
-        if (mode == GL11.GL_QUADS) {
-            commitQuad();
-        } else { // GL_QUAD_STRIP
-            commitStrip();
-        }
+        assert (mode != -1);
 
         mode = -1;
     }
 
     public void glTexCoord2f(float s, float t) {
-        asert(mode != -1);
+        assert (mode != -1);
 
         addVertex(s, t, texNum, texCoords);
         texNum++;
+
+        commit();
     }
 
     public void glVertex2f(float x, float y) {
-        asert(mode != -1);
+        assert (mode != -1);
 
         Matrix3f m = matrixStack.getMatrix();
 
@@ -96,28 +90,20 @@ public class Interceptor {
         vertexNum++;
 
         // Define vertex color.
-        colors[idx * 4] = color[0];
-        colors[idx * 4 + 1] = color[1];
-        colors[idx * 4 + 2] = color[2];
-        colors[idx * 4 + 3] = color[3];
+        int offset = idx * 4;
+        colors[offset] = color[0];
+        colors[offset + 1] = color[1];
+        colors[offset + 2] = color[2];
+        colors[offset + 3] = color[3];
+
+        commit();
     }
 
     private int addVertex(float x, float y, int vertexNum, float[] buffer) {
         int idx = vertexNum;
 
-        if (mode == GL11.GL_QUADS) {
-            if (vertexNum == 4) {
-                commitQuad();
-                idx = 0;
-            }
-        } else { // GL_QUAD_STRIP
-            if (vertexNum == 4) {
-                commitStrip();
-            }
-
-            if (vertexNum >= 2) {
-                idx = (vertexNum + 1) % 2 + 2;
-            }
+        if (mode == GL11.GL_QUAD_STRIP && vertexNum >= 2) {
+            idx = (vertexNum + 1) % 2 + 2;
         }
 
         buffer[idx * 2] = x;
@@ -126,18 +112,31 @@ public class Interceptor {
         return idx;
     }
 
+    private void commit() {
+        assert (texNum <= 4);
+        assert (vertexNum <= 4);
+
+        if (texNum == 4 && vertexNum == 4) {
+            if (mode == GL11.GL_QUADS) {
+                commitQuad();
+            } else { // GL_QUAD_STRIP
+                commitStrip();
+            }
+        }
+    }
+
     private void commitQuad() {
         if (texNum == 0 && vertexNum == 0) {
             return;
         }
 
-        asert(textureTarget != -1);
-        asert(textureID != -1);
-        asert(blendSfactor != -1);
-        asert(blendDfactor != -1);
+        assert (textureTarget != -1);
+        assert (textureID != -1);
+        assert (blendSfactor != -1);
+        assert (blendDfactor != -1);
 
-        asert(texNum == 4);
-        asert(vertexNum == 4);
+        assert (texNum == 4);
+        assert (vertexNum == 4);
 
         QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
         renderer.getQuads(ctx).addQuad(colors, texCoords, vertices);
@@ -151,14 +150,14 @@ public class Interceptor {
             return;
         }
 
-        asert(textureTarget != -1);
-        asert(textureID != -1);
-        asert(blendSfactor != -1);
-        asert(blendDfactor != -1);
+        assert (textureTarget != -1);
+        assert (textureID != -1);
+        assert (blendSfactor != -1);
+        assert (blendDfactor != -1);
 
-        asert(texNum == vertexNum);
-        asert(vertexNum >= 4);
-        asert(vertexNum % 2 == 0);
+        assert (texNum == vertexNum);
+        assert (vertexNum >= 4);
+        assert (vertexNum % 2 == 0);
 
         QuadContext ctx = new QuadContext(textureTarget, textureID, blendSfactor, blendDfactor, blendEquation);
         renderer.getQuads(ctx).addQuad(colors, texCoords, vertices);
