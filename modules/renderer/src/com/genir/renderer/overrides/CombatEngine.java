@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.genir.renderer.bridge.State;
+import com.genir.renderer.bridge.Bridge;
 
 public class CombatEngine {
     public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
@@ -84,12 +84,12 @@ public class CombatEngine {
     }
 
     private static void beginParticleLayer(String layer) {
-        State.beginLayer(layer);
-        State.beginIntercept();
+        Bridge.beginLayer(layer);
+        Bridge.beginIntercept();
     }
 
     private static void commitParticleLayer() {
-        State.endIntercept();
-        State.commitLayer();
+        Bridge.endIntercept();
+        Bridge.commitLayer();
     }
 }

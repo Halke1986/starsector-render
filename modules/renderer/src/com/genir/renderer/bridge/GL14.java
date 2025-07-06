@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.bridge.State.interceptor;
+import static com.genir.renderer.bridge.Bridge.interceptor;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {

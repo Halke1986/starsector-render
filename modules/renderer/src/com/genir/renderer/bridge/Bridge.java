@@ -2,7 +2,7 @@ package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 
-public class State {
+public class Bridge {
     static boolean layerActive = false;
 
     static Renderer renderer = new Renderer();

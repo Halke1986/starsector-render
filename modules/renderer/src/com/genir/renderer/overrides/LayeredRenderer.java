@@ -6,13 +6,13 @@ import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
-import com.genir.renderer.bridge.State;
+import com.genir.renderer.bridge.Bridge;
 
 import java.util.List;
 
 public class LayeredRenderer {
     public static void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
-        State.beginLayer(layer);
+        Bridge.beginLayer(layer);
 
         if (entities == null) {
             return;
@@ -22,14 +22,14 @@ public class LayeredRenderer {
             if (entity instanceof CustomCombatEntity) {
                 CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
                 if (plugin instanceof RoilingSwarmEffect) {
-                    State.beginIntercept();
+                    Bridge.beginIntercept();
                 }
             }
 
             entity.render(layer, viewport);
-            State.endIntercept();
+            Bridge.endIntercept();
         }
 
-        State.commitLayer();
+        Bridge.commitLayer();
     }
 }

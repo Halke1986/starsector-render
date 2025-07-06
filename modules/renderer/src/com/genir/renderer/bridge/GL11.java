@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.State.interceptor;
-import static com.genir.renderer.bridge.State.modelView;
+import static com.genir.renderer.bridge.Bridge.interceptor;
+import static com.genir.renderer.bridge.Bridge.modelView;
 
 public class GL11 {
     private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
