@@ -33,6 +33,7 @@ public class VertexInterceptor {
     public void glBegin(int mode) {
         asert(ctx.mode == GL11.GL_QUADS
                 || ctx.mode == GL11.GL_QUAD_STRIP
+                || ctx.mode == GL11.GL_TRIANGLES
                 || ctx.mode == GL11.GL_TRIANGLE_STRIP
                 || ctx.mode == GL11.GL_TRIANGLE_FAN);
 
@@ -93,6 +94,8 @@ public class VertexInterceptor {
                     // Subsequent Quads. Reverse the order of the vertex pair.
                     return (vertexNum + 1) % 2 + 2;
                 }
+            case GL11.GL_TRIANGLES:
+                return vertexNum % 3;
             case GL11.GL_TRIANGLE_FAN, GL11.GL_TRIANGLE_STRIP:
                 return Math.min(vertexNum, 2);
             default:
@@ -114,6 +117,11 @@ public class VertexInterceptor {
             case GL11.GL_QUAD_STRIP:
                 if (vertexNum >= 4 && vertexNum % 2 == 0) {
                     commitQuadStrip();
+                }
+                break;
+            case GL11.GL_TRIANGLES:
+                if (vertexNum % 3 == 0) {
+                    commitTriangle();
                 }
                 break;
             case GL11.GL_TRIANGLE_FAN:
@@ -160,6 +168,11 @@ public class VertexInterceptor {
         c[5] = c[9];
         c[6] = c[10];
         c[7] = c[11];
+    }
+
+    private void commitTriangle() {
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, 3);
     }
 
     private void commitTriangleStrip() {

@@ -247,7 +247,7 @@ public class RenderContext {
     public int arrayMode() {
         return switch (mode) {
             case GL11.GL_QUADS, GL11.GL_QUAD_STRIP -> GL11.GL_QUADS;
-            case GL11.GL_TRIANGLE_STRIP, GL11.GL_TRIANGLE_FAN -> GL11.GL_TRIANGLES;
+            case GL11.GL_TRIANGLES, GL11.GL_TRIANGLE_STRIP, GL11.GL_TRIANGLE_FAN -> GL11.GL_TRIANGLES;
             default -> -1;
         };
     }
