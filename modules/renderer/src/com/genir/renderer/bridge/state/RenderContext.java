@@ -19,9 +19,21 @@ public class RenderContext {
 
     // Stencil.
     public boolean enableStencil;
+    public int stencilFunc;
+    public int stencilRef;
+    public int stencilMask;
+    public int stencilFail;
+    public int stencilZfail;
+    public int stencilZpass;
+    public boolean stencilRed;
+    public boolean stencilGreen;
+    public boolean stencilBlue;
+    public boolean stencilAlpha;
 
     // Alpha.
     public boolean enableAlpha;
+    public int alphaFunc;
+    public float alphaRef;
 
     public void glEnable(int cap) {
         switch (cap) {
@@ -79,6 +91,30 @@ public class RenderContext {
         blendEquation = mode;
     }
 
+    public void glStencilFunc(int func, int ref, int mask) {
+        stencilFunc = func;
+        stencilRef = ref;
+        stencilMask = mask;
+    }
+
+    public void glStencilOp(int fail, int zfail, int zpass) {
+        stencilFail = fail;
+        stencilZfail = zfail;
+        stencilZpass = zpass;
+    }
+
+    public void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+        stencilRed = red;
+        stencilGreen = green;
+        stencilBlue = blue;
+        stencilAlpha = alpha;
+    }
+
+    public void glAlphaFunc(int func, float ref) {
+        alphaFunc = func;
+        alphaRef = ref;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -108,6 +144,28 @@ public class RenderContext {
             return false;
         }
 
+        // Compare stencil context.
+        if (enableStencil
+                && (stencilFunc != that.stencilFunc
+                || stencilRef != that.stencilRef
+                || stencilMask != that.stencilMask
+                || stencilFail != that.stencilFail
+                || stencilZfail != that.stencilZfail
+                || stencilZpass != that.stencilZpass
+                || stencilRed != that.stencilRed
+                || stencilGreen != that.stencilGreen
+                || stencilBlue != that.stencilBlue
+                || stencilAlpha != that.stencilAlpha)) {
+            return false;
+        }
+
+        // Compare alpha context.
+        if (enableAlpha
+                && (alphaFunc != that.alphaFunc
+                || alphaRef != that.alphaRef)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -133,9 +191,21 @@ public class RenderContext {
         }
 
         if (enableStencil) {
+            h = h * 31 + stencilFunc;
+            h = h * 31 + stencilRef;
+            h = h * 31 + stencilMask;
+            h = h * 31 + stencilFail;
+            h = h * 31 + stencilZfail;
+            h = h * 31 + stencilZpass;
+            h = h * 31 + (stencilRed ? 1 : 0);
+            h = h * 31 + (stencilGreen ? 1 : 0);
+            h = h * 31 + (stencilBlue ? 1 : 0);
+            h = h * 31 + (stencilAlpha ? 1 : 0);
         }
 
         if (enableAlpha) {
+            h = h * 31 + alphaFunc;
+            h = h * 31 + (int) alphaRef;
         }
 
         return h;
@@ -156,8 +226,20 @@ public class RenderContext {
         cpy.blendEquation = blendEquation;
 
         cpy.enableStencil = enableStencil;
+        cpy.stencilFunc = stencilFunc;
+        cpy.stencilRef = stencilRef;
+        cpy.stencilMask = stencilMask;
+        cpy.stencilFail = stencilFail;
+        cpy.stencilZfail = stencilZfail;
+        cpy.stencilZpass = stencilZpass;
+        cpy.stencilRed = stencilRed;
+        cpy.stencilGreen = stencilGreen;
+        cpy.stencilBlue = stencilBlue;
+        cpy.stencilAlpha = stencilAlpha;
 
         cpy.enableAlpha = enableAlpha;
+        cpy.alphaFunc = alphaFunc;
+        cpy.alphaRef = alphaRef;
 
         return cpy;
     }

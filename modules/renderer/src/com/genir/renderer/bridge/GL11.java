@@ -90,6 +90,58 @@ public class GL11 {
         }
     }
 
+    public static void glStencilFunc(int func, int ref, int mask) {
+        if (listManager.isRecording()) {
+            listManager.glStencilFunc(func, ref, mask);
+            return;
+        }
+
+        renderContext.glStencilFunc(func, ref, mask);
+
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
+        }
+    }
+
+    public static void glStencilOp(int fail, int zfail, int zpass) {
+        if (listManager.isRecording()) {
+            listManager.glStencilOp(fail, zfail, zpass);
+            return;
+        }
+
+        renderContext.glStencilOp(fail, zfail, zpass);
+
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
+        }
+    }
+
+    public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+        if (listManager.isRecording()) {
+            listManager.glColorMask(red, green, blue, alpha);
+            return;
+        }
+
+        renderContext.glColorMask(red, green, blue, alpha);
+
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
+        }
+    }
+
+    public static void glAlphaFunc(int func, float ref) {
+        if (listManager.isRecording()) {
+            listManager.glAlphaFunc(func, ref);
+            return;
+        }
+
+        renderContext.glAlphaFunc(func, ref);
+
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
+        }
+    }
+
     /**
      * Model view.
      */
@@ -242,14 +294,6 @@ public class GL11 {
         }
     }
 
-    public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glColorMask");
-        } else {
-            org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
-        }
-    }
-
     public static void glLineWidth(float width) {
         if (interceptActive || listManager.isRecording()) {
             throw new UnsupportedOperationException("glLineWidth");
@@ -258,13 +302,6 @@ public class GL11 {
         }
     }
 
-    public static void glStencilFunc(int func, int ref, int mask) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glStencilFunc");
-        } else {
-            org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
-        }
-    }
 
     public static void glDeleteTextures(IntBuffer textures) {
         if (interceptActive || listManager.isRecording()) {
@@ -343,22 +380,6 @@ public class GL11 {
             throw new UnsupportedOperationException("glScissor");
         } else {
             org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
-        }
-    }
-
-    public static void glStencilOp(int fail, int zfail, int zpass) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glStencilOp");
-        } else {
-            org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
-        }
-    }
-
-    public static void glAlphaFunc(int func, float ref) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glAlphaFunc");
-        } else {
-            org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
         }
     }
 

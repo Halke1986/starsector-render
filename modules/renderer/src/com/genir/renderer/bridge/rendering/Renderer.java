@@ -58,6 +58,24 @@ public class Renderer {
                 GL11.glDisable(GL11.GL_BLEND);
             }
 
+            // Stencil context.
+            if (ctx.enableStencil) {
+                GL11.glEnable(GL11.GL_STENCIL_TEST);
+                GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilMask);
+                GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
+                GL11.glColorMask(ctx.stencilRed, ctx.stencilGreen, ctx.stencilBlue, ctx.stencilAlpha);
+            } else {
+                GL11.glDisable(GL11.GL_STENCIL_TEST);
+            }
+
+            // Alpha context.
+            if (ctx.enableAlpha) {
+                GL11.glEnable(GL11.GL_ALPHA_TEST);
+                GL11.glAlphaFunc(ctx.alphaFunc, ctx.alphaRef);
+            } else {
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
+            }
+
             VertexBuffer.Buffers buffers = vertexBuffer.getBuffers();
 
             GL11.glVertexPointer(2, 0, buffers.vertices());
@@ -68,9 +86,11 @@ public class Renderer {
         }
 
         // Cleanup.
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_STENCIL_TEST);
         GL11.glDisable(GL11.GL_BLEND);
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
