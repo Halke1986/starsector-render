@@ -2,6 +2,8 @@ package com.genir.renderer.bridge.state;
 
 import org.lwjgl.opengl.GL11;
 
+import static com.genir.renderer.Debug.asert;
+
 public class RenderContext {
     // Mode.
     public int mode;
@@ -12,19 +14,52 @@ public class RenderContext {
     public int textureID;
 
     // Blend.
+    public boolean enableBlend;
     public int blendSfactor;
     public int blendDfactor;
     public int blendEquation;
 
+    // Stencil.
+    public boolean enableStencil;
+
+    // Alpha.
+    public boolean enableAlpha;
+
     public void glEnable(int cap) {
-        if (cap == GL11.GL_TEXTURE_2D) {
-            enableTexture = true;
+        switch (cap) {
+            case GL11.GL_STENCIL_TEST:
+                enableStencil = true;
+                break;
+            case GL11.GL_ALPHA_TEST:
+                enableAlpha = true;
+                break;
+            case GL11.GL_TEXTURE_2D:
+                enableTexture = true;
+                break;
+            case GL11.GL_BLEND:
+                enableBlend = true;
+                break;
+            default:
+                asert(false);
         }
     }
 
     public void glDisable(int cap) {
-        if (cap == GL11.GL_TEXTURE_2D) {
-            enableTexture = false;
+        switch (cap) {
+            case GL11.GL_STENCIL_TEST:
+                enableStencil = false;
+                break;
+            case GL11.GL_ALPHA_TEST:
+                enableAlpha = false;
+                break;
+            case GL11.GL_TEXTURE_2D:
+                enableTexture = false;
+                break;
+            case GL11.GL_BLEND:
+                enableBlend = false;
+                break;
+            default:
+                asert(false);
         }
     }
 
@@ -56,13 +91,30 @@ public class RenderContext {
         if (o == null || getClass() != o.getClass()) return false;
         RenderContext that = (RenderContext) o;
 
-        return arrayMode() == that.arrayMode()
-                && enableTexture == that.enableTexture
-                && textureTarget == that.textureTarget
-                && textureID == that.textureID
-                && blendSfactor == that.blendSfactor
-                && blendDfactor == that.blendDfactor
-                && blendEquation == that.blendEquation;
+        if (mode != that.mode
+                || enableTexture != that.enableTexture
+                || enableBlend != that.enableBlend
+                || enableStencil != that.enableStencil
+                || enableAlpha != that.enableAlpha) {
+            return false;
+        }
+
+        // Compare texture context.
+        if (enableTexture
+                && (textureTarget != that.textureTarget
+                || textureID != that.textureID)) {
+            return false;
+        }
+
+        // Compare blend context.
+        if (enableBlend
+                && (blendSfactor != that.blendSfactor
+                || blendDfactor != that.blendDfactor
+                || blendEquation != that.blendEquation)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -71,11 +123,26 @@ public class RenderContext {
 
         h = h * 31 + arrayMode();
         h = h * 31 + (enableTexture ? 1 : 0);
-        h = h * 31 + textureTarget;
-        h = h * 31 + textureID;
-        h = h * 31 + blendSfactor;
-        h = h * 31 + blendDfactor;
-        h = h * 31 + blendEquation;
+        h = h * 31 + (enableBlend ? 1 : 0);
+        h = h * 31 + (enableStencil ? 1 : 0);
+        h = h * 31 + (enableAlpha ? 1 : 0);
+
+        if (enableTexture) {
+            h = h * 31 + textureTarget;
+            h = h * 31 + textureID;
+        }
+
+        if (enableBlend) {
+            h = h * 31 + blendSfactor;
+            h = h * 31 + blendDfactor;
+            h = h * 31 + blendEquation;
+        }
+
+        if (enableStencil) {
+        }
+
+        if (enableAlpha) {
+        }
 
         return h;
     }
@@ -84,12 +151,19 @@ public class RenderContext {
         RenderContext cpy = new RenderContext();
 
         cpy.mode = mode;
+
         cpy.enableTexture = enableTexture;
         cpy.textureTarget = textureTarget;
         cpy.textureID = textureID;
+
+        cpy.enableBlend = enableBlend;
         cpy.blendSfactor = blendSfactor;
         cpy.blendDfactor = blendDfactor;
         cpy.blendEquation = blendEquation;
+
+        cpy.enableStencil = enableStencil;
+
+        cpy.enableAlpha = enableAlpha;
 
         return cpy;
     }
