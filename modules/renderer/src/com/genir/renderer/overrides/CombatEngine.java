@@ -77,11 +77,13 @@ public class CombatEngine {
 
         beginLayer(JUST_BELOW_WIDGETS);
         engine.getRenderer().renderOnly(engine.getViewport(), JUST_BELOW_WIDGETS);
-        commitLayer();
 
         if (var1) {
+            beginLayer("FloatingTextManager");
             engine.renderFloatingTextManager();
         }
+
+        commitLayer();
     }
 
     private static void beginLayer(CombatEngineLayers layer) {

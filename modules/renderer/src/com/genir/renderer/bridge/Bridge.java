@@ -8,8 +8,10 @@ import com.genir.renderer.bridge.state.RenderContext;
 
 public class Bridge {
     static boolean layerActive = false;
+    static boolean interceptActive = false;
 
     static Renderer renderer = new Renderer();
+    static ListManager listManager = new ListManager();
     static VertexInterceptor vertexInterceptor;
 
     // GL state.
@@ -37,10 +39,12 @@ public class Bridge {
     public static void beginIntercept() {
         if (layerActive) {
             vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView);
+            interceptActive = true;
         }
     }
 
     public static void endIntercept() {
         vertexInterceptor = null;
+        interceptActive = false;
     }
 }
