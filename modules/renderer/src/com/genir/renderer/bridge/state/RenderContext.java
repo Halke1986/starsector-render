@@ -2,8 +2,6 @@ package com.genir.renderer.bridge.state;
 
 import org.lwjgl.opengl.GL11;
 
-import static com.genir.renderer.Debug.asert;
-
 public class RenderContext {
     // Mode.
     public int mode;
@@ -39,8 +37,6 @@ public class RenderContext {
             case GL11.GL_BLEND:
                 enableBlend = true;
                 break;
-            default:
-                asert(false);
         }
     }
 
@@ -58,8 +54,6 @@ public class RenderContext {
             case GL11.GL_BLEND:
                 enableBlend = false;
                 break;
-            default:
-                asert(false);
         }
     }
 

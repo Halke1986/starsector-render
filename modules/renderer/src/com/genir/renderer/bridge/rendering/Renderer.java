@@ -36,20 +36,26 @@ public class Renderer {
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glEnable(GL11.GL_BLEND);
 
         for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
             RenderContext ctx = entry.getKey();
             VertexBuffer vertexBuffer = entry.getValue();
 
-            GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
-            GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
-            GL14.glBlendEquation(ctx.blendEquation);
-
+            // Texture context.
             if (ctx.enableTexture) {
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
+                GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
             } else {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
+            }
+
+            // Blend context.
+            if (ctx.enableBlend) {
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
+                GL14.glBlendEquation(ctx.blendEquation);
+            } else {
+                GL11.glDisable(GL11.GL_BLEND);
             }
 
             VertexBuffer.Buffers buffers = vertexBuffer.getBuffers();
@@ -61,12 +67,14 @@ public class Renderer {
             GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
         }
 
-        GL11.glDisable(GL11.GL_BLEND);
+        // Cleanup.
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+
         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
     }
 
     public VertexBuffer getVertexBuffer(RenderContext ctx) {
