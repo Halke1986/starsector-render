@@ -10,7 +10,7 @@ public class Bridge {
     static boolean layerActive = false;
 
     static Renderer renderer = new Renderer();
-    static VertexInterceptor interceptor;
+    static VertexInterceptor vertexInterceptor;
 
     // GL state.
     public static final ModelView modelView = new ModelView();
@@ -36,11 +36,11 @@ public class Bridge {
 
     public static void beginIntercept() {
         if (layerActive) {
-            interceptor = new VertexInterceptor(renderer, renderContext, modelView);
+            vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView);
         }
     }
 
     public static void endIntercept() {
-        interceptor = null;
+        vertexInterceptor = null;
     }
 }
