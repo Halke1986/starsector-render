@@ -1,7 +1,8 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.rendering;
 
 import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        GL14.glBlendEquation(Default.blendEquation);
+        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
     }
 
     public VertexBuffer getVertexBuffer(RenderContext ctx) {

@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.rendering;
 
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Matrix3f;
 
 import static com.genir.renderer.Debug.asert;
 
-public class Interceptor {
+public class VertexInterceptor {
     private final Renderer renderer;
     private final RenderContext ctx;
     private final ModelView matrixStack;
@@ -24,7 +24,7 @@ public class Interceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public Interceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
+    public VertexInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
         this.renderer = renderer;
         this.ctx = ctx;
         this.matrixStack = matrixStack;
