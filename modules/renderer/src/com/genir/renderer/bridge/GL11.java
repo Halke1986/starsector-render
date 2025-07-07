@@ -7,34 +7,62 @@ import java.nio.IntBuffer;
 import static com.genir.renderer.bridge.Bridge.*;
 
 public class GL11 {
+    /**
+     * Render context.
+     */
     public static void glEnable(int cap) {
+        renderContext.glEnable(cap);
+
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glEnable(cap);
         }
     }
 
     public static void glDisable(int cap) {
+        renderContext.glDisable(cap);
+
         if (interceptor == null) {
             org.lwjgl.opengl.GL11.glDisable(cap);
         }
     }
 
-    public static void glVertex2f(float x, float y) {
+    public static void glBegin(int mode) {
+        renderContext.glBegin(mode);
+
         if (interceptor != null) {
-            interceptor.glVertex2f(x, y);
+            interceptor.glBegin(mode);
         } else {
-            org.lwjgl.opengl.GL11.glVertex2f(x, y);
+            org.lwjgl.opengl.GL11.glBegin(mode);
         }
     }
 
-    public static void glTexCoord2f(float s, float t) {
-        if (interceptor != null) {
-            interceptor.glTexCoord2f(s, t);
-        } else {
-            org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
+    public static void glEnd() {
+        renderContext.glEnd();
+
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glEnd();
         }
     }
 
+    public static void glBindTexture(int target, int texture) {
+        renderContext.glBindTexture(target, texture);
+
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+        }
+    }
+
+    public static void glBlendFunc(int sfactor, int dfactor) {
+        renderContext.glBlendFunc(sfactor, dfactor);
+
+        if (interceptor == null) {
+            org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
+        }
+    }
+
+    /**
+     * Model view.
+     */
     public static void glMatrixMode(int mode) {
         modelView.glMatrixMode(mode);
 
@@ -83,6 +111,25 @@ public class GL11 {
         }
     }
 
+    /**
+     * Vertex interceptor.
+     */
+    public static void glVertex2f(float x, float y) {
+        if (interceptor != null) {
+            interceptor.glVertex2f(x, y);
+        } else {
+            org.lwjgl.opengl.GL11.glVertex2f(x, y);
+        }
+    }
+
+    public static void glTexCoord2f(float s, float t) {
+        if (interceptor != null) {
+            interceptor.glTexCoord2f(s, t);
+        } else {
+            org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
+        }
+    }
+
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         if (interceptor != null) {
             interceptor.glColor4ub(red, green, blue, alpha);
@@ -91,40 +138,9 @@ public class GL11 {
         }
     }
 
-    public static void glBegin(int mode) {
-        renderContext.glBegin(mode);
-
-        if (interceptor != null) {
-            interceptor.glBegin(mode);
-        } else {
-            org.lwjgl.opengl.GL11.glBegin(mode);
-        }
-    }
-
-    public static void glEnd() {
-        renderContext.glEnd();
-
-        if (interceptor == null) {
-            org.lwjgl.opengl.GL11.glEnd();
-        }
-    }
-
-    public static void glBindTexture(int target, int texture) {
-        renderContext.glBindTexture(target, texture);
-
-        if (interceptor == null) {
-            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
-        }
-    }
-
-    public static void glBlendFunc(int sfactor, int dfactor) {
-        renderContext.glBlendFunc(sfactor, dfactor);
-
-        if (interceptor == null) {
-            org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
-        }
-    }
-
+    /**
+     * UNSUPPORTED.
+     */
     public static void glHint(int target, int mode) {
         if (interceptor != null) {
             throw new UnsupportedOperationException("glHint");

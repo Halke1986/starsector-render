@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
 import static com.genir.renderer.Debug.asert;
-import static com.genir.renderer.Debug.logger;
 
 public class Interceptor {
     private final Renderer renderer;
@@ -32,8 +31,6 @@ public class Interceptor {
     }
 
     public void glBegin(int mode) {
-        logger().info(mode);
-
         asert(ctx.mode == GL11.GL_QUADS || ctx.mode == GL11.GL_QUAD_STRIP || ctx.mode == GL11.GL_TRIANGLE_STRIP || ctx.mode == GL11.GL_TRIANGLE_FAN);
 
         vertexNum = 0;

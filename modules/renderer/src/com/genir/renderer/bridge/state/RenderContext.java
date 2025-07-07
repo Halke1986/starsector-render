@@ -7,6 +7,7 @@ public class RenderContext {
     public int mode;
 
     // Texture.
+    public boolean enableTexture;
     public int textureTarget;
     public int textureID;
 
@@ -14,6 +15,18 @@ public class RenderContext {
     public int blendSfactor;
     public int blendDfactor;
     public int blendEquation;
+
+    public void glEnable(int cap) {
+        if (cap == GL11.GL_TEXTURE_2D) {
+            enableTexture = true;
+        }
+    }
+
+    public void glDisable(int cap) {
+        if (cap == GL11.GL_TEXTURE_2D) {
+            enableTexture = false;
+        }
+    }
 
     public void glBegin(int mode) {
         this.mode = mode;
@@ -44,6 +57,7 @@ public class RenderContext {
         RenderContext that = (RenderContext) o;
 
         return arrayMode() == that.arrayMode()
+                && enableTexture == that.enableTexture
                 && textureTarget == that.textureTarget
                 && textureID == that.textureID
                 && blendSfactor == that.blendSfactor
@@ -56,6 +70,7 @@ public class RenderContext {
         int h = 0;
 
         h = h * 31 + arrayMode();
+        h = h * 31 + (enableTexture ? 1 : 0);
         h = h * 31 + textureTarget;
         h = h * 31 + textureID;
         h = h * 31 + blendSfactor;
@@ -69,6 +84,7 @@ public class RenderContext {
         RenderContext cpy = new RenderContext();
 
         cpy.mode = mode;
+        cpy.enableTexture = enableTexture;
         cpy.textureTarget = textureTarget;
         cpy.textureID = textureID;
         cpy.blendSfactor = blendSfactor;
