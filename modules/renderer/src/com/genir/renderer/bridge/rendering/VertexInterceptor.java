@@ -31,7 +31,10 @@ public class VertexInterceptor {
     }
 
     public void glBegin(int mode) {
-        asert(ctx.mode == GL11.GL_QUADS || ctx.mode == GL11.GL_QUAD_STRIP || ctx.mode == GL11.GL_TRIANGLE_STRIP || ctx.mode == GL11.GL_TRIANGLE_FAN);
+        asert(ctx.mode == GL11.GL_QUADS
+                || ctx.mode == GL11.GL_QUAD_STRIP
+                || ctx.mode == GL11.GL_TRIANGLE_STRIP
+                || ctx.mode == GL11.GL_TRIANGLE_FAN);
 
         vertexNum = 0;
     }

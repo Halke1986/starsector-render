@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.fs.starfarer.combat.CombatViewport;
 import com.genir.renderer.bridge.Bridge;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
@@ -16,19 +17,73 @@ public class CombatEngine {
 
         logger().info("");
 
+        com.fs.graphics.LayeredRenderer<CombatEngineLayers, CombatViewport> renderer = engine.getRenderer();
+        CombatViewport viewport = engine.getViewport();
+
         beginLayer("GlowyContrailParticles");
         engine.getGlowyContrailParticles().render(0.0F, 0.0F);
 
         beginLayer("SmokyContrailParticles");
         engine.getSmokyContrailParticles().render(0.0F, 0.0F);
 
-        commitLayer();
-        engine.getRenderer().renderExcluding(
-                engine.getViewport(),
-                ABOVE_PARTICLES,
-                ABOVE_PARTICLES_LOWER,
-                JUST_BELOW_WIDGETS
-        );
+        beginLayer(BELOW_PLANETS);
+        renderer.renderOnly(viewport, BELOW_PLANETS);
+
+//        renderer.renderOnly(viewport, PLANET_LAYER);
+
+        beginLayer(ABOVE_PLANETS);
+        renderer.renderOnly(viewport, ABOVE_PLANETS);
+
+        beginLayer(CLOUD_LAYER);
+        renderer.renderOnly(viewport, CLOUD_LAYER);
+
+        beginLayer(BELOW_SHIPS_LAYER);
+        renderer.renderOnly(viewport, BELOW_SHIPS_LAYER);
+
+        beginLayer(UNDER_SHIPS_LAYER);
+        renderer.renderOnly(viewport, UNDER_SHIPS_LAYER);
+
+        beginLayer(ASTEROIDS_LAYER);
+        renderer.renderOnly(viewport, ASTEROIDS_LAYER);
+
+//        beginLayer(CAPITAL_SHIPS_LAYER);
+//        renderer.renderOnly(viewport, CAPITAL_SHIPS_LAYER);
+
+//        beginLayer(CRUISERS_LAYER);
+//        renderer.renderOnly(viewport, CRUISERS_LAYER);
+
+//        beginLayer(DESTROYERS_LAYER);
+//        renderer.renderOnly(viewport, DESTROYERS_LAYER);
+
+//        beginLayer(FRIGATES_LAYER);
+//        renderer.renderOnly(viewport, FRIGATES_LAYER);
+
+        beginLayer(BELOW_PHASED_SHIPS_LAYER);
+        renderer.renderOnly(viewport, BELOW_PHASED_SHIPS_LAYER);
+
+        beginLayer(PHASED_SHIPS_LAYER);
+        renderer.renderOnly(viewport, PHASED_SHIPS_LAYER);
+
+        beginLayer(STATION_WEAPONS_LAYER);
+        renderer.renderOnly(viewport, STATION_WEAPONS_LAYER);
+
+        beginLayer(CONTRAILS_LAYER);
+        renderer.renderOnly(viewport, CONTRAILS_LAYER);
+
+        beginLayer(FIGHTERS_LAYER);
+        renderer.renderOnly(viewport, FIGHTERS_LAYER);
+
+        beginLayer(BELOW_INDICATORS_LAYER);
+        renderer.renderOnly(viewport, BELOW_INDICATORS_LAYER);
+
+        beginLayer(FF_INDICATORS_LAYER);
+        renderer.renderOnly(viewport, FF_INDICATORS_LAYER);
+
+        beginLayer(ABOVE_SHIPS_LAYER);
+        renderer.renderOnly(viewport, ABOVE_SHIPS_LAYER);
+
+        beginLayer(ABOVE_SHIPS_AND_MISSILES_LAYER);
+        renderer.renderOnly(viewport, ABOVE_SHIPS_AND_MISSILES_LAYER);
 
         beginLayer("DebrisSystem");
         engine.getDebrisSystem().render(0.0F, 0.0F);
@@ -70,13 +125,13 @@ public class CombatEngine {
         engine.getNegativeSwirlyNebulaParticles().render(0.0F, 0.0F); // UNUSED
 
         beginLayer(ABOVE_PARTICLES_LOWER);
-        engine.getRenderer().renderOnly(engine.getViewport(), ABOVE_PARTICLES_LOWER);
+        renderer.renderOnly(viewport, ABOVE_PARTICLES_LOWER);
 
         beginLayer(ABOVE_PARTICLES);
-        engine.getRenderer().renderOnly(engine.getViewport(), ABOVE_PARTICLES);
+        renderer.renderOnly(viewport, ABOVE_PARTICLES);
 
         beginLayer(JUST_BELOW_WIDGETS);
-        engine.getRenderer().renderOnly(engine.getViewport(), JUST_BELOW_WIDGETS);
+        renderer.renderOnly(viewport, JUST_BELOW_WIDGETS);
 
         if (var1) {
             beginLayer("FloatingTextManager");

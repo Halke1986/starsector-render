@@ -118,8 +118,8 @@ public class Renderer {
             entities += quads.size();
         }
 
-        if (entities > 0) {
+//        if (entities > 0) {
             logger().info(layer + ": " + buffers.size() + " " + entities);
-        }
+//        }
     }
 }
