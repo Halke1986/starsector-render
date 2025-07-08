@@ -283,6 +283,15 @@ public class GL11 {
         }
     }
 
+    // TODO
+    public static void glTexParameteri(int target, int pname, int param) {
+//        if (interceptActive || listManager.isRecording()) {
+//            throw new UnsupportedOperationException("glTexParameteri");
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
+        }
+    }
+
     /**
      * UNSUPPORTED.
      */
@@ -301,7 +310,6 @@ public class GL11 {
             org.lwjgl.opengl.GL11.glLineWidth(width);
         }
     }
-
 
     public static void glDeleteTextures(IntBuffer textures) {
         if (interceptActive || listManager.isRecording()) {
@@ -396,14 +404,6 @@ public class GL11 {
             throw new UnsupportedOperationException("glGenTextures");
         } else {
             org.lwjgl.opengl.GL11.glGenTextures(textures);
-        }
-    }
-
-    public static void glTexParameteri(int target, int pname, int param) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glTexParameteri");
-        } else {
-            org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
         }
     }
 

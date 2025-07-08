@@ -46,17 +46,17 @@ public class CombatEngine {
         beginLayer(ASTEROIDS_LAYER);
         renderer.renderOnly(viewport, ASTEROIDS_LAYER);
 
-//        beginLayer(CAPITAL_SHIPS_LAYER);
-//        renderer.renderOnly(viewport, CAPITAL_SHIPS_LAYER);
+        beginLayer(CAPITAL_SHIPS_LAYER);
+        renderer.renderOnly(viewport, CAPITAL_SHIPS_LAYER);
 
-//        beginLayer(CRUISERS_LAYER);
-//        renderer.renderOnly(viewport, CRUISERS_LAYER);
+        beginLayer(CRUISERS_LAYER);
+        renderer.renderOnly(viewport, CRUISERS_LAYER);
 
-//        beginLayer(DESTROYERS_LAYER);
-//        renderer.renderOnly(viewport, DESTROYERS_LAYER);
+        beginLayer(DESTROYERS_LAYER);
+        renderer.renderOnly(viewport, DESTROYERS_LAYER);
 
-//        beginLayer(FRIGATES_LAYER);
-//        renderer.renderOnly(viewport, FRIGATES_LAYER);
+        beginLayer(FRIGATES_LAYER);
+        renderer.renderOnly(viewport, FRIGATES_LAYER);
 
         beginLayer(BELOW_PHASED_SHIPS_LAYER);
         renderer.renderOnly(viewport, BELOW_PHASED_SHIPS_LAYER);
