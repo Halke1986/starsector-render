@@ -76,11 +76,13 @@ public class Renderer {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
             }
 
-            VertexBuffer.Buffers buffers = vertexBuffer.getBuffers();
+            VertexBuffer.Buffers buffers = vertexBuffer.getFlippedBuffers();
 
-            GL11.glVertexPointer(2, 0, buffers.vertices());
-            GL11.glTexCoordPointer(2, 0, buffers.texCoord());
+            if (ctx.enableTexture) {
+                GL11.glTexCoordPointer(2, 0, buffers.texCoord());
+            }
             GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
+            GL11.glVertexPointer(2, 0, buffers.vertices());
 
             GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
         }
@@ -118,8 +120,8 @@ public class Renderer {
             entities += quads.size();
         }
 
-//        if (entities > 0) {
+        if (entities > 0) {
             logger().info(layer + ": " + buffers.size() + " " + entities);
-//        }
+        }
     }
 }

@@ -4,9 +4,19 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.bridge.Bridge.*;
 
 public class GL11 {
+    // TODO
+    public static void glTexParameteri(int target, int pname, int param) {
+//        if (interceptActive || listManager.isRecording()) {
+//            throw new UnsupportedOperationException("glTexParameteri");
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
+        }
+    }
+
     /**
      * Render context.
      */
@@ -226,13 +236,13 @@ public class GL11 {
     /**
      * Vertex interceptor.
      */
-    public static void glVertex2f(float x, float y) {
+    public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         if (listManager.isRecording()) {
-            listManager.recordGlVertex2f(x, y);
+            listManager.recordGlColor4ub(red, green, blue, alpha);
         } else if (interceptActive) {
-            vertexInterceptor.glVertex2f(x, y);
+            vertexInterceptor.glColor4ub(red, green, blue, alpha);
         } else {
-            org.lwjgl.opengl.GL11.glVertex2f(x, y);
+            org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
         }
     }
 
@@ -246,13 +256,66 @@ public class GL11 {
         }
     }
 
-    public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
+    public static void glVertex2f(float x, float y) {
         if (listManager.isRecording()) {
-            listManager.recordGlColor4ub(red, green, blue, alpha);
+            listManager.recordGlVertex2f(x, y);
         } else if (interceptActive) {
-            vertexInterceptor.glColor4ub(red, green, blue, alpha);
+            vertexInterceptor.glVertex2f(x, y);
         } else {
-            org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glVertex2f(x, y);
+        }
+    }
+
+    /**
+     * Array interceptor.
+     */
+    public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
+        if (listManager.isRecording()) {
+            throw new UnsupportedOperationException("glColorPointer");
+        }
+
+        if (interceptActive) {
+            arrayInterceptor.glColorPointer(size, unsigned, stride, pointer);
+        } else {
+            org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer);
+        }
+    }
+
+    public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+        if (listManager.isRecording()) {
+            throw new UnsupportedOperationException("glTexCoordPointer");
+        }
+
+        if (interceptActive) {
+            arrayInterceptor.glTexCoordPointer(size, stride, pointer);
+        } else {
+            org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer);
+        }
+    }
+
+    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        if (listManager.isRecording()) {
+            throw new UnsupportedOperationException("glVertexPointer");
+        }
+
+        if (interceptActive) {
+            arrayInterceptor.glVertexPointer(size, stride, pointer);
+        } else {
+            org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
+        }
+    }
+
+    public static void glDrawArrays(int mode, int first, int count) {
+        if (listManager.isRecording()) {
+            throw new UnsupportedOperationException("glDrawArrays");
+        }
+
+        renderContext.glDrawArrays(mode, first, count);
+
+        if (interceptActive) {
+            arrayInterceptor.glDrawArrays(mode, first, count);
+        } else {
+            org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
         }
     }
 
@@ -283,12 +346,30 @@ public class GL11 {
         }
     }
 
-    // TODO
-    public static void glTexParameteri(int target, int pname, int param) {
-//        if (interceptActive || listManager.isRecording()) {
-//            throw new UnsupportedOperationException("glTexParameteri");
+    /**
+     * No op
+     */
+    public static void glEnableClientState(int cap) {
+        if (listManager.isRecording()) {
+            throw new UnsupportedOperationException("glEnableClientState");
+        }
+
+        if (interceptActive) {
+            asert(cap == org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY
+                    || cap == org.lwjgl.opengl.GL11.GL_COLOR_ARRAY
+                    || cap == org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY);
+        } else {
+            org.lwjgl.opengl.GL11.glEnableClientState(cap);
+        }
+    }
+
+    public static void glDisableClientState(int cap) {
+        if (listManager.isRecording()) {
+            throw new UnsupportedOperationException("glDisableClientState");
+        }
+
         if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
+            org.lwjgl.opengl.GL11.glDisableClientState(cap);
         }
     }
 
@@ -535,27 +616,11 @@ public class GL11 {
         }
     }
 
-    public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glTexCoordPointer");
-        } else {
-            org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer);
-        }
-    }
-
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) {
         if (interceptActive || listManager.isRecording()) {
             throw new UnsupportedOperationException("glTexCoordPointer");
         } else {
             org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
-        }
-    }
-
-    public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glColorPointer");
-        } else {
-            org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer);
         }
     }
 
@@ -588,14 +653,6 @@ public class GL11 {
             throw new UnsupportedOperationException("glColor3f");
         } else {
             org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
-        }
-    }
-
-    public static void glDrawArrays(int mode, int first, int count) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glDrawArrays");
-        } else {
-            org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
         }
     }
 
@@ -644,14 +701,6 @@ public class GL11 {
             throw new UnsupportedOperationException("glGenLists");
         } else {
             return org.lwjgl.opengl.GL11.glGenLists(range);
-        }
-    }
-
-    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glVertexPointer");
-        } else {
-            org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
         }
     }
 
@@ -711,27 +760,11 @@ public class GL11 {
         }
     }
 
-    public static void glEnableClientState(int cap) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glEnableClientState");
-        } else {
-            org.lwjgl.opengl.GL11.glEnableClientState(cap);
-        }
-    }
-
     public static void glMultMatrix(FloatBuffer m) {
         if (interceptActive || listManager.isRecording()) {
             throw new UnsupportedOperationException("glMultMatrix");
         } else {
             org.lwjgl.opengl.GL11.glMultMatrix(m);
-        }
-    }
-
-    public static void glDisableClientState(int cap) {
-        if (interceptActive || listManager.isRecording()) {
-            throw new UnsupportedOperationException("glDisableClientState");
-        } else {
-            org.lwjgl.opengl.GL11.glDisableClientState(cap);
         }
     }
 }

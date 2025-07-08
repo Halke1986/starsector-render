@@ -1,8 +1,9 @@
 package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.genir.renderer.bridge.interception.ArrayInterceptor;
+import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.Renderer;
-import com.genir.renderer.bridge.rendering.VertexInterceptor;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
 
@@ -10,13 +11,14 @@ public class Bridge {
     static boolean layerActive = false;
     static boolean interceptActive = false;
 
-    static Renderer renderer = new Renderer();
-    static ListManager listManager = new ListManager();
-    static VertexInterceptor vertexInterceptor;
-
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
+    static final ListManager listManager = new ListManager();
+
+    static final Renderer renderer = new Renderer();
+    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView);
+    static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(renderer, renderContext, modelView);
 
     public static void beginLayer(CombatEngineLayers layer) {
         beginLayer(layer.name());
@@ -38,13 +40,11 @@ public class Bridge {
 
     public static void beginIntercept() {
         if (layerActive) {
-            vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView);
             interceptActive = true;
         }
     }
 
     public static void endIntercept() {
-        vertexInterceptor = null;
         interceptActive = false;
     }
 }

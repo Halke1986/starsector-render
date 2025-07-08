@@ -77,6 +77,10 @@ public class RenderContext {
         this.mode = -1;
     }
 
+    public void glDrawArrays(int mode, int first, int count) {
+        this.mode = mode;
+    }
+
     public void glBindTexture(int target, int texture) {
         textureTarget = target;
         textureID = texture;

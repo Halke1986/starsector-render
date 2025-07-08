@@ -1,5 +1,7 @@
-package com.genir.renderer.bridge.rendering;
+package com.genir.renderer.bridge.interception;
 
+import com.genir.renderer.bridge.rendering.Renderer;
+import com.genir.renderer.bridge.rendering.VertexBuffer;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
@@ -229,4 +231,3 @@ public class VertexInterceptor {
         c[7] = c[11];
     }
 }
-
