@@ -4,9 +4,7 @@ import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 import static com.genir.renderer.Debug.logger;
 
@@ -14,6 +12,8 @@ public class Renderer {
     private final Stack<VertexBuffer> bufferPool = new Stack<>();
     private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
     private String layer = "";
+
+    public static int useCount = 0;
 
     public void beginLayer(String layer) {
         // Put back quad buffers into pool for later reuse.
@@ -24,6 +24,8 @@ public class Renderer {
 
         this.buffers = new HashMap<>();
         this.layer = layer;
+
+        useCount = 0;
     }
 
     public void commitLayer() {
@@ -33,11 +35,19 @@ public class Renderer {
             return;
         }
 
+        // Vertices are already transformed into model frame.
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
-        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
+        List<Map.Entry<RenderContext, VertexBuffer>> bufferList = new java.util.ArrayList<>(buffers.entrySet().stream().toList());
+        bufferList.sort(Comparator.comparingInt(o -> o.getValue().lastUsed));
+
+        for (Map.Entry<RenderContext, VertexBuffer> entry : bufferList) {
             RenderContext ctx = entry.getKey();
             VertexBuffer vertexBuffer = entry.getValue();
 
@@ -97,6 +107,8 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+
+        GL11.glPopMatrix();
     }
 
     public VertexBuffer getVertexBuffer(RenderContext ctx) {

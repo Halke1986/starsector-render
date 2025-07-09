@@ -61,7 +61,7 @@ public class ArrayInterceptor {
         vertices.get(rawVertices);
 
         for (int i = 0; i < rawVertices.length; i += 2) {
-            float x = rawVertices[i];
+            float x = rawVertices[i + 0];
             float y = rawVertices[i + 1];
 
             rawVertices[i + 0] = x * m.m00 + y * m.m01 + m.m02;

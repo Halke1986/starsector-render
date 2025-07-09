@@ -28,8 +28,9 @@ public class CombatEngine {
 
         beginLayer(BELOW_PLANETS);
         renderer.renderOnly(viewport, BELOW_PLANETS);
+        commitLayer();
 
-//        renderer.renderOnly(viewport, PLANET_LAYER);
+        renderer.renderOnly(viewport, PLANET_LAYER);
 
         beginLayer(ABOVE_PLANETS);
         renderer.renderOnly(viewport, ABOVE_PLANETS);
@@ -61,8 +62,8 @@ public class CombatEngine {
         beginLayer(BELOW_PHASED_SHIPS_LAYER);
         renderer.renderOnly(viewport, BELOW_PHASED_SHIPS_LAYER);
 
-//        beginLayer(PHASED_SHIPS_LAYER);
-//        renderer.renderOnly(viewport, PHASED_SHIPS_LAYER);
+        beginLayer(PHASED_SHIPS_LAYER);
+        renderer.renderOnly(viewport, PHASED_SHIPS_LAYER);
 
         beginLayer(STATION_WEAPONS_LAYER);
         renderer.renderOnly(viewport, STATION_WEAPONS_LAYER);
@@ -70,8 +71,8 @@ public class CombatEngine {
         beginLayer(CONTRAILS_LAYER);
         renderer.renderOnly(viewport, CONTRAILS_LAYER);
 
-//        beginLayer(FIGHTERS_LAYER);
-//        renderer.renderOnly(viewport, FIGHTERS_LAYER);
+        beginLayer(FIGHTERS_LAYER);
+        renderer.renderOnly(viewport, FIGHTERS_LAYER);
 
         beginLayer(BELOW_INDICATORS_LAYER);
         renderer.renderOnly(viewport, BELOW_INDICATORS_LAYER);

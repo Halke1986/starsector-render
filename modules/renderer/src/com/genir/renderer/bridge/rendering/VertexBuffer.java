@@ -5,9 +5,12 @@ import org.lwjgl.BufferUtils;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import static com.genir.renderer.bridge.rendering.Renderer.useCount;
+
 public class VertexBuffer {
+    public int lastUsed = 0;
+
     private int numVertices = 0;
-//    private int maxVertices = 0;
 
     private ByteBuffer colors = BufferUtils.createByteBuffer(0);
     private FloatBuffer texCoords = BufferUtils.createFloatBuffer(0);
@@ -41,6 +44,7 @@ public class VertexBuffer {
         this.vertices.put(vertices, 0, verticesToAdd * 2);
 
         numVertices += verticesToAdd;
+        updateUsed();
     }
 
     public void addVertices(ByteBuffer colors, FloatBuffer texCoord, float[] vertices, int verticesToAdd) {
@@ -51,6 +55,12 @@ public class VertexBuffer {
         this.vertices.put(vertices, 0, verticesToAdd * 2);
 
         numVertices += verticesToAdd;
+        updateUsed();
+    }
+
+    private void updateUsed() {
+        lastUsed = useCount;
+        useCount++;
     }
 
     private void ensureCapacity(int verticesToAdd) {
