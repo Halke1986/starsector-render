@@ -137,6 +137,7 @@ public class GL11 {
             return;
         }
 
+        renderContext.glStencilFunc(func, ref, mask);
         stencilManager.glStencilFunc(func, ref, mask);
 
         if (!interceptActive) {
@@ -150,6 +151,7 @@ public class GL11 {
             return;
         }
 
+        renderContext.glStencilOp(fail, zfail, zpass);
         stencilManager.glStencilOp(fail, zfail, zpass);
 
         if (!interceptActive) {

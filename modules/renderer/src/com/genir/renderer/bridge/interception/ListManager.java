@@ -1,4 +1,6 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.interception;
+
+import com.genir.renderer.bridge.GL11;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -2,11 +2,12 @@ package com.genir.renderer.bridge;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.interception.ArrayInterceptor;
+import com.genir.renderer.bridge.interception.ListManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
-import com.genir.renderer.bridge.state.StencilManager;
+import com.genir.renderer.bridge.interception.StencilManager;
 
 public class Bridge {
     static boolean layerActive = false;
@@ -37,9 +38,9 @@ public class Bridge {
     }
 
     public static void beginIntercept() {
-//        if (layerActive) {
-//            interceptActive = true;
-//        }
+        if (layerActive) {
+            interceptActive = true;
+        }
     }
 
     public static void endIntercept() {
