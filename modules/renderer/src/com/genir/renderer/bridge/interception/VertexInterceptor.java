@@ -11,8 +11,10 @@ import static com.genir.renderer.Debug.asert;
 
 public class VertexInterceptor {
     private final Renderer renderer;
+
     private final RenderContext ctx;
     private final ModelView matrixStack;
+    private final StencilManager stencilManager;
 
     // State.
     private final byte[] color = new byte[4];
@@ -26,10 +28,11 @@ public class VertexInterceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public VertexInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
+    public VertexInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack, StencilManager stencilManager) {
         this.renderer = renderer;
         this.ctx = ctx;
         this.matrixStack = matrixStack;
+        this.stencilManager = stencilManager;
     }
 
     public void glBegin(int mode) {
@@ -118,7 +121,8 @@ public class VertexInterceptor {
                 break;
             case GL11.GL_QUAD_STRIP:
                 if (vertexNum >= 4 && vertexNum % 2 == 0) {
-                    commitQuadStrip();
+                    commitQuad();
+                    rotateQuadStrip();
                 }
                 break;
             case GL11.GL_TRIANGLES:
@@ -128,12 +132,14 @@ public class VertexInterceptor {
                 break;
             case GL11.GL_TRIANGLE_FAN:
                 if (vertexNum >= 3) {
-                    commitTriangleFan();
+                    commitTriangle();
+                    rotateTriangleFan();
                 }
                 break;
             case GL11.GL_TRIANGLE_STRIP:
                 if (vertexNum >= 3) {
-                    commitTriangleStrip();
+                    commitTriangle();
+                    rotateTriangleStrip();
                 }
                 break;
         }
@@ -142,13 +148,22 @@ public class VertexInterceptor {
     private void commitQuad() {
         VertexBuffer buffer = renderer.getVertexBuffer(ctx);
         buffer.addVertices(colors, texCoords, vertices, 4);
+
+        if (stencilManager.getState() == StencilManager.State.REPLACE_1) {
+            stencilManager.addMask(vertices, 4);
+        }
     }
 
-    private void commitQuadStrip() {
+    private void commitTriangle() {
         VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 4);
+        buffer.addVertices(colors, texCoords, vertices, 3);
 
-        // Rotate buffers.
+        if (stencilManager.getState() == StencilManager.State.REPLACE_1) {
+            stencilManager.addMask(vertices, 4);
+        }
+    }
+
+    private void rotateQuadStrip() {
         float[] t = texCoords;
         t[0] = t[6];
         t[1] = t[7];
@@ -172,16 +187,7 @@ public class VertexInterceptor {
         c[7] = c[11];
     }
 
-    private void commitTriangle() {
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 3);
-    }
-
-    private void commitTriangleStrip() {
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 3);
-
-        // Rotate buffers.
+    private void rotateTriangleStrip() {
         float[] t = texCoords;
         float[] v = vertices;
         byte[] c = colors;
@@ -211,11 +217,7 @@ public class VertexInterceptor {
         }
     }
 
-    private void commitTriangleFan() {
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 3);
-
-        // Rotate buffers.
+    private void rotateTriangleFan() {
         float[] t = texCoords;
         t[2] = t[4];
         t[3] = t[5];

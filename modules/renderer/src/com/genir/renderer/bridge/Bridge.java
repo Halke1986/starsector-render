@@ -3,11 +3,11 @@ package com.genir.renderer.bridge;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.interception.ArrayInterceptor;
 import com.genir.renderer.bridge.interception.ListManager;
+import com.genir.renderer.bridge.interception.StencilManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
-import com.genir.renderer.bridge.interception.StencilManager;
 
 public class Bridge {
     static boolean layerActive = false;
@@ -20,8 +20,8 @@ public class Bridge {
     static final ListManager listManager = new ListManager();
 
     static final Renderer renderer = new Renderer();
-    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView);
-    static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(renderer, renderContext, modelView);
+    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView, stencilManager);
+    static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(renderer, renderContext, modelView); // TODO stencilManager
 
     public static void beginLayer(CombatEngineLayers layer) {
         beginLayer(layer.name());
@@ -30,6 +30,7 @@ public class Bridge {
     public static void beginLayer(String layer) {
         layerActive = true;
         renderer.beginLayer(layer);
+        stencilManager.beginLayer();
     }
 
     public static void commitLayer() {

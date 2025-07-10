@@ -2,10 +2,53 @@ package com.genir.renderer.bridge.interception;
 
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.genir.renderer.Debug.asert;
+import static com.genir.renderer.Debug.logger;
 
 public class StencilManager {
     private State state = State.DISABLED;
+
+    private final List<List<BoundingBox>> bitLayers = new ArrayList<>();
+
+    public void beginLayer() {
+        if (!bitLayers.isEmpty()) {
+            logger().info("bl: " + bitLayers.size());
+        }
+
+        bitLayers.clear();
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void addMask(float[] vertices, int verticesNum) {
+        BoundingBox bb = new BoundingBox(vertices, verticesNum);
+
+        for (List<BoundingBox> bitLayer : bitLayers) {
+            boolean collision = false;
+
+            for (BoundingBox other : bitLayer) {
+                if (bb.overlaps(other)) {
+                    collision = true;
+                    break;
+                }
+            }
+
+            if (!collision) {
+                bitLayer.add(bb);
+                return;
+            }
+        }
+
+        // No place found in any existing layer.
+        List<BoundingBox> newLayer = new ArrayList<>();
+        newLayer.add(bb);
+        bitLayers.add(newLayer);
+    }
 
     public void glEnable(int cap) {
         if (cap != GL11.GL_STENCIL_TEST) {
@@ -66,10 +109,52 @@ public class StencilManager {
         }
     }
 
-    enum State {
+    public enum State {
         DISABLED,
         REPLACE_0,
         REPLACE_1,
         KEEP
+    }
+
+    private static class BoundingBox {
+        float x1;
+        float x2;
+        float y1;
+        float y2;
+
+        BoundingBox(float[] points, int num) {
+            asert(num >= 1);
+
+            float x = points[0];
+            float y = points[1];
+            x1 = x2 = x;
+            y1 = y2 = y;
+
+            for (int i = 1; i < num; i++) {
+                float xi = points[2 * i];
+                float yi = points[2 * i + 1];
+
+                x1 = Math.min(x1, xi);
+                x2 = Math.max(x2, xi);
+                y1 = Math.min(y1, yi);
+                y2 = Math.max(y2, yi);
+            }
+        }
+
+        public boolean overlaps(BoundingBox o) {
+            // Two boxes overlap if their projections on both axes intersect.
+            return o.x2 > x1
+                    && o.x1 < x2
+                    && o.y2 > y1
+                    && o.y1 < y2;
+        }
+
+        public void merge(BoundingBox o) {
+            // Expand this box to cover both.
+            x1 = Math.min(x1, o.x1);
+            x2 = Math.max(x2, o.x2);
+            y1 = Math.min(y1, o.y1);
+            y2 = Math.max(y2, o.y2);
+        }
     }
 }
