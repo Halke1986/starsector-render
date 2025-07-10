@@ -51,6 +51,8 @@ public class Renderer {
             RenderContext ctx = entry.getKey();
             VertexBuffer vertexBuffer = entry.getValue();
 
+            GL11.glColorMask(ctx.maskRed, ctx.maskGreen, ctx.maskBlue, ctx.maskAlpha);
+
             // Texture context.
             if (ctx.enableTexture) {
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -73,7 +75,6 @@ public class Renderer {
                 GL11.glEnable(GL11.GL_STENCIL_TEST);
                 GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilMask);
                 GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
-                GL11.glColorMask(ctx.stencilRed, ctx.stencilGreen, ctx.stencilBlue, ctx.stencilAlpha);
             } else {
                 GL11.glDisable(GL11.GL_STENCIL_TEST);
             }

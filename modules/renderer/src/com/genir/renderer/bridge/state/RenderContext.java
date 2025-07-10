@@ -6,6 +6,12 @@ public class RenderContext {
     // Mode.
     public int mode;
 
+    // Color mask.
+    public boolean maskRed;
+    public boolean maskGreen;
+    public boolean maskBlue;
+    public boolean maskAlpha;
+
     // Texture.
     public boolean enableTexture;
     public int textureTarget;
@@ -25,10 +31,6 @@ public class RenderContext {
     public int stencilFail;
     public int stencilZfail;
     public int stencilZpass;
-    public boolean stencilRed;
-    public boolean stencilGreen;
-    public boolean stencilBlue;
-    public boolean stencilAlpha;
 
     // Alpha.
     public boolean enableAlpha;
@@ -108,10 +110,10 @@ public class RenderContext {
     }
 
     public void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-        stencilRed = red;
-        stencilGreen = green;
-        stencilBlue = blue;
-        stencilAlpha = alpha;
+        maskRed = red;
+        maskGreen = green;
+        maskBlue = blue;
+        maskAlpha = alpha;
     }
 
     public void glAlphaFunc(int func, float ref) {
@@ -125,11 +127,20 @@ public class RenderContext {
         if (o == null || getClass() != o.getClass()) return false;
         RenderContext that = (RenderContext) o;
 
+        // Compare mode and enabled tests.
         if (mode != that.mode
                 || enableTexture != that.enableTexture
                 || enableBlend != that.enableBlend
                 || enableStencil != that.enableStencil
                 || enableAlpha != that.enableAlpha) {
+            return false;
+        }
+
+        // Compare color mask.
+        if (maskRed != that.maskRed
+                || maskGreen != that.maskGreen
+                || maskBlue != that.maskBlue
+                || maskAlpha != that.maskAlpha) {
             return false;
         }
 
@@ -155,11 +166,7 @@ public class RenderContext {
                 || stencilMask != that.stencilMask
                 || stencilFail != that.stencilFail
                 || stencilZfail != that.stencilZfail
-                || stencilZpass != that.stencilZpass
-                || stencilRed != that.stencilRed
-                || stencilGreen != that.stencilGreen
-                || stencilBlue != that.stencilBlue
-                || stencilAlpha != that.stencilAlpha)) {
+                || stencilZpass != that.stencilZpass)) {
             return false;
         }
 
@@ -175,50 +182,18 @@ public class RenderContext {
 
     @Override
     public int hashCode() {
-        int h = 0;
-
-        h = h * 31 + arrayMode();
-        h = h * 31 + (enableTexture ? 1 : 0);
-        h = h * 31 + (enableBlend ? 1 : 0);
-        h = h * 31 + (enableStencil ? 1 : 0);
-        h = h * 31 + (enableAlpha ? 1 : 0);
-
-        if (enableTexture) {
-            h = h * 31 + textureTarget;
-            h = h * 31 + textureID;
-        }
-
-        if (enableBlend) {
-            h = h * 31 + blendSfactor;
-            h = h * 31 + blendDfactor;
-            h = h * 31 + blendEquation;
-        }
-
-        if (enableStencil) {
-            h = h * 31 + stencilFunc;
-            h = h * 31 + stencilRef;
-            h = h * 31 + stencilMask;
-            h = h * 31 + stencilFail;
-            h = h * 31 + stencilZfail;
-            h = h * 31 + stencilZpass;
-            h = h * 31 + (stencilRed ? 1 : 0);
-            h = h * 31 + (stencilGreen ? 1 : 0);
-            h = h * 31 + (stencilBlue ? 1 : 0);
-            h = h * 31 + (stencilAlpha ? 1 : 0);
-        }
-
-        if (enableAlpha) {
-            h = h * 31 + alphaFunc;
-            h = h * 31 + (int) alphaRef;
-        }
-
-        return h;
+        return textureID;
     }
 
     public RenderContext copy() {
         RenderContext cpy = new RenderContext();
 
         cpy.mode = mode;
+
+        cpy.maskRed = maskRed;
+        cpy.maskGreen = maskGreen;
+        cpy.maskBlue = maskBlue;
+        cpy.maskAlpha = maskAlpha;
 
         cpy.enableTexture = enableTexture;
         cpy.textureTarget = textureTarget;
@@ -236,10 +211,6 @@ public class RenderContext {
         cpy.stencilFail = stencilFail;
         cpy.stencilZfail = stencilZfail;
         cpy.stencilZpass = stencilZpass;
-        cpy.stencilRed = stencilRed;
-        cpy.stencilGreen = stencilGreen;
-        cpy.stencilBlue = stencilBlue;
-        cpy.stencilAlpha = stencilAlpha;
 
         cpy.enableAlpha = enableAlpha;
         cpy.alphaFunc = alphaFunc;
