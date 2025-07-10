@@ -51,51 +51,7 @@ public class Renderer {
             RenderContext ctx = entry.getKey();
             VertexBuffer vertexBuffer = entry.getValue();
 
-            GL11.glColorMask(ctx.maskRed, ctx.maskGreen, ctx.maskBlue, ctx.maskAlpha);
-
-            // Texture context.
-            if (ctx.enableTexture) {
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-                GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
-            } else {
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-            }
-
-            // Blend context.
-            if (ctx.enableBlend) {
-                GL11.glEnable(GL11.GL_BLEND);
-                GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
-                GL14.glBlendEquation(ctx.blendEquation);
-            } else {
-                GL11.glDisable(GL11.GL_BLEND);
-            }
-
-            // Stencil context.
-            if (ctx.enableStencil) {
-                GL11.glEnable(GL11.GL_STENCIL_TEST);
-                GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilMask);
-                GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
-            } else {
-                GL11.glDisable(GL11.GL_STENCIL_TEST);
-            }
-
-            // Alpha context.
-            if (ctx.enableAlpha) {
-                GL11.glEnable(GL11.GL_ALPHA_TEST);
-                GL11.glAlphaFunc(ctx.alphaFunc, ctx.alphaRef);
-            } else {
-                GL11.glDisable(GL11.GL_ALPHA_TEST);
-            }
-
-            VertexBuffer.Buffers buffers = vertexBuffer.getFlippedBuffers();
-
-            if (ctx.enableTexture) {
-                GL11.glTexCoordPointer(2, 0, buffers.texCoord());
-            }
-            GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
-            GL11.glVertexPointer(2, 0, buffers.vertices());
-
-            GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
+            drawBuffer(ctx, vertexBuffer);
         }
 
         // Cleanup.
@@ -110,6 +66,59 @@ public class Renderer {
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
 
         GL11.glPopMatrix();
+
+        GL11.glClearStencil(0);
+        GL11.glStencilMask(0xFF);
+        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+    }
+
+    private void drawBuffer(RenderContext ctx, VertexBuffer vertexBuffer) {
+        GL11.glColorMask(ctx.maskRed, ctx.maskGreen, ctx.maskBlue, ctx.maskAlpha);
+
+        // Texture context.
+        if (ctx.enableTexture) {
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
+        } else {
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+        }
+
+        // Blend context.
+        if (ctx.enableBlend) {
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
+            GL14.glBlendEquation(ctx.blendEquation);
+        } else {
+            GL11.glDisable(GL11.GL_BLEND);
+        }
+
+        // Stencil context.
+        if (ctx.enableStencil) {
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
+            GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilFuncMask);
+            GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
+            GL11.glStencilMask(ctx.stencilMask);
+        } else {
+            GL11.glDisable(GL11.GL_STENCIL_TEST);
+        }
+
+        // Alpha context.
+        if (ctx.enableAlpha) {
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(ctx.alphaFunc, ctx.alphaRef);
+        } else {
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+        }
+
+        VertexBuffer.Buffers buffers = vertexBuffer.getFlippedBuffers();
+
+        if (ctx.enableTexture) {
+            GL11.glTexCoordPointer(2, 0, buffers.texCoord());
+        }
+        GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
+        GL11.glVertexPointer(2, 0, buffers.vertices());
+
+        GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
     }
 
     public VertexBuffer getVertexBuffer(RenderContext ctx) {

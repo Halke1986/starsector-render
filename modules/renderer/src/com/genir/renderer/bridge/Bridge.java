@@ -16,7 +16,7 @@ public class Bridge {
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
-    static final StencilManager stencilManager = new StencilManager();
+    static final StencilManager stencilManager = new StencilManager(renderContext);
     static final ListManager listManager = new ListManager();
 
     static final Renderer renderer = new Renderer();

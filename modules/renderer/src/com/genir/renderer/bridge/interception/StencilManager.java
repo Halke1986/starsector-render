@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge.interception;
 
+import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -9,9 +10,15 @@ import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.Debug.logger;
 
 public class StencilManager {
+    private final RenderContext ctx;
+
     private State state = State.DISABLED;
 
     private final List<List<BoundingBox>> bitLayers = new ArrayList<>();
+
+    public StencilManager(RenderContext ctx) {
+        this.ctx = ctx;
+    }
 
     public void beginLayer() {
         if (!bitLayers.isEmpty()) {
@@ -64,6 +71,11 @@ public class StencilManager {
         }
 
         state = State.REPLACE_0;
+
+        // Vanilla bit clearing draw calls are not required by the bridge.
+        // Set stencil to no op.
+        ctx.glStencilFunc(GL11.GL_NEVER, 0, 0);
+        ctx.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
     }
 
     public void glDisable(int cap) {
@@ -88,6 +100,11 @@ public class StencilManager {
             // State transition from cleaning stencil buffer to building mask.
             if (state == State.REPLACE_0) {
                 state = State.REPLACE_1;
+
+                int bitMask = getLayerIdx();
+                ctx.glStencilMask(bitMask);
+                ctx.glStencilFunc(GL11.GL_NEVER, bitMask, 0);
+                ctx.glStencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE);
             }
         }
     }
@@ -105,8 +122,16 @@ public class StencilManager {
             // State transition from building mask to drawing.
             if (state == State.REPLACE_1) {
                 state = State.KEEP;
+
+                int bitMask = getLayerIdx();
+                ctx.glStencilFunc(GL11.GL_EQUAL, bitMask, bitMask);
+                ctx.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
             }
         }
+    }
+
+    private int getLayerIdx() {
+        return 1 << Math.max(0, bitLayers.size() - 1);
     }
 
     public enum State {

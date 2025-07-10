@@ -27,10 +27,11 @@ public class RenderContext {
     public boolean enableStencil;
     public int stencilFunc;
     public int stencilRef;
-    public int stencilMask;
+    public int stencilFuncMask;
     public int stencilFail;
     public int stencilZfail;
     public int stencilZpass;
+    public int stencilMask;
 
     // Alpha.
     public boolean enableAlpha;
@@ -100,13 +101,17 @@ public class RenderContext {
     public void glStencilFunc(int func, int ref, int mask) {
         stencilFunc = func;
         stencilRef = ref;
-        stencilMask = mask;
+        stencilFuncMask = mask;
     }
 
     public void glStencilOp(int fail, int zfail, int zpass) {
         stencilFail = fail;
         stencilZfail = zfail;
         stencilZpass = zpass;
+    }
+
+    public void glStencilMask(int mask) {
+        stencilMask = mask;
     }
 
     public void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
@@ -163,10 +168,11 @@ public class RenderContext {
         if (enableStencil
                 && (stencilFunc != that.stencilFunc
                 || stencilRef != that.stencilRef
-                || stencilMask != that.stencilMask
+                || stencilFuncMask != that.stencilFuncMask
                 || stencilFail != that.stencilFail
                 || stencilZfail != that.stencilZfail
-                || stencilZpass != that.stencilZpass)) {
+                || stencilZpass != that.stencilZpass
+                || stencilMask != that.stencilMask)) {
             return false;
         }
 
@@ -207,10 +213,11 @@ public class RenderContext {
         cpy.enableStencil = enableStencil;
         cpy.stencilFunc = stencilFunc;
         cpy.stencilRef = stencilRef;
-        cpy.stencilMask = stencilMask;
+        cpy.stencilFuncMask = stencilFuncMask;
         cpy.stencilFail = stencilFail;
         cpy.stencilZfail = stencilZfail;
         cpy.stencilZpass = stencilZpass;
+        cpy.stencilMask = stencilMask;
 
         cpy.enableAlpha = enableAlpha;
         cpy.alphaFunc = alphaFunc;

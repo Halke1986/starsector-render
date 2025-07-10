@@ -28,7 +28,11 @@ public class VertexInterceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public VertexInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack, StencilManager stencilManager) {
+    public VertexInterceptor(
+            Renderer renderer,
+            RenderContext ctx,
+            ModelView matrixStack,
+            StencilManager stencilManager) {
         this.renderer = renderer;
         this.ctx = ctx;
         this.matrixStack = matrixStack;
@@ -146,21 +150,24 @@ public class VertexInterceptor {
     }
 
     private void commitQuad() {
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 4);
-
-        if (stencilManager.getState() == StencilManager.State.REPLACE_1) {
-            stencilManager.addMask(vertices, 4);
-        }
+        commitPrimitive(4);
     }
 
     private void commitTriangle() {
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 3);
+        commitPrimitive(3);
+    }
 
-        if (stencilManager.getState() == StencilManager.State.REPLACE_1) {
-            stencilManager.addMask(vertices, 4);
+    private void commitPrimitive(int vertexNum) {
+        switch (stencilManager.getState()) {
+            case REPLACE_0:
+                return;
+            case REPLACE_1:
+                stencilManager.addMask(vertices, vertexNum);
+                break;
         }
+
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, vertexNum);
     }
 
     private void rotateQuadStrip() {
