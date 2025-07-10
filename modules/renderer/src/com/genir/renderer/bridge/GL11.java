@@ -27,6 +27,7 @@ public class GL11 {
         }
 
         renderContext.glEnable(cap);
+        stencilManager.glEnable(cap);
 
         if (!interceptActive) {
             org.lwjgl.opengl.GL11.glEnable(cap);
@@ -40,6 +41,7 @@ public class GL11 {
         }
 
         renderContext.glDisable(cap);
+        stencilManager.glDisable(cap);
 
         if (!interceptActive) {
             org.lwjgl.opengl.GL11.glDisable(cap);
@@ -100,35 +102,9 @@ public class GL11 {
         }
     }
 
-    public static void glStencilFunc(int func, int ref, int mask) {
-        if (listManager.isRecording()) {
-            listManager.glStencilFunc(func, ref, mask);
-            return;
-        }
-
-        renderContext.glStencilFunc(func, ref, mask);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
-        }
-    }
-
-    public static void glStencilOp(int fail, int zfail, int zpass) {
-        if (listManager.isRecording()) {
-            listManager.glStencilOp(fail, zfail, zpass);
-            return;
-        }
-
-        renderContext.glStencilOp(fail, zfail, zpass);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
-        }
-    }
-
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         if (listManager.isRecording()) {
-            listManager.glColorMask(red, green, blue, alpha);
+            listManager.recordGlColorMask(red, green, blue, alpha);
             return;
         }
 
@@ -141,7 +117,7 @@ public class GL11 {
 
     public static void glAlphaFunc(int func, float ref) {
         if (listManager.isRecording()) {
-            listManager.glAlphaFunc(func, ref);
+            listManager.recordGlAlphaFunc(func, ref);
             return;
         }
 
@@ -149,6 +125,35 @@ public class GL11 {
 
         if (!interceptActive) {
             org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
+        }
+    }
+
+    /**
+     * Stencil manager.
+     */
+    public static void glStencilFunc(int func, int ref, int mask) {
+        if (listManager.isRecording()) {
+            listManager.recordGlStencilFunc(func, ref, mask);
+            return;
+        }
+
+        stencilManager.glStencilFunc(func, ref, mask);
+
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
+        }
+    }
+
+    public static void glStencilOp(int fail, int zfail, int zpass) {
+        if (listManager.isRecording()) {
+            listManager.recordGlStencilOp(fail, zfail, zpass);
+            return;
+        }
+
+        stencilManager.glStencilOp(fail, zfail, zpass);
+
+        if (!interceptActive) {
+            org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
         }
     }
 

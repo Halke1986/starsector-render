@@ -6,6 +6,7 @@ import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
+import com.genir.renderer.bridge.state.StencilManager;
 
 public class Bridge {
     static boolean layerActive = false;
@@ -14,6 +15,7 @@ public class Bridge {
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
+    static final StencilManager stencilManager = new StencilManager();
     static final ListManager listManager = new ListManager();
 
     static final Renderer renderer = new Renderer();

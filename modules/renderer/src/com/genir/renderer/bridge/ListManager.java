@@ -112,19 +112,19 @@ public class ListManager {
         newList.add(new GlColor4ub(red, green, blue, alpha));
     }
 
-    public void glStencilFunc(int func, int ref, int mask) {
+    public void recordGlStencilFunc(int func, int ref, int mask) {
         newList.add(new GlStencilFunc(func, ref, mask));
     }
 
-    public void glStencilOp(int fail, int zfail, int zpass) {
+    public void recordGlStencilOp(int fail, int zfail, int zpass) {
         newList.add(new GlStencilOp(fail, zfail, zpass));
     }
 
-    public void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+    public void recordGlColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         newList.add(new GlColorMask(red, green, blue, alpha));
     }
 
-    public void glAlphaFunc(int func, float ref) {
+    public void recordGlAlphaFunc(int func, float ref) {
         newList.add(new GlAlphaFunc(func, ref));
     }
 
