@@ -36,14 +36,10 @@ public class Bridge {
         layerActive = false;
     }
 
-    public static void dropLayer() {
-        layerActive = false;
-    }
-
     public static void beginIntercept() {
-        if (layerActive) {
-            interceptActive = true;
-        }
+//        if (layerActive) {
+//            interceptActive = true;
+//        }
     }
 
     public static void endIntercept() {
