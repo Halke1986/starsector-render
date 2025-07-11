@@ -37,9 +37,9 @@ public class Renderer {
     public void commitLayer() {
         logLayer();
 
-//        if (buffers.isEmpty()) {
-//            return;
-//        }
+        if (buffers.isEmpty()) {
+            return;
+        }
 
         // Vertices are already transformed into model frame.
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -74,19 +74,6 @@ public class Renderer {
                 drawBuffer(ctx, vertexBuffer);
             }
         }
-
-//        if (layer.contains("FIGHTERS_LAYER") && maxLayer > 0) {
-//            GL11.glDisable(GL11.GL_STENCIL_TEST);
-//            GL11.glDisable(GL11.GL_ALPHA_TEST);
-//            GL11.glDisable(GL11.GL_BLEND);
-//
-//            GL11.glEnable(GL11.GL_STENCIL_TEST);
-//            GL11.glStencilFunc(GL11.GL_NOTEQUAL, 0, maxLayer);
-//            GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-//
-//            GL11.glColorMask(true, true, true, true);
-//            drawRectangle(-4000f, -4000f, 8000f, 8000f, Color.BLUE, 0f);
-//        }
 
         // Cleanup.
         GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -142,9 +129,6 @@ public class Renderer {
             GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilFuncMask);
             GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
             GL11.glStencilMask(ctx.stencilMask);
-
-            logger().info(ctx.stencilFunc + " " + ctx.stencilRef + " " + ctx.stencilFuncMask + " " + ctx.stencilFail);
-
         } else {
             GL11.glDisable(GL11.GL_STENCIL_TEST);
         }

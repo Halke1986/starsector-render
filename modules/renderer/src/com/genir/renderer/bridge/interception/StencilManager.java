@@ -49,9 +49,6 @@ public class StencilManager {
             logger().info("bl: " + stencilPlanes.size());
         }
 
-        logger().info("");
-        logger().info("beginLayer");
-
         stencilPlanes.clear();
     }
 
