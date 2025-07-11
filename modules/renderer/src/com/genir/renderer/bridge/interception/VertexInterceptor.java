@@ -56,6 +56,13 @@ public class VertexInterceptor {
         color[3] = alpha;
     }
 
+    public void glColor3d(double red, double green, double blue) {
+        color[0] = (byte) Math.round(red * 255.0);
+        color[1] = (byte) Math.round(green * 255.0);
+        color[2] = (byte) Math.round(blue * 255.0);
+        color[3] = (byte) 255;
+    }
+
     public void glTexCoord2f(float s, float t) {
         texCoord[0] = s;
         texCoord[1] = t;
@@ -86,6 +93,12 @@ public class VertexInterceptor {
 
         vertexNum++;
         commit();
+    }
+
+    public void glVertex3d(double x, double y, double z) {
+        asert(z == 0);
+
+        glVertex2f((float) x, (float) y);
     }
 
     /**

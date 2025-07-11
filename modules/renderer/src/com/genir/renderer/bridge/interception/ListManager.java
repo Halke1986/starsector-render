@@ -106,12 +106,20 @@ public class ListManager {
         newList.add(new GlVertex2f(x, y));
     }
 
+    public void recordGlVertex3d(double x, double y, double z) {
+        newList.add(new GlVertex3d(x, y, z));
+    }
+
     public void recordGlTexCoord2f(float s, float t) {
         newList.add(new GlTexCoord2f(s, t));
     }
 
     public void recordGlColor4ub(byte red, byte green, byte blue, byte alpha) {
         newList.add(new GlColor4ub(red, green, blue, alpha));
+    }
+
+    public void recordGlColor3d(double red, double green, double blue) {
+        newList.add(new GlColor3d(red, green, blue));
     }
 
     public void recordGlStencilFunc(int func, int ref, int mask) {
@@ -225,6 +233,13 @@ public class ListManager {
         }
     }
 
+    private record GlVertex3d(double x, double y, double z) implements GlCommand {
+        @Override
+        public void call() {
+            GL11.glVertex3d(x, y, z);
+        }
+    }
+
     private record GlTexCoord2f(float s, float t) implements GlCommand {
         @Override
         public void call() {
@@ -236,6 +251,13 @@ public class ListManager {
         @Override
         public void call() {
             GL11.glColor4ub(red, green, blue, alpha);
+        }
+    }
+
+    private record GlColor3d(double red, double green, double blue) implements GlCommand {
+        @Override
+        public void call() {
+            GL11.glColor3d(red, green, blue);
         }
     }
 

@@ -56,7 +56,8 @@ public class GL11 {
     }
 
     public static void glBegin(int mode) {
-        if (unsupportedOperation != null){
+        if (unsupportedOperation != null) {
+            // Throw UnsupportedOperationException again, in case where the initial exception was caught.
             throw new UnsupportedOperationException(unsupportedOperation);
         }
 
@@ -262,6 +263,16 @@ public class GL11 {
         }
     }
 
+    public static void glColor3d(double red, double green, double blue) {
+        if (listManager.isRecording()) {
+            listManager.recordGlColor3d(red, green, blue);
+        } else if (interceptActive) {
+            vertexInterceptor.glColor3d(red, green, blue);
+        } else {
+            org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
+        }
+    }
+
     public static void glTexCoord2f(float s, float t) {
         if (listManager.isRecording()) {
             listManager.recordGlTexCoord2f(s, t);
@@ -279,6 +290,16 @@ public class GL11 {
             vertexInterceptor.glVertex2f(x, y);
         } else {
             org.lwjgl.opengl.GL11.glVertex2f(x, y);
+        }
+    }
+
+    public static void glVertex3d(double x, double y, double z) {
+        if (listManager.isRecording()) {
+            listManager.recordGlVertex3d(x, y, z);
+        } else if (interceptActive) {
+            vertexInterceptor.glVertex3d(x, y, z);
+        } else {
+            org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
         }
     }
 
@@ -559,22 +580,6 @@ public class GL11 {
             throwUnsupportedOperation("glNormal3f");
         } else {
             org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
-        }
-    }
-
-    public static void glVertex3d(double x, double y, double z) {
-        if (interceptActive || listManager.isRecording()) {
-            throwUnsupportedOperation("glVertex3d");
-        } else {
-            org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
-        }
-    }
-
-    public static void glColor3d(double red, double green, double blue) {
-        if (interceptActive || listManager.isRecording()) {
-            throwUnsupportedOperation("glColor3d");
-        } else {
-            org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
         }
     }
 
