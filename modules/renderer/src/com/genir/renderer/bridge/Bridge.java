@@ -7,6 +7,7 @@ import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.BufferPool;
 import com.genir.renderer.bridge.rendering.DrawOrderManager;
 import com.genir.renderer.bridge.rendering.Renderer;
+import com.genir.renderer.bridge.rendering.VertexRepository;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
 
@@ -16,18 +17,19 @@ public class Bridge {
 
     // Rendering.
     private static final BufferPool bufferPool = new BufferPool();
-    private static final Renderer renderer = new Renderer(bufferPool);
+    private static final VertexRepository vertexRepository = new VertexRepository(bufferPool);
+    private static final Renderer renderer = new Renderer(vertexRepository);
     static final DrawOrderManager drawOrderManager = new DrawOrderManager();
 
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
-    static final StencilManager stencilManager = new StencilManager(bufferPool, renderer, renderContext);
+    static final StencilManager stencilManager = new StencilManager(bufferPool, vertexRepository, renderContext);
     static final ListManager listManager = new ListManager();
 
     // Draw interceptors.
-    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView, stencilManager);
-    static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(renderer, renderContext, modelView); // TODO stencilManager
+    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(vertexRepository, renderContext, modelView, stencilManager);
+    static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(vertexRepository, renderContext, modelView); // TODO stencilManager
 
     public static void beginLayer(String layer) {
         layerActive = true;
@@ -35,6 +37,7 @@ public class Bridge {
         renderer.beginLayer(layer);
         stencilManager.beginLayer();
         drawOrderManager.beginLayer();
+        vertexRepository.clear();
     }
 
     public static void commitLayer() {

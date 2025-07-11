@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge.interception;
 
-import com.genir.renderer.bridge.rendering.Renderer;
-import com.genir.renderer.bridge.rendering.VertexBuffer;
+import com.genir.renderer.bridge.rendering.VertexRepository;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
@@ -13,7 +12,7 @@ import java.nio.FloatBuffer;
 import static com.genir.renderer.Debug.asert;
 
 public class ArrayInterceptor {
-    private final Renderer renderer;
+    private final VertexRepository vertexRepository;
     private final RenderContext ctx;
     private final ModelView matrixStack;
 
@@ -21,8 +20,8 @@ public class ArrayInterceptor {
     private FloatBuffer texCoords;
     private FloatBuffer vertices;
 
-    public ArrayInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
-        this.renderer = renderer;
+    public ArrayInterceptor(VertexRepository vertexRepository, RenderContext ctx, ModelView matrixStack) {
+        this.vertexRepository = vertexRepository;
         this.ctx = ctx;
         this.matrixStack = matrixStack;
     }
@@ -53,8 +52,6 @@ public class ArrayInterceptor {
         asert(mode == GL11.GL_QUADS);
         asert(first == 0);
 
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-
         // Transform vertices;
         Matrix3f m = matrixStack.getMatrix();
         float[] rawVertices = new float[count * 2];
@@ -68,6 +65,6 @@ public class ArrayInterceptor {
             rawVertices[i + 1] = x * m.m10 + y * m.m11 + m.m12;
         }
 
-        buffer.addVertices(colors, texCoords, rawVertices, count);
+        vertexRepository.addVertices(ctx, colors, texCoords, rawVertices, count);
     }
 }

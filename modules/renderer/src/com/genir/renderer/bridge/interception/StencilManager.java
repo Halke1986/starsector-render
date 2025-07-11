@@ -1,8 +1,8 @@
 package com.genir.renderer.bridge.interception;
 
 import com.genir.renderer.bridge.rendering.BufferPool;
-import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.rendering.VertexBuffer;
+import com.genir.renderer.bridge.rendering.VertexRepository;
 import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 
@@ -28,7 +28,7 @@ import static com.genir.renderer.Debug.logger;
  */
 public class StencilManager {
     private final BufferPool bufferPool;
-    private final Renderer renderer;
+    private final VertexRepository vertexRepository;
 
     private final RenderContext ctx;
 
@@ -38,9 +38,9 @@ public class StencilManager {
 
     private Map<RenderContext, VertexBuffer> maskBuffers = new HashMap<>();
 
-    public StencilManager(BufferPool bufferPool, Renderer renderer, RenderContext ctx) {
+    public StencilManager(BufferPool bufferPool, VertexRepository vertexRepository, RenderContext ctx) {
         this.bufferPool = bufferPool;
-        this.renderer = renderer;
+        this.vertexRepository = vertexRepository;
         this.ctx = ctx;
     }
 
@@ -164,8 +164,7 @@ public class StencilManager {
                     maskCtx.glStencilMask(bitMask);
                     maskCtx.glStencilFunc(GL11.GL_NEVER, bitMask, 0);
 
-                    VertexBuffer renderBuffer = renderer.getVertexBuffer(maskCtx);
-                    renderBuffer.addVertices(maskBuffer);
+                    vertexRepository.addVertices(maskCtx, maskBuffer);
                 }
 
                 // Clean mask buffers.

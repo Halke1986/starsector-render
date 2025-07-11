@@ -5,32 +5,27 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.genir.renderer.Debug.logger;
 
 public class Renderer {
-    private final BufferPool bufferPool;
-    private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
+    private final VertexRepository vertexRepository;
 
     private String layer = "";
 
-    public Renderer(BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
+    public Renderer(VertexRepository vertexRepository) {
+        this.vertexRepository = vertexRepository;
     }
 
     public void beginLayer(String layer) {
-        // Put back quad buffers into pool for later reuse.
-        bufferPool.returnBuffers(buffers.values());
 
-        this.buffers = new HashMap<>();
-        this.layer = layer;
     }
 
     public void commitLayer() {
-        logLayer();
+        Map<RenderContext, VertexBuffer> buffers = vertexRepository.getBuffers();
 
+        logLayer(buffers);
         if (buffers.isEmpty()) {
             return;
         }
@@ -139,19 +134,7 @@ public class Renderer {
         GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
     }
 
-    public VertexBuffer getVertexBuffer(RenderContext ctx) {
-        VertexBuffer buffer = buffers.get(ctx);
-        if (buffer != null) {
-            return buffer;
-        }
-
-        VertexBuffer newBuffer = bufferPool.getBuffer();
-        buffers.put(ctx.copy(), newBuffer);
-
-        return newBuffer;
-    }
-
-    private void logLayer() {
+    private void logLayer(Map<RenderContext, VertexBuffer> buffers) {
         int entities = 0;
         for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
             VertexBuffer quads = entry.getValue();
