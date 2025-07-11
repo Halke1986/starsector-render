@@ -173,6 +173,7 @@ public class VertexInterceptor {
     private void commitPrimitive(int vertexNum) {
         switch (stencilManager.getState()) {
             case REPLACE_0:
+                // Drop vanilla draws designed to clear stencil buffer.
                 return;
             case REPLACE_1:
                 // Let stencil manager handle the mask drawing.

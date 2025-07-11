@@ -18,7 +18,11 @@ public class LayeredRenderer {
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (isVanillaEntity(entity)) {
                 Bridge.beginIntercept();
+                Bridge.beginEntity();
+
                 entity.render(layer, viewport);
+
+                Bridge.endEntity();
                 Bridge.endIntercept();
             } else {
                 // TODO enable

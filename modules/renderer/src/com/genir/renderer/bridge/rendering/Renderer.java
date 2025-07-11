@@ -5,9 +5,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.genir.renderer.Debug.logger;
@@ -17,8 +15,6 @@ public class Renderer {
     private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
 
     private String layer = "";
-
-    public static int useCount = 0;
 
     public Renderer(BufferPool bufferPool) {
         this.bufferPool = bufferPool;
@@ -30,8 +26,6 @@ public class Renderer {
 
         this.buffers = new HashMap<>();
         this.layer = layer;
-
-        useCount = 0;
     }
 
     public void commitLayer() {
@@ -50,23 +44,16 @@ public class Renderer {
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
-        List<Map.Entry<RenderContext, VertexBuffer>> bufferList = new java.util.ArrayList<>(buffers.entrySet().stream().toList());
-        bufferList.sort(Comparator.comparingInt(o -> o.getValue().lastUsed));
-
-        int maxLayer = 0;
-
-        for (Map.Entry<RenderContext, VertexBuffer> entry : bufferList) {
+        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
             RenderContext ctx = entry.getKey();
 
             if (ctx.enableStencil && ctx.stencilFunc == GL11.GL_NEVER) {
                 VertexBuffer vertexBuffer = entry.getValue();
                 drawBuffer(ctx, vertexBuffer);
-
-                maxLayer = Math.max(maxLayer, ctx.stencilRef);
             }
         }
 
-        for (Map.Entry<RenderContext, VertexBuffer> entry : bufferList) {
+        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
             RenderContext ctx = entry.getKey();
 
             if (!ctx.enableStencil || ctx.stencilFunc != GL11.GL_NEVER) {
