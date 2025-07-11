@@ -4,23 +4,27 @@ import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.genir.renderer.Debug.logger;
 
 public class Renderer {
-    private final Stack<VertexBuffer> bufferPool = new Stack<>();
+    private final BufferPool bufferPool;
     private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
     private String layer = "";
 
     public static int useCount = 0;
 
+    public Renderer(BufferPool bufferPool) {
+        this.bufferPool = bufferPool;
+    }
+
     public void beginLayer(String layer) {
         // Put back quad buffers into pool for later reuse.
-        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
-            VertexBuffer buffer = entry.getValue();
-            bufferPool.push(buffer);
-        }
+        bufferPool.returnBuffers(buffers.values());
 
         this.buffers = new HashMap<>();
         this.layer = layer;
@@ -127,10 +131,9 @@ public class Renderer {
             return buffer;
         }
 
-        VertexBuffer newBuffer = (bufferPool.isEmpty()) ? new VertexBuffer() : bufferPool.pop();
+        VertexBuffer newBuffer = bufferPool.getBuffer();
         buffers.put(ctx.copy(), newBuffer);
 
-        newBuffer.clear();
         return newBuffer;
     }
 

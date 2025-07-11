@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.interception.ArrayInterceptor;
 import com.genir.renderer.bridge.interception.ListManager;
 import com.genir.renderer.bridge.interception.StencilManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
+import com.genir.renderer.bridge.rendering.BufferPool;
 import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
@@ -13,13 +14,15 @@ public class Bridge {
     static boolean layerActive = false;
     static boolean interceptActive = false;
 
+    private static BufferPool bufferPool = new BufferPool();
+
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
     static final StencilManager stencilManager = new StencilManager(renderContext);
     static final ListManager listManager = new ListManager();
 
-    static final Renderer renderer = new Renderer();
+    static final Renderer renderer = new Renderer(bufferPool);
     static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView, stencilManager);
     static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(renderer, renderContext, modelView); // TODO stencilManager
 
