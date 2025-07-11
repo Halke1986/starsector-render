@@ -14,15 +14,15 @@ public class Bridge {
     static boolean layerActive = false;
     static boolean interceptActive = false;
 
-    private static BufferPool bufferPool = new BufferPool();
+    private static final BufferPool bufferPool = new BufferPool();
+    private static final Renderer renderer = new Renderer(bufferPool);
 
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
-    static final StencilManager stencilManager = new StencilManager(renderContext);
+    static final StencilManager stencilManager = new StencilManager(bufferPool, renderer, renderContext);
     static final ListManager listManager = new ListManager();
 
-    static final Renderer renderer = new Renderer(bufferPool);
     static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView, stencilManager);
     static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(renderer, renderContext, modelView); // TODO stencilManager
 

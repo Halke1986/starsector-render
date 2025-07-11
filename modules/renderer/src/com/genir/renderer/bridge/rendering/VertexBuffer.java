@@ -58,6 +58,20 @@ public class VertexBuffer {
         updateUsed();
     }
 
+    public void addVertices(VertexBuffer vertexBuffer) {
+        int verticesToAdd = vertexBuffer.size();
+        ensureCapacity(verticesToAdd);
+
+        Buffers buffers = vertexBuffer.getFlippedBuffers();
+
+        this.colors.put(buffers.colors);
+        this.texCoords.put(buffers.texCoords);
+        this.vertices.put(buffers.vertices);
+
+        numVertices += verticesToAdd;
+        updateUsed();
+    }
+
     private void updateUsed() {
         lastUsed = useCount;
         useCount++;
@@ -91,7 +105,7 @@ public class VertexBuffer {
 
     public record Buffers(
             ByteBuffer colors,
-            FloatBuffer texCoord,
+            FloatBuffer texCoords,
             FloatBuffer vertices) {
     }
 }

@@ -1,60 +1,90 @@
 package com.genir.renderer.bridge.interception;
 
+import com.genir.renderer.bridge.rendering.BufferPool;
+import com.genir.renderer.bridge.rendering.Renderer;
+import com.genir.renderer.bridge.rendering.VertexBuffer;
 import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.Debug.logger;
 
+/**
+ * Stencil rendering in Starsector proceeds always in three steps:
+ * 1) Clear the stencil bit to 0 in the target region.
+ * 2) Render the mask geometry, setting stencil=1 where it covers.
+ * 3) Draw the content using stencil==1 as a mask.
+ * <p>
+ * After this block, the mask is never reused.
+ * <p>
+ * When multiple masks overlap in the same frame, they must use distinct stencil bits.
+ * StencilManager handles collisions by assigning each new mask to the next available bit,
+ * allowing overlapping masks to be rendered via array drawing.
+ */
 public class StencilManager {
+    private final BufferPool bufferPool;
+    private final Renderer renderer;
+
     private final RenderContext ctx;
 
     private State state = State.DISABLED;
+    private final List<List<BoundingBox>> stencilPlanes = new ArrayList<>();
+    private BoundingBox currentMaskBBox;
 
-    private final List<List<BoundingBox>> bitLayers = new ArrayList<>();
+    private Map<RenderContext, VertexBuffer> maskBuffers = new HashMap<>();
 
-    public StencilManager(RenderContext ctx) {
+    public StencilManager(BufferPool bufferPool, Renderer renderer, RenderContext ctx) {
+        this.bufferPool = bufferPool;
+        this.renderer = renderer;
         this.ctx = ctx;
     }
 
     public void beginLayer() {
-        if (!bitLayers.isEmpty()) {
-            logger().info("bl: " + bitLayers.size());
+        if (!stencilPlanes.isEmpty()) {
+            logger().info("bl: " + stencilPlanes.size());
         }
 
-        bitLayers.clear();
+        logger().info("");
+        logger().info("beginLayer");
+
+        stencilPlanes.clear();
     }
 
     public State getState() {
         return state;
     }
 
-    public void addMask(float[] vertices, int verticesNum) {
-        BoundingBox bb = new BoundingBox(vertices, verticesNum);
+    public void addMask(byte[] colors, float[] texCoord, float[] vertices, int verticesToAdd) {
+        // We can’t know which stencil bit we’ll use until the mask’s geometry is fully defined.
+        // Because the stencil index is part of the render context, defer issuing draw calls:
+        // buffer the mask’s vertices now, then commit them once the stencil plane has been assigned.
+        VertexBuffer maskBuffer = getMaskVertexBuffer();
+        maskBuffer.addVertices(colors, texCoord, vertices, verticesToAdd);
 
-        for (List<BoundingBox> bitLayer : bitLayers) {
-            boolean collision = false;
+        // Expand the mask bounding box.
+        BoundingBox bb = new BoundingBox(vertices, verticesToAdd);
+        if (currentMaskBBox == null) {
+            currentMaskBBox = bb;
+        } else {
+            currentMaskBBox.merge(bb);
+        }
+    }
 
-            for (BoundingBox other : bitLayer) {
-                if (bb.overlaps(other)) {
-                    collision = true;
-                    break;
-                }
-            }
-
-            if (!collision) {
-                bitLayer.add(bb);
-                return;
-            }
+    private VertexBuffer getMaskVertexBuffer() {
+        VertexBuffer buffer = maskBuffers.get(ctx);
+        if (buffer != null) {
+            return buffer;
         }
 
-        // No place found in any existing layer.
-        List<BoundingBox> newLayer = new ArrayList<>();
-        newLayer.add(bb);
-        bitLayers.add(newLayer);
+        VertexBuffer newBuffer = bufferPool.getBuffer();
+        maskBuffers.put(ctx.copy(), newBuffer);
+
+        return newBuffer;
     }
 
     public void glEnable(int cap) {
@@ -70,10 +100,11 @@ public class StencilManager {
             glDisable(GL11.GL_STENCIL_TEST);
         }
 
+        // State transition from stencil disabled to clearing stencil buffer.
         state = State.REPLACE_0;
 
         // Vanilla bit clearing draw calls are not required by the bridge.
-        // Set stencil to no op.
+        // Set stencil to no-op.
         ctx.glStencilFunc(GL11.GL_NEVER, 0, 0);
         ctx.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
     }
@@ -99,12 +130,16 @@ public class StencilManager {
 
             // State transition from cleaning stencil buffer to building mask.
             if (state == State.REPLACE_0) {
-                state = State.REPLACE_1;
+                currentMaskBBox = null;
 
-                int bitMask = getLayerIdx();
-                ctx.glStencilMask(bitMask);
-                ctx.glStencilFunc(GL11.GL_NEVER, bitMask, 0);
+                // Prepare render context for mask drawing.
+                // Bit mask is not yet defined at this stage.
+                int undefinedMask = 0;
+                ctx.glStencilMask(undefinedMask);
+                ctx.glStencilFunc(GL11.GL_NEVER, undefinedMask, 0);
                 ctx.glStencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE);
+
+                state = State.REPLACE_1;
             }
         }
     }
@@ -121,17 +156,64 @@ public class StencilManager {
 
             // State transition from building mask to drawing.
             if (state == State.REPLACE_1) {
-                state = State.KEEP;
+                int bitMask = 1 << findPlane();
 
-                int bitMask = getLayerIdx();
+                // Merge mask primitives to render buffer.
+                for (Map.Entry<RenderContext, VertexBuffer> entry : maskBuffers.entrySet()) {
+                    RenderContext maskCtx = entry.getKey();
+                    VertexBuffer maskBuffer = entry.getValue();
+
+                    // Update context with defined value of stencil bit mask.
+                    maskCtx.glStencilMask(bitMask);
+                    maskCtx.glStencilFunc(GL11.GL_NEVER, bitMask, 0);
+
+                    VertexBuffer renderBuffer = renderer.getVertexBuffer(maskCtx);
+                    renderBuffer.addVertices(maskBuffer);
+                }
+
+                // Clean mask buffers.
+                bufferPool.returnBuffers(maskBuffers.values());
+                maskBuffers = new HashMap<>();
+
+                // Prepare render context for drawing.
                 ctx.glStencilFunc(GL11.GL_EQUAL, bitMask, bitMask);
                 ctx.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+
+                state = State.KEEP;
             }
         }
     }
 
-    private int getLayerIdx() {
-        return 1 << Math.max(0, bitLayers.size() - 1);
+    private int findPlane() {
+        if (currentMaskBBox == null) {
+            return 0;
+        }
+
+        for (int i = 0; i < stencilPlanes.size(); i++) {
+            List<BoundingBox> plane = stencilPlanes.get(i);
+
+            // Check if the mask collides with
+            // any mask already in the plane.
+            boolean collision = false;
+            for (BoundingBox other : plane) {
+                if (currentMaskBBox.overlaps(other)) {
+                    collision = true;
+                    break;
+                }
+            }
+
+            if (!collision) {
+                plane.add(currentMaskBBox);
+                return i;
+            }
+        }
+
+        // No place found in any existing plane.
+        List<BoundingBox> newPlane = new ArrayList<>();
+        newPlane.add(currentMaskBBox);
+        stencilPlanes.add(newPlane);
+
+        return stencilPlanes.size() - 1;
     }
 
     public enum State {

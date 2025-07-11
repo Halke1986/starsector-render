@@ -162,12 +162,13 @@ public class VertexInterceptor {
             case REPLACE_0:
                 return;
             case REPLACE_1:
-                stencilManager.addMask(vertices, vertexNum);
+                // Let stencil manager handle the mask drawing.
+                stencilManager.addMask(colors, texCoords, vertices, vertexNum);
                 break;
+            default:
+                VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+                buffer.addVertices(colors, texCoords, vertices, vertexNum);
         }
-
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, vertexNum);
     }
 
     private void rotateQuadStrip() {

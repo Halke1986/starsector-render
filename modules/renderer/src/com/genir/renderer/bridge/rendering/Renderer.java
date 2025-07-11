@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
+import java.awt.*;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import static com.genir.renderer.Debug.logger;
 public class Renderer {
     private final BufferPool bufferPool;
     private Map<RenderContext, VertexBuffer> buffers = new HashMap<>();
+
     private String layer = "";
 
     public static int useCount = 0;
@@ -35,9 +37,9 @@ public class Renderer {
     public void commitLayer() {
         logLayer();
 
-        if (buffers.isEmpty()) {
-            return;
-        }
+//        if (buffers.isEmpty()) {
+//            return;
+//        }
 
         // Vertices are already transformed into model frame.
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -51,12 +53,40 @@ public class Renderer {
         List<Map.Entry<RenderContext, VertexBuffer>> bufferList = new java.util.ArrayList<>(buffers.entrySet().stream().toList());
         bufferList.sort(Comparator.comparingInt(o -> o.getValue().lastUsed));
 
+        int maxLayer = 0;
+
         for (Map.Entry<RenderContext, VertexBuffer> entry : bufferList) {
             RenderContext ctx = entry.getKey();
-            VertexBuffer vertexBuffer = entry.getValue();
 
-            drawBuffer(ctx, vertexBuffer);
+            if (ctx.enableStencil && ctx.stencilFunc == GL11.GL_NEVER) {
+                VertexBuffer vertexBuffer = entry.getValue();
+                drawBuffer(ctx, vertexBuffer);
+
+                maxLayer = Math.max(maxLayer, ctx.stencilRef);
+            }
         }
+
+        for (Map.Entry<RenderContext, VertexBuffer> entry : bufferList) {
+            RenderContext ctx = entry.getKey();
+
+            if (!ctx.enableStencil || ctx.stencilFunc != GL11.GL_NEVER) {
+                VertexBuffer vertexBuffer = entry.getValue();
+                drawBuffer(ctx, vertexBuffer);
+            }
+        }
+
+//        if (layer.contains("FIGHTERS_LAYER") && maxLayer > 0) {
+//            GL11.glDisable(GL11.GL_STENCIL_TEST);
+//            GL11.glDisable(GL11.GL_ALPHA_TEST);
+//            GL11.glDisable(GL11.GL_BLEND);
+//
+//            GL11.glEnable(GL11.GL_STENCIL_TEST);
+//            GL11.glStencilFunc(GL11.GL_NOTEQUAL, 0, maxLayer);
+//            GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+//
+//            GL11.glColorMask(true, true, true, true);
+//            drawRectangle(-4000f, -4000f, 8000f, 8000f, Color.BLUE, 0f);
+//        }
 
         // Cleanup.
         GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -74,6 +104,16 @@ public class Renderer {
         GL11.glClearStencil(0);
         GL11.glStencilMask(0xFF);
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+    }
+
+    public static void drawRectangle(float var0, float var1, float var2, float var3, Color var4, float var5) {
+        GL11.glColor4ub((byte) var4.getRed(), (byte) var4.getGreen(), (byte) var4.getBlue(), (byte) ((int) ((float) var4.getAlpha() * var5)));
+        GL11.glBegin(7);
+        GL11.glVertex2f(var0, var1);
+        GL11.glVertex2f(var0, var1 + var3);
+        GL11.glVertex2f(var0 + var2, var1 + var3);
+        GL11.glVertex2f(var0 + var2, var1);
+        GL11.glEnd();
     }
 
     private void drawBuffer(RenderContext ctx, VertexBuffer vertexBuffer) {
@@ -102,6 +142,9 @@ public class Renderer {
             GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilFuncMask);
             GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
             GL11.glStencilMask(ctx.stencilMask);
+
+            logger().info(ctx.stencilFunc + " " + ctx.stencilRef + " " + ctx.stencilFuncMask + " " + ctx.stencilFail);
+
         } else {
             GL11.glDisable(GL11.GL_STENCIL_TEST);
         }
@@ -117,7 +160,7 @@ public class Renderer {
         VertexBuffer.Buffers buffers = vertexBuffer.getFlippedBuffers();
 
         if (ctx.enableTexture) {
-            GL11.glTexCoordPointer(2, 0, buffers.texCoord());
+            GL11.glTexCoordPointer(2, 0, buffers.texCoords());
         }
         GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
         GL11.glVertexPointer(2, 0, buffers.vertices());
