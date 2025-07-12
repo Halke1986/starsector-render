@@ -24,7 +24,7 @@ public class Debug {
 
         if (found) {
             for (StackTraceElement element : stackTraceElements) {
-                logger().info(element.getClassName());
+                logger().info(element);
             }
             logger().info(" ");
         }
@@ -34,7 +34,7 @@ public class Debug {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 
         for (StackTraceElement element : stackTraceElements) {
-            logger().info(element.getClassName());
+            logger().info(element);
         }
         logger().info(" ");
     }
