@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.Bridge.listManager;
+import static com.genir.renderer.bridge.Bridge.*;
 
 public class GL11 {
     private static String unsupportedOperation;
@@ -14,21 +14,95 @@ public class GL11 {
         throw new UnsupportedOperationException("operation");
     }
 
+    /**
+     * Object lists.
+     */
     public static void glNewList(int list, int mode) {
-        listManager.glNewList(list, mode);
+        if (interceptActive) {
+            listManager.glNewList(list, mode);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glNewList(list, mode);
     }
 
     public static void glEndList() {
-        listManager.glEndList();
+        if (interceptActive) {
+            listManager.glEndList();
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glEndList();
     }
 
     public static void glCallList(int list) {
-        listManager.glCallList(list);
+        if (interceptActive) {
+            listManager.glCallList(list);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glCallList(list);
     }
 
+
+    /**
+     * Draw operations.
+     */
+    public static void glBegin(int mode) {
+        if (listManager.isRecording()) {
+            listManager.glBegin(mode);
+            return;
+        }
+
+        if (interceptActive) {
+            renderContext.apply();
+        }
+
+        org.lwjgl.opengl.GL11.glBegin(mode);
+    }
+
+    public static void glDrawArrays(int mode, int first, int count) {
+        if (listManager.isRecording()) {
+            listManager.glDrawArrays(mode, first, count);
+            return;
+        }
+
+        if (interceptActive) {
+            renderContext.apply();
+        }
+
+        org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
+    }
+
+    public static void glVertex2f(float x, float y) {
+        if (listManager.isRecording()) {
+            listManager.glVertex2f(x, y);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glVertex2f(x, y);
+    }
+
+    public static void glVertex3d(double x, double y, double z) {
+        if (listManager.isRecording()) {
+            listManager.glVertex3d(x, y, z);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
+    }
+
+    /**
+     * State update.
+     */
     public static void glEnable(int cap) {
         if (listManager.isRecording()) {
             listManager.glEnable(cap);
+            return;
+        }
+
+        if (interceptActive) {
+            renderContext.glEnable(cap);
             return;
         }
 
@@ -41,16 +115,12 @@ public class GL11 {
             return;
         }
 
-        org.lwjgl.opengl.GL11.glDisable(cap);
-    }
-
-    public static void glBegin(int mode) {
-        if (listManager.isRecording()) {
-            listManager.glBegin(mode);
+        if (interceptActive) {
+            renderContext.glDisable(cap);
             return;
         }
 
-        org.lwjgl.opengl.GL11.glBegin(mode);
+        org.lwjgl.opengl.GL11.glDisable(cap);
     }
 
     public static void glEnd() {
@@ -195,33 +265,6 @@ public class GL11 {
         }
 
         org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
-    }
-
-    public static void glVertex2f(float x, float y) {
-        if (listManager.isRecording()) {
-            listManager.glVertex2f(x, y);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glVertex2f(x, y);
-    }
-
-    public static void glVertex3d(double x, double y, double z) {
-        if (listManager.isRecording()) {
-            listManager.glVertex3d(x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
-    }
-
-    public static void glDrawArrays(int mode, int first, int count) {
-        if (listManager.isRecording()) {
-            listManager.glDrawArrays(mode, first, count);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
     }
 
     public static void glTexParameteri(int target, int pname, int param) {

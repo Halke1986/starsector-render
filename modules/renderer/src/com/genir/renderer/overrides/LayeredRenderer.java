@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
+import com.fs.starfarer.combat.entities.terrain.Planet;
 import com.genir.renderer.bridge.Bridge;
 
 import java.util.List;
@@ -16,14 +17,14 @@ public class LayeredRenderer {
         }
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
-            if (isVanillaEntity(entity)) {
-//                Bridge.beginIntercept();
-//                Bridge.beginEntity();
+            if (entity instanceof Planet) {
+                entity.render(layer, viewport);
+            } else if (isVanillaEntity(entity)) {
+                Bridge.beginIntercept();
 
                 entity.render(layer, viewport);
 
-//                Bridge.endEntity();
-//                Bridge.endIntercept();
+                Bridge.endIntercept();
             } else {
                 // TODO enable
                 // entity.render(layer, viewport);

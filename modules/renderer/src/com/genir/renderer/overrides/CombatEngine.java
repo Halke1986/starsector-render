@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.genir.renderer.bridge.Bridge;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
 
@@ -61,16 +62,17 @@ public class CombatEngine {
     }
 
     private static void renderLayer(CombatEngineLayers layer) {
-//        Bridge.beginLayer(layer.name());
+        Bridge.beginLayer();
+        Bridge.beginIntercept();
 
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
-//        Bridge.commitLayer();
+        Bridge.endIntercept();
     }
 
     private static void renderLayer(String layer) {
-//        Bridge.beginLayer(layer);
-//        Bridge.beginIntercept(); // When there's no possibility of CustomCombatEntity occurrence, intercept all entities.
+        Bridge.beginLayer();
+        Bridge.beginIntercept(); // When there's no possibility of CustomCombatEntity occurrence, intercept all entities.
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -91,7 +93,6 @@ public class CombatEngine {
             case "FloatingTextManager" -> engine.renderFloatingTextManager();
         }
 
-//        Bridge.endIntercept();
-//        Bridge.commitLayer();
+        Bridge.endIntercept();
     }
 }
