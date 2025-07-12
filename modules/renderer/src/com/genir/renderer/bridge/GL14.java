@@ -1,17 +1,14 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.bridge.Bridge.*;
+import static com.genir.renderer.bridge.Bridge.listManager;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
         if (listManager.isRecording()) {
-            throw new UnsupportedOperationException("glEnable");
+            listManager.glBlendEquation(mode);
+            return;
         }
 
-        renderContext.glBlendEquation(mode);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL14.glBlendEquation(mode);
-        }
+        org.lwjgl.opengl.GL14.glBlendEquation(mode);
     }
 }

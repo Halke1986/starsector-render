@@ -1,10 +1,8 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.genir.renderer.bridge.Bridge;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.Debug.logger;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
@@ -16,7 +14,7 @@ public class CombatEngine {
             return;
         }
 
-        logger().info("");
+//        logger().info("");
 
         renderLayer("GlowyContrailParticles");
         renderLayer("SmokyContrailParticles");
@@ -63,16 +61,16 @@ public class CombatEngine {
     }
 
     private static void renderLayer(CombatEngineLayers layer) {
-        Bridge.beginLayer(layer.name());
+//        Bridge.beginLayer(layer.name());
 
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
-        Bridge.commitLayer();
+//        Bridge.commitLayer();
     }
 
     private static void renderLayer(String layer) {
-        Bridge.beginLayer(layer);
-        Bridge.beginIntercept(); // When there's no possibility of CustomCombatEntity occurrence, intercept all entities.
+//        Bridge.beginLayer(layer);
+//        Bridge.beginIntercept(); // When there's no possibility of CustomCombatEntity occurrence, intercept all entities.
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -93,7 +91,7 @@ public class CombatEngine {
             case "FloatingTextManager" -> engine.renderFloatingTextManager();
         }
 
-        Bridge.endIntercept();
-        Bridge.commitLayer();
+//        Bridge.endIntercept();
+//        Bridge.commitLayer();
     }
 }

@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.interception.ArrayInterceptor;
-import com.genir.renderer.bridge.interception.ListManager;
 import com.genir.renderer.bridge.interception.StencilManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.BufferPool;
