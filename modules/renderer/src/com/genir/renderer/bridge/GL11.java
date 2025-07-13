@@ -41,9 +41,7 @@ public class GL11 {
 
         renderContext.glBegin(mode);
 
-        if (interceptActive) {
-            vertexInterceptor.glBegin(mode);
-        } else {
+        if (!interceptActive) {
             org.lwjgl.opengl.GL11.glBegin(mode);
         }
     }
@@ -150,14 +148,6 @@ public class GL11 {
         }
     }
 
-    public static void glColor3d(double red, double green, double blue) {
-        if (interceptActive) {
-            vertexInterceptor.glColor3d(red, green, blue);
-        } else {
-            org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
-        }
-    }
-
     public static void glTexCoord2f(float s, float t) {
         if (interceptActive) {
             vertexInterceptor.glTexCoord2f(s, t);
@@ -174,17 +164,25 @@ public class GL11 {
         }
     }
 
+    /**
+     * UNSUPPORTED.
+     */
     public static void glVertex3d(double x, double y, double z) {
         if (interceptActive) {
-            vertexInterceptor.glVertex3d(x, y, z);
+            throwUnsupportedOperation("glVertex3d");
         } else {
             org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
         }
     }
 
-    /**
-     * UNSUPPORTED.
-     */
+    public static void glColor3d(double red, double green, double blue) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glColor3d");
+        } else {
+            org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
+        }
+    }
+
     public static void glTexParameteri(int target, int pname, int param) {
         if (interceptActive) {
             throwUnsupportedOperation("glTexParameteri");
