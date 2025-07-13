@@ -42,19 +42,8 @@ public class Renderer {
         for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
             RenderContext ctx = entry.getKey();
 
-            if (ctx.enableStencil && ctx.stencilFunc == GL11.GL_NEVER) {
-                VertexBuffer vertexBuffer = entry.getValue();
-                drawBuffer(ctx, vertexBuffer);
-            }
-        }
-
-        for (Map.Entry<RenderContext, VertexBuffer> entry : buffers.entrySet()) {
-            RenderContext ctx = entry.getKey();
-
-            if (!ctx.enableStencil || ctx.stencilFunc != GL11.GL_NEVER) {
-                VertexBuffer vertexBuffer = entry.getValue();
-                drawBuffer(ctx, vertexBuffer);
-            }
+            VertexBuffer vertexBuffer = entry.getValue();
+            drawBuffer(ctx, vertexBuffer);
         }
 
         // Cleanup.
@@ -103,16 +92,6 @@ public class Renderer {
             GL14.glBlendEquation(ctx.blendEquation);
         } else {
             GL11.glDisable(GL11.GL_BLEND);
-        }
-
-        // Stencil context.
-        if (ctx.enableStencil) {
-            GL11.glEnable(GL11.GL_STENCIL_TEST);
-            GL11.glStencilFunc(ctx.stencilFunc, ctx.stencilRef, ctx.stencilFuncMask);
-            GL11.glStencilOp(ctx.stencilFail, ctx.stencilZfail, ctx.stencilZpass);
-            GL11.glStencilMask(ctx.stencilMask);
-        } else {
-            GL11.glDisable(GL11.GL_STENCIL_TEST);
         }
 
         // Alpha context.
