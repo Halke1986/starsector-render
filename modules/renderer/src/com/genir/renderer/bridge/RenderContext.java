@@ -1,58 +1,99 @@
 package com.genir.renderer.bridge;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import static com.genir.renderer.Debug.asert;
 
 public class RenderContext {
-    private Snapshot current = new Snapshot();
-    private Snapshot previous = new Snapshot();
+    private Snapshot c = new Snapshot();
+    private Snapshot p = new Snapshot();
 
     public void sync() {
-        current = new Snapshot();
-        previous = new Snapshot();
+        c = new Snapshot();
+        p = new Snapshot();
 
         GL11.glDisable(GL11.GL_STENCIL_TEST);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
+
+        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
     }
 
     public void apply() {
-        if (current.enableStencilTest != previous.enableStencilTest) {
-            previous.enableStencilTest = current.enableStencilTest;
-            if (current.enableStencilTest) {
+        applyStencil();
+        applyAlpha();
+        applyTexture();
+        applyBlend();
+    }
+
+    private void applyStencil() {
+        if (p.enableStencilTest != c.enableStencilTest) {
+            p.enableStencilTest = c.enableStencilTest;
+            if (c.enableStencilTest) {
                 GL11.glEnable(GL11.GL_STENCIL_TEST);
             } else {
                 GL11.glDisable(GL11.GL_STENCIL_TEST);
             }
         }
+    }
 
-        if (current.enableAlphaTest != previous.enableAlphaTest) {
-            previous.enableAlphaTest = current.enableAlphaTest;
-            if (current.enableAlphaTest) {
+    private void applyAlpha() {
+        if (p.enableAlphaTest != c.enableAlphaTest) {
+            p.enableAlphaTest = c.enableAlphaTest;
+            if (c.enableAlphaTest) {
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
             } else {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
             }
         }
+    }
 
-        if (current.enableTexture2D != previous.enableTexture2D) {
-            previous.enableTexture2D = current.enableTexture2D;
-            if (current.enableTexture2D) {
+    private void applyTexture() {
+        if (p.enableTexture2D != c.enableTexture2D) {
+            p.enableTexture2D = c.enableTexture2D;
+            if (c.enableTexture2D) {
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
             } else {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
             }
         }
 
-        if (current.enableBlend != previous.enableBlend) {
-            previous.enableBlend = current.enableBlend;
-            if (current.enableBlend) {
+        if (!c.enableTexture2D) {
+            return;
+        }
+
+        if (p.textureID != c.textureID || p.textureTarget != c.textureTarget) {
+            p.textureID = c.textureID;
+            p.textureTarget = c.textureTarget;
+            GL11.glBindTexture(c.textureTarget, c.textureID);
+        }
+    }
+
+    private void applyBlend() {
+        if (p.enableBlend != c.enableBlend) {
+            p.enableBlend = c.enableBlend;
+            if (c.enableBlend) {
                 GL11.glEnable(GL11.GL_BLEND);
             } else {
                 GL11.glDisable(GL11.GL_BLEND);
             }
+        }
+
+        if (!c.enableBlend) {
+            return;
+        }
+
+        if (p.blendSfactor != c.blendSfactor || p.blendDfactor != c.blendDfactor) {
+            p.blendSfactor = c.blendSfactor;
+            p.blendDfactor = c.blendDfactor;
+            GL11.glBlendFunc(c.blendSfactor, c.blendDfactor);
+        }
+
+        if (p.blendEquation != c.blendEquation) {
+            p.blendEquation = c.blendEquation;
+            GL14.glBlendEquation(c.blendEquation);
         }
     }
 
@@ -64,16 +105,16 @@ public class RenderContext {
 
         switch (cap) {
             case GL11.GL_STENCIL_TEST:
-                current.enableStencilTest = true;
+                c.enableStencilTest = true;
                 break;
             case GL11.GL_ALPHA_TEST:
-                current.enableAlphaTest = true;
+                c.enableAlphaTest = true;
                 break;
             case GL11.GL_TEXTURE_2D:
-                current.enableTexture2D = true;
+                c.enableTexture2D = true;
                 break;
             case GL11.GL_BLEND:
-                current.enableBlend = true;
+                c.enableBlend = true;
                 break;
         }
     }
@@ -81,24 +122,46 @@ public class RenderContext {
     public void glDisable(int cap) {
         switch (cap) {
             case GL11.GL_STENCIL_TEST:
-                current.enableStencilTest = false;
+                c.enableStencilTest = false;
                 break;
             case GL11.GL_ALPHA_TEST:
-                current.enableAlphaTest = false;
+                c.enableAlphaTest = false;
                 break;
             case GL11.GL_TEXTURE_2D:
-                current.enableTexture2D = false;
+                c.enableTexture2D = false;
                 break;
             case GL11.GL_BLEND:
-                current.enableBlend = false;
+                c.enableBlend = false;
                 break;
         }
     }
 
+    public void glBindTexture(int target, int texture) {
+        c.textureTarget = target;
+        c.textureID = texture;
+    }
+
+    public void glBlendFunc(int sfactor, int dfactor) {
+        c.blendSfactor = sfactor;
+        c.blendDfactor = dfactor;
+    }
+
+    public void glBlendEquation(int mode) {
+        c.blendEquation = mode;
+    }
+
     private static class Snapshot {
-        public boolean enableStencilTest = false;
-        public boolean enableAlphaTest = false;
-        public boolean enableTexture2D = false;
-        public boolean enableBlend = false;
+        boolean enableStencilTest = false;
+
+        boolean enableAlphaTest = false;
+
+        boolean enableTexture2D = false;
+        int textureTarget = 0;
+        int textureID = 0;
+
+        boolean enableBlend = false;
+        int blendSfactor = 0;
+        int blendDfactor = 0;
+        int blendEquation = 0;
     }
 }

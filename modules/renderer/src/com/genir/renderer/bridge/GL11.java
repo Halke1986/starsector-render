@@ -251,18 +251,14 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glDisable(cap);
     }
 
-    public static void glEnd() {
-        if (listManager.isRecording()) {
-            listManager.glEnd();
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glEnd();
-    }
-
     public static void glBindTexture(int target, int texture) {
         if (listManager.isRecording()) {
             listManager.glBindTexture(target, texture);
+            return;
+        }
+
+        if (interceptActive) {
+            renderContext.glBindTexture(target, texture);
             return;
         }
 
@@ -275,7 +271,21 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            renderContext.glBlendFunc(sfactor, dfactor);
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
+    }
+
+    public static void glEnd() {
+        if (listManager.isRecording()) {
+            listManager.glEnd();
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glEnd();
     }
 
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
