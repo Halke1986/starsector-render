@@ -26,7 +26,6 @@ public class Bridge {
     public static void beginLayer(String layer) {
         layerActive = true;
 
-        renderer.beginLayer(layer);
         vertexRepository.clear();
     }
 

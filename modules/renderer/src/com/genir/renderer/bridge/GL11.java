@@ -70,14 +70,6 @@ public class GL11 {
         }
     }
 
-    public static void glAlphaFunc(int func, float ref) {
-        renderContext.glAlphaFunc(func, ref);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
-        }
-    }
-
     /**
      * Model view.
      */
@@ -159,6 +151,14 @@ public class GL11 {
     /**
      * UNSUPPORTED.
      */
+    public static void glAlphaFunc(int func, float ref) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glAlphaFunc");
+        } else {
+            org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
+        }
+    }
+
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         if (interceptActive) {
             throwUnsupportedOperation("glColorMask");

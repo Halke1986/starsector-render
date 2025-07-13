@@ -18,10 +18,6 @@ public class Renderer {
         this.vertexRepository = vertexRepository;
     }
 
-    public void beginLayer(String layer) {
-
-    }
-
     public void commitLayer() {
         Map<RenderContext, VertexBuffer> buffers = vertexRepository.getBuffers();
 
@@ -92,14 +88,6 @@ public class Renderer {
             GL11.glDisable(GL11.GL_BLEND);
         }
 
-        // Alpha context.
-        if (ctx.enableAlpha) {
-            GL11.glEnable(GL11.GL_ALPHA_TEST);
-            GL11.glAlphaFunc(ctx.alphaFunc, ctx.alphaRef);
-        } else {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-        }
-
         VertexBuffer.Buffers buffers = vertexBuffer.getFlippedBuffers();
 
         if (ctx.enableTexture) {
@@ -108,7 +96,7 @@ public class Renderer {
         GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, buffers.colors());
         GL11.glVertexPointer(2, 0, buffers.vertices());
 
-        GL11.glDrawArrays(ctx.arrayMode(), 0, vertexBuffer.size());
+        GL11.glDrawArrays(GL11.GL_QUADS, 0, vertexBuffer.size());
     }
 
     private void logLayer(Map<RenderContext, VertexBuffer> buffers) {

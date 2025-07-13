@@ -17,16 +17,8 @@ public class RenderContext {
     public int blendDfactor;
     public int blendEquation;
 
-    // Alpha.
-    public boolean enableAlpha;
-    public int alphaFunc;
-    public float alphaRef;
-
     public void glEnable(int cap) {
         switch (cap) {
-            case GL11.GL_ALPHA_TEST:
-                enableAlpha = true;
-                break;
             case GL11.GL_TEXTURE_2D:
                 enableTexture = true;
                 break;
@@ -38,9 +30,6 @@ public class RenderContext {
 
     public void glDisable(int cap) {
         switch (cap) {
-            case GL11.GL_ALPHA_TEST:
-                enableAlpha = false;
-                break;
             case GL11.GL_TEXTURE_2D:
                 enableTexture = false;
                 break;
@@ -72,11 +61,6 @@ public class RenderContext {
         blendEquation = mode;
     }
 
-    public void glAlphaFunc(int func, float ref) {
-        alphaFunc = func;
-        alphaRef = ref;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,8 +70,7 @@ public class RenderContext {
         // Compare mode and enabled tests.
         if (mode != that.mode
                 || enableTexture != that.enableTexture
-                || enableBlend != that.enableBlend
-                || enableAlpha != that.enableAlpha) {
+                || enableBlend != that.enableBlend) {
             return false;
         }
 
@@ -103,13 +86,6 @@ public class RenderContext {
                 && (blendSfactor != that.blendSfactor
                 || blendDfactor != that.blendDfactor
                 || blendEquation != that.blendEquation)) {
-            return false;
-        }
-
-        // Compare alpha context.
-        if (enableAlpha
-                && (alphaFunc != that.alphaFunc
-                || alphaRef != that.alphaRef)) {
             return false;
         }
 
@@ -135,18 +111,6 @@ public class RenderContext {
         cpy.blendDfactor = blendDfactor;
         cpy.blendEquation = blendEquation;
 
-        cpy.enableAlpha = enableAlpha;
-        cpy.alphaFunc = alphaFunc;
-        cpy.alphaRef = alphaRef;
-
         return cpy;
-    }
-
-    public int arrayMode() {
-        return switch (mode) {
-            case GL11.GL_QUADS, GL11.GL_QUAD_STRIP -> GL11.GL_QUADS;
-            case GL11.GL_TRIANGLES, GL11.GL_TRIANGLE_STRIP, GL11.GL_TRIANGLE_FAN -> GL11.GL_TRIANGLES;
-            default -> -1;
-        };
     }
 }
