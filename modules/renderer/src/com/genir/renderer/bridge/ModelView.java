@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.state;
+package com.genir.renderer.bridge;
 
 import org.lwjgl.util.vector.Matrix3f;
 
@@ -14,6 +14,9 @@ public class ModelView {
     public ModelView() {
         stack[0] = new Matrix3f();
         stack[0].setIdentity();
+
+        stack[0].m02 = 0.01f;
+        stack[0].m12 = 0.01f;
     }
 
     public Matrix3f getMatrix() {

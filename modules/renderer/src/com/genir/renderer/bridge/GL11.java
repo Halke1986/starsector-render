@@ -11,7 +11,7 @@ public class GL11 {
 
     private static void throwUnsupportedOperation(String operation) {
         unsupportedOperation = operation;
-        throw new UnsupportedOperationException("operation");
+        throw new UnsupportedOperationException(operation);
     }
 
     /**
@@ -44,9 +44,8 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glCallList(list);
     }
 
-
     /**
-     * Draw operations.
+     * State apply points.
      */
     public static void glBegin(int mode) {
         if (listManager.isRecording()) {
@@ -69,14 +68,111 @@ public class GL11 {
 
         if (interceptActive) {
             renderContext.apply();
+            vertexInterceptor.glDrawArrays(mode, first, count);
+            return;
         }
 
         org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
     }
 
+    /**
+     * Matrix operations.
+     */
+    public static void glMatrixMode(int mode) {
+        if (listManager.isRecording()) {
+            listManager.glMatrixMode(mode);
+            return;
+        }
+
+        if (interceptActive) {
+            modelView.glMatrixMode(mode);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glMatrixMode(mode);
+    }
+
+    public static void glPushMatrix() {
+        if (listManager.isRecording()) {
+            listManager.glPushMatrix();
+            return;
+        }
+
+        if (interceptActive) {
+            modelView.glPushMatrix();
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glPushMatrix();
+    }
+
+    public static void glPopMatrix() {
+        if (listManager.isRecording()) {
+            listManager.glPopMatrix();
+            return;
+        }
+
+        if (interceptActive) {
+            modelView.glPopMatrix();
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glPopMatrix();
+    }
+
+    public static void glTranslatef(float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.glTranslatef(x, y, z);
+            return;
+        }
+
+        if (interceptActive) {
+            modelView.glTranslatef(x, y, z);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
+    }
+
+    public static void glScalef(float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.glScalef(x, y, z);
+            return;
+        }
+
+        if (interceptActive) {
+            modelView.glScalef(x, y, z);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glScalef(x, y, z);
+    }
+
+    public static void glRotatef(float angle, float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.glRotatef(angle, x, y, z);
+            return;
+        }
+
+        if (interceptActive) {
+            modelView.glRotatef(angle, x, y, z);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
+    }
+
+    /**
+     * Vertex geometry.
+     */
     public static void glVertex2f(float x, float y) {
         if (listManager.isRecording()) {
             listManager.glVertex2f(x, y);
+            return;
+        }
+
+        if (interceptActive) {
+            vertexInterceptor.glVertex2f(x, y);
             return;
         }
 
@@ -89,7 +185,39 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            vertexInterceptor.glVertex3d(x, y, z);
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
+    }
+
+    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        if (interceptActive) {
+            vertexInterceptor.glVertexPointer(size, stride, pointer);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
+    }
+
+    public static void glVertexPointer(int size, int stride, IntBuffer pointer) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glVertexPointer");
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
+    }
+
+    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glVertexPointer");
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
     }
 
     /**
@@ -184,60 +312,6 @@ public class GL11 {
         }
 
         org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
-    }
-
-    public static void glMatrixMode(int mode) {
-        if (listManager.isRecording()) {
-            listManager.glMatrixMode(mode);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glMatrixMode(mode);
-    }
-
-    public static void glPushMatrix() {
-        if (listManager.isRecording()) {
-            listManager.glPushMatrix();
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glPushMatrix();
-    }
-
-    public static void glPopMatrix() {
-        if (listManager.isRecording()) {
-            listManager.glPopMatrix();
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glPopMatrix();
-    }
-
-    public static void glTranslatef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.glTranslatef(x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
-    }
-
-    public static void glScalef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.glScalef(x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glScalef(x, y, z);
-    }
-
-    public static void glRotatef(float angle, float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.glRotatef(angle, x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -609,18 +683,6 @@ public class GL11 {
 
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) {
         org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
-    }
-
-    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
-    }
-
-    public static void glVertexPointer(int size, int stride, IntBuffer pointer) {
-        org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
-    }
-
-    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
     }
 
     public static void glGetInteger(int pname, IntBuffer params) {
