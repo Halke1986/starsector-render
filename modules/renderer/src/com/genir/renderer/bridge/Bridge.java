@@ -5,7 +5,6 @@ import com.genir.renderer.bridge.interception.ListManager;
 import com.genir.renderer.bridge.interception.StencilManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.BufferPool;
-import com.genir.renderer.bridge.rendering.DrawOrderManager;
 import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.rendering.VertexRepository;
 import com.genir.renderer.bridge.state.ModelView;
@@ -19,7 +18,6 @@ public class Bridge {
     private static final BufferPool bufferPool = new BufferPool();
     private static final VertexRepository vertexRepository = new VertexRepository(bufferPool);
     private static final Renderer renderer = new Renderer(vertexRepository);
-    static final DrawOrderManager drawOrderManager = new DrawOrderManager();
 
     // GL state.
     public static final ModelView modelView = new ModelView();
@@ -36,7 +34,6 @@ public class Bridge {
 
         renderer.beginLayer(layer);
         stencilManager.beginLayer();
-        drawOrderManager.beginLayer();
         vertexRepository.clear();
     }
 
@@ -54,13 +51,5 @@ public class Bridge {
 
     public static void endIntercept() {
         interceptActive = false;
-    }
-
-    public static void beginEntity() {
-        drawOrderManager.beginEntity();
-    }
-
-    public static void endEntity() {
-        drawOrderManager.endEntity();
     }
 }
