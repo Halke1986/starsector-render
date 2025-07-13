@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.interception.ArrayInterceptor;
-import com.genir.renderer.bridge.interception.ListManager;
 import com.genir.renderer.bridge.interception.StencilManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.BufferPool;
@@ -23,7 +22,6 @@ public class Bridge {
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
     static final StencilManager stencilManager = new StencilManager(bufferPool, vertexRepository, renderContext);
-    static final ListManager listManager = new ListManager();
 
     // Draw interceptors.
     static final VertexInterceptor vertexInterceptor = new VertexInterceptor(vertexRepository, renderContext, modelView, stencilManager);
