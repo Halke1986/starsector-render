@@ -63,7 +63,11 @@ public class CombatEngine {
     }
 
     private static void renderLayer(CombatEngineLayers layer) {
+        Bridge.beginLayer(layer.name());
+
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
+
+        Bridge.commitLayer();
     }
 
     private static void renderLayer(String layer) {
