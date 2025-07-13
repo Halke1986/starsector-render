@@ -21,7 +21,7 @@ public class CombatEngine {
         renderLayer("GlowyContrailParticles");
         renderLayer("SmokyContrailParticles");
         renderLayer(BELOW_PLANETS);
-        engine.getRenderer().renderOnly(engine.getViewport(), PLANET_LAYER); // Delegate 3D planet rendering to Vanilla.
+        renderLayer(PLANET_LAYER);
         renderLayer(ABOVE_PLANETS);
         renderLayer(CLOUD_LAYER);
         renderLayer(BELOW_SHIPS_LAYER);
@@ -58,21 +58,17 @@ public class CombatEngine {
         renderLayer(JUST_BELOW_WIDGETS);
 
         if (var1) {
-            renderLayer("FloatingTextManager");
+            engine.renderFloatingTextManager();
         }
     }
 
     private static void renderLayer(CombatEngineLayers layer) {
-        Bridge.beginLayer(layer.name());
-
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
-
-        Bridge.commitLayer();
     }
 
     private static void renderLayer(String layer) {
         Bridge.beginLayer(layer);
-        Bridge.beginIntercept(); // When there's no possibility of CustomCombatEntity occurrence, intercept all entities.
+        Bridge.beginIntercept();
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -90,7 +86,6 @@ public class CombatEngine {
             case "NegativeParticles" -> engine.getNegativeParticles().render(0F, 0F);
             case "NegativeNebulaParticles" -> engine.getNegativeNebulaParticles().render(0F, 0F);
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
-            case "FloatingTextManager" -> engine.renderFloatingTextManager();
         }
 
         Bridge.endIntercept();

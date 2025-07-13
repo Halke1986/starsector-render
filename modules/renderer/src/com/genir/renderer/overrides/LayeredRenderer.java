@@ -3,6 +3,7 @@ package com.genir.renderer.overrides;
 import com.fs.graphics.LayeredRenderable;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
+import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
 import com.genir.renderer.bridge.Bridge;
@@ -16,28 +17,25 @@ public class LayeredRenderer {
         }
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
-            if (isVanillaEntity(entity)) {
+            if (isSwarm(entity)) {
                 Bridge.beginIntercept();
-                Bridge.beginEntity();
 
                 entity.render(layer, viewport);
 
-                Bridge.endEntity();
                 Bridge.endIntercept();
             } else {
-                // TODO enable
-                // entity.render(layer, viewport);
+                entity.render(layer, viewport);
             }
         }
     }
 
-    private static boolean isVanillaEntity(LayeredRenderable<CombatEngineLayers, CombatViewport> entity) {
+    private static boolean isSwarm(LayeredRenderable<CombatEngineLayers, CombatViewport> entity) {
         if (entity instanceof CustomCombatEntity) {
             CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
 
-            return plugin.getClass().getClassLoader() == ClassLoader.getSystemClassLoader();
+            return plugin instanceof RoilingSwarmEffect;
         }
 
-        return true;
+        return false;
     }
 }
