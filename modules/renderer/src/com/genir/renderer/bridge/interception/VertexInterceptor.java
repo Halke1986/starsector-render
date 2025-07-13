@@ -12,7 +12,6 @@ public class VertexInterceptor {
     private final VertexRepository vertexRepository;
     private final RenderContext ctx;
     private final ModelView matrixStack;
-    private final StencilManager stencilManager;
 
     // State.
     private final byte[] color = new byte[4];
@@ -26,15 +25,10 @@ public class VertexInterceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public VertexInterceptor(
-            VertexRepository vertexRepository,
-            RenderContext ctx,
-            ModelView matrixStack,
-            StencilManager stencilManager) {
+    public VertexInterceptor(VertexRepository vertexRepository, RenderContext ctx, ModelView matrixStack) {
         this.vertexRepository = vertexRepository;
         this.ctx = ctx;
         this.matrixStack = matrixStack;
-        this.stencilManager = stencilManager;
     }
 
     public void glBegin(int mode) {
@@ -169,17 +163,7 @@ public class VertexInterceptor {
     }
 
     private void commitPrimitive(int vertexNum) {
-        switch (stencilManager.getState()) {
-            case REPLACE_0:
-                // Drop vanilla draws designed to clear stencil buffer.
-                return;
-            case REPLACE_1:
-                // Let stencil manager handle the mask drawing.
-                stencilManager.addMask(colors, texCoords, vertices, vertexNum);
-                break;
-            default:
-                vertexRepository.addVertices(ctx, colors, texCoords, vertices, vertexNum);
-        }
+        vertexRepository.addVertices(ctx, colors, texCoords, vertices, vertexNum);
     }
 
     private void rotateQuadStrip() {

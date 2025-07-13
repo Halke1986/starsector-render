@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.interception.ArrayInterceptor;
-import com.genir.renderer.bridge.interception.StencilManager;
 import com.genir.renderer.bridge.interception.VertexInterceptor;
 import com.genir.renderer.bridge.rendering.BufferPool;
 import com.genir.renderer.bridge.rendering.Renderer;
@@ -21,17 +20,15 @@ public class Bridge {
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
-    static final StencilManager stencilManager = new StencilManager(bufferPool, vertexRepository, renderContext);
 
     // Draw interceptors.
-    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(vertexRepository, renderContext, modelView, stencilManager);
+    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(vertexRepository, renderContext, modelView);
     static final ArrayInterceptor arrayInterceptor = new ArrayInterceptor(vertexRepository, renderContext, modelView); // TODO stencilManager
 
     public static void beginLayer(String layer) {
         layerActive = true;
 
         renderer.beginLayer(layer);
-        stencilManager.beginLayer();
         vertexRepository.clear();
     }
 
