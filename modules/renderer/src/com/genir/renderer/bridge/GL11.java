@@ -17,8 +17,11 @@ public class GL11 {
 
     // TODO
     public static void glTexParameteri(int target, int pname, int param) {
-//        if (interceptActive || listManager.isRecording()) {
-//            throwUnsupportedOperation("glTexParameteri");
+        if (listManager.isRecording()) {
+            listManager.glTexParameteri(target, pname, param);
+            return;
+        }
+
         if (!interceptActive) {
             org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
         }
@@ -29,7 +32,7 @@ public class GL11 {
      */
     public static void glEnable(int cap) {
         if (listManager.isRecording()) {
-            listManager.recordGlEnable(cap);
+            listManager.glEnable(cap);
             return;
         }
 
@@ -43,7 +46,7 @@ public class GL11 {
 
     public static void glDisable(int cap) {
         if (listManager.isRecording()) {
-            listManager.recordGlDisable(cap);
+            listManager.glDisable(cap);
             return;
         }
 
@@ -62,7 +65,7 @@ public class GL11 {
         }
 
         if (listManager.isRecording()) {
-            listManager.recordGlBegin(mode);
+            listManager.glBegin(mode);
             return;
         }
 
@@ -77,7 +80,7 @@ public class GL11 {
 
     public static void glEnd() {
         if (listManager.isRecording()) {
-            listManager.recordGlEnd();
+            listManager.glEnd();
             return;
         }
 
@@ -90,7 +93,7 @@ public class GL11 {
 
     public static void glBindTexture(int target, int texture) {
         if (listManager.isRecording()) {
-            listManager.recordGlBindTexture(target, texture);
+            listManager.glBindTexture(target, texture);
             return;
         }
 
@@ -103,7 +106,7 @@ public class GL11 {
 
     public static void glBlendFunc(int sfactor, int dfactor) {
         if (listManager.isRecording()) {
-            listManager.recordGlBlendFunc(sfactor, dfactor);
+            listManager.glBlendFunc(sfactor, dfactor);
             return;
         }
 
@@ -116,7 +119,7 @@ public class GL11 {
 
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         if (listManager.isRecording()) {
-            listManager.recordGlColorMask(red, green, blue, alpha);
+            listManager.glColorMask(red, green, blue, alpha);
             return;
         }
 
@@ -129,7 +132,7 @@ public class GL11 {
 
     public static void glAlphaFunc(int func, float ref) {
         if (listManager.isRecording()) {
-            listManager.recordGlAlphaFunc(func, ref);
+            listManager.glAlphaFunc(func, ref);
             return;
         }
 
@@ -145,7 +148,7 @@ public class GL11 {
      */
     public static void glStencilFunc(int func, int ref, int mask) {
         if (listManager.isRecording()) {
-            listManager.recordGlStencilFunc(func, ref, mask);
+            listManager.glStencilFunc(func, ref, mask);
             return;
         }
 
@@ -158,7 +161,7 @@ public class GL11 {
 
     public static void glStencilOp(int fail, int zfail, int zpass) {
         if (listManager.isRecording()) {
-            listManager.recordGlStencilOp(fail, zfail, zpass);
+            listManager.glStencilOp(fail, zfail, zpass);
             return;
         }
 
@@ -174,7 +177,7 @@ public class GL11 {
      */
     public static void glMatrixMode(int mode) {
         if (listManager.isRecording()) {
-            listManager.recordGlMatrixMode(mode);
+            listManager.glMatrixMode(mode);
             return;
         }
 
@@ -187,7 +190,7 @@ public class GL11 {
 
     public static void glPushMatrix() {
         if (listManager.isRecording()) {
-            listManager.recordGlPushMatrix();
+            listManager.glPushMatrix();
             return;
         }
 
@@ -200,7 +203,7 @@ public class GL11 {
 
     public static void glPopMatrix() {
         if (listManager.isRecording()) {
-            listManager.recordGlPopMatrix();
+            listManager.glPopMatrix();
             return;
         }
 
@@ -213,7 +216,7 @@ public class GL11 {
 
     public static void glTranslatef(float x, float y, float z) {
         if (listManager.isRecording()) {
-            listManager.recordGlTranslatef(x, y, z);
+            listManager.glTranslatef(x, y, z);
             return;
         }
 
@@ -226,7 +229,7 @@ public class GL11 {
 
     public static void glScalef(float x, float y, float z) {
         if (listManager.isRecording()) {
-            listManager.recordGlScalef(x, y, z);
+            listManager.glScalef(x, y, z);
             return;
         }
 
@@ -239,7 +242,7 @@ public class GL11 {
 
     public static void glRotatef(float angle, float x, float y, float z) {
         if (listManager.isRecording()) {
-            listManager.recordGlRotatef(angle, x, y, z);
+            listManager.glRotatef(angle, x, y, z);
             return;
         }
 
@@ -255,8 +258,11 @@ public class GL11 {
      */
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         if (listManager.isRecording()) {
-            listManager.recordGlColor4ub(red, green, blue, alpha);
-        } else if (interceptActive) {
+            listManager.glColor4ub(red, green, blue, alpha);
+            return;
+        }
+
+        if (interceptActive) {
             vertexInterceptor.glColor4ub(red, green, blue, alpha);
         } else {
             org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha);
@@ -265,8 +271,11 @@ public class GL11 {
 
     public static void glColor3d(double red, double green, double blue) {
         if (listManager.isRecording()) {
-            listManager.recordGlColor3d(red, green, blue);
-        } else if (interceptActive) {
+            listManager.glColor3d(red, green, blue);
+            return;
+        }
+
+        if (interceptActive) {
             vertexInterceptor.glColor3d(red, green, blue);
         } else {
             org.lwjgl.opengl.GL11.glColor3d(red, green, blue);
@@ -275,8 +284,11 @@ public class GL11 {
 
     public static void glTexCoord2f(float s, float t) {
         if (listManager.isRecording()) {
-            listManager.recordGlTexCoord2f(s, t);
-        } else if (interceptActive) {
+            listManager.glTexCoord2f(s, t);
+            return;
+        }
+
+        if (interceptActive) {
             vertexInterceptor.glTexCoord2f(s, t);
         } else {
             org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
@@ -285,8 +297,11 @@ public class GL11 {
 
     public static void glVertex2f(float x, float y) {
         if (listManager.isRecording()) {
-            listManager.recordGlVertex2f(x, y);
-        } else if (interceptActive) {
+            listManager.glVertex2f(x, y);
+            return;
+        }
+
+        if (interceptActive) {
             vertexInterceptor.glVertex2f(x, y);
         } else {
             org.lwjgl.opengl.GL11.glVertex2f(x, y);
@@ -295,8 +310,11 @@ public class GL11 {
 
     public static void glVertex3d(double x, double y, double z) {
         if (listManager.isRecording()) {
-            listManager.recordGlVertex3d(x, y, z);
-        } else if (interceptActive) {
+            listManager.glVertex3d(x, y, z);
+            return;
+        }
+
+        if (interceptActive) {
             vertexInterceptor.glVertex3d(x, y, z);
         } else {
             org.lwjgl.opengl.GL11.glVertex3d(x, y, z);
@@ -307,10 +325,6 @@ public class GL11 {
      * Array interceptor.
      */
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-        if (listManager.isRecording()) {
-            throwUnsupportedOperation("glColorPointer");
-        }
-
         if (interceptActive) {
             arrayInterceptor.glColorPointer(size, unsigned, stride, pointer);
         } else {
@@ -319,10 +333,6 @@ public class GL11 {
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        if (listManager.isRecording()) {
-            throwUnsupportedOperation("glTexCoordPointer");
-        }
-
         if (interceptActive) {
             arrayInterceptor.glTexCoordPointer(size, stride, pointer);
         } else {
@@ -331,10 +341,6 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        if (listManager.isRecording()) {
-            throwUnsupportedOperation("glVertexPointer");
-        }
-
         if (interceptActive) {
             arrayInterceptor.glVertexPointer(size, stride, pointer);
         } else {
@@ -344,7 +350,8 @@ public class GL11 {
 
     public static void glDrawArrays(int mode, int first, int count) {
         if (listManager.isRecording()) {
-            throwUnsupportedOperation("glDrawArrays");
+            listManager.glDrawArrays(mode, first, count);
+            return;
         }
 
         renderContext.glDrawArrays(mode, first, count);
@@ -387,10 +394,6 @@ public class GL11 {
      * No op
      */
     public static void glEnableClientState(int cap) {
-        if (listManager.isRecording()) {
-            throwUnsupportedOperation("glEnableClientState");
-        }
-
         if (interceptActive) {
             asert(cap == org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY
                     || cap == org.lwjgl.opengl.GL11.GL_COLOR_ARRAY
@@ -401,10 +404,6 @@ public class GL11 {
     }
 
     public static void glDisableClientState(int cap) {
-        if (listManager.isRecording()) {
-            throwUnsupportedOperation("glDisableClientState");
-        }
-
         if (!interceptActive) {
             org.lwjgl.opengl.GL11.glDisableClientState(cap);
         }
@@ -414,7 +413,12 @@ public class GL11 {
      * UNSUPPORTED.
      */
     public static void glHint(int target, int mode) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glHint(target, mode);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glHint");
         } else {
             org.lwjgl.opengl.GL11.glHint(target, mode);
@@ -422,7 +426,12 @@ public class GL11 {
     }
 
     public static void glLineWidth(float width) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glLineWidth(width);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glLineWidth");
         } else {
             org.lwjgl.opengl.GL11.glLineWidth(width);
@@ -430,7 +439,7 @@ public class GL11 {
     }
 
     public static void glDeleteTextures(IntBuffer textures) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glDeleteTextures");
         } else {
             org.lwjgl.opengl.GL11.glDeleteTextures(textures);
@@ -438,7 +447,7 @@ public class GL11 {
     }
 
     public static void glDeleteTextures(int texture) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glDeleteTextures");
         } else {
             org.lwjgl.opengl.GL11.glDeleteTextures(texture);
@@ -446,7 +455,12 @@ public class GL11 {
     }
 
     public static void glPolygonMode(int face, int mode) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glPolygonMode(face, mode);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glPolygonMode");
         } else {
             org.lwjgl.opengl.GL11.glPolygonMode(face, mode);
@@ -454,7 +468,7 @@ public class GL11 {
     }
 
     public static void glGetInteger(int pname, IntBuffer params) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glGetInteger");
         } else {
             org.lwjgl.opengl.GL11.glGetInteger(pname, params);
@@ -462,7 +476,7 @@ public class GL11 {
     }
 
     public static int glGetInteger(int pname) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glGetInteger");
             return 0;
         } else {
@@ -471,7 +485,12 @@ public class GL11 {
     }
 
     public static void glViewport(int x, int y, int width, int height) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glViewport(x, y, width, height);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glViewport");
         } else {
             org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
@@ -479,7 +498,7 @@ public class GL11 {
     }
 
     public static String glGetString(int name) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glGetString");
             return "";
         } else {
@@ -488,7 +507,7 @@ public class GL11 {
     }
 
     public static void glFlush() {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glFlush");
         } else {
             org.lwjgl.opengl.GL11.glFlush();
@@ -496,7 +515,7 @@ public class GL11 {
     }
 
     public static void glFinish() {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glFinish");
         } else {
             org.lwjgl.opengl.GL11.glFinish();
@@ -504,7 +523,12 @@ public class GL11 {
     }
 
     public static void glScissor(int x, int y, int width, int height) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glScissor(x, y, width, height);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glScissor");
         } else {
             org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
@@ -512,7 +536,7 @@ public class GL11 {
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glReadPixels");
         } else {
             org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
@@ -520,7 +544,7 @@ public class GL11 {
     }
 
     public static void glGenTextures(IntBuffer textures) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glGenTextures");
         } else {
             org.lwjgl.opengl.GL11.glGenTextures(textures);
@@ -528,7 +552,12 @@ public class GL11 {
     }
 
     public static void glPointSize(float size) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glPointSize(size);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glPointSize");
         } else {
             org.lwjgl.opengl.GL11.glPointSize(size);
@@ -536,7 +565,12 @@ public class GL11 {
     }
 
     public static void glShadeModel(int mode) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glShadeModel(mode);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glShadeModel");
         } else {
             org.lwjgl.opengl.GL11.glShadeModel(mode);
@@ -544,7 +578,12 @@ public class GL11 {
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glLight(light, pname, params);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glLight");
         } else {
             org.lwjgl.opengl.GL11.glLight(light, pname, params);
@@ -552,7 +591,12 @@ public class GL11 {
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glMaterial(face, pname, params);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glMaterial");
         } else {
             org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
@@ -560,7 +604,12 @@ public class GL11 {
     }
 
     public static void glMateriali(int face, int pname, int param) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glMateriali(face, pname, param);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glMateriali");
         } else {
             org.lwjgl.opengl.GL11.glMateriali(face, pname, param);
@@ -568,7 +617,12 @@ public class GL11 {
     }
 
     public static void glColor3ub(byte red, byte green, byte blue) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glColor3ub(red, green, blue);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glColor3ub");
         } else {
             org.lwjgl.opengl.GL11.glColor3ub(red, green, blue);
@@ -576,7 +630,12 @@ public class GL11 {
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glNormal3f(nx, ny, nz);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glNormal3f");
         } else {
             org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
@@ -584,7 +643,12 @@ public class GL11 {
     }
 
     public static void glTexEnvf(int target, int pname, float param) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glTexEnvf(target, pname, param);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glTexEnvf");
         } else {
             org.lwjgl.opengl.GL11.glTexEnvf(target, pname, param);
@@ -592,7 +656,12 @@ public class GL11 {
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glColor4f(red, green, blue, alpha);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glColor4f");
         } else {
             org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
@@ -600,7 +669,12 @@ public class GL11 {
     }
 
     public static void glLoadIdentity() {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glLoadIdentity();
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glLoadIdentity");
         } else {
             org.lwjgl.opengl.GL11.glLoadIdentity();
@@ -608,7 +682,7 @@ public class GL11 {
     }
 
     public static boolean glIsEnabled(int cap) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glIsEnabled");
             return false;
         } else {
@@ -617,7 +691,12 @@ public class GL11 {
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glTexImage2D");
         } else {
             org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
@@ -625,7 +704,12 @@ public class GL11 {
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glTexSubImage2D");
         } else {
             org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
@@ -633,7 +717,12 @@ public class GL11 {
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels_buffer_offset);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glTexSubImage2D");
         } else {
             org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels_buffer_offset);
@@ -641,7 +730,7 @@ public class GL11 {
     }
 
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glTexCoordPointer");
         } else {
             org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
@@ -649,7 +738,7 @@ public class GL11 {
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glColorPointer");
         } else {
             org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
@@ -657,7 +746,12 @@ public class GL11 {
     }
 
     public static void glVertex3f(float x, float y, float z) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glVertex3f(x, y, z);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glVertex3f");
         } else {
             org.lwjgl.opengl.GL11.glVertex3f(x, y, z);
@@ -665,7 +759,12 @@ public class GL11 {
     }
 
     public static void glColorMaterial(int face, int mode) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glColorMaterial(face, mode);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glColorMaterial");
         } else {
             org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
@@ -673,7 +772,12 @@ public class GL11 {
     }
 
     public static void glColor3f(float red, float green, float blue) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glColor3f(red, green, blue);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glColor3f");
         } else {
             org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
@@ -681,7 +785,12 @@ public class GL11 {
     }
 
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glOrtho(left, right, bottom, top, zNear, zFar);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glOrtho");
         } else {
             org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
@@ -689,7 +798,12 @@ public class GL11 {
     }
 
     public static void glClear(int mask) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glClear(mask);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glClear");
         } else {
             org.lwjgl.opengl.GL11.glClear(mask);
@@ -697,7 +811,12 @@ public class GL11 {
     }
 
     public static void glClearColor(float red, float green, float blue, float alpha) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glClearColor(red, green, blue, alpha);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glClearColor");
         } else {
             org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
@@ -705,7 +824,12 @@ public class GL11 {
     }
 
     public static void glPushAttrib(int mask) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glPushAttrib(mask);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glPushAttrib");
         } else {
             org.lwjgl.opengl.GL11.glPushAttrib(mask);
@@ -713,7 +837,12 @@ public class GL11 {
     }
 
     public static void glPopAttrib() {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glPopAttrib();
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glPopAttrib");
         } else {
             org.lwjgl.opengl.GL11.glPopAttrib();
@@ -721,7 +850,7 @@ public class GL11 {
     }
 
     public static int glGenLists(int range) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glGenLists");
             return 0;
         } else {
@@ -730,7 +859,7 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, IntBuffer pointer) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glVertexPointer");
         } else {
             org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
@@ -738,7 +867,7 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glVertexPointer");
         } else {
             org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
@@ -746,7 +875,7 @@ public class GL11 {
     }
 
     public static void glDeleteLists(int list, int range) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glDeleteLists");
         } else {
             org.lwjgl.opengl.GL11.glDeleteLists(list, range);
@@ -754,7 +883,7 @@ public class GL11 {
     }
 
     public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) {
-        if (interceptActive || listManager.isRecording()) {
+        if (interceptActive) {
             throwUnsupportedOperation("glInterleavedArrays");
         } else {
             org.lwjgl.opengl.GL11.glInterleavedArrays(format, stride, pointer);
@@ -762,7 +891,12 @@ public class GL11 {
     }
 
     public static void glArrayElement(int i) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glArrayElement(i);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glArrayElement");
         } else {
             org.lwjgl.opengl.GL11.glArrayElement(i);
@@ -770,7 +904,12 @@ public class GL11 {
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glDrawElements(mode, indices);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glDrawElements");
         } else {
             org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
@@ -778,7 +917,12 @@ public class GL11 {
     }
 
     public static void glTranslated(double x, double y, double z) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glTranslated(x, y, z);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glTranslated");
         } else {
             org.lwjgl.opengl.GL11.glTranslated(x, y, z);
@@ -786,7 +930,12 @@ public class GL11 {
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        if (interceptActive || listManager.isRecording()) {
+        if (listManager.isRecording()) {
+            listManager.glMultMatrix(m);
+            return;
+        }
+
+        if (interceptActive) {
             throwUnsupportedOperation("glMultMatrix");
         } else {
             org.lwjgl.opengl.GL11.glMultMatrix(m);
