@@ -75,8 +75,6 @@ public class Renderer {
     }
 
     private void drawBuffer(RenderContext ctx, VertexBuffer vertexBuffer) {
-        GL11.glColorMask(ctx.maskRed, ctx.maskGreen, ctx.maskBlue, ctx.maskAlpha);
-
         // Texture context.
         if (ctx.enableTexture) {
             GL11.glEnable(GL11.GL_TEXTURE_2D);

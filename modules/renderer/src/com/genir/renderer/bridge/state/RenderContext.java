@@ -6,12 +6,6 @@ public class RenderContext {
     // Mode.
     public int mode;
 
-    // Color mask.
-    public boolean maskRed;
-    public boolean maskGreen;
-    public boolean maskBlue;
-    public boolean maskAlpha;
-
     // Texture.
     public boolean enableTexture;
     public int textureTarget;
@@ -78,13 +72,6 @@ public class RenderContext {
         blendEquation = mode;
     }
 
-    public void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-        maskRed = red;
-        maskGreen = green;
-        maskBlue = blue;
-        maskAlpha = alpha;
-    }
-
     public void glAlphaFunc(int func, float ref) {
         alphaFunc = func;
         alphaRef = ref;
@@ -101,14 +88,6 @@ public class RenderContext {
                 || enableTexture != that.enableTexture
                 || enableBlend != that.enableBlend
                 || enableAlpha != that.enableAlpha) {
-            return false;
-        }
-
-        // Compare color mask.
-        if (maskRed != that.maskRed
-                || maskGreen != that.maskGreen
-                || maskBlue != that.maskBlue
-                || maskAlpha != that.maskAlpha) {
             return false;
         }
 
@@ -146,11 +125,6 @@ public class RenderContext {
         RenderContext cpy = new RenderContext();
 
         cpy.mode = mode;
-
-        cpy.maskRed = maskRed;
-        cpy.maskGreen = maskGreen;
-        cpy.maskBlue = maskBlue;
-        cpy.maskAlpha = maskAlpha;
 
         cpy.enableTexture = enableTexture;
         cpy.textureTarget = textureTarget;

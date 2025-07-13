@@ -70,14 +70,6 @@ public class GL11 {
         }
     }
 
-    public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-        renderContext.glColorMask(red, green, blue, alpha);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
-        }
-    }
-
     public static void glAlphaFunc(int func, float ref) {
         renderContext.glAlphaFunc(func, ref);
 
@@ -167,6 +159,14 @@ public class GL11 {
     /**
      * UNSUPPORTED.
      */
+    public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glColorMask");
+        } else {
+            org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
+        }
+    }
+
     public static void glVertex3d(double x, double y, double z) {
         if (interceptActive) {
             throwUnsupportedOperation("glVertex3d");
