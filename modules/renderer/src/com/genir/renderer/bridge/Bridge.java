@@ -1,9 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.interception.VertexInterceptor;
-import com.genir.renderer.bridge.rendering.BufferPool;
 import com.genir.renderer.bridge.rendering.Renderer;
-import com.genir.renderer.bridge.rendering.VertexRepository;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
 
@@ -12,21 +10,19 @@ public class Bridge {
     static boolean interceptActive = false;
 
     // Rendering.
-    private static final BufferPool bufferPool = new BufferPool();
-    private static final VertexRepository vertexRepository = new VertexRepository(bufferPool);
-    private static final Renderer renderer = new Renderer(vertexRepository);
+    private static final Renderer renderer = new Renderer();
 
     // GL state.
     public static final ModelView modelView = new ModelView();
     public static final RenderContext renderContext = new RenderContext();
 
     // Draw interceptors.
-    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(vertexRepository, renderContext, modelView);
+    static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, renderContext, modelView);
 
     public static void beginLayer(String layer) {
         layerActive = true;
 
-        vertexRepository.clear();
+        renderer.beginLayer(layer);
     }
 
     public static void commitLayer() {

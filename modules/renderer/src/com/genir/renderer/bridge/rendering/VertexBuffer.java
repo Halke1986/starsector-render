@@ -1,92 +1,68 @@
 package com.genir.renderer.bridge.rendering;
 
-import org.lwjgl.BufferUtils;
-
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class VertexBuffer {
     private int numVertices = 0;
+    private int maxVertices = 0;
 
-    private ByteBuffer colors = BufferUtils.createByteBuffer(0);
-    private FloatBuffer texCoords = BufferUtils.createFloatBuffer(0);
-    private FloatBuffer vertices = BufferUtils.createFloatBuffer(0);
+    private byte[] colors = new byte[0];
+    private float[] texCoords = new float[0];
+    private float[] vertices = new float[0];
 
     public void clear() {
+        numVertices = 0;
+    }
+
+    public void exportVertices(ByteBuffer colors, FloatBuffer texCoords, FloatBuffer vertices) {
         colors.clear();
         texCoords.clear();
         vertices.clear();
 
-        numVertices = 0;
-    }
+        colors.put(this.colors, 0, numVertices * 4);
+        texCoords.put(this.texCoords, 0, numVertices * 2);
+        vertices.put(this.vertices, 0, numVertices * 2);
 
-    public Buffers getFlippedBuffers() {
         colors.flip();
         texCoords.flip();
         vertices.flip();
-
-        return new Buffers(colors, texCoords, vertices);
     }
 
     public int size() {
         return numVertices;
     }
 
-    public void addVertices(byte[] colors, float[] texCoord, float[] vertices, int verticesToAdd) {
+    public void addVertices(byte[] colors, float[] texCoords, float[] vertices, int verticesToAdd) {
         ensureCapacity(verticesToAdd);
 
-        this.colors.put(colors, 0, verticesToAdd * 4);
-        this.texCoords.put(texCoord, 0, verticesToAdd * 2);
-        this.vertices.put(vertices, 0, verticesToAdd * 2);
-
-        numVertices += verticesToAdd;
-    }
-
-    public void addVertices(ByteBuffer colors, FloatBuffer texCoord, float[] vertices, int verticesToAdd) {
-        ensureCapacity(verticesToAdd);
-
-        this.colors.put(colors.position(), colors, 0, verticesToAdd * 4);
-        this.texCoords.put(texCoord.position(), texCoord, 0, verticesToAdd * 2);
-        this.vertices.put(vertices, 0, verticesToAdd * 2);
-
-        numVertices += verticesToAdd;
-    }
-
-    public void addVertices(VertexBuffer vertexBuffer) {
-        int verticesToAdd = vertexBuffer.size();
-        ensureCapacity(verticesToAdd);
-
-        Buffers buffers = vertexBuffer.getFlippedBuffers();
-
-        this.colors.put(buffers.colors);
-        this.texCoords.put(buffers.texCoords);
-        this.vertices.put(buffers.vertices);
+        System.arraycopy(colors, 0, this.colors, numVertices * 4, verticesToAdd * 4);
+        System.arraycopy(texCoords, 0, this.texCoords, numVertices * 2, verticesToAdd * 2);
+        System.arraycopy(vertices, 0, this.vertices, numVertices * 2, verticesToAdd * 2);
 
         numVertices += verticesToAdd;
     }
 
     private void ensureCapacity(int verticesToAdd) {
-        while (vertices.remaining() < verticesToAdd * 2) {
+        while (maxVertices < numVertices + verticesToAdd) {
             colors = growByteBuffer(colors);
             texCoords = growFloatBuffer(texCoords);
             vertices = growFloatBuffer(vertices);
+
+            maxVertices = vertices.length / 2;
         }
     }
 
-    private ByteBuffer growByteBuffer(ByteBuffer src) {
-        ByteBuffer newBuffer = BufferUtils.createByteBuffer(Math.max(4, src.capacity() * 2));
-
-        src.flip();
-        newBuffer.put(src);
+    private byte[] growByteBuffer(byte[] src) {
+        byte[] newBuffer = new byte[(Math.max(4, src.length * 2))];
+        System.arraycopy(src, 0, newBuffer, 0, src.length);
 
         return newBuffer;
     }
 
-    private FloatBuffer growFloatBuffer(FloatBuffer src) {
-        FloatBuffer newBuffer = BufferUtils.createFloatBuffer(Math.max(2, src.capacity() * 2));
-
-        src.flip();
-        newBuffer.put(src);
+    private float[] growFloatBuffer(float[] src) {
+        float[] newBuffer = new float[(Math.max(2, src.length * 2))];
+        System.arraycopy(src, 0, newBuffer, 0, src.length);
 
         return newBuffer;
     }

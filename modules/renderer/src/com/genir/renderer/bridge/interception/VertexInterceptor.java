@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.interception;
 
-import com.genir.renderer.bridge.rendering.VertexRepository;
+import com.genir.renderer.bridge.rendering.Renderer;
+import com.genir.renderer.bridge.rendering.VertexBuffer;
 import com.genir.renderer.bridge.state.ModelView;
 import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
@@ -9,7 +10,7 @@ import org.lwjgl.util.vector.Matrix3f;
 import static com.genir.renderer.Debug.asert;
 
 public class VertexInterceptor {
-    private final VertexRepository vertexRepository;
+    private final Renderer renderer;
     private final RenderContext ctx;
     private final ModelView matrixStack;
 
@@ -25,8 +26,8 @@ public class VertexInterceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public VertexInterceptor(VertexRepository vertexRepository, RenderContext ctx, ModelView matrixStack) {
-        this.vertexRepository = vertexRepository;
+    public VertexInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
+        this.renderer = renderer;
         this.ctx = ctx;
         this.matrixStack = matrixStack;
     }
@@ -74,7 +75,8 @@ public class VertexInterceptor {
     }
 
     private void commit() {
-        vertexRepository.addVertices(ctx, colors, texCoords, vertices, 4);
+        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
+        buffer.addVertices(colors, texCoords, vertices, 4);
         vertexNum = 0;
     }
 }
