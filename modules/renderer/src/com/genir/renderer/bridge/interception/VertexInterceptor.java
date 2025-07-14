@@ -1,9 +1,7 @@
 package com.genir.renderer.bridge.interception;
 
 import com.genir.renderer.bridge.rendering.Renderer;
-import com.genir.renderer.bridge.rendering.VertexBuffer;
 import com.genir.renderer.bridge.state.ModelView;
-import com.genir.renderer.bridge.state.RenderContext;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
@@ -11,7 +9,6 @@ import static com.genir.renderer.Debug.asert;
 
 public class VertexInterceptor {
     private final Renderer renderer;
-    private final RenderContext ctx;
     private final ModelView matrixStack;
 
     // State.
@@ -26,9 +23,15 @@ public class VertexInterceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    public VertexInterceptor(Renderer renderer, RenderContext ctx, ModelView matrixStack) {
+    public void glBegin(int mode) {
+        asert(mode == GL11.GL_QUADS);
+    }
+
+    public void glEnd() {
+    }
+
+    public VertexInterceptor(Renderer renderer, ModelView matrixStack) {
         this.renderer = renderer;
-        this.ctx = ctx;
         this.matrixStack = matrixStack;
     }
 
@@ -45,8 +48,6 @@ public class VertexInterceptor {
     }
 
     public void glVertex2f(float x, float y) {
-        asert(ctx.mode == GL11.GL_QUADS);
-
         Matrix3f m = matrixStack.getMatrix();
 
         float u = x * m.m00 + y * m.m01 + m.m02;
@@ -75,8 +76,7 @@ public class VertexInterceptor {
     }
 
     private void commit() {
-        VertexBuffer buffer = renderer.getVertexBuffer(ctx);
-        buffer.addVertices(colors, texCoords, vertices, 4);
+        renderer.drawPrimitives(colors, texCoords, vertices, 4);
         vertexNum = 0;
     }
 }

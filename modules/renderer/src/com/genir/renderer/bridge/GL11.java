@@ -15,62 +15,6 @@ public class GL11 {
     }
 
     /**
-     * Render context.
-     */
-    public static void glEnable(int cap) {
-        renderContext.glEnable(cap);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glEnable(cap);
-        }
-    }
-
-    public static void glDisable(int cap) {
-        renderContext.glDisable(cap);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glDisable(cap);
-        }
-    }
-
-    public static void glBegin(int mode) {
-        if (unsupportedOperation != null) {
-            // Throw UnsupportedOperationException again, in case where the initial exception was caught.
-            throw new UnsupportedOperationException(unsupportedOperation);
-        }
-
-        renderContext.glBegin(mode);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glBegin(mode);
-        }
-    }
-
-    public static void glEnd() {
-        renderContext.glEnd();
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glEnd();
-        }
-    }
-
-    public static void glBindTexture(int target, int texture) {
-        renderContext.glBindTexture(target, texture);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
-        }
-    }
-
-    public static void glBlendFunc(int sfactor, int dfactor) {
-        renderContext.glBlendFunc(sfactor, dfactor);
-
-        if (!interceptActive) {
-            org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
-        }
-    }
-
-    /**
      * Model view.
      */
     public static void glMatrixMode(int mode) {
@@ -124,6 +68,22 @@ public class GL11 {
     /**
      * Vertex interceptor.
      */
+    public static void glBegin(int mode) {
+        if (interceptActive) {
+            vertexInterceptor.glBegin(mode);
+        } else {
+            org.lwjgl.opengl.GL11.glBegin(mode);
+        }
+    }
+
+    public static void glEnd() {
+        if (interceptActive) {
+            vertexInterceptor.glEnd();
+        } else {
+            org.lwjgl.opengl.GL11.glEnd();
+        }
+    }
+
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         if (interceptActive) {
             vertexInterceptor.glColor4ub(red, green, blue, alpha);
@@ -146,6 +106,25 @@ public class GL11 {
         } else {
             org.lwjgl.opengl.GL11.glVertex2f(x, y);
         }
+    }
+
+    /**
+     * Unintercepted.
+     */
+    public static void glBindTexture(int target, int texture) {
+        org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+    }
+
+    public static void glBlendFunc(int sfactor, int dfactor) {
+        org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
+    }
+
+    public static void glEnable(int cap) {
+        org.lwjgl.opengl.GL11.glEnable(cap);
+    }
+
+    public static void glDisable(int cap) {
+        org.lwjgl.opengl.GL11.glDisable(cap);
     }
 
     /**
