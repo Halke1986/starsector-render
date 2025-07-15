@@ -2,6 +2,8 @@ package com.genir.renderer.bridge.state;
 
 import org.lwjgl.util.vector.Matrix3f;
 
+import static com.genir.renderer.Debug.asert;
+
 /**
  * Assume 2D transformations in Z plane only.
  * Will fail for 3D transformation such as during planet rendering.
@@ -21,6 +23,8 @@ public class ModelView {
     }
 
     public void glMatrixMode(int mode) {
+        asert(mode == org.lwjgl.opengl.GL11.GL_MODELVIEW);
+
         matrixMode = mode;
     }
 

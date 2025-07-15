@@ -5,37 +5,26 @@ import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.state.ModelView;
 
 public class Bridge {
-    static boolean layerActive = false;
-    static boolean interceptActive = false;
+    public static boolean interceptActive = false;
 
-    // Rendering.
-    private static final Renderer renderer = new Renderer();
-
-    // GL state.
+    static final ListManager listManager = new ListManager();
     public static final ModelView modelView = new ModelView();
-
-    // Draw interceptors.
+    private static final Renderer renderer = new Renderer();
     static final VertexInterceptor vertexInterceptor = new VertexInterceptor(renderer, modelView);
 
     public static void beginLayer(String layer) {
-        layerActive = true;
-
         renderer.beginLayer(layer);
+        interceptActive = true;
     }
 
     public static void commitLayer() {
         renderer.commitLayer();
-
-        layerActive = false;
+        interceptActive = false;
     }
 
     public static void beginIntercept() {
-        if (layerActive) {
-            interceptActive = true;
-        }
     }
 
     public static void endIntercept() {
-        interceptActive = false;
     }
 }

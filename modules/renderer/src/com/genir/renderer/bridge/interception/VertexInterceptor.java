@@ -2,8 +2,10 @@ package com.genir.renderer.bridge.interception;
 
 import com.genir.renderer.bridge.rendering.Renderer;
 import com.genir.renderer.bridge.state.ModelView;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 import static com.genir.renderer.Debug.asert;
 
@@ -12,22 +14,31 @@ public class VertexInterceptor {
     private final ModelView matrixStack;
 
     // State.
+    private int mode = 0;
     private final byte[] color = new byte[4];
     private final float[] texCoord = new float[2];
 
     // Buffers.
-    private final byte[] colors = new byte[16];
-    private final float[] texCoords = new float[8];
-    private final float[] vertices = new float[8];
+    private final byte[] colors = new byte[1 << 16];
+    private final float[] texCoords = new float[1 << 15];
+    private final float[] vertices = new float[1 << 15];
 
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
+    // External buffers.
+    private ByteBuffer colorPointer = null;
+    private FloatBuffer texCoordsPointer = null;
+    private FloatBuffer vertexPointer = null;
+
     public void glBegin(int mode) {
-        asert(mode == GL11.GL_QUADS);
+        this.mode = mode;
+//        vertexNum = 0;
     }
 
     public void glEnd() {
+        renderer.drawPrimitives(mode, colors, texCoords, vertices, vertexNum);
+        vertexNum = 0;
     }
 
     public VertexInterceptor(Renderer renderer, ModelView matrixStack) {
@@ -42,9 +53,22 @@ public class VertexInterceptor {
         color[3] = alpha;
     }
 
+    public void glColor3d(double red, double green, double blue) {
+        color[0] = (byte) Math.round(red * 255.0);
+        color[1] = (byte) Math.round(green * 255.0);
+        color[2] = (byte) Math.round(blue * 255.0);
+        color[3] = (byte) 255;
+    }
+
     public void glTexCoord2f(float s, float t) {
         texCoord[0] = s;
         texCoord[1] = t;
+    }
+
+    public void glVertex3d(double x, double y, double z) {
+        asert(z == 0);
+
+        glVertex2f((float) x, (float) y);
     }
 
     public void glVertex2f(float x, float y) {
@@ -69,14 +93,44 @@ public class VertexInterceptor {
         colors[idx * 4 + 3] = color[3];
 
         vertexNum++;
-
-        if (vertexNum == 4) {
-            commit();
-        }
     }
 
-    private void commit() {
-        renderer.drawPrimitives(colors, texCoords, vertices, 4);
-        vertexNum = 0;
+    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
+        colorPointer = pointer;
+    }
+
+    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        vertexPointer = pointer;
+    }
+
+    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+        texCoordsPointer = pointer;
+    }
+
+    public void glDrawArrays(int mode, int first, int count) {
+        FloatBuffer vertexReader = vertexPointer.duplicate();
+        FloatBuffer texCoordsReader = texCoordsPointer.duplicate();
+        ByteBuffer colorReader = colorPointer.duplicate();
+
+        vertexReader.rewind();
+        texCoordsReader.rewind();
+        colorReader.rewind();
+
+        vertexReader.get(vertices, 0, count * 2);
+        texCoordsReader.get(texCoords, 0, count * 2);
+        colorReader.get(colors, 0, count * 4);
+
+        // Transform vertices;
+        Matrix3f m = matrixStack.getMatrix();
+
+        for (int i = 0; i < count * 2; i += 2) {
+            float x = vertices[i + 0];
+            float y = vertices[i + 1];
+
+            vertices[i + 0] = x * m.m00 + y * m.m01 + m.m02;
+            vertices[i + 1] = x * m.m10 + y * m.m11 + m.m12;
+        }
+
+        renderer.drawPrimitives(mode, colors, texCoords, vertices, count);
     }
 }

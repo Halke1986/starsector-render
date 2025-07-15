@@ -7,9 +7,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class Renderer {
-    private final ByteBuffer colors = BufferUtils.createByteBuffer(16);
-    private final FloatBuffer texCoords = BufferUtils.createFloatBuffer(8);
-    private final FloatBuffer vertices = BufferUtils.createFloatBuffer(8);
+    private final ByteBuffer colors = BufferUtils.createByteBuffer(1 << 16);
+    private final FloatBuffer texCoords = BufferUtils.createFloatBuffer(1 << 15);
+    private final FloatBuffer vertices = BufferUtils.createFloatBuffer(1 << 15);
 
     private String layer = "";
 
@@ -39,7 +39,11 @@ public class Renderer {
         GL11.glPopMatrix();
     }
 
-    public void drawPrimitives(byte[] colors, float[] texCoords, float[] vertices, int numVertices) {
+    public void drawPrimitives(int mode, byte[] colors, float[] texCoords, float[] vertices, int numVertices) {
+        if (numVertices == 0) {
+            return;
+        }
+
         this.colors.clear();
         this.texCoords.clear();
         this.vertices.clear();
@@ -52,6 +56,6 @@ public class Renderer {
         this.texCoords.flip();
         this.vertices.flip();
 
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, numVertices);
+        GL11.glDrawArrays(mode, 0, numVertices);
     }
 }

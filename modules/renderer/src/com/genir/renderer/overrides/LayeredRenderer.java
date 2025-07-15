@@ -6,7 +6,6 @@ import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
-import com.genir.renderer.bridge.Bridge;
 
 import java.util.List;
 
@@ -17,15 +16,7 @@ public class LayeredRenderer {
         }
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
-            if (isSwarm(entity)) {
-                Bridge.beginIntercept();
-
-                entity.render(layer, viewport);
-
-                Bridge.endIntercept();
-            } else {
-                entity.render(layer, viewport);
-            }
+            entity.render(layer, viewport);
         }
     }
 

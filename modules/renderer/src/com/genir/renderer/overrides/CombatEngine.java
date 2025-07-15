@@ -64,9 +64,11 @@ public class CombatEngine {
 
     private static void renderLayer(CombatEngineLayers layer) {
         Bridge.beginLayer(layer.name());
+        Bridge.beginIntercept();
 
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
+        Bridge.endIntercept();
         Bridge.commitLayer();
     }
 
