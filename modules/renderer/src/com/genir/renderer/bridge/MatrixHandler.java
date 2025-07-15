@@ -1,13 +1,16 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.bridge.Bridge.interceptActive;
+import java.nio.FloatBuffer;
 
-public class MatrixTracker {
+import static com.genir.renderer.bridge.Bridge.interceptActive;
+import static com.genir.renderer.bridge.Bridge.throwUnsupportedOperation;
+
+public class MatrixHandler {
     private int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
 
-    private final Matrix modelView;
+    private final MatrixStack modelView;
 
-    public MatrixTracker(Matrix modelView) {
+    public MatrixHandler(MatrixStack modelView) {
         this.modelView = modelView;
     }
 
@@ -37,6 +40,27 @@ public class MatrixTracker {
         }
     }
 
+    public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
+        // glOrtho should never be called on model view matrix.
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            throwUnsupportedOperation("glOrtho");
+        }
+
+        if (!interceptActive || matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
+        }
+    }
+
+    public void glLoadIdentity() {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glLoadIdentity();
+        }
+
+        if (!interceptActive || matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            org.lwjgl.opengl.GL11.glLoadIdentity();
+        }
+    }
+
     public void glTranslatef(float x, float y, float z) {
         if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glTranslatef(x, y, z);
@@ -45,6 +69,10 @@ public class MatrixTracker {
         if (!interceptActive || matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
         }
+    }
+
+    public void glTranslated(double x, double y, double z) {
+        glTranslatef((float) x, (float) y, (float) z);
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
@@ -64,6 +92,16 @@ public class MatrixTracker {
 
         if (!interceptActive || matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             org.lwjgl.opengl.GL11.glScalef(x, y, z);
+        }
+    }
+
+    public void glMultMatrix(FloatBuffer m) {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            throwUnsupportedOperation("glMultMatrix");
+        }
+
+        if (!interceptActive || matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            org.lwjgl.opengl.GL11.glMultMatrix(m);
         }
     }
 }

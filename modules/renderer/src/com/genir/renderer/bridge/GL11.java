@@ -7,13 +7,6 @@ import java.nio.IntBuffer;
 import static com.genir.renderer.bridge.Bridge.*;
 
 public class GL11 {
-    private static String unsupportedOperation;
-
-    private static void throwUnsupportedOperation(String operation) {
-        unsupportedOperation = operation;
-        throw new UnsupportedOperationException(operation);
-    }
-
     /**
      * Object lists.
      */
@@ -53,7 +46,7 @@ public class GL11 {
             return;
         }
 
-        matrixTracker.glMatrixMode(mode);
+        matrixHandler.glMatrixMode(mode);
     }
 
     public static void glPushMatrix() {
@@ -62,7 +55,7 @@ public class GL11 {
             return;
         }
 
-        matrixTracker.glPushMatrix();
+        matrixHandler.glPushMatrix();
     }
 
     public static void glPopMatrix() {
@@ -71,7 +64,25 @@ public class GL11 {
             return;
         }
 
-        matrixTracker.glPopMatrix();
+        matrixHandler.glPopMatrix();
+    }
+
+    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
+        if (listManager.isRecording()) {
+            listManager.glOrtho(left, right, bottom, top, zNear, zFar);
+            return;
+        }
+
+        matrixHandler.glOrtho(left, right, bottom, top, zNear, zFar);
+    }
+
+    public static void glLoadIdentity() {
+        if (listManager.isRecording()) {
+            listManager.glLoadIdentity();
+            return;
+        }
+
+        matrixHandler.glLoadIdentity();
     }
 
     public static void glTranslatef(float x, float y, float z) {
@@ -80,7 +91,16 @@ public class GL11 {
             return;
         }
 
-        matrixTracker.glTranslatef(x, y, z);
+        matrixHandler.glTranslatef(x, y, z);
+    }
+
+    public static void glTranslated(double x, double y, double z) {
+        if (listManager.isRecording()) {
+            listManager.glTranslated(x, y, z);
+            return;
+        }
+
+        matrixHandler.glTranslated(x, y, z);
     }
 
     public static void glScalef(float x, float y, float z) {
@@ -89,7 +109,7 @@ public class GL11 {
             return;
         }
 
-        matrixTracker.glScalef(x, y, z);
+        matrixHandler.glScalef(x, y, z);
     }
 
     public static void glRotatef(float angle, float x, float y, float z) {
@@ -98,13 +118,24 @@ public class GL11 {
             return;
         }
 
-        matrixTracker.glRotatef(angle, x, y, z);
+        matrixHandler.glRotatef(angle, x, y, z);
+    }
+
+    public static void glMultMatrix(FloatBuffer m) {
+        if (listManager.isRecording()) {
+            listManager.glMultMatrix(m);
+            return;
+        }
+
+        matrixHandler.glMultMatrix(m);
     }
 
     /**
      * Vertex interception.
      */
     public static void glBegin(int mode) {
+        assertNoUnsupportedOperation();
+
         if (listManager.isRecording()) {
             listManager.glBegin(mode);
             return;
@@ -504,15 +535,6 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
     }
 
-    public static void glLoadIdentity() {
-        if (listManager.isRecording()) {
-            listManager.glLoadIdentity();
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glLoadIdentity();
-    }
-
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
         if (listManager.isRecording()) {
             listManager.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
@@ -567,15 +589,6 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
     }
 
-    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        if (listManager.isRecording()) {
-            listManager.glOrtho(left, right, bottom, top, zNear, zFar);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
-    }
-
     public static void glClear(int mask) {
         if (listManager.isRecording()) {
             listManager.glClear(mask);
@@ -628,24 +641,6 @@ public class GL11 {
         }
 
         org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
-    }
-
-    public static void glTranslated(double x, double y, double z) {
-        if (listManager.isRecording()) {
-            listManager.glTranslated(x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glTranslated(x, y, z);
-    }
-
-    public static void glMultMatrix(FloatBuffer m) {
-        if (listManager.isRecording()) {
-            listManager.glMultMatrix(m);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glMultMatrix(m);
     }
 
     public static void glDeleteLists(int list, int range) {

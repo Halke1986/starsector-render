@@ -2,15 +2,17 @@ package com.genir.renderer.bridge;
 
 import org.lwjgl.util.vector.Matrix3f;
 
+import java.nio.FloatBuffer;
+
 /**
  * Assume 2D transformations in Z plane only.
  * Will fail for 3D transformation such as during planet rendering.
  */
-public class Matrix {
+public class MatrixStack {
     private final Matrix3f[] stack = new Matrix3f[16];
     private int matrixIdx = 0;
 
-    public Matrix() {
+    public MatrixStack() {
         stack[0] = new Matrix3f();
         stack[0].setIdentity();
     }
@@ -36,6 +38,10 @@ public class Matrix {
         }
 
         matrixIdx--;
+    }
+
+    public void glLoadIdentity() {
+        Matrix3f.setIdentity(stack[matrixIdx]);
     }
 
     public void glTranslatef(float x, float y, float z) {

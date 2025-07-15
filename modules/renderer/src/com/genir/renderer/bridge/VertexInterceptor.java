@@ -1,7 +1,6 @@
-package com.genir.renderer.bridge.interception;
+package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.rendering.Renderer;
-import com.genir.renderer.bridge.Matrix;
 import org.lwjgl.util.vector.Matrix3f;
 
 import java.nio.ByteBuffer;
@@ -11,7 +10,7 @@ import static com.genir.renderer.Debug.asert;
 
 public class VertexInterceptor {
     private final Renderer renderer;
-    private final Matrix matrixStack;
+    private final MatrixStack matrixStack;
 
     // State.
     private int mode = 0;
@@ -33,7 +32,6 @@ public class VertexInterceptor {
 
     public void glBegin(int mode) {
         this.mode = mode;
-//        vertexNum = 0;
     }
 
     public void glEnd() {
@@ -41,7 +39,7 @@ public class VertexInterceptor {
         vertexNum = 0;
     }
 
-    public VertexInterceptor(Renderer renderer, Matrix matrixStack) {
+    public VertexInterceptor(Renderer renderer, MatrixStack matrixStack) {
         this.renderer = renderer;
         this.matrixStack = matrixStack;
     }
