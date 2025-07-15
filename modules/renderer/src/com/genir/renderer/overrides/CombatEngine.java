@@ -1,10 +1,8 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.genir.renderer.bridge.Bridge;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.Debug.logger;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
@@ -15,8 +13,6 @@ public class CombatEngine {
         if (engine.isDestroyed()) {
             return;
         }
-
-        logger().info("");
 
         renderLayer("GlowyContrailParticles");
         renderLayer("SmokyContrailParticles");
@@ -63,19 +59,10 @@ public class CombatEngine {
     }
 
     private static void renderLayer(CombatEngineLayers layer) {
-        Bridge.beginLayer(layer.name());
-        Bridge.beginIntercept();
-
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
-
-        Bridge.endIntercept();
-        Bridge.commitLayer();
     }
 
     private static void renderLayer(String layer) {
-        Bridge.beginLayer(layer);
-        Bridge.beginIntercept();
-
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
             case "SmokyContrailParticles" -> engine.getSmokyContrailParticles().render(0F, 0F);
@@ -93,8 +80,5 @@ public class CombatEngine {
             case "NegativeNebulaParticles" -> engine.getNegativeNebulaParticles().render(0F, 0F);
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
-
-        Bridge.endIntercept();
-        Bridge.commitLayer();
     }
 }

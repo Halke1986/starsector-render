@@ -53,12 +53,7 @@ public class GL11 {
             return;
         }
 
-        if (interceptActive) {
-            modelView.glMatrixMode(mode);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glMatrixMode(mode);
+        matrixTracker.glMatrixMode(mode);
     }
 
     public static void glPushMatrix() {
@@ -67,12 +62,7 @@ public class GL11 {
             return;
         }
 
-        if (interceptActive) {
-            modelView.glPushMatrix();
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glPushMatrix();
+        matrixTracker.glPushMatrix();
     }
 
     public static void glPopMatrix() {
@@ -81,12 +71,7 @@ public class GL11 {
             return;
         }
 
-        if (interceptActive) {
-            modelView.glPopMatrix();
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glPopMatrix();
+        matrixTracker.glPopMatrix();
     }
 
     public static void glTranslatef(float x, float y, float z) {
@@ -95,12 +80,7 @@ public class GL11 {
             return;
         }
 
-        if (interceptActive) {
-            modelView.glTranslatef(x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
+        matrixTracker.glTranslatef(x, y, z);
     }
 
     public static void glScalef(float x, float y, float z) {
@@ -109,12 +89,7 @@ public class GL11 {
             return;
         }
 
-        if (interceptActive) {
-            modelView.glScalef(x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glScalef(x, y, z);
+        matrixTracker.glScalef(x, y, z);
     }
 
     public static void glRotatef(float angle, float x, float y, float z) {
@@ -123,12 +98,7 @@ public class GL11 {
             return;
         }
 
-        if (interceptActive) {
-            modelView.glRotatef(angle, x, y, z);
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
+        matrixTracker.glRotatef(angle, x, y, z);
     }
 
     /**

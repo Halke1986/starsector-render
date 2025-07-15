@@ -1,19 +1,16 @@
-package com.genir.renderer.bridge.state;
+package com.genir.renderer.bridge;
 
 import org.lwjgl.util.vector.Matrix3f;
-
-import static com.genir.renderer.Debug.asert;
 
 /**
  * Assume 2D transformations in Z plane only.
  * Will fail for 3D transformation such as during planet rendering.
  */
-public class ModelView {
-    private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
+public class Matrix {
     private final Matrix3f[] stack = new Matrix3f[16];
     private int matrixIdx = 0;
 
-    public ModelView() {
+    public Matrix() {
         stack[0] = new Matrix3f();
         stack[0].setIdentity();
     }
@@ -22,17 +19,7 @@ public class ModelView {
         return stack[matrixIdx];
     }
 
-    public void glMatrixMode(int mode) {
-        asert(mode == org.lwjgl.opengl.GL11.GL_MODELVIEW);
-
-        matrixMode = mode;
-    }
-
     public void glPushMatrix() {
-        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            return;
-        }
-
         int next = matrixIdx + 1;
         if (stack[next] == null) {
             stack[next] = new Matrix3f();
@@ -43,10 +30,6 @@ public class ModelView {
     }
 
     public void glPopMatrix() {
-        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            return;
-        }
-
         // GL_STACK_UNDERFLOW
         if (matrixIdx == 0) {
             return;
@@ -56,10 +39,6 @@ public class ModelView {
     }
 
     public void glTranslatef(float x, float y, float z) {
-        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            return;
-        }
-
         Matrix3f m = stack[matrixIdx];
 
         m.m02 = x * m.m00 + y * m.m01 + m.m02;
@@ -68,10 +47,6 @@ public class ModelView {
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            return;
-        }
-
         float a = angle * (float) (Math.PI / 180);
         float cos = (float) Math.cos(a);
         float sin = (float) Math.sin(a);
@@ -90,10 +65,6 @@ public class ModelView {
     }
 
     public void glScalef(float x, float y, float z) {
-        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            return;
-        }
-
         Matrix3f m = stack[matrixIdx];
 
         m.m00 *= x;

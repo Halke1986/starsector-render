@@ -11,11 +11,7 @@ public class Renderer {
     private final FloatBuffer texCoords = BufferUtils.createFloatBuffer(1 << 15);
     private final FloatBuffer vertices = BufferUtils.createFloatBuffer(1 << 15);
 
-    private String layer = "";
-
-    public void beginLayer(String layer) {
-        this.layer = layer;
-
+    public void beginLayer() {
         // Vertices are already transformed into model frame.
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
