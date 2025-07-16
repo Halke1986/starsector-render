@@ -419,7 +419,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glHint");
             return;
         }
 
@@ -433,7 +433,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glLineWidth");
             return;
         }
 
@@ -447,7 +447,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glPolygonMode");
             return;
         }
 
@@ -461,7 +461,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glViewport");
             return;
         }
 
@@ -475,7 +475,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glScissor");
             return;
         }
 
@@ -489,7 +489,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glPointSize");
             return;
         }
 
@@ -503,7 +503,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glShadeModel");
             return;
         }
 
@@ -517,7 +517,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glLight");
             return;
         }
 
@@ -531,7 +531,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glMaterial");
             return;
         }
 
@@ -545,7 +545,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glMateriali");
             return;
         }
 
@@ -559,7 +559,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glColor3ub");
             return;
         }
 
@@ -573,7 +573,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glNormal3f");
             return;
         }
 
@@ -587,7 +587,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glTexEnvf");
             return;
         }
 
@@ -601,7 +601,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glColor4f");
             return;
         }
 
@@ -615,7 +615,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glTexImage2D");
             return;
         }
 
@@ -629,7 +629,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glTexSubImage2D");
             return;
         }
 
@@ -643,7 +643,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glTexSubImage2D");
             return;
         }
 
@@ -657,7 +657,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glVertex3f");
             return;
         }
 
@@ -671,7 +671,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glColorMaterial");
             return;
         }
 
@@ -685,7 +685,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glColor3f");
             return;
         }
 
@@ -699,7 +699,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glClear");
             return;
         }
 
@@ -713,7 +713,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glClearColor");
             return;
         }
 
@@ -727,7 +727,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glPushAttrib");
             return;
         }
 
@@ -741,7 +741,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glPopAttrib");
             return;
         }
 
@@ -755,7 +755,7 @@ public class GL11 {
         }
 
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glArrayElement");
             return;
         }
 
@@ -778,7 +778,7 @@ public class GL11 {
 
     public static void glDeleteLists(int list, int range) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glDrawElements");
             return;
         }
 
@@ -787,7 +787,7 @@ public class GL11 {
 
     public static void glDeleteTextures(IntBuffer textures) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glDeleteTextures");
             return;
         }
 
@@ -796,7 +796,7 @@ public class GL11 {
 
     public static void glDeleteTextures(int texture) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glDeleteTextures");
             return;
         }
 
@@ -805,7 +805,7 @@ public class GL11 {
 
     public static void glFinish() {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glFinish");
             return;
         }
 
@@ -814,7 +814,7 @@ public class GL11 {
 
     public static void glFlush() {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glFlush");
             return;
         }
 
@@ -823,7 +823,7 @@ public class GL11 {
 
     public static int glGenLists(int range) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glGenLists");
             return 0;
         }
 
@@ -832,7 +832,7 @@ public class GL11 {
 
     public static void glGenTextures(IntBuffer textures) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glGenTextures");
             return;
         }
 
@@ -841,7 +841,7 @@ public class GL11 {
 
     public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glInterleavedArrays");
             return;
         }
 
@@ -850,7 +850,7 @@ public class GL11 {
 
     public static boolean glIsEnabled(int cap) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glIsEnabled");
             return false;
         }
 
@@ -859,7 +859,7 @@ public class GL11 {
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glReadPixels");
             return;
         }
 
@@ -868,7 +868,7 @@ public class GL11 {
 
     public static void glGetInteger(int pname, IntBuffer params) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glGetInteger");
             return;
         }
 
@@ -877,7 +877,7 @@ public class GL11 {
 
     public static int glGetInteger(int pname) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glGetInteger");
             return 0;
         }
 
@@ -886,7 +886,7 @@ public class GL11 {
 
     public static String glGetString(int name) {
         if (interceptActive) {
-            throwUnsupportedOperation("glTexCoordPointer");
+            throwUnsupportedOperation("glGetString");
             return "";
         }
 

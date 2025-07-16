@@ -7,7 +7,6 @@ import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
 import com.fs.starfarer.combat.entities.terrain.Planet;
-import com.genir.renderer.bridge.Bridge;
 
 import java.util.List;
 
@@ -17,38 +16,12 @@ public class LayeredRenderer {
             return;
         }
 
-        if (!Bridge.interceptActive) {
-            for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
-                entity.render(layer, viewport);
-            }
-
-            return;
-        }
-
-        int intercepted = 0;
-
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (shouldIntercept(entity)) {
                 entity.render(layer, viewport);
-                intercepted++;
             }
         }
-
-        if (intercepted == entities.size()) {
-            return;
-        }
-
-        Bridge.endIntercept();
-
-        for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
-            if (!shouldIntercept(entity)) {
-                entity.render(layer, viewport);
-            }
-        }
-
-        Bridge.beginIntercept();
     }
-
 
     private static boolean shouldIntercept(LayeredRenderable<CombatEngineLayers, CombatViewport> entity) {
         return isVanillaEntity(entity) && !isPlanet(entity);
