@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.rendering.Renderer;
-
 public class Bridge {
     static String unsupportedOperation;
     public static boolean interceptActive = false;

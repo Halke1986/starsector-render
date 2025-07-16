@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.rendering.Renderer;
 import org.lwjgl.util.vector.Matrix3f;
 
 import java.nio.ByteBuffer;
