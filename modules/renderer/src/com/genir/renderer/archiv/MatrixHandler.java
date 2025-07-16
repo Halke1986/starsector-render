@@ -1,9 +1,9 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.archiv;
 
 import java.nio.FloatBuffer;
 
-import static com.genir.renderer.bridge.Bridge.interceptActive;
-import static com.genir.renderer.bridge.Bridge.throwUnsupportedOperation;
+import static com.genir.renderer.archiv.Bridge.interceptActive;
+import static com.genir.renderer.archiv.Bridge.throwUnsupportedOperation;
 
 public class MatrixHandler {
     private int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW;
