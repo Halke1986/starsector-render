@@ -409,9 +409,17 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
     }
 
+    /**
+     * UNSUPPORTED.
+     */
     public static void glHint(int target, int mode) {
         if (listManager.isRecording()) {
             listManager.glHint(target, mode);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -424,12 +432,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glLineWidth(width);
     }
 
     public static void glPolygonMode(int face, int mode) {
         if (listManager.isRecording()) {
             listManager.glPolygonMode(face, mode);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -442,12 +460,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
     }
 
     public static void glScissor(int x, int y, int width, int height) {
         if (listManager.isRecording()) {
             listManager.glScissor(x, y, width, height);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -460,12 +488,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glPointSize(size);
     }
 
     public static void glShadeModel(int mode) {
         if (listManager.isRecording()) {
             listManager.glShadeModel(mode);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -478,12 +516,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glLight(light, pname, params);
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
         if (listManager.isRecording()) {
             listManager.glMaterial(face, pname, params);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -496,12 +544,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glMateriali(face, pname, param);
     }
 
     public static void glColor3ub(byte red, byte green, byte blue) {
         if (listManager.isRecording()) {
             listManager.glColor3ub(red, green, blue);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -514,12 +572,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
     }
 
     public static void glTexEnvf(int target, int pname, float param) {
         if (listManager.isRecording()) {
             listManager.glTexEnvf(target, pname, param);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -532,12 +600,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
         if (listManager.isRecording()) {
             listManager.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -550,12 +628,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {
         if (listManager.isRecording()) {
             listManager.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels_buffer_offset);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -568,12 +656,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glVertex3f(x, y, z);
     }
 
     public static void glColorMaterial(int face, int mode) {
         if (listManager.isRecording()) {
             listManager.glColorMaterial(face, mode);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -586,12 +684,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
     }
 
     public static void glClear(int mask) {
         if (listManager.isRecording()) {
             listManager.glClear(mask);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -604,12 +712,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
     }
 
     public static void glPushAttrib(int mask) {
         if (listManager.isRecording()) {
             listManager.glPushAttrib(mask);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -622,12 +740,22 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glPopAttrib();
     }
 
     public static void glArrayElement(int i) {
         if (listManager.isRecording()) {
             listManager.glArrayElement(i);
+            return;
+        }
+
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
             return;
         }
 
@@ -640,58 +768,128 @@ public class GL11 {
             return;
         }
 
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
     }
 
     public static void glDeleteLists(int list, int range) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glDeleteLists(list, range);
     }
 
     public static void glDeleteTextures(IntBuffer textures) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glDeleteTextures(textures);
     }
 
     public static void glDeleteTextures(int texture) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glDeleteTextures(texture);
     }
 
     public static void glFinish() {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glFinish();
     }
 
     public static void glFlush() {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glFlush();
     }
 
     public static int glGenLists(int range) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return 0;
+        }
+
         return org.lwjgl.opengl.GL11.glGenLists(range);
     }
 
     public static void glGenTextures(IntBuffer textures) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glGenTextures(textures);
     }
 
     public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glInterleavedArrays(format, stride, pointer);
     }
 
     public static boolean glIsEnabled(int cap) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return false;
+        }
+
         return org.lwjgl.opengl.GL11.glIsEnabled(cap);
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
     }
 
     public static void glGetInteger(int pname, IntBuffer params) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return;
+        }
+
         org.lwjgl.opengl.GL11.glGetInteger(pname, params);
     }
 
     public static int glGetInteger(int pname) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return 0;
+        }
+
         return org.lwjgl.opengl.GL11.glGetInteger(pname);
     }
 
     public static String glGetString(int name) {
+        if (interceptActive) {
+            throwUnsupportedOperation("glTexCoordPointer");
+            return "";
+        }
+
         return org.lwjgl.opengl.GL11.glGetString(name);
     }
 }
