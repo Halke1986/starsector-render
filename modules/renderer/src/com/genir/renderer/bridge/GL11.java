@@ -410,36 +410,105 @@ public class GL11 {
     }
 
     /**
-     * UNSUPPORTED.
+     * Context.
      */
-    public static void glHint(int target, int mode) {
-        if (listManager.isRecording()) {
-            listManager.glHint(target, mode);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glHint");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glHint(target, mode);
-    }
-
-    public static void glLineWidth(float width) {
+    public static void glLineWidth(float width) {  // enable / disable GL_LINE_SMOOTH=2848
         if (listManager.isRecording()) {
             listManager.glLineWidth(width);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glLineWidth");
             return;
         }
 
         org.lwjgl.opengl.GL11.glLineWidth(width);
     }
 
+    public static void glScissor(int x, int y, int width, int height) { //  GL_SCISSOR_TEST = 3089
+        if (listManager.isRecording()) {
+            listManager.glScissor(x, y, width, height);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
+    }
+
+    /**
+     * Unknown.
+     */
+    public static void glClearColor(float red, float green, float blue, float alpha) {
+        if (listManager.isRecording()) {
+            listManager.glClearColor(red, green, blue, alpha);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
+    }
+
+    public static void glClear(int mask) {
+        if (listManager.isRecording()) {
+            listManager.glClear(mask);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glClear(mask);
+    }
+
+    public static void glPushAttrib(int mask) {
+        if (listManager.isRecording()) {
+            listManager.glPushAttrib(mask);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glPushAttrib(mask);
+    }
+
+    public static void glViewport(int x, int y, int width, int height) {
+        if (listManager.isRecording()) {
+            listManager.glViewport(x, y, width, height);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
+    }
+
+    public static void glPopAttrib() {
+        if (listManager.isRecording()) {
+            listManager.glPopAttrib();
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glPopAttrib();
+    }
+
+    public static void glFlush() {
+        org.lwjgl.opengl.GL11.glFlush();
+    }
+
+    // BLOCKING!
+    public static void glGenTextures(IntBuffer textures) {
+        org.lwjgl.opengl.GL11.glGenTextures(textures);
+    }
+
+    // BLOCKING!
+    public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
+        if (listManager.isRecording()) {
+            listManager.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+    }
+
+    public static void glHint(int target, int mode) {
+        if (listManager.isRecording()) {
+            listManager.glHint(target, mode);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glHint(target, mode);
+    }
+
+    /**
+     * UNSUPPORTED.
+     */
     public static void glPolygonMode(int face, int mode) {
         if (listManager.isRecording()) {
             listManager.glPolygonMode(face, mode);
@@ -452,34 +521,6 @@ public class GL11 {
         }
 
         org.lwjgl.opengl.GL11.glPolygonMode(face, mode);
-    }
-
-    public static void glViewport(int x, int y, int width, int height) {
-        if (listManager.isRecording()) {
-            listManager.glViewport(x, y, width, height);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glViewport");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
-    }
-
-    public static void glScissor(int x, int y, int width, int height) {
-        if (listManager.isRecording()) {
-            listManager.glScissor(x, y, width, height);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glScissor");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
     }
 
     public static void glPointSize(float size) {
@@ -608,20 +649,6 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
     }
 
-    public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
-        if (listManager.isRecording()) {
-            listManager.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glTexImage2D");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
-    }
-
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
         if (listManager.isRecording()) {
             listManager.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
@@ -692,62 +719,6 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glColor3f(red, green, blue);
     }
 
-    public static void glClear(int mask) {
-        if (listManager.isRecording()) {
-            listManager.glClear(mask);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glClear");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glClear(mask);
-    }
-
-    public static void glClearColor(float red, float green, float blue, float alpha) {
-        if (listManager.isRecording()) {
-            listManager.glClearColor(red, green, blue, alpha);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glClearColor");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
-    }
-
-    public static void glPushAttrib(int mask) {
-        if (listManager.isRecording()) {
-            listManager.glPushAttrib(mask);
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glPushAttrib");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glPushAttrib(mask);
-    }
-
-    public static void glPopAttrib() {
-        if (listManager.isRecording()) {
-            listManager.glPopAttrib();
-            return;
-        }
-
-        if (interceptActive) {
-            throwUnsupportedOperation("glPopAttrib");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glPopAttrib();
-    }
-
     public static void glArrayElement(int i) {
         if (listManager.isRecording()) {
             listManager.glArrayElement(i);
@@ -812,15 +783,6 @@ public class GL11 {
         org.lwjgl.opengl.GL11.glFinish();
     }
 
-    public static void glFlush() {
-        if (interceptActive) {
-            throwUnsupportedOperation("glFlush");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glFlush();
-    }
-
     public static int glGenLists(int range) {
         if (interceptActive) {
             throwUnsupportedOperation("glGenLists");
@@ -828,15 +790,6 @@ public class GL11 {
         }
 
         return org.lwjgl.opengl.GL11.glGenLists(range);
-    }
-
-    public static void glGenTextures(IntBuffer textures) {
-        if (interceptActive) {
-            throwUnsupportedOperation("glGenTextures");
-            return;
-        }
-
-        org.lwjgl.opengl.GL11.glGenTextures(textures);
     }
 
     public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) {
