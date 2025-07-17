@@ -25,6 +25,12 @@ public class GL11 {
     /**
      * Calls.
      */
+    public static void glBegin(int mode) {
+        assertNoUnsupportedOperation();
+
+        process(() -> org.lwjgl.opengl.GL11.glBegin(mode));
+    }
+
     public static void glDisable(int cap) {
         process(() -> org.lwjgl.opengl.GL11.glDisable(cap));
     }
@@ -71,10 +77,6 @@ public class GL11 {
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         process(() -> org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha));
-    }
-
-    public static void glBegin(int mode) {
-        process(() -> org.lwjgl.opengl.GL11.glBegin(mode));
     }
 
     public static void glVertex2f(float x, float y) {
@@ -174,6 +176,14 @@ public class GL11 {
         processNoList(() -> org.lwjgl.opengl.GL11.glDisableClientState(cap));
     }
 
+    public static void glVertex3d(double x, double y, double z) {
+        process(() -> org.lwjgl.opengl.GL11.glVertex3d(x, y, z));
+    }
+
+    public static void glColor3d(double red, double green, double blue) {
+        process(() -> org.lwjgl.opengl.GL11.glColor3d(red, green, blue));
+    }
+
     /**
      * Blocking.
      */
@@ -187,7 +197,7 @@ public class GL11 {
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
         if (listManager.isRecording()) {
-            throw new UnsupportedOperationException();
+            throwUnsupportedOperation("glTexImage2D");
         }
 
         org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
@@ -205,134 +215,127 @@ public class GL11 {
      * Unsupported.
      */
     public static void glTranslated(double x, double y, double z) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void glVertex3d(double x, double y, double z) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void glColor3d(double red, double green, double blue) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glTranslated");
     }
 
     public static void glPolygonMode(int face, int mode) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glPolygonMode");
     }
 
     public static void glPointSize(float size) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glPointSize");
     }
 
     public static void glShadeModel(int mode) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glShadeModel");
     }
 
     public static void glMateriali(int face, int pname, int param) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glMateriali");
     }
 
     public static void glColor3ub(byte red, byte green, byte blue) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glColor3ub");
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glNormal3f");
     }
 
     public static void glTexEnvf(int target, int pname, float param) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glTexEnvf");
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glColor4f");
     }
 
     public static void glVertex3f(float x, float y, float z) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glVertex3f");
     }
 
     public static void glColorMaterial(int face, int mode) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glColorMaterial");
     }
 
     public static void glColor3f(float red, float green, float blue) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glColor3f");
     }
 
     public static void glArrayElement(int i) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glArrayElement");
     }
 
     public static void glDeleteLists(int list, int range) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glDeleteLists");
     }
 
     public static void glDeleteTextures(int texture) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glDeleteTextures");
     }
 
     public static void glFinish() { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glFinish");
     }
 
     public static boolean glIsEnabled(int cap) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glIsEnabled");
+        return false;
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glMultMatrix");
     }
 
     public static void glVertexPointer(int size, int stride, IntBuffer pointer) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glVertexPointer");
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glLight");
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glMaterial");
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glTexSubImage2D");
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glDrawElements");
     }
 
     public static void glDeleteTextures(IntBuffer textures) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glDeleteTextures");
     }
 
     public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glInterleavedArrays");
     }
 
     public static void glGetInteger(int pname, IntBuffer params) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glGetInteger");
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glReadPixels");
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glVertexPointer");
     }
 
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glTexCoordPointer");
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glColorPointer");
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {
-        throw new UnsupportedOperationException();
+        throwUnsupportedOperation("glTexSubImage2D");
     }
 }

@@ -9,7 +9,7 @@ import static com.genir.renderer.Debug.asert;
 
 public class ListManager {
     private int mode = 0;
-    private int listID;
+    private int newListID;
     private List<Runnable> newList;
 
     private final Map<Integer, List<Runnable>> lists = new HashMap<>();
@@ -30,17 +30,16 @@ public class ListManager {
         asert(!isRecording());
         asert(mode == org.lwjgl.opengl.GL11.GL_COMPILE || mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE);
 
-        this.listID = list;
+        this.newListID = list;
         this.mode = mode;
 
         newList = new ArrayList<>();
     }
 
     public void glEndList() {
-        lists.put(listID, newList);
+        lists.put(newListID, newList);
 
         mode = 0;
-        newList = null;
     }
 
     public void glCallList(int list) {
