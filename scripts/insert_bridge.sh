@@ -3,76 +3,9 @@
 rm -rf ./assembly/bridged
 cp -R ./disassembly/starfarer assembly/bridged
 
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDisable ^invokestatic Method com/genir/renderer/bridge/GL11 glDisable ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glEnable ^invokestatic Method com/genir/renderer/bridge/GL11 glEnable ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glBlendFunc ^invokestatic Method com/genir/renderer/bridge/GL11 glBlendFunc ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glBegin ^invokestatic Method com/genir/renderer/bridge/GL11 glBegin ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glEnd ^invokestatic Method com/genir/renderer/bridge/GL11 glEnd ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glHint ^invokestatic Method com/genir/renderer/bridge/GL11 glHint ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glVertex2f ^invokestatic Method com/genir/renderer/bridge/GL11 glVertex2f ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glPushMatrix ^invokestatic Method com/genir/renderer/bridge/GL11 glPushMatrix ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glPopMatrix ^invokestatic Method com/genir/renderer/bridge/GL11 glPopMatrix ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTranslatef ^invokestatic Method com/genir/renderer/bridge/GL11 glTranslatef ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColor4ub ^invokestatic Method com/genir/renderer/bridge/GL11 glColor4ub ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glScalef ^invokestatic Method com/genir/renderer/bridge/GL11 glScalef ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColorMask ^invokestatic Method com/genir/renderer/bridge/GL11 glColorMask ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glRotatef ^invokestatic Method com/genir/renderer/bridge/GL11 glRotatef ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTexCoord2f ^invokestatic Method com/genir/renderer/bridge/GL11 glTexCoord2f ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glLineWidth ^invokestatic Method com/genir/renderer/bridge/GL11 glLineWidth ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glStencilFunc ^invokestatic Method com/genir/renderer/bridge/GL11 glStencilFunc ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDeleteTextures ^invokestatic Method com/genir/renderer/bridge/GL11 glDeleteTextures ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glPolygonMode ^invokestatic Method com/genir/renderer/bridge/GL11 glPolygonMode ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glGetInteger ^invokestatic Method com/genir/renderer/bridge/GL11 glGetInteger ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glViewport ^invokestatic Method com/genir/renderer/bridge/GL11 glViewport ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glGetString ^invokestatic Method com/genir/renderer/bridge/GL11 glGetString ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glFlush ^invokestatic Method com/genir/renderer/bridge/GL11 glFlush ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glFinish ^invokestatic Method com/genir/renderer/bridge/GL11 glFinish ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glScissor ^invokestatic Method com/genir/renderer/bridge/GL11 glScissor ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glStencilOp ^invokestatic Method com/genir/renderer/bridge/GL11 glStencilOp ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glAlphaFunc ^invokestatic Method com/genir/renderer/bridge/GL11 glAlphaFunc ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glReadPixels ^invokestatic Method com/genir/renderer/bridge/GL11 glReadPixels ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glGenTextures ^invokestatic Method com/genir/renderer/bridge/GL11 glGenTextures ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri ^invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glPointSize ^invokestatic Method com/genir/renderer/bridge/GL11 glPointSize ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glShadeModel ^invokestatic Method com/genir/renderer/bridge/GL11 glShadeModel ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glLight ^invokestatic Method com/genir/renderer/bridge/GL11 glLight ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glMaterial ^invokestatic Method com/genir/renderer/bridge/GL11 glMaterial ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glMateriali ^invokestatic Method com/genir/renderer/bridge/GL11 glMateriali ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColor3ub ^invokestatic Method com/genir/renderer/bridge/GL11 glColor3ub ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glNormal3f ^invokestatic Method com/genir/renderer/bridge/GL11 glNormal3f ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glVertex3d ^invokestatic Method com/genir/renderer/bridge/GL11 glVertex3d ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColor3d ^invokestatic Method com/genir/renderer/bridge/GL11 glColor3d ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTexEnvf ^invokestatic Method com/genir/renderer/bridge/GL11 glTexEnvf ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColor4f ^invokestatic Method com/genir/renderer/bridge/GL11 glColor4f ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glMatrixMode ^invokestatic Method com/genir/renderer/bridge/GL11 glMatrixMode ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glLoadIdentity ^invokestatic Method com/genir/renderer/bridge/GL11 glLoadIdentity ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glIsEnabled ^invokestatic Method com/genir/renderer/bridge/GL11 glIsEnabled ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glBindTexture ^invokestatic Method com/genir/renderer/bridge/GL11 glBindTexture ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTexImage2D ^invokestatic Method com/genir/renderer/bridge/GL11 glTexImage2D ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTexSubImage2D ^invokestatic Method com/genir/renderer/bridge/GL11 glTexSubImage2D ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTexCoordPointer ^invokestatic Method com/genir/renderer/bridge/GL11 glTexCoordPointer ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColorPointer ^invokestatic Method com/genir/renderer/bridge/GL11 glColorPointer ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glVertex3f ^invokestatic Method com/genir/renderer/bridge/GL11 glVertex3f ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColorMaterial ^invokestatic Method com/genir/renderer/bridge/GL11 glColorMaterial ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glColor3f ^invokestatic Method com/genir/renderer/bridge/GL11 glColor3f ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glVertexPointer ^invokestatic Method com/genir/renderer/bridge/GL11 glVertexPointer ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDrawArrays ^invokestatic Method com/genir/renderer/bridge/GL11 glDrawArrays ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glOrtho ^invokestatic Method com/genir/renderer/bridge/GL11 glOrtho ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glClear ^invokestatic Method com/genir/renderer/bridge/GL11 glClear ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glClearColor ^invokestatic Method com/genir/renderer/bridge/GL11 glClearColor ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glPushAttrib ^invokestatic Method com/genir/renderer/bridge/GL11 glPushAttrib ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glPopAttrib ^invokestatic Method com/genir/renderer/bridge/GL11 glPopAttrib ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glCallList ^invokestatic Method com/genir/renderer/bridge/GL11 glCallList ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glGenLists ^invokestatic Method com/genir/renderer/bridge/GL11 glGenLists ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glNewList ^invokestatic Method com/genir/renderer/bridge/GL11 glNewList ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDeleteLists ^invokestatic Method com/genir/renderer/bridge/GL11 glDeleteLists ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glInterleavedArrays ^invokestatic Method com/genir/renderer/bridge/GL11 glInterleavedArrays ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glArrayElement ^invokestatic Method com/genir/renderer/bridge/GL11 glArrayElement ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDrawElements ^invokestatic Method com/genir/renderer/bridge/GL11 glDrawElements ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glTranslated ^invokestatic Method com/genir/renderer/bridge/GL11 glTranslated ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glEnableClientState ^invokestatic Method com/genir/renderer/bridge/GL11 glEnableClientState ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glMultMatrix ^invokestatic Method com/genir/renderer/bridge/GL11 glMultMatrix ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glEndList ^invokestatic Method com/genir/renderer/bridge/GL11 glEndList ^g' {} +
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL11 glDisableClientState ^invokestatic Method com/genir/renderer/bridge/GL11 glDisableClientState ^g' {} +
-
-find ./assembly/bridged -type f -exec sed -i 's^invokestatic Method org/lwjgl/opengl/GL14 glBlendEquation ^invokestatic Method com/genir/renderer/bridge/GL14 glBlendEquation ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/Display ^com/genir/renderer/bridge/Display ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/GLContext ^com/genir/renderer/bridge/GLContext ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/Pbuffer ^com/genir/renderer/bridge/Pbuffer ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/ARBVertexBufferObject ^com/genir/renderer/bridge/ARBVertexBufferObject ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/EXTFramebufferObject ^com/genir/renderer/bridge/EXTFramebufferObject ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/util/Display ^com/genir/renderer/bridge/DisplayUtil ^g' {} +
