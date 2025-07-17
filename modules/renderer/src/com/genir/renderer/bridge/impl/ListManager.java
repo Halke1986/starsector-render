@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;

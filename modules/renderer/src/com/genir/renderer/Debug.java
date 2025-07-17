@@ -123,4 +123,17 @@ public class Debug {
     public static Logger logger() {
         return Logger.getLogger(Renderer.class);
     }
+
+    private static String unsupportedOperation;
+
+    public static void throwUnsupportedOperation(String operation) {
+        unsupportedOperation = operation;
+        throw new UnsupportedOperationException(operation);
+    }
+
+    public static void assertNoUnsupportedOperation() {
+        if (unsupportedOperation != null) {
+            throw new UnsupportedOperationException(unsupportedOperation);
+        }
+    }
 }
