@@ -14,3 +14,4 @@ find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/util/Display ^com/geni
 
 # lwjgl_util should have only opengl calls bridged, not its own methods
 find ./assembly/bridged/lwjgl_util -type f -exec sed -i 's^com/genir/renderer/bridge/DisplayUtil ^org/lwjgl/util/Display ^g' {} +
+find ./assembly/bridged/lwjgl_util -type f -exec sed -i 's^com/genir/renderer/bridge/Display ^org/lwjgl/opengl/Display ^g' {} +
