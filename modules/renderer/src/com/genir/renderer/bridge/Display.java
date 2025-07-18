@@ -92,4 +92,8 @@ public class Display {
     public static boolean isVisible() {
         return exec.get(() -> org.lwjgl.opengl.Display.isVisible());
     }
+
+    public static void processMessages() {
+        exec.wait(() -> org.lwjgl.opengl.Display.processMessages());
+    }
 }

@@ -197,6 +197,14 @@ public class GL11 {
         exec.execute(() -> org.lwjgl.opengl.GL11.glShadeModel(mode));
     }
 
+    public static void glNormal3f(float nx, float ny, float nz) {
+        exec.execute(() -> org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz));
+    }
+
+    public static void glVertex3f(float x, float y, float z) {
+        exec.execute(() -> org.lwjgl.opengl.GL11.glVertex3f(x, y, z));
+    }
+
     /**
      * Blocking.
      */
@@ -263,20 +271,12 @@ public class GL11 {
         throwUnsupportedOperation("glColor3ub");
     }
 
-    public static void glNormal3f(float nx, float ny, float nz) {
-        throwUnsupportedOperation("glNormal3f");
-    }
-
     public static void glTexEnvf(int target, int pname, float param) {
         throwUnsupportedOperation("glTexEnvf");
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
         throwUnsupportedOperation("glColor4f");
-    }
-
-    public static void glVertex3f(float x, float y, float z) {
-        throwUnsupportedOperation("glVertex3f");
     }
 
     public static void glColor3f(float red, float green, float blue) {
