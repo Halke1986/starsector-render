@@ -2,8 +2,10 @@ package com.genir.renderer.bridge;
 
 import org.lwjgl.opengl.ContextCapabilities;
 
+import static com.genir.renderer.bridge.impl.State.exec;
+
 public class GLContext {
     public static ContextCapabilities getCapabilities() {
-        return org.lwjgl.opengl.GLContext.getCapabilities();
+        return exec.get(() -> org.lwjgl.opengl.GLContext.getCapabilities());
     }
 }
