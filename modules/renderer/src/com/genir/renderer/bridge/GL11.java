@@ -189,6 +189,14 @@ public class GL11 {
         exec.execute(() -> org.lwjgl.opengl.GL11.glColor3d(red, green, blue));
     }
 
+    public static void glColorMaterial(int face, int mode) {
+        exec.execute(() -> org.lwjgl.opengl.GL11.glColorMaterial(face, mode));
+    }
+
+    public static void glShadeModel(int mode) {
+        exec.execute(() -> org.lwjgl.opengl.GL11.glShadeModel(mode));
+    }
+
     /**
      * Blocking.
      */
@@ -216,6 +224,22 @@ public class GL11 {
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetString(name));
     }
 
+    public static void glMultMatrix(FloatBuffer m) {
+        exec.wait(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
+    }
+
+    public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
+        exec.wait(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels));
+    }
+
+    public static void glLight(int light, int pname, FloatBuffer params) {
+        exec.wait(() -> org.lwjgl.opengl.GL11.glLight(light, pname, params));
+    }
+
+    public static void glMaterial(int face, int pname, FloatBuffer params) {
+        exec.wait(() -> org.lwjgl.opengl.GL11.glMaterial(face, pname, params));
+    }
+
     /**
      * Unsupported.
      */
@@ -229,10 +253,6 @@ public class GL11 {
 
     public static void glPointSize(float size) {
         throwUnsupportedOperation("glPointSize");
-    }
-
-    public static void glShadeModel(int mode) {
-        throwUnsupportedOperation("glShadeModel");
     }
 
     public static void glMateriali(int face, int pname, int param) {
@@ -257,10 +277,6 @@ public class GL11 {
 
     public static void glVertex3f(float x, float y, float z) {
         throwUnsupportedOperation("glVertex3f");
-    }
-
-    public static void glColorMaterial(int face, int mode) {
-        throwUnsupportedOperation("glColorMaterial");
     }
 
     public static void glColor3f(float red, float green, float blue) {
@@ -288,24 +304,8 @@ public class GL11 {
         return false;
     }
 
-    public static void glMultMatrix(FloatBuffer m) {
-        throwUnsupportedOperation("glMultMatrix");
-    }
-
     public static void glVertexPointer(int size, int stride, IntBuffer pointer) { // NO LIST
         throwUnsupportedOperation("glVertexPointer");
-    }
-
-    public static void glLight(int light, int pname, FloatBuffer params) {
-        throwUnsupportedOperation("glLight");
-    }
-
-    public static void glMaterial(int face, int pname, FloatBuffer params) {
-        throwUnsupportedOperation("glMaterial");
-    }
-
-    public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
-        throwUnsupportedOperation("glTexSubImage2D");
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {

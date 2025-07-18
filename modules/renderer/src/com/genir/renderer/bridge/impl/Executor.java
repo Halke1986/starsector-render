@@ -1,23 +1,23 @@
 package com.genir.renderer.bridge.impl;
 
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
-public class Executor extends AbstractExecutorService {
-    @Override
+public class Executor {
+    private final ExecutorService exec = Executors.newSingleThreadExecutor();
+
     public void execute(Runnable command) {
-        command.run();
+        exec.execute(command);
     }
 
     public void wait(Runnable command) {
-        command.run();
-    }
+        FutureTask<?> task = new FutureTask<>(command, null);
+        exec.execute(task);
 
-    @Override
-    public <T> Future<T> submit(Callable<T> task) {
         try {
-            T result = task.call();
-            return CompletableFuture.completedFuture(result);
+            task.get();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -25,34 +25,9 @@ public class Executor extends AbstractExecutorService {
 
     public <T> T get(Callable<T> task) {
         try {
-            return submit(task).get();
+            return exec.submit(task).get();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
-    }
-
-    @Override
-    public void shutdown() {
-
-    }
-
-    @Override
-    public List<Runnable> shutdownNow() {
-        return null;
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return false;
-    }
-
-    @Override
-    public boolean isTerminated() {
-        return false;
-    }
-
-    @Override
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return false;
     }
 }
