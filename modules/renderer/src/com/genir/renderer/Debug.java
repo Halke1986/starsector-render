@@ -1,6 +1,5 @@
 package com.genir.renderer;
 
-import com.genir.renderer.archiv.Renderer;
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -24,9 +23,9 @@ public class Debug {
 
         if (found) {
             for (StackTraceElement element : stackTraceElements) {
-                logger().info(element.getClassName());
+                log(element.getClassName());
             }
-            logger().info(" ");
+            log(" ");
         }
     }
 
@@ -34,9 +33,9 @@ public class Debug {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 
         for (StackTraceElement element : stackTraceElements) {
-            logger().info(element.getClassName());
+            log(element.getClassName());
         }
-        logger().info(" ");
+        log(" ");
     }
 
     public static Matrix3f loadModelMatrix() {
@@ -86,13 +85,13 @@ public class Debug {
         // but we print here as human-readable rows)
         for (int row = 0; row < 4; row++) {
             // elements at indices 0+row, 4+row, 8+row, 12+row
-            logger().info(String.format(
+            log(String.format(
                     "[ % .4f  % .4f  % .4f  % .4f ]",
                     m[0 * 4 + row], m[1 * 4 + row], m[2 * 4 + row], m[3 * 4 + row]
             ));
         }
 
-        logger().info("    ");
+        log("    ");
     }
 
     public static void logViewport() {
@@ -111,7 +110,7 @@ public class Debug {
         int width = vp.get();   // viewport width
         int height = vp.get();   // viewport height
 
-        logger().info("Viewport = " + x + " " + y + " " + width + " " + height);
+        log("Viewport = " + x + " " + y + " " + width + " " + height);
     }
 
     public static void asert(boolean val) {
@@ -120,12 +119,8 @@ public class Debug {
         }
     }
 
-    public static Logger logger() {
-        return Logger.getLogger(Renderer.class);
-    }
-
-    public static void log(Class<?> user, Object msg) {
-        Logger.getLogger(user).info(msg);
+    public static void log(Object msg) {
+        Logger.getLogger(Debug.class).info(msg);
     }
 
     private static String unsupportedOperation;

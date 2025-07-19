@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.genir.renderer.Debug.log;
-
 public class ModLoader extends URLClassLoader {
     private final Map<String, Class<?>> cache = new HashMap<>();
 
@@ -44,8 +42,6 @@ public class ModLoader extends URLClassLoader {
             byte[] classBytes = transformer.apply(classStream.readAllBytes());
             Class<?> c = super.defineClass(name, classBytes, 0, classBytes.length);
 
-            log(ModLoader.class, "transforming " + name);
-
             cache.put(name, c);
             return c;
         } catch (Throwable e) {
@@ -53,24 +49,3 @@ public class ModLoader extends URLClassLoader {
         }
     }
 }
-
-//public class ModLoader {
-//    private static final Map<String, Class<?>> cache = new HashMap<>();
-//
-
-//
-//    public static Class<?> getCached(String name) {
-//        return cache.get(name);
-//    }
-//
-//    public static void setCached(String name, Class<?> c) {
-//        log("transform " + name);
-//        cache.put(name, c);
-//    }
-//
-//    public static byte[] transform(byte[] c) {
-//
-//        return c;
-////        return transformer.apply(c);
-//    }
-//}
