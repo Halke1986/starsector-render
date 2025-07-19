@@ -16,8 +16,8 @@ public class Executor {
     }
 
     public void wait(Runnable command) {
-//        log(Executor.class, "wait");
-//        logStack();
+        log(Executor.class, "wait");
+        logStack();
 
         FutureTask<?> task = new FutureTask<>(command, null);
         exec.execute(task);
@@ -30,8 +30,8 @@ public class Executor {
     }
 
     public <T> T get(Callable<T> task) {
-//        log(Executor.class, "get");
-//        logStack();
+        log(Executor.class, "get");
+        logStack();
 
         try {
             return exec.submit(task).get();
