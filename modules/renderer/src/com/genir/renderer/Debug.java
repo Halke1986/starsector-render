@@ -124,8 +124,8 @@ public class Debug {
         return Logger.getLogger(Renderer.class);
     }
 
-    public static void log(Object msg) {
-        Logger.getLogger(Renderer.class).info(msg);
+    public static void log(Class<?> user, Object msg) {
+        Logger.getLogger(user).info(msg);
     }
 
     private static String unsupportedOperation;
