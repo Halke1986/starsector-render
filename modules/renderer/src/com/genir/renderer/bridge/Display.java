@@ -71,14 +71,14 @@ public class Display {
     }
 
     public static void update(boolean processMessages) {
-        exec.wait(() -> {
+        exec.barrier(() -> {
             org.lwjgl.opengl.Display.update(processMessages);
             stateCache.update();
         });
     }
 
     public static void update() {
-        exec.wait(() -> {
+        exec.barrier(() -> {
             org.lwjgl.opengl.Display.update();
             stateCache.update();
         });
