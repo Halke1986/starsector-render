@@ -18,4 +18,5 @@ public class State {
     //    public static final Processor processor = new Processor();
 
     public static final Executor exec = new Executor();
+    public static final StateCache stateCache = new StateCache();
 }

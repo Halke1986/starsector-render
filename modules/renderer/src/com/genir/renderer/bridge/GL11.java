@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import static com.genir.renderer.Debug.assertNoUnsupportedOperation;
 import static com.genir.renderer.Debug.throwUnsupportedOperation;
 import static com.genir.renderer.bridge.impl.State.exec;
+import static com.genir.renderer.bridge.impl.State.stateCache;
 
 public class GL11 {
     /**
@@ -124,7 +125,6 @@ public class GL11 {
         exec.execute(() -> org.lwjgl.opengl.GL11.glClear(mask));
     }
 
-    // TODO sync here?
     public static void glFlush() { // NoList
         exec.execute(() -> org.lwjgl.opengl.GL11.glFlush());
     }
@@ -258,6 +258,10 @@ public class GL11 {
     }
 
     public static String glGetString(int name) { // NoList
+        if (stateCache.isInitialized() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
+            return stateCache.getGlStringExtensions();
+        }
+
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetString(name));
     }
 
