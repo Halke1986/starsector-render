@@ -23,7 +23,7 @@ public class Debug {
 
         if (found) {
             for (StackTraceElement element : stackTraceElements) {
-                log(element.getClassName());
+                log(element);
             }
             log(" ");
         }
@@ -33,7 +33,7 @@ public class Debug {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 
         for (StackTraceElement element : stackTraceElements) {
-            log(element.getClassName());
+            log(element);
         }
         log(" ");
     }
@@ -117,6 +117,10 @@ public class Debug {
         if (!val) {
             throw new AssertionError("false");
         }
+    }
+
+    public static void log(Class<?> user, Object msg) {
+        Logger.getLogger(user).info(msg);
     }
 
     public static void log(Object msg) {

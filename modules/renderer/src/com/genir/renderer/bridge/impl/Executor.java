@@ -5,6 +5,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import static com.genir.renderer.Debug.log;
+import static com.genir.renderer.Debug.logStack;
+
 public class Executor {
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
 
@@ -13,6 +16,9 @@ public class Executor {
     }
 
     public void wait(Runnable command) {
+//        log(Executor.class, "wait");
+//        logStack();
+
         FutureTask<?> task = new FutureTask<>(command, null);
         exec.execute(task);
 
@@ -24,6 +30,9 @@ public class Executor {
     }
 
     public <T> T get(Callable<T> task) {
+//        log(Executor.class, "get");
+//        logStack();
+
         try {
             return exec.submit(task).get();
         } catch (Throwable t) {

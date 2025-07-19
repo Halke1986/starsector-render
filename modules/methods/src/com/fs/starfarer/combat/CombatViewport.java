@@ -1,4 +1,4 @@
 package com.fs.starfarer.combat;
 
-public class CombatViewport {
+public class CombatViewport extends CombatViewportAPIImlp {
 }
