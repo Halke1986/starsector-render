@@ -70,17 +70,15 @@ public class Display {
         return exec.get(() -> org.lwjgl.opengl.Display.getPixelScaleFactor());
     }
 
-    // TODO sync point
     public static void update(boolean processMessages) {
-        exec.execute(() -> {
+        exec.wait(() -> {
             org.lwjgl.opengl.Display.update(processMessages);
             stateCache.update();
         });
     }
 
-    // TODO sync point
     public static void update() {
-        exec.execute(() -> {
+        exec.wait(() -> {
             org.lwjgl.opengl.Display.update();
             stateCache.update();
         });
