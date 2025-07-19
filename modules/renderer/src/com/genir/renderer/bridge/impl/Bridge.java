@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge.impl;
 
-public class State {
+public class Bridge {
 //    public static final ListManager listManager = new ListManager();
 
     public static final Executor exec = new Executor();

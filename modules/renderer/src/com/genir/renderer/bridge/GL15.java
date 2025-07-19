@@ -2,7 +2,7 @@ package com.genir.renderer.bridge;
 
 import java.nio.FloatBuffer;
 
-import static com.genir.renderer.bridge.impl.State.exec;
+import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL15 {
     public static void glBindBuffer(int target, int buffer) { // MOD

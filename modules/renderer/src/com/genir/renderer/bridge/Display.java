@@ -6,8 +6,8 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 
-import static com.genir.renderer.bridge.impl.State.exec;
-import static com.genir.renderer.bridge.impl.State.stateCache;
+import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
 public class Display {
     public static DisplayMode[] getAvailableDisplayModes() throws LWJGLException {

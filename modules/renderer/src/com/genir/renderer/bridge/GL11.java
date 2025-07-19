@@ -6,8 +6,8 @@ import java.nio.IntBuffer;
 
 import static com.genir.renderer.Debug.assertNoUnsupportedOperation;
 import static com.genir.renderer.Debug.throwUnsupportedOperation;
-import static com.genir.renderer.bridge.impl.State.exec;
-import static com.genir.renderer.bridge.impl.State.stateCache;
+import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
 public class GL11 {
     /**

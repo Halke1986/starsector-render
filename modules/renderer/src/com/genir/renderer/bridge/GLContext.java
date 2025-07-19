@@ -2,8 +2,8 @@ package com.genir.renderer.bridge;
 
 import org.lwjgl.opengl.ContextCapabilities;
 
-import static com.genir.renderer.bridge.impl.State.exec;
-import static com.genir.renderer.bridge.impl.State.stateCache;
+import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
 public class GLContext {
     public static ContextCapabilities getCapabilities() {
