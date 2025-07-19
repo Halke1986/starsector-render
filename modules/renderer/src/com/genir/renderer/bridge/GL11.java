@@ -165,12 +165,25 @@ public class GL11 {
         exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer));
     }
 
+    // TODO handle long pointers
+    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
+        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
+    }
+
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
         exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer));
     }
 
+    public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
+        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
+    }
+
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
         exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer));
+    }
+
+    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
@@ -203,6 +216,22 @@ public class GL11 {
 
     public static void glVertex3f(float x, float y, float z) {
         exec.execute(() -> org.lwjgl.opengl.GL11.glVertex3f(x, y, z));
+    }
+
+    public static void glColor4f(float red, float green, float blue, float alpha) {
+        exec.execute(() -> org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha));
+    }
+
+    public static void glRectf(float x1, float y1, float x2, float y2) { // MOD
+        exec.execute(() -> org.lwjgl.opengl.GL11.glRectf(x1, y1, x2, y2));
+    }
+
+    public static void glPushClientAttrib(int mask) { // MOD
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
+    }
+
+    public static void glPopClientAttrib() { // MOD
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
     }
 
     /**
@@ -275,10 +304,6 @@ public class GL11 {
         throwUnsupportedOperation("glTexEnvf");
     }
 
-    public static void glColor4f(float red, float green, float blue, float alpha) {
-        throwUnsupportedOperation("glColor4f");
-    }
-
     public static void glColor3f(float red, float green, float blue) {
         throwUnsupportedOperation("glColor3f");
     }
@@ -326,18 +351,6 @@ public class GL11 {
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NO LIST
         throwUnsupportedOperation("glReadPixels");
-    }
-
-    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
-        throwUnsupportedOperation("glVertexPointer");
-    }
-
-    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
-        throwUnsupportedOperation("glTexCoordPointer");
-    }
-
-    public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NO LIST
-        throwUnsupportedOperation("glColorPointer");
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {

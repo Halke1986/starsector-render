@@ -7,11 +7,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.genir.renderer.Debug.log;
+
 public class ModLoader extends URLClassLoader {
     private final Map<String, Class<?>> cache = new HashMap<>();
 
     private static final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
-            ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL15", "com/genir/renderer/bridge/GL15")
+            ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
+            ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL15", "com/genir/renderer/bridge/GL15"),
+            ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext")
     ));
 
     public ModLoader(URL[] urls, ClassLoader parent) {
@@ -39,6 +43,8 @@ public class ModLoader extends URLClassLoader {
         try {
             byte[] classBytes = transformer.apply(classStream.readAllBytes());
             Class<?> c = super.defineClass(name, classBytes, 0, classBytes.length);
+
+            log(ModLoader.class, "transforming " + name);
 
             cache.put(name, c);
             return c;
