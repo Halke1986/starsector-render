@@ -7,7 +7,7 @@ import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
 public class GLContext {
     public static ContextCapabilities getCapabilities() {
-        if (stateCache.isInitialized()) {
+        if (stateCache.isAvailable()) {
             return stateCache.getContextCapabilities();
         }
 

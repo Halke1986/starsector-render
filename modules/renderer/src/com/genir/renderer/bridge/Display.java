@@ -63,7 +63,7 @@ public class Display {
     }
 
     public static float getPixelScaleFactor() {
-        if (stateCache.isInitialized()) {
+        if (stateCache.isAvailable()) {
             return stateCache.getDisplayPixelScaleFactor();
         }
 
@@ -85,7 +85,7 @@ public class Display {
     }
 
     public static boolean isCloseRequested() {
-        if (stateCache.isInitialized()) {
+        if (stateCache.isAvailable()) {
             return stateCache.getDisplayIsCloseRequested();
         }
 
@@ -93,7 +93,7 @@ public class Display {
     }
 
     public static boolean isActive() {
-        if (stateCache.isInitialized()) {
+        if (stateCache.isAvailable()) {
             return stateCache.getDisplayIsActive();
         }
 
@@ -105,7 +105,7 @@ public class Display {
     }
 
     public static boolean isFullscreen() {
-        if (stateCache.isInitialized()) {
+        if (stateCache.isAvailable()) {
             return stateCache.getDisplayIsFullscreen();
         }
 
@@ -113,7 +113,7 @@ public class Display {
     }
 
     public static boolean isVisible() {
-        if (stateCache.isInitialized()) {
+        if (stateCache.isAvailable()) {
             return stateCache.getDisplayIsVisible();
         }
 

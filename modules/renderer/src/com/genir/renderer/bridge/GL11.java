@@ -447,7 +447,7 @@ public class GL11 {
     }
 
     public static String glGetString(int name) { // NoList
-        if (stateCache.isInitialized() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
+        if (stateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
             return stateCache.getGlStringExtensions();
         }
 
