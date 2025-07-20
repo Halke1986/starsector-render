@@ -9,6 +9,7 @@ public class Bridge {
     public static final ListManager listManager = new ListManager();
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
+    public static final MatrixStack modelView = new MatrixStack();
 
     public static FloatBuffer bufferSnapshot(FloatBuffer params) {
         FloatBuffer reader = params.duplicate();

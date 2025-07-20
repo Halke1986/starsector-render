@@ -25,7 +25,76 @@ public class GL11 {
     }
 
     /**
-     * Calls.
+     * Matrix.
+     */
+    public static void glMatrixMode(int mode) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glMatrixMode(mode));
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glMatrixMode(mode));
+        }
+    }
+
+    public static void glLoadIdentity() {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glLoadIdentity());
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
+        }
+    }
+
+    public static void glPushMatrix() {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glPushMatrix());
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glPushMatrix());
+        }
+    }
+
+    public static void glTranslatef(float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glTranslatef(x, y, z));
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
+        }
+    }
+
+    public static void glPopMatrix() {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glPopMatrix());
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glPopMatrix());
+        }
+    }
+
+    public static void glRotatef(float angle, float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glRotatef(angle, x, y, z));
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z));
+        }
+    }
+
+    public static void glScalef(float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glScalef(x, y, z));
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glScalef(x, y, z));
+        }
+    }
+
+    public static void glMultMatrix(FloatBuffer m) {
+        FloatBuffer snapshot = bufferSnapshot(m);
+
+        if (listManager.isRecording()) {
+            listManager.record(() -> glMultMatrix(snapshot));
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(snapshot));
+        }
+    }
+
+    /**
+     * Other calls.
      */
     public static void glBegin(int mode) {
         assertNoUnsupportedOperation();
@@ -42,22 +111,6 @@ public class GL11 {
             listManager.record(() -> glDisable(cap));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glDisable(cap));
-        }
-    }
-
-    public static void glMatrixMode(int mode) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glMatrixMode(mode));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glMatrixMode(mode));
-        }
-    }
-
-    public static void glLoadIdentity() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glLoadIdentity());
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
         }
     }
 
@@ -85,27 +138,11 @@ public class GL11 {
         }
     }
 
-    public static void glPushMatrix() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glPushMatrix());
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glPushMatrix());
-        }
-    }
-
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         if (listManager.isRecording()) {
             listManager.record(() -> glOrtho(left, right, bottom, top, zNear, zFar));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar));
-        }
-    }
-
-    public static void glTranslatef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glTranslatef(x, y, z));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
         }
     }
 
@@ -149,14 +186,6 @@ public class GL11 {
         }
     }
 
-    public static void glPopMatrix() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glPopMatrix());
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glPopMatrix());
-        }
-    }
-
     public static void glPopAttrib() {
         if (listManager.isRecording()) {
             listManager.record(() -> glPopAttrib());
@@ -178,14 +207,6 @@ public class GL11 {
             listManager.record(() -> glTexParameteri(target, pname, param));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param));
-        }
-    }
-
-    public static void glRotatef(float angle, float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glRotatef(angle, x, y, z));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z));
         }
     }
 
@@ -246,14 +267,6 @@ public class GL11 {
             listManager.record(() -> GL11.glAlphaFunc(func, ref));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glAlphaFunc(func, ref));
-        }
-    }
-
-    public static void glScalef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glScalef(x, y, z));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glScalef(x, y, z));
         }
     }
 
@@ -389,16 +402,6 @@ public class GL11 {
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
         ByteBuffer snapshot = bufferSnapshot(pixels);
         exec.wait(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
-    }
-
-    public static void glMultMatrix(FloatBuffer m) {
-        FloatBuffer snapshot = bufferSnapshot(m);
-
-        if (listManager.isRecording()) {
-            listManager.record(() -> glMultMatrix(snapshot));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(snapshot));
-        }
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
