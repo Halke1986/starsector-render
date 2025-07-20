@@ -147,8 +147,6 @@ public class VertexInterceptor {
         texCoordsReader.rewind();
         vertexReader.rewind();
 
-        colorReader.get(colors, 0, count * 4);
-        texCoordsReader.get(texCoords, 0, count * 2);
         vertexReader.get(vertices, 0, count * 2);
 
         // Transform vertices;
@@ -165,8 +163,12 @@ public class VertexInterceptor {
             vertices[i * 3 + 1] = y;
         }
 
-        colorPointer.put(colors, 0, 4 * count);
-        texCoordsPointer.put(texCoords, 0, 2 * count);
+        colorReader.limit(count * 4);
+        texCoordsReader.limit(count * 2);
+
+        colorPointer.put(colorReader);
+        texCoordsPointer.put(texCoordsReader);
+
         vertexPointer.put(vertices, 0, 3 * count);
 
         final int drawMode = mode;
