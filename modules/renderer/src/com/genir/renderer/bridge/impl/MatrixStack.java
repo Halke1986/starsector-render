@@ -2,8 +2,6 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.util.vector.Matrix3f;
 
-import java.nio.FloatBuffer;
-
 /**
  * Assume 2D transformations in Z plane only.
  * Will fail for 3D transformation such as during planet rendering.
@@ -79,8 +77,5 @@ public class MatrixStack {
         m.m11 *= y;
         m.m20 *= x;
         m.m21 *= y;
-    }
-
-    public void glMultMatrix(FloatBuffer m) {
     }
 }

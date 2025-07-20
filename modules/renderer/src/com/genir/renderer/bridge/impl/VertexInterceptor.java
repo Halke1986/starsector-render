@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix3f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -13,6 +14,7 @@ public class VertexInterceptor {
     private final int drawBufferSize = 1 << 20;
 
     private final Executor exec;
+    private final MatrixStack modelView;
 
     // State.
     private int mode = 0;
@@ -44,8 +46,9 @@ public class VertexInterceptor {
     private FloatBuffer externalTexCoordsPointer;
     private FloatBuffer externalVertexPointer;
 
-    public VertexInterceptor(Executor exec) {
+    public VertexInterceptor(Executor exec, MatrixStack modelView) {
         this.exec = exec;
+        this.modelView = modelView;
     }
 
     public void update() {
@@ -98,8 +101,11 @@ public class VertexInterceptor {
     public void glVertex3f(float x, float y, float z) {
         int idx = vertexNum;
 
-        vertices[idx * 3 + 0] = x;
-        vertices[idx * 3 + 1] = y;
+        // Transform vertices;
+        Matrix3f m = modelView.getMatrix();
+
+        vertices[idx * 3 + 0] = x * m.m00 + y * m.m01 + m.m02;
+        vertices[idx * 3 + 1] = x * m.m10 + y * m.m11 + m.m12;
         vertices[idx * 3 + 3] = z;
 
         // Define vertex texture.
@@ -150,17 +156,14 @@ public class VertexInterceptor {
         vertexReader.get(vertices, 0, count * 2);
 
         // Transform vertices;
-//        Matrix3f m = matrixStack.getMatrix();
+        Matrix3f m = modelView.getMatrix();
 
         for (int i = count - 1; i >= 0; i--) {
             float x = vertices[i * 2 + 0];
             float y = vertices[i * 2 + 1];
 
-//            vertices[i + 0] = x * m.m00 + y * m.m01 + m.m02;
-//            vertices[i + 1] = x * m.m10 + y * m.m11 + m.m12;
-
-            vertices[i * 3 + 0] = x;
-            vertices[i * 3 + 1] = y;
+            vertices[i * 3 + 0] = x * m.m00 + y * m.m01 + m.m02;
+            vertices[i * 3 + 1] = x * m.m10 + y * m.m11 + m.m12;
         }
 
         colorReader.limit(count * 4);

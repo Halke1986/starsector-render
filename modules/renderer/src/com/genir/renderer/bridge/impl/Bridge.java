@@ -10,7 +10,7 @@ public class Bridge {
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
     public static final MatrixStack modelView = new MatrixStack();
-    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec);
+    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView);
 
     public static FloatBuffer bufferSnapshot(FloatBuffer params) {
         FloatBuffer reader = params.duplicate();
