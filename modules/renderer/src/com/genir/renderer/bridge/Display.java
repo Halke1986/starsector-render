@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.impl.Bridge;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
@@ -73,14 +74,14 @@ public class Display {
     public static void update(boolean processMessages) {
         exec.barrier(() -> {
             org.lwjgl.opengl.Display.update(processMessages);
-            stateCache.update();
+            Bridge.update();
         });
     }
 
     public static void update() {
         exec.barrier(() -> {
             org.lwjgl.opengl.Display.update();
-            stateCache.update();
+            Bridge.update();
         });
     }
 

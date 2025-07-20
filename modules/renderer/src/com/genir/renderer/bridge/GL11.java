@@ -25,6 +25,143 @@ public class GL11 {
     }
 
     /**
+     * Draw.
+     */
+    public static void glBegin(int mode) {
+        assertNoUnsupportedOperation();
+
+        if (listManager.isRecording()) {
+            listManager.record(() -> glBegin(mode));
+        } else {
+            vertexInterceptor.glBegin(mode);
+        }
+    }
+
+    public static void glEnd() {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glEnd());
+        } else {
+            vertexInterceptor.glEnd();
+        }
+    }
+
+    public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glColor4ub(red, green, blue, alpha));
+        } else {
+            vertexInterceptor.glColor4ub(red, green, blue, alpha);
+        }
+    }
+
+    public static void glColor3d(double red, double green, double blue) {
+        glColor4ub(
+                (byte) Math.round(red * 255),
+                (byte) Math.round(green * 255),
+                (byte) Math.round(blue * 255),
+                (byte) 255
+        );
+    }
+
+    public static void glColor4f(float red, float green, float blue, float alpha) {
+        glColor4ub(
+                (byte) Math.round(red * 255),
+                (byte) Math.round(green * 255),
+                (byte) Math.round(blue * 255),
+                (byte) Math.round(alpha * 255)
+        );
+    }
+
+    public static void glTexCoord2f(float s, float t) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glTexCoord2f(s, t));
+        } else {
+            vertexInterceptor.glTexCoord2f(s, t);
+        }
+    }
+
+    public static void glNormal3f(float nx, float ny, float nz) {
+        return;
+
+//        if (listManager.isRecording()) {
+//            listManager.record(() -> glNormal3f(nx, ny, nz));
+//        } else {
+//            exec.execute(() -> org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz));
+//        }
+    }
+
+    public static void glVertex3f(float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glVertex3f(x, y, z));
+        } else {
+            vertexInterceptor.glVertex3f(x, y, z);
+        }
+    }
+
+    public static void glVertex2f(float x, float y) {
+        glVertex3f(x, y, 0);
+    }
+
+    public static void glVertex3d(double x, double y, double z) {
+        glVertex3f(
+                (float) x,
+                (float) y,
+                (float) z
+        );
+    }
+
+    public static void glRectf(float x1, float y1, float x2, float y2) {
+        glBegin(org.lwjgl.opengl.GL11.GL_QUADS);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+        glEnd();
+    }
+
+    /**
+     * Array draw.
+     */
+    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer));
+    }
+
+    // TODO handle long pointers
+    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
+    }
+
+    public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer));
+    }
+
+    public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
+    }
+
+    public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer));
+    }
+
+    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
+    }
+
+    public static void glDrawArrays(int mode, int first, int count) {
+        return;
+//        if (listManager.isRecording()) {
+//            listManager.record(() -> glDrawArrays(mode, first, count));
+//        } else {
+//            exec.execute(() -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count));
+//        }
+    }
+
+    /**
      * Matrix.
      */
     public static void glMatrixMode(int mode) {
@@ -96,16 +233,6 @@ public class GL11 {
     /**
      * Other calls.
      */
-    public static void glBegin(int mode) {
-        assertNoUnsupportedOperation();
-
-        if (listManager.isRecording()) {
-            listManager.record(() -> glBegin(mode));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glBegin(mode));
-        }
-    }
-
     public static void glDisable(int cap) {
         if (listManager.isRecording()) {
             listManager.record(() -> glDisable(cap));
@@ -162,30 +289,6 @@ public class GL11 {
         }
     }
 
-    public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glColor4ub(red, green, blue, alpha));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glColor4ub(red, green, blue, alpha));
-        }
-    }
-
-    public static void glVertex2f(float x, float y) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glVertex2f(x, y));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glVertex2f(x, y));
-        }
-    }
-
-    public static void glEnd() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glEnd());
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glEnd());
-        }
-    }
-
     public static void glPopAttrib() {
         if (listManager.isRecording()) {
             listManager.record(() -> glPopAttrib());
@@ -207,14 +310,6 @@ public class GL11 {
             listManager.record(() -> glTexParameteri(target, pname, param));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param));
-        }
-    }
-
-    public static void glTexCoord2f(float s, float t) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glTexCoord2f(s, t));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoord2f(s, t));
         }
     }
 
@@ -287,60 +382,13 @@ public class GL11 {
     }
 
     public static void glEnableClientState(int cap) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glEnableClientState(cap));
-    }
-
-    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer));
-    }
-
-    // TODO handle long pointers
-    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
-    }
-
-    public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer));
-    }
-
-    public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
-    }
-
-    public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer));
-    }
-
-    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
-    }
-
-    public static void glDrawArrays(int mode, int first, int count) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glDrawArrays(mode, first, count));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count));
-        }
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glEnableClientState(cap));
     }
 
     public static void glDisableClientState(int cap) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glDisableClientState(cap));
-    }
-
-    public static void glVertex3d(double x, double y, double z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glVertex3d(x, y, z));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glVertex3d(x, y, z));
-        }
-    }
-
-    public static void glColor3d(double red, double green, double blue) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glColor3d(red, green, blue));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glColor3d(red, green, blue));
-        }
+        return;
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glDisableClientState(cap));
     }
 
     public static void glColorMaterial(int face, int mode) {
@@ -356,38 +404,6 @@ public class GL11 {
             listManager.record(() -> glShadeModel(mode));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glShadeModel(mode));
-        }
-    }
-
-    public static void glNormal3f(float nx, float ny, float nz) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glNormal3f(nx, ny, nz));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz));
-        }
-    }
-
-    public static void glVertex3f(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glVertex3f(x, y, z));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glVertex3f(x, y, z));
-        }
-    }
-
-    public static void glColor4f(float red, float green, float blue, float alpha) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glColor4f(red, green, blue, alpha));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha));
-        }
-    }
-
-    public static void glRectf(float x1, float y1, float x2, float y2) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glRectf(x1, y1, x2, y2));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glRectf(x1, y1, x2, y2));
         }
     }
 
