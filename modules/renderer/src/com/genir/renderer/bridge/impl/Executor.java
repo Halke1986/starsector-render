@@ -11,7 +11,11 @@ import static com.genir.renderer.Debug.log;
 import static com.genir.renderer.Debug.logStack;
 
 public class Executor {
-    private final ExecutorService exec = Executors.newSingleThreadExecutor();
+    private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
+        Thread t = new Thread(runnable);
+        t.setDaemon(true);
+        return t;
+    });
 
     static final int batchCapacity = 128;
     private List<Runnable> commandBuffer = new ArrayList<>(batchCapacity);
@@ -24,6 +28,10 @@ public class Executor {
         }
     }
 
+    /**
+     * Execute callable and block until it returns.
+     * This method stalls the concurrent pipeline.
+     */
     public void wait(Runnable command) {
         log(Executor.class, "wait");
         logStack();
@@ -40,6 +48,11 @@ public class Executor {
         }
     }
 
+    /**
+     * Executes callable and block until it returns.
+     * Same as wait, but stalls the concurrent pipeline
+     * on purpose, to synchronize threads.
+     */
     public void barrier(Runnable command) {
         executeCommands();
 
@@ -53,6 +66,10 @@ public class Executor {
         }
     }
 
+    /**
+     * Execute callable and block until it returns a value.
+     * This method stalls the concurrent pipeline.
+     */
     public <T> T get(Callable<T> task) {
         log(Executor.class, "get");
         logStack();
