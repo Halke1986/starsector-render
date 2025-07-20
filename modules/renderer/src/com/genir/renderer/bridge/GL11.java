@@ -121,20 +121,32 @@ public class GL11 {
     /**
      * Array draw.
      */
-    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer));
+    public static void glEnableClientState(int cap) { // NoList
     }
 
-    // TODO handle long pointers
-    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
+    public static void glDisableClientState(int cap) { // NoList
+    }
+
+    public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
+        vertexInterceptor.glVertexPointer(size, stride, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
+        vertexInterceptor.glColorPointer(size, unsigned, stride, pointer);
+    }
+
+    public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
+        vertexInterceptor.glTexCoordPointer(size, stride, pointer);
+    }
+
+    public static void glDrawArrays(int mode, int first, int count) {
+        vertexInterceptor.glDrawArrays(mode, first, count);
+    }
+
+    // TODO handle long pointers
+    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer));
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
@@ -142,23 +154,9 @@ public class GL11 {
 //        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
     }
 
-    public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
+    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer));
-    }
-
-    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
-    }
-
-    public static void glDrawArrays(int mode, int first, int count) {
-        return;
-//        if (listManager.isRecording()) {
-//            listManager.record(() -> glDrawArrays(mode, first, count));
-//        } else {
-//            exec.execute(() -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count));
-//        }
+//        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
     /**
@@ -379,16 +377,6 @@ public class GL11 {
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glLineWidth(width));
         }
-    }
-
-    public static void glEnableClientState(int cap) { // NoList
-        return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glEnableClientState(cap));
-    }
-
-    public static void glDisableClientState(int cap) { // NoList
-        return;
-//        exec.execute(() -> org.lwjgl.opengl.GL11.glDisableClientState(cap));
     }
 
     public static void glColorMaterial(int face, int mode) {

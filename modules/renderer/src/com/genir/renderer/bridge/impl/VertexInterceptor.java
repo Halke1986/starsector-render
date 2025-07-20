@@ -6,9 +6,11 @@ import org.lwjgl.opengl.GL11;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import static com.genir.renderer.Debug.asert;
+
 public class VertexInterceptor {
     private final int localBufferSize = 1 << 16;
-    private final int externalBufferSize = 1 << 20;
+    private final int drawBufferSize = 1 << 20;
 
     private final Executor exec;
 
@@ -29,13 +31,18 @@ public class VertexInterceptor {
     // Total number of vertices since glBegin.
     private int vertexNum = 0;
 
-    // External buffers.
-    private final ByteBuffer colorPointer = BufferUtils.createByteBuffer(4 * externalBufferSize);
-    private final FloatBuffer texCoordsPointer = BufferUtils.createFloatBuffer(2 * externalBufferSize);
-    private final FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(3 * externalBufferSize);
+    // Draw buffers.
+    private final ByteBuffer colorPointer = BufferUtils.createByteBuffer(4 * drawBufferSize);
+    private final FloatBuffer texCoordsPointer = BufferUtils.createFloatBuffer(2 * drawBufferSize);
+    private final FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(3 * drawBufferSize);
 
     // Total number of vertices since update.
     private int totalVertexNum = 0;
+
+    // External buffers.
+    private ByteBuffer externalColorPointer;
+    private FloatBuffer externalTexCoordsPointer;
+    private FloatBuffer externalVertexPointer;
 
     public VertexInterceptor(Executor exec) {
         this.exec = exec;
@@ -108,42 +115,66 @@ public class VertexInterceptor {
         vertexNum++;
     }
 
-//    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-//        colorPointer = pointer;
-//    }
-//
-//    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-//        vertexPointer = pointer;
-//    }
-//
-//    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-//        texCoordsPointer = pointer;
-//    }
-//
-//    public void glDrawArrays(int mode, int first, int count) {
-//        FloatBuffer vertexReader = vertexPointer.duplicate();
-//        FloatBuffer texCoordsReader = texCoordsPointer.duplicate();
-//        ByteBuffer colorReader = colorPointer.duplicate();
-//
-//        vertexReader.rewind();
-//        texCoordsReader.rewind();
-//        colorReader.rewind();
-//
-//        vertexReader.get(vertices, 0, count * 2);
-//        texCoordsReader.get(texCoords, 0, count * 2);
-//        colorReader.get(colors, 0, count * 4);
-//
-//        // Transform vertices;
+    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
+        asert(stride == 0);
+        asert(size == 4);
+
+        externalColorPointer = pointer;
+    }
+
+    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+        asert(stride == 0);
+        asert(size == 2);
+
+        externalTexCoordsPointer = pointer;
+    }
+
+    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        asert(stride == 0);
+        asert(size == 2);
+
+        externalVertexPointer = pointer;
+    }
+
+    public void glDrawArrays(int mode, int first, int count) {
+        asert(first == 0);
+
+        ByteBuffer colorReader = externalColorPointer.duplicate();
+        FloatBuffer texCoordsReader = externalTexCoordsPointer.duplicate();
+        FloatBuffer vertexReader = externalVertexPointer.duplicate();
+
+        colorReader.rewind();
+        texCoordsReader.rewind();
+        vertexReader.rewind();
+
+        colorReader.get(colors, 0, count * 4);
+        texCoordsReader.get(texCoords, 0, count * 2);
+        vertexReader.get(vertices, 0, count * 2);
+
+        // Transform vertices;
 //        Matrix3f m = matrixStack.getMatrix();
-//
-//        for (int i = 0; i < count * 2; i += 2) {
-//            float x = vertices[i + 0];
-//            float y = vertices[i + 1];
-//
+
+        for (int i = count - 1; i >= 0; i--) {
+            float x = vertices[i * 2 + 0];
+            float y = vertices[i * 2 + 1];
+
 //            vertices[i + 0] = x * m.m00 + y * m.m01 + m.m02;
 //            vertices[i + 1] = x * m.m10 + y * m.m11 + m.m12;
-//        }
-//
-//        renderer.drawPrimitives(mode, colors, texCoords, vertices, count);
-//    }
+
+            vertices[i * 3 + 0] = x;
+            vertices[i * 3 + 1] = y;
+        }
+
+        colorPointer.put(colors, 0, 4 * count);
+        texCoordsPointer.put(texCoords, 0, 2 * count);
+        vertexPointer.put(vertices, 0, 3 * count);
+
+        final int drawMode = mode;
+        final int drawTotalVertexNum = totalVertexNum;
+        final int drawVertexNum = count;
+
+        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
+
+        totalVertexNum += count;
+    }
 }
