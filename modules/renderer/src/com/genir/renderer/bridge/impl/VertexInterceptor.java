@@ -2,7 +2,7 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix3f;
+import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -102,11 +102,11 @@ public class VertexInterceptor {
         int idx = vertexNum;
 
         // Transform vertices;
-        Matrix3f m = modelView.getMatrix();
+        Matrix4f m = modelView.getMatrix();
 
-        vertices[idx * 3 + 0] = x * m.m00 + y * m.m01 + m.m02;
-        vertices[idx * 3 + 1] = x * m.m10 + y * m.m11 + m.m12;
-        vertices[idx * 3 + 3] = z;
+        vertices[idx * 3 + 0] = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
+        vertices[idx * 3 + 1] = x * m.m10 + y * m.m11 + z * m.m12 + m.m13;
+        vertices[idx * 3 + 3] = x * m.m20 + y * m.m21 + z * m.m22 + m.m23;
 
         // Define vertex texture.
         texCoords[idx * 2 + 0] = texS;
@@ -156,14 +156,15 @@ public class VertexInterceptor {
         vertexReader.get(vertices, 0, count * 2);
 
         // Transform vertices;
-        Matrix3f m = modelView.getMatrix();
+        Matrix4f m = modelView.getMatrix();
 
         for (int i = count - 1; i >= 0; i--) {
             float x = vertices[i * 2 + 0];
             float y = vertices[i * 2 + 1];
 
-            vertices[i * 3 + 0] = x * m.m00 + y * m.m01 + m.m02;
-            vertices[i * 3 + 1] = x * m.m10 + y * m.m11 + m.m12;
+            // Support only 2D transformation.
+            vertices[i * 3 + 0] = x * m.m00 + y * m.m01 + m.m03;
+            vertices[i * 3 + 1] = x * m.m10 + y * m.m11 + m.m13 ;
         }
 
         colorReader.limit(count * 4);
