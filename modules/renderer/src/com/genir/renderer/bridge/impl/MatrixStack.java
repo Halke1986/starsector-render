@@ -2,6 +2,8 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.util.vector.Matrix4f;
 
+import java.nio.FloatBuffer;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sqrt;
 
@@ -133,5 +135,15 @@ public class MatrixStack {
         m.m30 = x * m.m30;
         m.m31 = y * m.m31;
         m.m32 = z * m.m32;
+    }
+
+    public void glMultMatrix(FloatBuffer buf) {
+        Matrix4f m2 = new Matrix4f();
+        FloatBuffer reader = buf.duplicate();
+        reader.clear();
+        m2.loadTranspose(reader);
+
+        Matrix4f m = stack[matrixIdx];
+        Matrix4f.mul(m2, m, m);
     }
 }

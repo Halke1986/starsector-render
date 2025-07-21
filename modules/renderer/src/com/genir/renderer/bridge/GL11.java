@@ -242,7 +242,7 @@ public class GL11 {
         if (listManager.isRecording()) {
             listManager.record(() -> glMultMatrix(snapshot));
         } else if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            // TODO
+            modelView.glMultMatrix(m);
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(snapshot));
         }
