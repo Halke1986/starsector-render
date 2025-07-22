@@ -271,6 +271,14 @@ public class GL11 {
         }
     }
 
+    public static void glBlendFunc(int sfactor, int dfactor) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glBlendFunc(sfactor, dfactor));
+        } else {
+            renderContext.glBlendFunc(sfactor, dfactor);
+        }
+    }
+
     public static void glBindTexture(int target, int texture) {
         if (listManager.isRecording()) {
             listManager.record(() -> glBindTexture(target, texture));
@@ -321,14 +329,6 @@ public class GL11 {
             listManager.record(() -> glOrtho(left, right, bottom, top, zNear, zFar));
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar));
-        }
-    }
-
-    public static void glBlendFunc(int sfactor, int dfactor) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glBlendFunc(sfactor, dfactor));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor));
         }
     }
 

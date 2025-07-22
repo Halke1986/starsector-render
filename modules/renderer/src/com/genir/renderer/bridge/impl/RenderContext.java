@@ -2,8 +2,6 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -12,8 +10,8 @@ import java.util.Stack;
 public class RenderContext {
     private final Executor exec;
 
-    private Snapshot c = new Snapshot();
-    private Snapshot p = new Snapshot();
+    private final Snapshot c = new Snapshot();
+    private final Snapshot p = new Snapshot();
 
     private final Stack<Snapshot> stack = new Stack<>();
 
@@ -48,20 +46,25 @@ public class RenderContext {
     }
 
     public void glPushAttrib(int mask) {
-        if ((mask & GL11.GL_ENABLE_BIT) != 0) {
-            stack.push(c.copy());
-        } else {
-            stack.push(null);
-        }
+        c.attribMask = mask;
+
+        Snapshot saved = new Snapshot();
+        c.save(saved);
+        stack.push(saved);
     }
 
     public void glPopAttrib() {
-        Snapshot s = stack.pop();
+        Snapshot saved = stack.pop();
 
-        if (s != null) {
-            p = s.copy();
-            c = s;
+        if (saved != null) {
+            saved.save(p);
+            saved.save(c);
         }
+    }
+
+    public void glBlendFunc(int sfactor, int dfactor) {
+        c.blendSfactor = sfactor;
+        c.blendDfactor = dfactor;
     }
 
     private void applyStencil() {
@@ -106,6 +109,18 @@ public class RenderContext {
                 exec.execute(() -> GL11.glDisable(GL11.GL_BLEND));
             }
         }
+
+        if (c.enableBlend) {
+            if (p.blendSfactor != c.blendSfactor || p.blendDfactor != c.blendDfactor) {
+                p.blendSfactor = c.blendSfactor;
+                p.blendDfactor = c.blendDfactor;
+
+                final int sfactor = c.blendSfactor;
+                final int dfactor = c.blendDfactor;
+
+                exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
+            }
+        }
     }
 
     private void setState(int cap, boolean value) {
@@ -126,20 +141,29 @@ public class RenderContext {
     }
 
     private static class Snapshot {
+        int attribMask = 0;
+
         boolean enableStencilTest = false;
         boolean enableAlphaTest = false;
         boolean enableTexture2D = false;
         boolean enableBlend = false;
+        int blendSfactor = 0;
+        int blendDfactor = 0;
 
-        Snapshot copy() {
-            Snapshot copy = new Snapshot();
+        void save(Snapshot other) {
+            other.attribMask = attribMask;
 
-            copy.enableStencilTest = enableStencilTest;
-            copy.enableAlphaTest = enableAlphaTest;
-            copy.enableTexture2D = enableTexture2D;
-            copy.enableBlend = enableBlend;
+            if ((attribMask & GL11.GL_ENABLE_BIT) != 0) {
+                other.enableStencilTest = enableStencilTest;
+                other.enableAlphaTest = enableAlphaTest;
+                other.enableTexture2D = enableTexture2D;
+                other.enableBlend = enableBlend;
+            }
 
-            return copy;
+            if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
+                other.blendSfactor = blendSfactor;
+                other.blendDfactor = blendDfactor;
+            }
         }
     }
 }
