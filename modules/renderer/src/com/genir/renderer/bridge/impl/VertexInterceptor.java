@@ -6,8 +6,10 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import static com.genir.renderer.Debug.asert;
+import static com.genir.renderer.Debug.log;
 
 public class VertexInterceptor {
     private final int localBufferSize = 1 << 16;
@@ -15,6 +17,7 @@ public class VertexInterceptor {
 
     private final Executor exec;
     private final MatrixStack modelView;
+    private final RenderContext renderContext;
 
     // State.
     private int mode = 0;
@@ -46,9 +49,10 @@ public class VertexInterceptor {
     private FloatBuffer externalTexCoordsPointer;
     private FloatBuffer externalVertexPointer;
 
-    public VertexInterceptor(Executor exec, MatrixStack modelView) {
+    public VertexInterceptor(Executor exec, MatrixStack modelView, RenderContext renderContext) {
         this.exec = exec;
         this.modelView = modelView;
+        this.renderContext = renderContext;
     }
 
     public void update() {
@@ -79,8 +83,15 @@ public class VertexInterceptor {
         final int drawMode = mode;
         final int drawTotalVertexNum = totalVertexNum;
         final int drawVertexNum = vertexNum;
+        final List<Runnable> contextCommands = renderContext.apply();
 
-        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
+        exec.execute(() -> {
+            for (Runnable command : contextCommands) {
+                command.run();
+            }
+
+            GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum);
+        });
 
         totalVertexNum += vertexNum;
         vertexNum = 0;
@@ -164,7 +175,7 @@ public class VertexInterceptor {
 
             // Support only 2D transformation.
             vertices[i * 3 + 0] = x * m.m00 + y * m.m01 + m.m03;
-            vertices[i * 3 + 1] = x * m.m10 + y * m.m11 + m.m13 ;
+            vertices[i * 3 + 1] = x * m.m10 + y * m.m11 + m.m13;
         }
 
         colorReader.limit(count * 4);
@@ -178,8 +189,15 @@ public class VertexInterceptor {
         final int drawMode = mode;
         final int drawTotalVertexNum = totalVertexNum;
         final int drawVertexNum = count;
+        final List<Runnable> contextCommands = renderContext.apply();
 
-        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
+        exec.execute(() -> {
+            for (Runnable command : contextCommands) {
+                command.run();
+            }
+
+            GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum);
+        });
 
         totalVertexNum += count;
     }

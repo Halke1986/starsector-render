@@ -249,16 +249,49 @@ public class GL11 {
     }
 
     /**
-     * Other calls.
+     * Render context.
      */
+    public static void glEnable(int cap) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glEnable(cap));
+        } else if (renderContext.intercept(cap)) {
+            renderContext.glEnable(cap);
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glEnable(cap));
+        }
+    }
+
     public static void glDisable(int cap) {
         if (listManager.isRecording()) {
             listManager.record(() -> glDisable(cap));
+        } else if (renderContext.intercept(cap)) {
+            renderContext.glDisable(cap);
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glDisable(cap));
         }
     }
 
+    public static void glBindTexture(int target, int texture) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glBindTexture(target, texture));
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glBindTexture(target, texture));
+        }
+    }
+
+    public static void glPushAttrib(int mask) { // NoList
+        renderContext.glPushAttrib(mask);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPushAttrib(mask));
+    }
+
+    public static void glPopAttrib() { // NoList
+        renderContext.glPopAttrib();
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPopAttrib());
+    }
+
+    /**
+     * Other calls.
+     */
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         if (listManager.isRecording()) {
             listManager.record(() -> glColorMask(red, green, blue, alpha));
@@ -275,11 +308,11 @@ public class GL11 {
         }
     }
 
-    public static void glPushAttrib(int mask) {
+    public static void glPushClientAttrib(int mask) {
         if (listManager.isRecording()) {
-            listManager.record(() -> glPushAttrib(mask));
+            listManager.record(() -> glPushClientAttrib(mask));
         } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glPushAttrib(mask));
+            exec.execute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
         }
     }
 
@@ -291,14 +324,6 @@ public class GL11 {
         }
     }
 
-    public static void glEnable(int cap) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glEnable(cap));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glEnable(cap));
-        }
-    }
-
     public static void glBlendFunc(int sfactor, int dfactor) {
         if (listManager.isRecording()) {
             listManager.record(() -> glBlendFunc(sfactor, dfactor));
@@ -307,19 +332,11 @@ public class GL11 {
         }
     }
 
-    public static void glPopAttrib() {
+    public static void glPopClientAttrib() {
         if (listManager.isRecording()) {
-            listManager.record(() -> glPopAttrib());
+            listManager.record(() -> glPopClientAttrib());
         } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glPopAttrib());
-        }
-    }
-
-    public static void glBindTexture(int target, int texture) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> glBindTexture(target, texture));
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glBindTexture(target, texture));
+            exec.execute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
         }
     }
 
@@ -415,14 +432,6 @@ public class GL11 {
         }
     }
 
-    public static void glPushClientAttrib(int mask) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
-    }
-
-    public static void glPopClientAttrib() { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
-    }
-
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
         ByteBuffer snapshot = bufferSnapshot(pixels);
         exec.wait(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
@@ -479,6 +488,10 @@ public class GL11 {
         }
 
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetString(name));
+    }
+
+    public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList
+        exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     /**
@@ -551,10 +564,6 @@ public class GL11 {
 
     public static void glGetInteger(int pname, IntBuffer params) { // NoList
         throwUnsupportedOperation("glGetInteger");
-    }
-
-    public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList
-        throwUnsupportedOperation("glReadPixels");
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {

@@ -9,8 +9,9 @@ public class Bridge {
     public static final ListManager listManager = new ListManager();
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
+    public static final RenderContext renderContext = new RenderContext();
     public static final MatrixStack modelView = new MatrixStack();
-    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView);
+    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, renderContext);
 
     public static FloatBuffer bufferSnapshot(FloatBuffer params) {
         FloatBuffer reader = params.duplicate();
@@ -34,7 +35,7 @@ public class Bridge {
         return snapshot;
     }
 
-    public static void update(){
+    public static void update() {
         stateCache.update();
         vertexInterceptor.update();
     }
