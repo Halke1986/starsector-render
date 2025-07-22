@@ -6,10 +6,8 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.List;
 
 import static com.genir.renderer.Debug.asert;
-import static com.genir.renderer.Debug.log;
 
 public class VertexInterceptor {
     private final int localBufferSize = 1 << 16;
@@ -83,15 +81,9 @@ public class VertexInterceptor {
         final int drawMode = mode;
         final int drawTotalVertexNum = totalVertexNum;
         final int drawVertexNum = vertexNum;
-        final List<Runnable> contextCommands = renderContext.apply();
 
-        exec.execute(() -> {
-            for (Runnable command : contextCommands) {
-                command.run();
-            }
-
-            GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum);
-        });
+        renderContext.apply();
+        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
 
         totalVertexNum += vertexNum;
         vertexNum = 0;
@@ -189,15 +181,9 @@ public class VertexInterceptor {
         final int drawMode = mode;
         final int drawTotalVertexNum = totalVertexNum;
         final int drawVertexNum = count;
-        final List<Runnable> contextCommands = renderContext.apply();
 
-        exec.execute(() -> {
-            for (Runnable command : contextCommands) {
-                command.run();
-            }
-
-            GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum);
-        });
+        renderContext.apply();
+        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
 
         totalVertexNum += count;
     }

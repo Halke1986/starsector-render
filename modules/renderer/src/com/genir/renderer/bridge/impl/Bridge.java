@@ -9,7 +9,7 @@ public class Bridge {
     public static final ListManager listManager = new ListManager();
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
-    public static final RenderContext renderContext = new RenderContext();
+    public static final RenderContext renderContext = new RenderContext(exec);
     public static final MatrixStack modelView = new MatrixStack();
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, renderContext);
 

@@ -10,10 +10,16 @@ import java.util.Stack;
  * RenderContext optimizes state changes by filtering out redundant calls (e.g., consecutive glEnable calls).
  */
 public class RenderContext {
+    private final Executor exec;
+
     private Snapshot c = new Snapshot();
     private Snapshot p = new Snapshot();
 
     private final Stack<Snapshot> stack = new Stack<>();
+
+    public RenderContext(Executor exec) {
+        this.exec = exec;
+    }
 
     public boolean intercept(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
@@ -26,15 +32,11 @@ public class RenderContext {
         return c.enableTexture2D;
     }
 
-    public List<Runnable> apply() {
-        List<Runnable> commands = new ArrayList<>();
-
-        applyStencil(commands);
-        applyAlpha(commands);
-        applyTexture(commands);
-        applyBlend(commands);
-
-        return commands;
+    public void apply() {
+        applyStencil();
+        applyAlpha();
+        applyTexture();
+        applyBlend();
     }
 
     public void glEnable(int cap) {
@@ -62,46 +64,46 @@ public class RenderContext {
         }
     }
 
-    private void applyStencil(List<Runnable> commands) {
+    private void applyStencil() {
         if (p.enableStencilTest != c.enableStencilTest) {
             p.enableStencilTest = c.enableStencilTest;
             if (c.enableStencilTest) {
-                commands.add(() -> GL11.glEnable(GL11.GL_STENCIL_TEST));
+                exec.execute(() -> GL11.glEnable(GL11.GL_STENCIL_TEST));
             } else {
-                commands.add(() -> GL11.glDisable(GL11.GL_STENCIL_TEST));
+                exec.execute(() -> GL11.glDisable(GL11.GL_STENCIL_TEST));
             }
         }
     }
 
-    private void applyAlpha(List<Runnable> commands) {
+    private void applyAlpha() {
         if (p.enableAlphaTest != c.enableAlphaTest) {
             p.enableAlphaTest = c.enableAlphaTest;
             if (c.enableAlphaTest) {
-                commands.add(() -> GL11.glEnable(GL11.GL_ALPHA_TEST));
+                exec.execute(() -> GL11.glEnable(GL11.GL_ALPHA_TEST));
             } else {
-                commands.add(() -> GL11.glDisable(GL11.GL_ALPHA_TEST));
+                exec.execute(() -> GL11.glDisable(GL11.GL_ALPHA_TEST));
             }
         }
     }
 
-    private void applyTexture(List<Runnable> commands) {
+    private void applyTexture() {
         if (p.enableTexture2D != c.enableTexture2D) {
             p.enableTexture2D = c.enableTexture2D;
             if (c.enableTexture2D) {
-                commands.add(() -> GL11.glEnable(GL11.GL_TEXTURE_2D));
+                exec.execute(() -> GL11.glEnable(GL11.GL_TEXTURE_2D));
             } else {
-                commands.add(() -> GL11.glDisable(GL11.GL_TEXTURE_2D));
+                exec.execute(() -> GL11.glDisable(GL11.GL_TEXTURE_2D));
             }
         }
     }
 
-    private void applyBlend(List<Runnable> commands) {
+    private void applyBlend() {
         if (p.enableBlend != c.enableBlend) {
             p.enableBlend = c.enableBlend;
             if (c.enableBlend) {
-                commands.add(() -> GL11.glEnable(GL11.GL_BLEND));
+                exec.execute(() -> GL11.glEnable(GL11.GL_BLEND));
             } else {
-                commands.add(() -> GL11.glDisable(GL11.GL_BLEND));
+                exec.execute(() -> GL11.glDisable(GL11.GL_BLEND));
             }
         }
     }
