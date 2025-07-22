@@ -81,13 +81,12 @@ public class GL11 {
         }
     }
 
-    public static void glNormal3f(float nx, float ny, float nz) { // TODO planets
-        return;
-//        if (listManager.isRecording()) {
-//            listManager.record(() -> glNormal3f(nx, ny, nz));
-//        } else {
-//            exec.execute(() -> org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz));
-//        }
+    public static void glNormal3f(float nx, float ny, float nz) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> glNormal3f(nx, ny, nz));
+        } else {
+            vertexInterceptor.glNormal3f(nx, ny, nz);
+        }
     }
 
     public static void glVertex3f(float x, float y, float z) {

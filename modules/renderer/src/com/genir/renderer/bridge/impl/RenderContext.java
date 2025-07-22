@@ -23,11 +23,17 @@ public class RenderContext {
         return (cap == GL11.GL_STENCIL_TEST
                 || cap == GL11.GL_ALPHA_TEST
                 || cap == GL11.GL_TEXTURE_2D
-                || cap == GL11.GL_BLEND);
+                || cap == GL11.GL_BLEND
+                || cap == GL11.GL_LIGHTING
+        );
     }
 
     public boolean enableTexture() {
         return c.enableTexture2D;
+    }
+
+    public boolean enableLighting() {
+        return c.enableLighting;
     }
 
     public void apply() {
@@ -35,6 +41,7 @@ public class RenderContext {
         applyAlpha();
         applyTexture();
         applyBlend();
+        applyLighting();
     }
 
     public void glEnable(int cap) {
@@ -70,44 +77,28 @@ public class RenderContext {
     private void applyStencil() {
         if (p.enableStencilTest != c.enableStencilTest) {
             p.enableStencilTest = c.enableStencilTest;
-            if (c.enableStencilTest) {
-                exec.execute(() -> GL11.glEnable(GL11.GL_STENCIL_TEST));
-            } else {
-                exec.execute(() -> GL11.glDisable(GL11.GL_STENCIL_TEST));
-            }
+            apply(GL11.GL_STENCIL_TEST, c.enableStencilTest);
         }
     }
 
     private void applyAlpha() {
         if (p.enableAlphaTest != c.enableAlphaTest) {
             p.enableAlphaTest = c.enableAlphaTest;
-            if (c.enableAlphaTest) {
-                exec.execute(() -> GL11.glEnable(GL11.GL_ALPHA_TEST));
-            } else {
-                exec.execute(() -> GL11.glDisable(GL11.GL_ALPHA_TEST));
-            }
+            apply(GL11.GL_ALPHA_TEST, c.enableAlphaTest);
         }
     }
 
     private void applyTexture() {
         if (p.enableTexture2D != c.enableTexture2D) {
             p.enableTexture2D = c.enableTexture2D;
-            if (c.enableTexture2D) {
-                exec.execute(() -> GL11.glEnable(GL11.GL_TEXTURE_2D));
-            } else {
-                exec.execute(() -> GL11.glDisable(GL11.GL_TEXTURE_2D));
-            }
+            apply(GL11.GL_TEXTURE_2D, c.enableTexture2D);
         }
     }
 
     private void applyBlend() {
         if (p.enableBlend != c.enableBlend) {
             p.enableBlend = c.enableBlend;
-            if (c.enableBlend) {
-                exec.execute(() -> GL11.glEnable(GL11.GL_BLEND));
-            } else {
-                exec.execute(() -> GL11.glDisable(GL11.GL_BLEND));
-            }
+            apply(GL11.GL_BLEND, c.enableBlend);
         }
 
         if (c.enableBlend) {
@@ -120,6 +111,21 @@ public class RenderContext {
 
                 exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
             }
+        }
+    }
+
+    private void applyLighting() {
+        if (p.enableLighting != c.enableLighting) {
+            p.enableLighting = c.enableLighting;
+            apply(GL11.GL_LIGHTING, c.enableLighting);
+        }
+    }
+
+    private void apply(int cap, boolean value) {
+        if (value) {
+            exec.execute(() -> GL11.glEnable(cap));
+        } else {
+            exec.execute(() -> GL11.glDisable(cap));
         }
     }
 
@@ -137,6 +143,9 @@ public class RenderContext {
             case GL11.GL_BLEND:
                 c.enableBlend = value;
                 break;
+            case GL11.GL_LIGHTING:
+                c.enableLighting = value;
+                break;
         }
     }
 
@@ -147,6 +156,7 @@ public class RenderContext {
         boolean enableAlphaTest = false;
         boolean enableTexture2D = false;
         boolean enableBlend = false;
+        boolean enableLighting = false;
         int blendSfactor = 0;
         int blendDfactor = 0;
 
@@ -158,6 +168,7 @@ public class RenderContext {
                 other.enableAlphaTest = enableAlphaTest;
                 other.enableTexture2D = enableTexture2D;
                 other.enableBlend = enableBlend;
+                other.enableLighting = enableLighting;
             }
 
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
