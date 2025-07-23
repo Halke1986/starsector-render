@@ -11,7 +11,7 @@ public class CombatEngine {
     public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
         CombatEngine.engine = engine;
 
-        log(CombatEngine.class, " ");
+//        log(CombatEngine.class, " ");
 
         if (engine.isDestroyed()) {
             return;

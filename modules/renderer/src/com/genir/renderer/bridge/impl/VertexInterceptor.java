@@ -8,10 +8,15 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import static com.genir.renderer.Debug.asert;
+import static com.genir.renderer.Debug.log;
 
 public class VertexInterceptor {
-    private final int localBufferSize = 1 << 16;
-    private final int drawBufferSize = 1 << 20;
+    private final int BUFFER_SIZE = 1 << 16;
+    private final int COLOR_SIZE = 4;
+    private final int TEX_SIZE = 2;
+    private final int NORMAL_SIZE = 3;
+    private final int VERTEX_SIZE = 3;
+    private final int VERTEX_SIZE_2D = 2;
 
     private final Executor exec;
     private final MatrixStack modelView;
@@ -30,22 +35,19 @@ public class VertexInterceptor {
     private float nz;
 
     // Local buffers.
-    private final byte[] colors = new byte[4 * localBufferSize];
-    private final float[] texCoords = new float[2 * localBufferSize];
-    private final float[] normals = new float[3 * localBufferSize];
-    private final float[] vertices = new float[3 * localBufferSize];
+    private final byte[] colorsCache = new byte[BUFFER_SIZE * COLOR_SIZE];
+    private final float[] texCoordsCache = new float[BUFFER_SIZE * TEX_SIZE];
+    private final float[] normalsCache = new float[BUFFER_SIZE * NORMAL_SIZE];
+    private final float[] verticesCache = new float[BUFFER_SIZE * VERTEX_SIZE];
 
     // Total number of vertices since glBegin.
-    private int vertexNum = 0;
+    private int cachedVertices = 0;
 
     // Draw buffers.
-    private final ByteBuffer colorPointer = BufferUtils.createByteBuffer(4 * drawBufferSize);
-    private final FloatBuffer texCoordsPointer = BufferUtils.createFloatBuffer(2 * drawBufferSize);
-    private final FloatBuffer normalsPointer = BufferUtils.createFloatBuffer(2 * drawBufferSize);
-    private final FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(3 * drawBufferSize);
-
-    // Total number of vertices since update.
-    private int totalVertexNum = 0;
+    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(1 * COLOR_SIZE);
+    private FloatBuffer texCoordsPointer = BufferUtils.createFloatBuffer(1 * TEX_SIZE);
+    private FloatBuffer normalsPointer = BufferUtils.createFloatBuffer(1 * NORMAL_SIZE);
+    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(1 * VERTEX_SIZE);
 
     // External buffers.
     private ByteBuffer externalColorPointer;
@@ -69,12 +71,10 @@ public class VertexInterceptor {
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-        GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colorPointer);
-        GL11.glTexCoordPointer(2, 0, texCoordsPointer);
+        GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorPointer);
+        GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordsPointer);
         GL11.glNormalPointer(0, normalsPointer);
-        GL11.glVertexPointer(3, 0, vertexPointer);
-
-        totalVertexNum = 0;
+        GL11.glVertexPointer(VERTEX_SIZE, 0, vertexPointer);
     }
 
     public void glBegin(int mode) {
@@ -82,31 +82,26 @@ public class VertexInterceptor {
     }
 
     public void glEnd() {
-        colorPointer.put(colors, 0, 4 * vertexNum);
-
-        if (renderContext.enableTexture()) {
-            texCoordsPointer.put(texCoords, 0, 2 * vertexNum);
-        } else {
-            texCoordsPointer.position(texCoordsPointer.position() + 2 * vertexNum);
-        }
-
-        if (renderContext.enableLighting()) {
-            normalsPointer.put(normals, 0, 3 * vertexNum);
-        } else {
-            normalsPointer.position(normalsPointer.position() + 3 * vertexNum);
-        }
-
-        vertexPointer.put(vertices, 0, 3 * vertexNum);
-
         final int drawMode = mode;
-        final int drawTotalVertexNum = totalVertexNum;
-        final int drawVertexNum = vertexNum;
+        final int drawBufferOffset = vertexPointer.position() / VERTEX_SIZE;
+        final int drawSize = cachedVertices;
+
+        resizeDrawBuffers(drawSize);
+
+        colorPointer.put(colorsCache, 0, drawSize * COLOR_SIZE);
+
+        if (renderContext.enableTexture()) texCoordsPointer.put(texCoordsCache, 0, drawSize * TEX_SIZE);
+        else texCoordsPointer.position(texCoordsPointer.position() + drawSize * TEX_SIZE);
+
+        if (renderContext.enableLighting()) normalsPointer.put(normalsCache, 0, drawSize * NORMAL_SIZE);
+        else normalsPointer.position(normalsPointer.position() + drawSize * NORMAL_SIZE);
+
+        vertexPointer.put(verticesCache, 0, drawSize * VERTEX_SIZE);
 
         renderContext.apply();
-        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
+        exec.execute(() -> GL11.glDrawArrays(drawMode, drawBufferOffset, drawSize));
 
-        totalVertexNum += vertexNum;
-        vertexNum = 0;
+        cachedVertices = 0;
     }
 
     public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -128,18 +123,18 @@ public class VertexInterceptor {
     }
 
     public void glVertex3f(float x, float y, float z) {
-        int idx = vertexNum;
+        int idx = cachedVertices;
 
         // Define vertex color.
-        colors[idx * 4 + 0] = red;
-        colors[idx * 4 + 1] = green;
-        colors[idx * 4 + 2] = blue;
-        colors[idx * 4 + 3] = alpha;
+        colorsCache[idx * COLOR_SIZE + 0] = red;
+        colorsCache[idx * COLOR_SIZE + 1] = green;
+        colorsCache[idx * COLOR_SIZE + 2] = blue;
+        colorsCache[idx * COLOR_SIZE + 3] = alpha;
 
         // Define vertex texture.
         if (renderContext.enableTexture()) {
-            texCoords[idx * 2 + 0] = texS;
-            texCoords[idx * 2 + 1] = texT;
+            texCoordsCache[idx * TEX_SIZE + 0] = texS;
+            texCoordsCache[idx * TEX_SIZE + 1] = texT;
         }
 
         Matrix4f m = modelView.getMatrix();
@@ -149,36 +144,36 @@ public class VertexInterceptor {
             // Assume model view is just rotations and translations, no shear or scale.
             // Otherwise, the upper left 3x3 part of transformation matrix would have
             // to be inversed and transposed first.
-            normals[idx * 3 + 0] = nx * m.m00 + ny * m.m01 + nz * m.m02;
-            normals[idx * 3 + 1] = nx * m.m10 + ny * m.m11 + nz * m.m12;
-            normals[idx * 3 + 3] = nx * m.m20 + ny * m.m21 + nz * m.m22;
+            normalsCache[idx * NORMAL_SIZE + 0] = nx * m.m00 + ny * m.m01 + nz * m.m02;
+            normalsCache[idx * NORMAL_SIZE + 1] = nx * m.m10 + ny * m.m11 + nz * m.m12;
+            normalsCache[idx * NORMAL_SIZE + 3] = nx * m.m20 + ny * m.m21 + nz * m.m22;
         }
 
         // Transform vertices;
-        vertices[idx * 3 + 0] = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
-        vertices[idx * 3 + 1] = x * m.m10 + y * m.m11 + z * m.m12 + m.m13;
-        vertices[idx * 3 + 3] = x * m.m20 + y * m.m21 + z * m.m22 + m.m23;
+        verticesCache[idx * VERTEX_SIZE + 0] = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
+        verticesCache[idx * VERTEX_SIZE + 1] = x * m.m10 + y * m.m11 + z * m.m12 + m.m13;
+        verticesCache[idx * VERTEX_SIZE + 3] = x * m.m20 + y * m.m21 + z * m.m22 + m.m23;
 
-        vertexNum++;
+        cachedVertices++;
     }
 
     public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
         asert(stride == 0);
-        asert(size == 4);
+        asert(size == COLOR_SIZE);
 
         externalColorPointer = pointer;
     }
 
     public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
         asert(stride == 0);
-        asert(size == 2);
+        asert(size == TEX_SIZE);
 
         externalTexCoordsPointer = pointer;
     }
 
     public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
         asert(stride == 0);
-        asert(size == 2);
+        asert(size == VERTEX_SIZE_2D);
 
         externalVertexPointer = pointer;
     }
@@ -194,35 +189,54 @@ public class VertexInterceptor {
         texCoordsReader.rewind();
         vertexReader.rewind();
 
-        vertexReader.get(vertices, 0, count * 2);
+        vertexReader.get(verticesCache, 0, count * VERTEX_SIZE_2D);
 
         // Transform vertices;
         Matrix4f m = modelView.getMatrix();
 
         for (int i = count - 1; i >= 0; i--) {
-            float x = vertices[i * 2 + 0];
-            float y = vertices[i * 2 + 1];
+            float x = verticesCache[i * VERTEX_SIZE_2D + 0];
+            float y = verticesCache[i * VERTEX_SIZE_2D + 1];
 
             // Support only 2D transformation.
-            vertices[i * 3 + 0] = x * m.m00 + y * m.m01 + m.m03;
-            vertices[i * 3 + 1] = x * m.m10 + y * m.m11 + m.m13;
+            verticesCache[i * VERTEX_SIZE + 0] = x * m.m00 + y * m.m01 + m.m03;
+            verticesCache[i * VERTEX_SIZE + 1] = x * m.m10 + y * m.m11 + m.m13;
         }
 
-        colorReader.limit(count * 4);
-        texCoordsReader.limit(count * 2);
+        colorReader.limit(count * COLOR_SIZE);
+        texCoordsReader.limit(count * TEX_SIZE);
+
+        final int drawMode = mode;
+        final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
+        final int drawSize = count;
+
+        resizeDrawBuffers(count);
 
         colorPointer.put(colorReader);
         texCoordsPointer.put(texCoordsReader);
-
-        vertexPointer.put(vertices, 0, 3 * count);
-
-        final int drawMode = mode;
-        final int drawTotalVertexNum = totalVertexNum;
-        final int drawVertexNum = count;
+        vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
 
         renderContext.apply();
-        exec.execute(() -> GL11.glDrawArrays(drawMode, drawTotalVertexNum, drawVertexNum));
+        exec.execute(() -> GL11.glDrawArrays(drawMode, drawBufferSize, drawSize));
+    }
 
-        totalVertexNum += count;
+    private void resizeDrawBuffers(int vertexNum) {
+        if (vertexPointer.remaining() >= vertexNum * VERTEX_SIZE) {
+            return;
+        }
+
+        int currentSize = vertexPointer.capacity() / VERTEX_SIZE;
+        final int newSize = Math.max(currentSize * 2, currentSize + vertexNum);
+
+        log(VertexInterceptor.class, "resize draw buffer to " + newSize + " vertices");
+
+        exec.wait(() -> {
+            colorPointer = BufferUtils.createByteBuffer(newSize * COLOR_SIZE);
+            texCoordsPointer = BufferUtils.createFloatBuffer(newSize * TEX_SIZE);
+            normalsPointer = BufferUtils.createFloatBuffer(newSize * NORMAL_SIZE);
+            vertexPointer = BufferUtils.createFloatBuffer(newSize * VERTEX_SIZE);
+
+            update();
+        });
     }
 }

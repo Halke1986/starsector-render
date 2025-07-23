@@ -33,8 +33,8 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        log(Executor.class, "wait");
-        logStack();
+//        log(Executor.class, "wait");
+//        logStack();
 
         executeCommands();
 
@@ -71,8 +71,8 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public <T> T get(Callable<T> task) {
-        log(Executor.class, "get");
-        logStack();
+//        log(Executor.class, "get");
+//        logStack();
 
         executeCommands();
 
