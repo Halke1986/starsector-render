@@ -12,7 +12,7 @@ public class ListManager {
     private int newListID;
     private List<Runnable> newList;
 
-    private final Map<Integer, List<Runnable>> lists = new HashMap<>();
+    private final Map<Integer, Runnable[]> lists = new HashMap<>();
 
     public boolean isRecording() {
         return mode != 0;
@@ -33,7 +33,7 @@ public class ListManager {
     }
 
     public void glEndList() {
-        lists.put(newListID, newList);
+        lists.put(newListID, newList.toArray(new Runnable[0]));
 
         boolean execute = mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         mode = 0;
@@ -46,11 +46,12 @@ public class ListManager {
     public void glCallList(int list) {
         asert(!isRecording());
 
-        List<Runnable> listToCall = lists.get(list);
+        Runnable[] listToCall = lists.get(list);
         if (listToCall != null) {
-            for (Runnable command : listToCall) {
-                command.run();
-            }
+            // for-each loop over a list is a performance bottleneck, according to a profiler.
+            // Simple for loop over an array is much faster.
+            for (int i = 0; i < listToCall.length; i++)
+                listToCall[i].run();
         }
     }
 }
