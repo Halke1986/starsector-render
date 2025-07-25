@@ -140,7 +140,11 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        vertexInterceptor.glDrawArrays(mode, first, count);
+        if (listManager.isRecording()) {
+            listManager.record(() -> glDrawArrays(mode, first, count));
+        } else {
+            vertexInterceptor.glDrawArrays(mode, first, count);
+        }
     }
 
     // TODO handle long pointers
