@@ -20,6 +20,10 @@ public class ListManager {
 
     public void record(Runnable command) {
         newList.add(command);
+
+        if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
+            command.run();
+        }
     }
 
     public void glNewList(int list, int mode) {
@@ -35,12 +39,7 @@ public class ListManager {
     public void glEndList() {
         lists.put(newListID, newList.toArray(new Runnable[0]));
 
-        boolean execute = mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         mode = 0;
-
-        if (execute) {
-            glCallList(newListID);
-        }
     }
 
     public void glCallList(int list) {

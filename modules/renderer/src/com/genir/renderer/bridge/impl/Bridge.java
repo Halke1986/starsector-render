@@ -13,6 +13,14 @@ public class Bridge {
     public static final MatrixStack modelView = new MatrixStack();
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, renderContext);
 
+    public static void recordOrExecute(Runnable command) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> exec.execute(command));
+        } else {
+            exec.execute(command);
+        }
+    }
+
     public static FloatBuffer bufferSnapshot(FloatBuffer params) {
         FloatBuffer reader = params.duplicate();
         reader.rewind();
