@@ -181,43 +181,55 @@ public class VertexInterceptor {
     public void glDrawArrays(int mode, int first, int count) {
         asert(first == 0);
 
-        ByteBuffer colorReader = externalColorPointer.duplicate();
-        FloatBuffer texCoordsReader = externalTexCoordsPointer.duplicate();
-        FloatBuffer vertexReader = externalVertexPointer.duplicate();
-
-        colorReader.rewind();
-        texCoordsReader.rewind();
-        vertexReader.rewind();
-
-        vertexReader.get(verticesCache, 0, count * VERTEX_SIZE_2D);
-
-        // Transform vertices;
-        Matrix4f m = modelView.getMatrix();
-
-        for (int i = count - 1; i >= 0; i--) {
-            float x = verticesCache[i * VERTEX_SIZE_2D + 0];
-            float y = verticesCache[i * VERTEX_SIZE_2D + 1];
-
-            // Support only 2D transformation.
-            verticesCache[i * VERTEX_SIZE + 0] = x * m.m00 + y * m.m01 + m.m03;
-            verticesCache[i * VERTEX_SIZE + 1] = x * m.m10 + y * m.m11 + m.m13;
-        }
-
-        colorReader.limit(count * COLOR_SIZE);
-        texCoordsReader.limit(count * TEX_SIZE);
-
-        final int drawMode = mode;
-        final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
-        final int drawSize = count;
-
+        // Prepare buffers.
         resizeDrawBuffers(count);
+        final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
 
+        // Flush colors.
+        ByteBuffer colorReader = externalColorPointer.duplicate();
+        colorReader.rewind();
+        colorReader.limit(count * COLOR_SIZE);
         colorPointer.put(colorReader);
+
+        // Flush textures.
+        FloatBuffer texCoordsReader = externalTexCoordsPointer.duplicate();
+        texCoordsReader.rewind();
+        texCoordsReader.limit(count * TEX_SIZE);
         texCoordsPointer.put(texCoordsReader);
+
+        // Transform and flush vertices.
+        FloatBuffer vertexReader = externalVertexPointer.duplicate();
+        vertexReader.rewind();
+        vertexReader.get(verticesCache, 0, count * VERTEX_SIZE_2D);
+        transform2Dvertices(verticesCache);
         vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
 
+        // Draw.
         renderContext.apply();
-        exec.execute(() -> GL11.glDrawArrays(drawMode, drawBufferSize, drawSize));
+        exec.execute(() -> GL11.glDrawArrays(mode, drawBufferSize, count));
+    }
+
+    public Runnable recordedGlDrawArrays(int mode, int first, int count) {
+        asert(first == 0);
+
+        // Take snapshot of the buffers at the time of list recording.
+        final byte[] colors = bufferSnapshot(externalColorPointer, count * COLOR_SIZE);
+        final float[] texCoords = bufferSnapshot(externalTexCoordsPointer, count * TEX_SIZE);
+        final float[] vertices = bufferSnapshot(externalVertexPointer, count * VERTEX_SIZE_2D);
+
+        return () -> {
+            // Prepare draw buffers.
+            resizeDrawBuffers(count);
+            final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
+
+            colorPointer.put(colors, 0, count * COLOR_SIZE);
+            texCoordsPointer.put(texCoords, 0, count * TEX_SIZE);
+            transform2Dvertices(vertices);
+            vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
+
+            renderContext.apply();
+            exec.execute(() -> GL11.glDrawArrays(mode, drawBufferSize, count));
+        };
     }
 
     private void resizeDrawBuffers(int vertexNum) {
@@ -238,5 +250,41 @@ public class VertexInterceptor {
 
             update();
         });
+    }
+
+    private void transform2Dvertices(float[] input) {
+        // Transform vertices;
+        Matrix4f m = modelView.getMatrix();
+
+        // Iterate in the revese direction in case input is same as output.
+        // That way spreading vertices from 2D to 3D won't override input values.
+        for (int i = input.length / VERTEX_SIZE_2D - 1; i >= 0; i--) {
+            float x = input[i * VERTEX_SIZE_2D + 0];
+            float y = input[i * VERTEX_SIZE_2D + 1];
+
+            // Use the default cache array to store output.
+            verticesCache[i * VERTEX_SIZE + 0] = x * m.m00 + y * m.m01 + m.m03;
+            verticesCache[i * VERTEX_SIZE + 1] = x * m.m10 + y * m.m11 + m.m13;
+        }
+    }
+
+    private float[] bufferSnapshot(FloatBuffer params, int count) {
+        FloatBuffer reader = params.duplicate();
+        reader.rewind();
+
+        float[] snapshot = new float[count];
+        reader.get(snapshot, 0, count);
+
+        return snapshot;
+    }
+
+    private byte[] bufferSnapshot(ByteBuffer params, int count) {
+        ByteBuffer reader = params.duplicate();
+        reader.rewind();
+
+        byte[] snapshot = new byte[count];
+        reader.get(snapshot, 0, count);
+
+        return snapshot;
     }
 }

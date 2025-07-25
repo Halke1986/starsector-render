@@ -141,7 +141,7 @@ public class GL11 {
 
     public static void glDrawArrays(int mode, int first, int count) {
         if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glDrawArrays(mode, first, count));
+            listManager.record(vertexInterceptor.recordedGlDrawArrays(mode, first, count));
         } else {
             vertexInterceptor.glDrawArrays(mode, first, count);
         }
