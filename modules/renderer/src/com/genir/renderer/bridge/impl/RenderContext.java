@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 import java.util.Stack;
 
@@ -75,14 +74,6 @@ public class RenderContext {
         c.blendDfactor = dfactor;
     }
 
-    public void glBlendEquation(int mode) {
-        c.blendEquation = mode;
-    }
-
-    public void glBindTexture(int target, int texture) {
-        c.textureID = texture;
-    }
-
     private void applyStencil() {
         if (p.enableStencilTest != c.enableStencilTest) {
             p.enableStencilTest = c.enableStencilTest;
@@ -119,14 +110,6 @@ public class RenderContext {
                 final int dfactor = c.blendDfactor;
 
                 exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
-            }
-
-            if (p.blendEquation != c.blendEquation) {
-                p.blendEquation = c.blendEquation;
-
-                final int equation = c.blendEquation;
-
-                exec.execute(() -> GL14.glBlendEquation(equation));
             }
         }
     }
@@ -174,15 +157,8 @@ public class RenderContext {
         boolean enableTexture2D = false;
         boolean enableBlend = false;
         boolean enableLighting = false;
-
         int blendSfactor = 0;
         int blendDfactor = 0;
-        int blendEquation = GL14.GL_FUNC_ADD;
-
-        // Texture ID is tracked, but not applied by the RenderContext.
-        // Overriding texture binding leads to issues with Starsector
-        // texture loading process.
-        int textureID;
 
         void save(Snapshot other) {
             other.attribMask = attribMask;
@@ -198,7 +174,6 @@ public class RenderContext {
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
                 other.blendSfactor = blendSfactor;
                 other.blendDfactor = blendDfactor;
-                other.blendEquation = blendEquation;
             }
         }
     }
