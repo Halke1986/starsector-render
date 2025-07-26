@@ -201,7 +201,7 @@ public class VertexInterceptor {
         FloatBuffer vertexReader = externalVertexPointer.duplicate();
         vertexReader.rewind();
         vertexReader.get(verticesCache, 0, count * VERTEX_SIZE_2D);
-        transform2Dvertices(verticesCache);
+        transform2DVertices(verticesCache, count);
         vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
 
         // Draw.
@@ -224,7 +224,7 @@ public class VertexInterceptor {
 
             colorPointer.put(colors, 0, count * COLOR_SIZE);
             texCoordsPointer.put(texCoords, 0, count * TEX_SIZE);
-            transform2Dvertices(vertices);
+            transform2DVertices(vertices, count);
             vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
 
             renderContext.apply();
@@ -252,13 +252,13 @@ public class VertexInterceptor {
         });
     }
 
-    private void transform2Dvertices(float[] input) {
+    private void transform2DVertices(float[] input, int count) {
         // Transform vertices;
         Matrix4f m = modelView.getMatrix();
 
-        // Iterate in the revese direction in case input is same as output.
+        // Iterate in the reverse direction in case input is same as output.
         // That way spreading vertices from 2D to 3D won't override input values.
-        for (int i = input.length / VERTEX_SIZE_2D - 1; i >= 0; i--) {
+        for (int i = count - 1; i >= 0; i--) {
             float x = input[i * VERTEX_SIZE_2D + 0];
             float y = input[i * VERTEX_SIZE_2D + 1];
 
