@@ -338,6 +338,19 @@ public class GL11 {
         }
     }
 
+    public static void glBindTexture(int target, int texture) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> iglBindTexture(target, texture));
+        } else {
+            iglBindTexture(target, texture);
+        }
+    }
+
+    private static void iglBindTexture(int target, int texture) {
+        renderContext.glBindTexture(target, texture);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glBindTexture(target, texture));
+    }
+
     public static void glPushAttrib(int mask) { // NoList
         renderContext.glPushAttrib(mask);
         exec.execute(() -> org.lwjgl.opengl.GL11.glPushAttrib(mask));
@@ -351,10 +364,6 @@ public class GL11 {
     /**
      * Other calls.
      */
-    public static void glBindTexture(int target, int texture) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glBindTexture(target, texture));
-    }
-
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha));
     }
