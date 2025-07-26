@@ -109,6 +109,14 @@ public class GL11 {
         );
     }
 
+    public static void glVertex2d(double x, double y) {
+        glVertex3f(
+                (float) x,
+                (float) y,
+                0
+        );
+    }
+
     public static void glRectf(float x1, float y1, float x2, float y2) {
         glBegin(org.lwjgl.opengl.GL11.GL_QUADS);
         glVertex2f(x1, y1);
