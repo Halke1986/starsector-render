@@ -1,5 +1,7 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.impl.BufferUtils;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -287,7 +289,7 @@ public class GL11 {
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        FloatBuffer snapshot = bufferSnapshot(m);
+        FloatBuffer snapshot = BufferUtils.snapshot(m);
         if (listManager.isRecording()) {
             listManager.record(() -> iglMultMatrix(snapshot));
         } else {
@@ -432,22 +434,22 @@ public class GL11 {
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
-        ByteBuffer snapshot = bufferSnapshot(pixels);
-        exec.wait(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
+        ByteBuffer snapshot = BufferUtils.snapshot(pixels);
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
-        ByteBuffer snapshot = bufferSnapshot(pixels);
+        ByteBuffer snapshot = BufferUtils.snapshot(pixels);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
-        FloatBuffer snapshot = bufferSnapshot(params);
+        FloatBuffer snapshot = BufferUtils.snapshot(params);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glLight(light, pname, snapshot));
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
-        FloatBuffer snapshot = bufferSnapshot(params);
+        FloatBuffer snapshot = BufferUtils.snapshot(params);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glMaterial(face, pname, snapshot));
     }
 
