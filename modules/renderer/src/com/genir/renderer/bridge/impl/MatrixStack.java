@@ -10,14 +10,16 @@ import static java.lang.Math.sqrt;
 public class MatrixStack {
     private final Matrix4f[] stack = new Matrix4f[16];
     private int matrixIdx = 0;
+    private Matrix4f current;
 
     public MatrixStack() {
         stack[0] = new Matrix4f();
         stack[0].setIdentity();
+        current = stack[0];
     }
 
     public Matrix4f getMatrix() {
-        return stack[matrixIdx];
+        return current;
     }
 
     public void glPushMatrix() {
@@ -26,8 +28,9 @@ public class MatrixStack {
             stack[next] = new Matrix4f();
         }
 
-        Matrix4f.load(stack[matrixIdx], stack[next]);
+        Matrix4f.load(current, stack[next]);
         matrixIdx++;
+        current = stack[matrixIdx];
     }
 
     public void glPopMatrix() {
@@ -37,10 +40,11 @@ public class MatrixStack {
         }
 
         matrixIdx--;
+        current = stack[matrixIdx];
     }
 
     public void glLoadIdentity() {
-        Matrix4f.setIdentity(stack[matrixIdx]);
+        Matrix4f.setIdentity(current);
     }
 
     public void glTranslatef(float x, float y, float z) {
@@ -49,7 +53,7 @@ public class MatrixStack {
         // 0 0 1 z
         // 0 0 0 1
 
-        Matrix4f m = stack[matrixIdx];
+        Matrix4f m = current;
 
         m.m03 = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
         m.m13 = x * m.m10 + y * m.m11 + z * m.m12 + m.m13;
@@ -68,7 +72,7 @@ public class MatrixStack {
         float c = (float) cos(a);
         float s = (float) Math.sin(a);
 
-        Matrix4f m = stack[matrixIdx];
+        Matrix4f m = current;
 
         if (x == 0f && y == 0f && z == 1f) {
             // 2D fast path.
@@ -144,7 +148,7 @@ public class MatrixStack {
         // 0 0 z 0
         // 0 0 0 1
 
-        Matrix4f m = stack[matrixIdx];
+        Matrix4f m = current;
 
         m.m00 = x * m.m00;
         m.m01 = y * m.m01;
@@ -166,7 +170,7 @@ public class MatrixStack {
         reader.clear();
         m2.loadTranspose(reader);
 
-        Matrix4f m = stack[matrixIdx];
+        Matrix4f m = current;
         Matrix4f.mul(m2, m, m);
     }
 }
