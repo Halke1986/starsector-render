@@ -22,6 +22,8 @@ public class VertexInterceptor {
     private final MatrixStack modelView;
     private final RenderContext renderContext;
 
+    private boolean shouldRegisterArrays = false;
+
     // State.
     private int mode = 0;
     private byte red;
@@ -44,10 +46,10 @@ public class VertexInterceptor {
     private int cachedVertices = 0;
 
     // Draw buffers.
-    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(1 * COLOR_SIZE);
-    private FloatBuffer texCoordsPointer = BufferUtils.createFloatBuffer(1 * TEX_SIZE);
-    private FloatBuffer normalsPointer = BufferUtils.createFloatBuffer(1 * NORMAL_SIZE);
-    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(1 * VERTEX_SIZE);
+    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(COLOR_SIZE);
+    private FloatBuffer texCoordsPointer = BufferUtils.createFloatBuffer(TEX_SIZE);
+    private FloatBuffer normalsPointer = BufferUtils.createFloatBuffer(NORMAL_SIZE);
+    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(VERTEX_SIZE);
 
     // External buffers.
     private ByteBuffer externalColorPointer;
@@ -61,6 +63,9 @@ public class VertexInterceptor {
     }
 
     public void update() {
+        // Accessing VertexInterceptor state on the GL thread. Ensure the update method
+        // runs within a synchronized executor operation (wait or barrier).
+        // Otherwise, concurrent modification may occur.
         colorPointer.clear();
         texCoordsPointer.clear();
         normalsPointer.clear();
@@ -71,10 +76,18 @@ public class VertexInterceptor {
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-        GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorPointer);
-        GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordsPointer);
-        GL11.glNormalPointer(0, normalsPointer);
-        GL11.glVertexPointer(VERTEX_SIZE, 0, vertexPointer);
+        registerArrays();
+    }
+
+    private void registerArrays() {
+        GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorPointer.duplicate().clear());
+        GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordsPointer.duplicate().clear());
+        GL11.glNormalPointer(0, normalsPointer.duplicate().clear());
+        GL11.glVertexPointer(VERTEX_SIZE, 0, vertexPointer.duplicate().clear());
+    }
+
+    public void arraysTouched() {
+        shouldRegisterArrays = true;
     }
 
     public void glBegin(int mode) {
@@ -85,6 +98,9 @@ public class VertexInterceptor {
         final int drawMode = mode;
         final int drawBufferOffset = vertexPointer.position() / VERTEX_SIZE;
         final int drawSize = cachedVertices;
+        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
+
+        this.shouldRegisterArrays = false;
 
         resizeDrawBuffers(drawSize);
 
@@ -99,7 +115,13 @@ public class VertexInterceptor {
         vertexPointer.put(verticesCache, 0, drawSize * VERTEX_SIZE);
 
         renderContext.apply();
-        exec.execute(() -> GL11.glDrawArrays(drawMode, drawBufferOffset, drawSize));
+        exec.execute(() -> {
+            if (shouldRegisterArrays) {
+                registerArrays();
+            }
+
+            GL11.glDrawArrays(drawMode, drawBufferOffset, drawSize);
+        });
 
         cachedVertices = 0;
     }
@@ -161,6 +183,7 @@ public class VertexInterceptor {
         asert(stride == 0);
         asert(size == COLOR_SIZE);
 
+        arraysTouched();
         externalColorPointer = pointer;
     }
 
@@ -168,6 +191,7 @@ public class VertexInterceptor {
         asert(stride == 0);
         asert(size == TEX_SIZE);
 
+        arraysTouched();
         externalTexCoordsPointer = pointer;
     }
 
@@ -175,38 +199,25 @@ public class VertexInterceptor {
         asert(stride == 0);
         asert(size == VERTEX_SIZE_2D);
 
+        arraysTouched();
         externalVertexPointer = pointer;
     }
 
     public void glDrawArrays(int mode, int first, int count) {
-        asert(first == 0);
-
-        // Prepare buffers.
-        resizeDrawBuffers(count);
-        final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
-
-        // Flush colors.
-        ByteBuffer colorReader = externalColorPointer.duplicate();
-        colorReader.rewind();
-        colorReader.limit(count * COLOR_SIZE);
-        colorPointer.put(colorReader);
-
-        // Flush textures.
-        FloatBuffer texCoordsReader = externalTexCoordsPointer.duplicate();
-        texCoordsReader.rewind();
-        texCoordsReader.limit(count * TEX_SIZE);
-        texCoordsPointer.put(texCoordsReader);
-
-        // Transform and flush vertices.
-        FloatBuffer vertexReader = externalVertexPointer.duplicate();
-        vertexReader.rewind();
-        vertexReader.get(verticesCache, 0, count * VERTEX_SIZE_2D);
-        transform2DVertices(verticesCache, count);
-        vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
+        Matrix4f m = modelView.getMatrix();
+        final FloatBuffer mBuffer = BufferUtils.createFloatBuffer(16);
+        m.storeTranspose(mBuffer);
+        mBuffer.flip();
 
         // Draw.
         renderContext.apply();
-        exec.execute(() -> GL11.glDrawArrays(mode, drawBufferSize, count));
+
+        exec.execute(() -> {
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glMultMatrix(mBuffer);
+            GL11.glDrawArrays(mode, first, count);
+            GL11.glLoadIdentity();
+        });
     }
 
     public Runnable recordedGlDrawArrays(int mode, int first, int count) {

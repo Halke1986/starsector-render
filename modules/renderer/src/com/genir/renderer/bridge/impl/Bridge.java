@@ -1,10 +1,5 @@
 package com.genir.renderer.bridge.impl;
 
-import org.lwjgl.BufferUtils;
-
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
 public class Bridge {
     public static final ListManager listManager = new ListManager();
     public static final Executor exec = new Executor();

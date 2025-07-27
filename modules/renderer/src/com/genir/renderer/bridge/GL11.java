@@ -139,14 +139,23 @@ public class GL11 {
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
         vertexInterceptor.glVertexPointer(size, stride, pointer);
+
+        final FloatBuffer snapshot = BufferUtils.snapshot(pointer);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, snapshot));
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
         vertexInterceptor.glColorPointer(size, unsigned, stride, pointer);
+
+        final ByteBuffer snapshot = BufferUtils.snapshot(pointer);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, snapshot));
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
         vertexInterceptor.glTexCoordPointer(size, stride, pointer);
+
+        final FloatBuffer snapshot = BufferUtils.snapshot(pointer);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, snapshot));
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
@@ -160,16 +169,19 @@ public class GL11 {
     // TODO handle long pointers
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         return;
+//        vertexInterceptor.arraysTouched();
 //        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         return;
+        //        vertexInterceptor.arraysTouched();
 //        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         return;
+        //        vertexInterceptor.arraysTouched();
 //        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
@@ -377,12 +389,12 @@ public class GL11 {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
     }
 
-    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar));
-    }
-
     public static void glPopClientAttrib() {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
+    }
+
+    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar));
     }
 
     public static void glTexParameteri(int target, int pname, int param) {
