@@ -98,8 +98,8 @@ public class VertexInterceptor {
         final int drawMode = mode;
         final int drawBufferOffset = vertexPointer.position() / VERTEX_SIZE;
         final int drawSize = cachedVertices;
-        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
 
+        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
         this.shouldRegisterArrays = false;
 
         resizeDrawBuffers(drawSize);
@@ -233,13 +233,22 @@ public class VertexInterceptor {
             resizeDrawBuffers(count);
             final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
 
+            final boolean shouldRegisterArrays = this.shouldRegisterArrays;
+            this.shouldRegisterArrays = false;
+
             colorPointer.put(colors, 0, count * COLOR_SIZE);
             texCoordsPointer.put(texCoords, 0, count * TEX_SIZE);
             transform2DVertices(vertices, count);
             vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
 
             renderContext.apply();
-            exec.execute(() -> GL11.glDrawArrays(mode, drawBufferSize, count));
+            exec.execute(() -> {
+                if (shouldRegisterArrays) {
+                    registerArrays();
+                }
+
+                GL11.glDrawArrays(mode, drawBufferSize, count);
+            });
         };
     }
 

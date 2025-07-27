@@ -2,12 +2,13 @@ package com.genir.renderer.overrides;
 
 public class RenderOverride {
     public static boolean shouldRender(Object entity) {
-        boolean isVanilla = entity.getClass().getClassLoader() == ClassLoader.getSystemClassLoader();
+        return true;
+//        boolean isVanilla = entity.getClass().getClassLoader() == ClassLoader.getSystemClassLoader();
 
-        if (!isVanilla) {
+//        if (!isVanilla) {
 //            log(RenderOverride.class, entity.getClass().getName());
-        }
+//        }
 
-        return isVanilla;
+//        return isVanilla;
     }
 }

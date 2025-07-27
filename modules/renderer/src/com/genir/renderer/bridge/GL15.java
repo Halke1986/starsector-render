@@ -1,13 +1,16 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.impl.BufferUtils;
+
 import java.nio.FloatBuffer;
 
 import static com.genir.renderer.Debug.throwUnsupportedOperation;
-import static com.genir.renderer.bridge.impl.Bridge.exec;
-import static com.genir.renderer.bridge.impl.Bridge.listManager;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL15 {
     public static void glBindBuffer(int target, int buffer) {
+        vertexInterceptor.arraysTouched();
+
         if (listManager.isRecording()) {
             throwUnsupportedOperation("glBindBuffer");
         } else {
@@ -36,10 +39,12 @@ public class GL15 {
     }
 
     public static void glBufferData(int target, FloatBuffer data, int usage) {
+        final FloatBuffer snapshot = BufferUtils.snapshot(data);
+
         if (listManager.isRecording()) {
             throwUnsupportedOperation("glBufferData");
         } else {
-            exec.wait(() -> org.lwjgl.opengl.GL15.glBufferData(target, data, usage));
+            exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
         }
     }
 }
