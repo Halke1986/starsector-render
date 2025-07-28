@@ -10,10 +10,11 @@ import java.util.Stack;
 public class RenderContext {
     private final Executor exec;
 
-    private final Snapshot c = new Snapshot();
-    private final Snapshot p = new Snapshot();
+    private final Snapshot expected = new Snapshot();
+    private final Snapshot actual = new Snapshot();
 
-    private final Stack<Snapshot> stack = new Stack<>();
+    private final Stack<Snapshot> expectedStack = new Stack<>();
+    private final Stack<Snapshot> actualStack = new Stack<>();
 
     public RenderContext(Executor exec) {
         this.exec = exec;
@@ -29,11 +30,11 @@ public class RenderContext {
     }
 
     public boolean enableTexture() {
-        return c.enableTexture2D;
+        return expected.enableTexture2D;
     }
 
     public boolean enableLighting() {
-        return c.enableLighting;
+        return expected.enableLighting;
     }
 
     public void applyEnableAndColorBufferBit() {
@@ -53,61 +54,69 @@ public class RenderContext {
     }
 
     public void glPushAttrib(int mask) {
-        c.attribMask = mask;
+        expected.attribMask = mask;
+        actual.attribMask = mask;
 
-        Snapshot saved = new Snapshot();
-        c.save(saved);
-        stack.push(saved);
+        // Save expected state.
+        Snapshot savedExpected = new Snapshot();
+        expected.save(savedExpected);
+        expectedStack.push(savedExpected);
+
+        // Save actual state.
+        Snapshot savedActual = new Snapshot();
+        actual.save(savedActual);
+        actualStack.push(savedActual);
     }
 
     public void glPopAttrib() {
-        Snapshot saved = stack.pop();
+        Snapshot savedCurrent = expectedStack.pop();
+        Snapshot savedPrevious = actualStack.pop();
 
-        if (saved != null) {
-            saved.save(p);
-            saved.save(c);
+        if (savedCurrent != null) {
+            savedCurrent.save(expected);
+            savedPrevious.save(actual);
         }
     }
 
     public void glBlendFunc(int sfactor, int dfactor) {
-        c.blendSfactor = sfactor;
-        c.blendDfactor = dfactor;
+        expected.blendSfactor = sfactor;
+        expected.blendDfactor = dfactor;
     }
 
     private void applyStencil() {
-        if (p.enableStencilTest != c.enableStencilTest) {
-            p.enableStencilTest = c.enableStencilTest;
-            apply(GL11.GL_STENCIL_TEST, c.enableStencilTest);
+        if (actual.enableStencilTest != expected.enableStencilTest) {
+            actual.enableStencilTest = expected.enableStencilTest;
+            apply(GL11.GL_STENCIL_TEST, expected.enableStencilTest);
         }
     }
 
     private void applyAlpha() {
-        if (p.enableAlphaTest != c.enableAlphaTest) {
-            p.enableAlphaTest = c.enableAlphaTest;
-            apply(GL11.GL_ALPHA_TEST, c.enableAlphaTest);
+        if (actual.enableAlphaTest != expected.enableAlphaTest) {
+            actual.enableAlphaTest = expected.enableAlphaTest;
+            apply(GL11.GL_ALPHA_TEST, expected.enableAlphaTest);
         }
     }
 
     private void applyTexture() {
-        if (p.enableTexture2D != c.enableTexture2D) {
-            p.enableTexture2D = c.enableTexture2D;
-            apply(GL11.GL_TEXTURE_2D, c.enableTexture2D);
+        if (actual.enableTexture2D != expected.enableTexture2D) {
+            actual.enableTexture2D = expected.enableTexture2D;
+            apply(GL11.GL_TEXTURE_2D, expected.enableTexture2D);
         }
     }
 
     private void applyBlend() {
-        if (p.enableBlend != c.enableBlend) {
-            p.enableBlend = c.enableBlend;
-            apply(GL11.GL_BLEND, c.enableBlend);
+        if (actual.enableBlend != expected.enableBlend) {
+            actual.enableBlend = expected.enableBlend;
+            apply(GL11.GL_BLEND, expected.enableBlend);
         }
 
-        if (c.enableBlend) {
-            if (p.blendSfactor != c.blendSfactor || p.blendDfactor != c.blendDfactor) {
-                p.blendSfactor = c.blendSfactor;
-                p.blendDfactor = c.blendDfactor;
+        if (expected.enableBlend) {
+            if (actual.blendSfactor != expected.blendSfactor || actual.blendDfactor != expected.blendDfactor) {
+                actual.blendSfactor = expected.blendSfactor;
+                actual.blendDfactor = expected.blendDfactor;
 
-                final int sfactor = c.blendSfactor;
-                final int dfactor = c.blendDfactor;
+                final int sfactor = expected.blendSfactor;
+                final int dfactor = expected.blendDfactor;
 
                 exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
             }
@@ -115,9 +124,9 @@ public class RenderContext {
     }
 
     private void applyLighting() {
-        if (p.enableLighting != c.enableLighting) {
-            p.enableLighting = c.enableLighting;
-            apply(GL11.GL_LIGHTING, c.enableLighting);
+        if (actual.enableLighting != expected.enableLighting) {
+            actual.enableLighting = expected.enableLighting;
+            apply(GL11.GL_LIGHTING, expected.enableLighting);
         }
     }
 
@@ -132,19 +141,19 @@ public class RenderContext {
     private void setState(int cap, boolean value) {
         switch (cap) {
             case GL11.GL_STENCIL_TEST:
-                c.enableStencilTest = value;
+                expected.enableStencilTest = value;
                 break;
             case GL11.GL_ALPHA_TEST:
-                c.enableAlphaTest = value;
+                expected.enableAlphaTest = value;
                 break;
             case GL11.GL_TEXTURE_2D:
-                c.enableTexture2D = value;
+                expected.enableTexture2D = value;
                 break;
             case GL11.GL_BLEND:
-                c.enableBlend = value;
+                expected.enableBlend = value;
                 break;
             case GL11.GL_LIGHTING:
-                c.enableLighting = value;
+                expected.enableLighting = value;
                 break;
         }
     }
