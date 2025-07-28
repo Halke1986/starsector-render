@@ -326,7 +326,7 @@ public class GL11 {
     }
 
     private static void iglEnable(int cap) {
-        if (renderContext.intercept(cap)) {
+        if (renderContext.interceptEnable(cap)) {
             renderContext.glEnable(cap);
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glEnable(cap));
@@ -342,7 +342,7 @@ public class GL11 {
     }
 
     private static void iglDisable(int cap) {
-        if (renderContext.intercept(cap)) {
+        if (renderContext.interceptEnable(cap)) {
             renderContext.glDisable(cap);
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glDisable(cap));

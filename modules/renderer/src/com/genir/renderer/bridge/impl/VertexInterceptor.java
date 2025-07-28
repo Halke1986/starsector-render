@@ -114,7 +114,7 @@ public class VertexInterceptor {
 
         vertexPointer.put(verticesCache, 0, drawSize * VERTEX_SIZE);
 
-        renderContext.apply();
+        renderContext.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             if (shouldRegisterArrays) {
                 registerArrays();
@@ -210,8 +210,7 @@ public class VertexInterceptor {
         mBuffer.flip();
 
         // Draw.
-        renderContext.apply();
-
+        renderContext.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
             GL11.glMultMatrix(mBuffer);
@@ -241,7 +240,7 @@ public class VertexInterceptor {
             transform2DVertices(vertices, count);
             vertexPointer.put(verticesCache, 0, count * VERTEX_SIZE);
 
-            renderContext.apply();
+            renderContext.applyEnableAndColorBufferBit();
             exec.execute(() -> {
                 if (shouldRegisterArrays) {
                     registerArrays();

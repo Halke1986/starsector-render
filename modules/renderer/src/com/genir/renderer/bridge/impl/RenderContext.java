@@ -19,7 +19,7 @@ public class RenderContext {
         this.exec = exec;
     }
 
-    public boolean intercept(int cap) {
+    public boolean interceptEnable(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
                 || cap == GL11.GL_ALPHA_TEST
                 || cap == GL11.GL_TEXTURE_2D
@@ -36,7 +36,7 @@ public class RenderContext {
         return c.enableLighting;
     }
 
-    public void apply() {
+    public void applyEnableAndColorBufferBit() {
         applyStencil();
         applyAlpha();
         applyTexture();
