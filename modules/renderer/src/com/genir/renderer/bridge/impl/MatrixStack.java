@@ -8,7 +8,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sqrt;
 
 public class MatrixStack {
-    private final Matrix4f[] stack = new Matrix4f[16];
+    private Matrix4f[] stack = new Matrix4f[1];
     private int matrixIdx = 0;
     private Matrix4f current;
 
@@ -24,6 +24,10 @@ public class MatrixStack {
 
     public void glPushMatrix() {
         int next = matrixIdx + 1;
+        if (next == stack.length) {
+            stack = BufferUtils.reallocate(Matrix4f.class, stack.length * 2, stack);
+        }
+
         if (stack[next] == null) {
             stack[next] = new Matrix4f();
         }

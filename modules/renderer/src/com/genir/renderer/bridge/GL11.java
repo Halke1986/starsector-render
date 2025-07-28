@@ -200,23 +200,8 @@ public class GL11 {
         }
     }
 
-    public static void glLoadIdentity() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglLoadIdentity());
-        } else {
-            iglLoadIdentity();
-        }
-    }
-
-    private static void iglLoadIdentity() {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glLoadIdentity();
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
-        }
-    }
-
     public static void glPushMatrix() {
+
         if (listManager.isRecording()) {
             listManager.record(() -> iglPushMatrix());
         } else {
@@ -229,22 +214,6 @@ public class GL11 {
             modelView.glPushMatrix();
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glPushMatrix());
-        }
-    }
-
-    public static void glTranslatef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglTranslatef(x, y, z));
-        } else {
-            iglTranslatef(x, y, z);
-        }
-    }
-
-    private static void iglTranslatef(float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glTranslatef(x, y, z);
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
         }
     }
 
@@ -261,6 +230,38 @@ public class GL11 {
             modelView.glPopMatrix();
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glPopMatrix());
+        }
+    }
+
+    public static void glLoadIdentity() {
+        if (listManager.isRecording()) {
+            listManager.record(() -> iglLoadIdentity());
+        } else {
+            iglLoadIdentity();
+        }
+    }
+
+    private static void iglLoadIdentity() {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glLoadIdentity();
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
+        }
+    }
+
+    public static void glTranslatef(float x, float y, float z) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> iglTranslatef(x, y, z));
+        } else {
+            iglTranslatef(x, y, z);
+        }
+    }
+
+    private static void iglTranslatef(float x, float y, float z) {
+        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+            modelView.glTranslatef(x, y, z);
+        } else {
+            exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
         }
     }
 
