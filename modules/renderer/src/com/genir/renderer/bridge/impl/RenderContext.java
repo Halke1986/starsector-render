@@ -11,7 +11,7 @@ public class RenderContext {
     private final Executor exec;
 
     private final Snapshot expected = new Snapshot();
-    private final Snapshot actual = new Snapshot();
+    public final Snapshot actual = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
     private final Stack<Snapshot> actualStack = new Stack<>();
@@ -37,12 +37,47 @@ public class RenderContext {
         return expected.enableLighting;
     }
 
+    public int matrixMode() {
+        return expected.matrixMode;
+    }
+
     public void applyEnableAndColorBufferBit() {
         applyStencil();
         applyAlpha();
         applyTexture();
         applyBlend();
         applyLighting();
+    }
+
+    // Apply matrix mode selected by client.
+    public void applyMatrixMode() {
+        if (actual.matrixMode != expected.matrixMode) {
+            actual.matrixMode = expected.matrixMode;
+
+            final int mode = expected.matrixMode;
+            exec.execute(() -> GL11.glMatrixMode(mode));
+        }
+    }
+
+    // Set matrix mode required by the bridge, which may be
+    // different from mode selected by the client.
+    public void forceMatrixMode(int mode) {
+        if (actual.matrixMode != mode) {
+            actual.matrixMode = mode;
+
+            exec.execute(() -> GL11.glMatrixMode(mode));
+        }
+    }
+
+    public void clear() {
+        Snapshot cleanContext = new Snapshot();
+        cleanContext.attribMask = -1;
+
+        cleanContext.save(actual);
+        cleanContext.save(expected);
+
+        expectedStack.clear();
+        actualStack.clear();
     }
 
     public void glEnable(int cap) {
@@ -81,6 +116,10 @@ public class RenderContext {
     public void glBlendFunc(int sfactor, int dfactor) {
         expected.blendSfactor = sfactor;
         expected.blendDfactor = dfactor;
+    }
+
+    public void glMatrixMode(int mode) {
+        expected.matrixMode = mode;
     }
 
     private void applyStencil() {
@@ -158,7 +197,7 @@ public class RenderContext {
         }
     }
 
-    private static class Snapshot {
+    public static class Snapshot {
         int attribMask = 0;
 
         boolean enableStencilTest = false;
@@ -168,6 +207,8 @@ public class RenderContext {
         boolean enableLighting = false;
         int blendSfactor = 0;
         int blendDfactor = 0;
+
+        public int matrixMode = GL11.GL_MODELVIEW;
 
         void save(Snapshot other) {
             other.attribMask = attribMask;
@@ -183,6 +224,10 @@ public class RenderContext {
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
                 other.blendSfactor = blendSfactor;
                 other.blendDfactor = blendDfactor;
+            }
+
+            if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
+                other.matrixMode = matrixMode;
             }
         }
     }

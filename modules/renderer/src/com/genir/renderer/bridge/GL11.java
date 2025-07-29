@@ -11,8 +11,6 @@ import static com.genir.renderer.Debug.throwUnsupportedOperation;
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL11 {
-    private static int matrixMode = org.lwjgl.opengl.GL11.GL_MODELVIEW_MATRIX;
-
     /**
      * Lists.
      */
@@ -186,22 +184,13 @@ public class GL11 {
      */
     public static void glMatrixMode(int mode) {
         if (listManager.isRecording()) {
-            listManager.record(() -> iglMatrixMode(mode));
+            listManager.record(() -> renderContext.glMatrixMode(mode));
         } else {
-            iglMatrixMode(mode);
-        }
-    }
-
-    private static void iglMatrixMode(int mode) {
-        matrixMode = mode;
-
-        if (matrixMode != org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glMatrixMode(mode));
+            renderContext.glMatrixMode(mode);
         }
     }
 
     public static void glPushMatrix() {
-
         if (listManager.isRecording()) {
             listManager.record(() -> iglPushMatrix());
         } else {
@@ -210,9 +199,10 @@ public class GL11 {
     }
 
     private static void iglPushMatrix() {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glPushMatrix();
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glPushMatrix());
         }
     }
@@ -226,9 +216,10 @@ public class GL11 {
     }
 
     private static void iglPopMatrix() {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glPopMatrix();
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glPopMatrix());
         }
     }
@@ -242,9 +233,10 @@ public class GL11 {
     }
 
     private static void iglLoadIdentity() {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glLoadIdentity();
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
         }
     }
@@ -258,9 +250,10 @@ public class GL11 {
     }
 
     private static void iglTranslatef(float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glTranslatef(x, y, z);
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
         }
     }
@@ -274,9 +267,10 @@ public class GL11 {
     }
 
     private static void iglRotatef(float angle, float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glRotatef(angle, x, y, z);
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z));
         }
     }
@@ -290,9 +284,10 @@ public class GL11 {
     }
 
     private static void iglScalef(float x, float y, float z) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glScalef(x, y, z);
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glScalef(x, y, z));
         }
     }
@@ -307,9 +302,10 @@ public class GL11 {
     }
 
     private static void iglMultMatrix(FloatBuffer m) {
-        if (matrixMode == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (renderContext.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glMultMatrix(m);
         } else {
+            renderContext.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
         }
     }

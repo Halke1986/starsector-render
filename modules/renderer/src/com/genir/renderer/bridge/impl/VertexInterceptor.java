@@ -204,6 +204,8 @@ public class VertexInterceptor {
     }
 
     public void glDrawArrays(int mode, int first, int count) {
+        // Array draw, as opposed to glBegin/gEnd block doesn't
+        // have model matrix applied on the CPU side.
         Matrix4f m = modelView.getMatrix();
         final FloatBuffer mBuffer = BufferUtils.createFloatBuffer(16);
         m.storeTranspose(mBuffer);
@@ -211,8 +213,8 @@ public class VertexInterceptor {
 
         // Draw.
         renderContext.applyEnableAndColorBufferBit();
+        renderContext.forceMatrixMode(GL11.GL_MODELVIEW);
         exec.execute(() -> {
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
             GL11.glMultMatrix(mBuffer);
             GL11.glDrawArrays(mode, first, count);
             GL11.glLoadIdentity();

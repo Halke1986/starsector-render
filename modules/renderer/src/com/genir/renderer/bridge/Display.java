@@ -7,8 +7,7 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 
-import static com.genir.renderer.bridge.impl.Bridge.exec;
-import static com.genir.renderer.bridge.impl.Bridge.stateCache;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class Display {
     public static DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
@@ -50,6 +49,8 @@ public class Display {
     }
 
     public static void create(PixelFormat pixel_format) throws LWJGLException {
+        renderContext.clear();
+
         exec.wait(() -> {
             try {
                 org.lwjgl.opengl.Display.create(pixel_format);
