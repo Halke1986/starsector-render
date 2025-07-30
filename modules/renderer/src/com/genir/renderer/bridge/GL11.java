@@ -48,29 +48,29 @@ public class GL11 {
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glColor4ub(red, green, blue, alpha));
-        } else {
-            vertexInterceptor.glColor4ub(red, green, blue, alpha);
-        }
+        glColor4f(
+                (red & 0xFF) / 255f,
+                (green & 0xFF) / 255f,
+                (blue & 0xFF) / 255f,
+                (alpha & 0xFF) / 255f
+        );
     }
 
     public static void glColor3d(double red, double green, double blue) {
-        glColor4ub(
-                (byte) Math.round(red * 255),
-                (byte) Math.round(green * 255),
-                (byte) Math.round(blue * 255),
-                (byte) 255
+        glColor4f(
+                (float) red * 255,
+                (float) green * 255,
+                (float) blue * 255,
+                1f
         );
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        glColor4ub(
-                (byte) Math.round(red * 255),
-                (byte) Math.round(green * 255),
-                (byte) Math.round(blue * 255),
-                (byte) Math.round(alpha * 255)
-        );
+        if (listManager.isRecording()) {
+            listManager.record(() -> vertexInterceptor.glColor4f(red, green, blue, alpha));
+        } else {
+            vertexInterceptor.glColor4f(red, green, blue, alpha);
+        }
     }
 
     public static void glTexCoord2f(float s, float t) {
