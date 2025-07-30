@@ -213,22 +213,49 @@ public class VertexInterceptor {
         asert(first == 0);
 
         // Take snapshot of the buffers at the time of list recording.
-        final byte[] colors = bufferSnapshot(externalColorPointer, count * COLOR_SIZE);
-        final float[] texCoords = bufferSnapshot(externalTexCoordsPointer, count * TEX_SIZE);
-        final float[] vertices = bufferSnapshot(externalVertexPointer, count * VERTEX_SIZE_2D);
+        ByteBuffer colorReader = externalColorPointer.duplicate().position(0);
+        FloatBuffer vertexReader = externalVertexPointer.duplicate().position(0);
+        FloatBuffer texCoordReader = externalTexCoordsPointer.duplicate().position(0);
+
+        final float[] vertexSnapshot = new float[count * STRIDE];
+        for (int i = 0; i < count; i++) {
+            int offset = i * STRIDE;
+
+            vertexSnapshot[offset + 3] = (colorReader.get() & 0xFF) / 255f;
+            vertexSnapshot[offset + 4] = (colorReader.get() & 0xFF) / 255f;
+            vertexSnapshot[offset + 5] = (colorReader.get() & 0xFF) / 255f;
+            vertexSnapshot[offset + 6] = (colorReader.get() & 0xFF) / 255f;
+
+            vertexSnapshot[offset + 7] = texCoordReader.get();
+            vertexSnapshot[offset + 8] = texCoordReader.get();
+
+            // Since vanilla is not recording arrays with normals, it is possible
+            // to use normals indices to store untransformed vertices.
+            vertexSnapshot[offset + 9] = vertexReader.get();
+            vertexSnapshot[offset + 10] = vertexReader.get();
+        }
 
         return () -> {
-           /* // Prepare draw buffers.
+            // Prepare draw buffers.
             resizeDrawBuffers(count);
-            final int drawBufferSize = vertexPointer.position() / VERTEX_SIZE;
+            final int drawBufferSize = vertexPointer.position() / STRIDE;
 
             final boolean shouldRegisterArrays = this.shouldRegisterArrays;
             this.shouldRegisterArrays = false;
 
-            colorPointer.put(colors, 0, count * COLOR_SIZE);
-            texCoordsPointer.put(texCoords, 0, count * TEX_SIZE);
-            transform2DVertices(vertices, count);
-            vertexPointer.put(vertexScratchpad, 0, count * VERTEX_SIZE);
+            // Transform vertices;
+            Matrix4f m = modelView.getMatrix();
+            for (int i = 0; i < count; i++) {
+                int offset = i * STRIDE;
+
+                float x = vertexSnapshot[offset + 9];
+                float y = vertexSnapshot[offset + 10];
+
+                vertexSnapshot[offset + 0] = x * m.m00 + y * m.m01 + m.m03;
+                vertexSnapshot[offset + 1] = x * m.m10 + y * m.m11 + m.m13;
+            }
+
+            vertexPointer.put(vertexSnapshot, 0, count * STRIDE);
 
             renderContext.applyEnableAndColorBufferBit();
             exec.execute(() -> {
@@ -237,7 +264,7 @@ public class VertexInterceptor {
                 }
 
                 GL11.glDrawArrays(mode, drawBufferSize, count);
-            });*/
+            });
         };
     }
 
@@ -287,41 +314,5 @@ public class VertexInterceptor {
 
             update();
         });
-    }
-
-    private void transform2DVertices(float[] input, int count) {
-        // Transform vertices;
-        Matrix4f m = modelView.getMatrix();
-
-        // Iterate in the reverse direction in case input is same as output.
-        // That way spreading vertices from 2D to 3D won't override input values.
-        for (int i = count - 1; i >= 0; i--) {
-            float x = input[i * VERTEX_SIZE_2D + 0];
-            float y = input[i * VERTEX_SIZE_2D + 1];
-
-            // Use the default cache array to store output.
-            vertexScratchpad[i * VERTEX_SIZE + 0] = x * m.m00 + y * m.m01 + m.m03;
-            vertexScratchpad[i * VERTEX_SIZE + 1] = x * m.m10 + y * m.m11 + m.m13;
-        }
-    }
-
-    private float[] bufferSnapshot(FloatBuffer params, int count) {
-        FloatBuffer reader = params.duplicate();
-        reader.rewind();
-
-        float[] snapshot = new float[count];
-        reader.get(snapshot, 0, count);
-
-        return snapshot;
-    }
-
-    private byte[] bufferSnapshot(ByteBuffer params, int count) {
-        ByteBuffer reader = params.duplicate();
-        reader.rewind();
-
-        byte[] snapshot = new byte[count];
-        reader.get(snapshot, 0, count);
-
-        return snapshot;
     }
 }
