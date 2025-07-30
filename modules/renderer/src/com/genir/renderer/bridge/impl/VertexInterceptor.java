@@ -91,6 +91,11 @@ public class VertexInterceptor {
         final int drawBufferOffset = vertexPointer.position() / STRIDE;
         final int count = cachedVertices;
 
+        if (drawMode == GL11.GL_LINE_LOOP || drawMode == GL11.GL_LINE_STRIP) {
+            drawLine(drawMode, count);
+            return;
+        }
+
         final boolean shouldRegisterArrays = this.shouldRegisterArrays;
         this.shouldRegisterArrays = false;
 
@@ -234,6 +239,37 @@ public class VertexInterceptor {
                 GL11.glDrawArrays(mode, drawBufferSize, count);
             });*/
         };
+    }
+
+    /**
+     * GL11.GL_LINE_LOOP and GL11.GL_LINE_STRIP cannot be converted from
+     * a glBegin()/glEnd() block into glDrawArrays using the standard approach,
+     * because that triggers Intel driver bugs and can produce malformed geometry.
+     * <p>
+     * Instead, LINE primitives are batched into a dedicated buffer without texCoords
+     * or normals. Although allocating a new buffer for each draw is less efficient
+     * than reusing a persistent buffer, LINES are drawn very infrequently, so the
+     * overall performance impact is negligible.
+     */
+    private void drawLine(int mode, int count) {
+        final int LINE_STRIDE = VERTEX_SIZE + COLOR_SIZE;
+        final FloatBuffer linePointer = org.lwjgl.BufferUtils.createFloatBuffer(count * LINE_STRIDE);
+
+        for (int i = 0; i < count; i++) {
+            linePointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
+        }
+
+        renderContext.applyEnableAndColorBufferBit();
+        exec.execute(() -> {
+            GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));
+            GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(VERTEX_SIZE));
+
+            GL11.glDrawArrays(mode, 0, count);
+
+            registerArrays();
+        });
+
+        cachedVertices = 0;
     }
 
     private void resizeDrawBuffers(int vertexNum) {
