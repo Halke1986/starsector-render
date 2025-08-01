@@ -5,11 +5,19 @@ import org.lwjgl.opengl.GL11;
 import java.util.Stack;
 
 public class ClientAttribTracker {
-    private final Snapshot expected = new Snapshot();
+    public final Snapshot expected = new Snapshot();
     public final Snapshot actual = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
     private final Stack<Snapshot> actualStack = new Stack<>();
+
+    public boolean enableTexCoordArray() {
+        return expected.enableTexCoordArray;
+    }
+
+    public boolean enableColorArray() {
+        return expected.enableColorArray;
+    }
 
     public void glEnableClientState(int cap) {
         setState(cap, true);

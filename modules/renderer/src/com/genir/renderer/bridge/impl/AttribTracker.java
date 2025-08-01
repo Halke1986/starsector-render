@@ -11,7 +11,7 @@ public class AttribTracker {
     private final Executor exec;
 
     private final Snapshot expected = new Snapshot();
-    public final Snapshot actual = new Snapshot();
+    private final Snapshot actual = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
     private final Stack<Snapshot> actualStack = new Stack<>();

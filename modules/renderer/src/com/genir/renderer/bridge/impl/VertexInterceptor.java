@@ -22,6 +22,7 @@ public class VertexInterceptor {
     private final Executor exec;
     private final MatrixStack modelView;
     private final AttribTracker attribTracker;
+    private final ClientAttribTracker clientAttribTracker;
 
     private boolean shouldRegisterArrays = false;
 
@@ -49,10 +50,15 @@ public class VertexInterceptor {
     private FloatBuffer externalTexCoordsPointer;
     private FloatBuffer externalVertexPointer;
 
-    public VertexInterceptor(Executor exec, MatrixStack modelView, AttribTracker attribTracker) {
+    public VertexInterceptor(
+            Executor exec,
+            MatrixStack modelView,
+            AttribTracker attribTracker,
+            ClientAttribTracker clientAttribTracker) {
         this.exec = exec;
         this.modelView = modelView;
         this.attribTracker = attribTracker;
+        this.clientAttribTracker = clientAttribTracker;
     }
 
     public void update() {
@@ -176,30 +182,23 @@ public class VertexInterceptor {
     }
 
     public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-        asert(stride == 0);
-        asert(size == COLOR_SIZE);
-
         arraysTouched();
         externalColorPointer = pointer;
     }
 
     public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        asert(stride == 0);
-        asert(size == TEX_SIZE);
-
         arraysTouched();
         externalTexCoordsPointer = pointer;
     }
 
     public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        asert(stride == 0);
-        asert(size == VERTEX_SIZE_2D);
-
         arraysTouched();
         externalVertexPointer = pointer;
     }
 
     public void glDrawArrays(int mode, int first, int count) {
+        arraysTouched();
+
         // Array draw, as opposed to glBegin/gEnd block doesn't
         // have model matrix applied on the CPU side.
         Matrix4f m = modelView.getMatrix();
@@ -207,11 +206,53 @@ public class VertexInterceptor {
         m.storeTranspose(mBuffer);
         mBuffer.flip();
 
+        final FloatBuffer vertexSnapshot = (externalVertexPointer != null) ?
+                com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalVertexPointer) :
+                null;
+
+        final ByteBuffer colorSnapshot = (clientAttribTracker.enableColorArray() && externalColorPointer != null) ?
+                com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalColorPointer) :
+                null;
+
+        final FloatBuffer texCoordSnapshot = (clientAttribTracker.enableTexCoordArray() && externalTexCoordsPointer != null) ?
+                com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalTexCoordsPointer) :
+                null;
+
+
+        if (!clientAttribTracker.enableColorArray()) {
+            final float r = red;
+            final float g = green;
+            final float b = blue;
+            final float a = alpha;
+
+            exec.execute(() -> {
+                try {
+                    GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+
+                    GL11.glColor4f(r, g, b, a);
+                } catch (Throwable t) {
+                    throw new RuntimeException("glEnd set color: " + t);
+                }
+            });
+        }
+
         // Draw.
         attribTracker.applyEnableAndColorBufferBit();
         attribTracker.forceMatrixMode(GL11.GL_MODELVIEW);
         exec.execute(() -> {
             try {
+                if (vertexSnapshot != null) {
+                    GL11.glVertexPointer(VERTEX_SIZE_2D, 0, vertexSnapshot);
+                }
+
+                if (colorSnapshot != null) {
+                    GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot);
+                }
+
+                if (texCoordSnapshot != null) {
+                    GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordSnapshot);
+                }
+
                 GL11.glMultMatrix(mBuffer);
                 GL11.glDrawArrays(mode, first, count);
                 GL11.glLoadIdentity();

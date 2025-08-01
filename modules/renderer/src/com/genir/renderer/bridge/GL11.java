@@ -6,8 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.Debug.assertNoUnsupportedOperation;
-import static com.genir.renderer.Debug.throwUnsupportedOperation;
+import static com.genir.renderer.Debug.*;
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL11 {
@@ -166,24 +165,42 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        vertexInterceptor.glVertexPointer(size, stride, pointer);
+        asert(size == 2);
+        asert(stride == 0);
 
-        final FloatBuffer snapshot = BufferUtils.snapshot(pointer);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, snapshot));
+        vertexInterceptor.glVertexPointer(size, stride, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
-        vertexInterceptor.glColorPointer(size, unsigned, stride, pointer);
+        asert(size == 4);
+        asert(stride == 0);
 
-        final ByteBuffer snapshot = BufferUtils.snapshot(pointer);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, snapshot));
+        vertexInterceptor.glColorPointer(size, unsigned, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        vertexInterceptor.glTexCoordPointer(size, stride, pointer);
+        asert(size == 2);
+        asert(stride == 0);
 
-        final FloatBuffer snapshot = BufferUtils.snapshot(pointer);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, snapshot));
+        vertexInterceptor.glTexCoordPointer(size, stride, pointer);
+    }
+
+    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        vertexInterceptor.glVertexPointer(0, 0, null);
+
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
+    }
+
+    public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        vertexInterceptor.glColorPointer(0, false, 0, null);
+
+        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
+    }
+
+    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        vertexInterceptor.glTexCoordPointer(0, 0, null);
+
+        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
@@ -192,21 +209,6 @@ public class GL11 {
         } else {
             vertexInterceptor.glDrawArrays(mode, first, count);
         }
-    }
-
-    public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        vertexInterceptor.arraysTouched();
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
-    }
-
-    public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        vertexInterceptor.arraysTouched();
-        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
-    }
-
-    public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        vertexInterceptor.arraysTouched();
-        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
     /**
