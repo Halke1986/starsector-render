@@ -5,6 +5,7 @@ public class Bridge {
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
     public static final AttribTracker attribTracker = new AttribTracker(exec);
+    public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
     public static final MatrixStack modelView = new MatrixStack();
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, attribTracker);
 

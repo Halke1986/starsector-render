@@ -130,9 +130,39 @@ public class GL11 {
      * Array draw.
      */
     public static void glEnableClientState(int cap) { // NoList
+        clientAttribTracker.glEnableClientState(cap);
     }
 
     public static void glDisableClientState(int cap) { // NoList
+        clientAttribTracker.glDisableClientState(cap);
+    }
+
+    public static void glPushClientAttrib(int mask) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> iglPushClientAttrib(mask));
+        } else {
+            iglPushClientAttrib(mask);
+        }
+    }
+
+    private static void iglPushClientAttrib(int mask) {
+        clientAttribTracker.glPushClientAttrib(mask);
+
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
+    }
+
+    public static void glPopClientAttrib() {
+        if (listManager.isRecording()) {
+            listManager.record(() -> iglPopClientAttrib());
+        } else {
+            iglPopClientAttrib();
+        }
+    }
+
+    public static void iglPopClientAttrib() {
+        clientAttribTracker.glPopClientAttrib();
+
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
@@ -376,14 +406,6 @@ public class GL11 {
 
     public static void glViewport(int x, int y, int width, int height) {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glViewport(x, y, width, height));
-    }
-
-    public static void glPushClientAttrib(int mask) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
-    }
-
-    public static void glPopClientAttrib() {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
     }
 
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
