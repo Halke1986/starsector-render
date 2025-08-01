@@ -1,19 +1,26 @@
 package com.genir.renderer.bridge.impl;
 
+import org.lwjgl.opengl.Display;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-
-import static com.genir.renderer.Debug.log;
-import static com.genir.renderer.Debug.logStack;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Executor {
+    private static final AtomicInteger threadCounter = new AtomicInteger(0);
+
+    private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
+    private boolean exceptionCaptured = false; // Accessed by rendering thread.
+
     private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
         t.setDaemon(true);
+        t.setName("Render-Thread-" + threadCounter.getAndIncrement());
+
         return t;
     });
 
@@ -24,7 +31,7 @@ public class Executor {
         commandBuffer.add(command);
 
         if (commandBuffer.size() == batchCapacity) {
-            executeCommands();
+            flushCommands();
         }
     }
 
@@ -36,15 +43,12 @@ public class Executor {
 //        log(Executor.class, "wait");
 //        logStack();
 
-        executeCommands();
-
-        FutureTask<?> task = new FutureTask<>(command, null);
-        exec.execute(task);
+        flushCommands();
 
         try {
-            task.get();
+            exec.submit(() -> tryRun(List.of(command))).get();
         } catch (Throwable t) {
-            throw new RuntimeException(t);
+            throw new RuntimeException(command + " " + t);
         }
     }
 
@@ -54,15 +58,12 @@ public class Executor {
      * on purpose, to synchronize threads.
      */
     public void barrier(Runnable command) {
-        executeCommands();
-
-        FutureTask<?> task = new FutureTask<>(command, null);
-        exec.execute(task);
+        flushCommands();
 
         try {
-            task.get();
+            exec.submit(() -> tryRun(List.of(command))).get();
         } catch (Throwable t) {
-            throw new RuntimeException(t);
+            throw new RuntimeException(command + " " + t);
         }
     }
 
@@ -74,23 +75,49 @@ public class Executor {
 //        log(Executor.class, "get");
 //        logStack();
 
-        executeCommands();
+        flushCommands();
 
         try {
             return exec.submit(task).get();
         } catch (Throwable t) {
-            throw new RuntimeException(t);
+            throw new RuntimeException(task + " " + t);
         }
     }
 
-    private void executeCommands() {
-        List<Runnable> currentBatch = commandBuffer;
+    private void flushCommands() {
+        final List<Runnable> currentBatch = commandBuffer;
         commandBuffer = new ArrayList<>(batchCapacity);
 
-        exec.execute(() -> {
-            for (Runnable command : currentBatch) {
-                command.run();
+        exec.execute(() -> tryRun(currentBatch));
+
+        // If the rendering thread throws an exception, crash the application.
+        // This ensures a clear log message. Rethrow the exception only once,
+        // to not interrupt main thread cleanup triggered by the first rethrow.
+        RuntimeException e = exception.getAndSet(null);
+        if (e != null) {
+            throw e;
+        }
+    }
+
+    private void tryRun(List<Runnable> commands) {
+        for (Runnable command : commands) {
+            // Rendering thread has already thrown an exception.
+            // Skip further commands, except get, to avoid a potential
+            // hard crash without logging.
+            if (exceptionCaptured) {
+                return;
             }
-        });
+
+            try {
+                command.run();
+            } catch (Throwable t) {
+                exceptionCaptured = true;
+                exception.set(new RuntimeException(command + " " + t));
+
+                // Destroy the display. Main thread will attempt to do the cleanup itself,
+                // but its commands are ignored after an exception was thrown.
+                Display.destroy();
+            }
+        }
     }
 }

@@ -91,6 +91,10 @@ public class VertexInterceptor {
         final int drawBufferOffset = vertexPointer.position() / STRIDE;
         final int count = cachedVertices;
 
+        if (count == 0) {
+            return;
+        }
+
         if (drawMode == GL11.GL_LINE_LOOP || drawMode == GL11.GL_LINE_STRIP) {
             drawLine(drawMode, count);
             return;
@@ -104,11 +108,15 @@ public class VertexInterceptor {
 
         renderContext.applyEnableAndColorBufferBit();
         exec.execute(() -> {
-            if (shouldRegisterArrays) {
-                registerArrays();
-            }
+            try {
+                if (shouldRegisterArrays) {
+                    registerArrays();
+                }
 
-            GL11.glDrawArrays(drawMode, drawBufferOffset, count);
+                GL11.glDrawArrays(drawMode, drawBufferOffset, count);
+            } catch (Throwable t) {
+                throw new RuntimeException("glEnd: " + t);
+            }
         });
 
         cachedVertices = 0;
@@ -203,9 +211,13 @@ public class VertexInterceptor {
         renderContext.applyEnableAndColorBufferBit();
         renderContext.forceMatrixMode(GL11.GL_MODELVIEW);
         exec.execute(() -> {
-            GL11.glMultMatrix(mBuffer);
-            GL11.glDrawArrays(mode, first, count);
-            GL11.glLoadIdentity();
+            try {
+                GL11.glMultMatrix(mBuffer);
+                GL11.glDrawArrays(mode, first, count);
+                GL11.glLoadIdentity();
+            } catch (Throwable t) {
+                throw new RuntimeException("glEnd: " + t);
+            }
         });
     }
 
@@ -259,11 +271,15 @@ public class VertexInterceptor {
 
             renderContext.applyEnableAndColorBufferBit();
             exec.execute(() -> {
-                if (shouldRegisterArrays) {
-                    registerArrays();
-                }
+                try {
+                    if (shouldRegisterArrays) {
+                        registerArrays();
+                    }
 
-                GL11.glDrawArrays(mode, drawBufferSize, count);
+                    GL11.glDrawArrays(mode, drawBufferSize, count);
+                } catch (Throwable t) {
+                    throw new RuntimeException("recordedGlDrawArrays: " + t);
+                }
             });
         };
     }
@@ -288,12 +304,16 @@ public class VertexInterceptor {
 
         renderContext.applyEnableAndColorBufferBit();
         exec.execute(() -> {
-            GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));
-            GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(VERTEX_SIZE));
+            try {
+                GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));
+                GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(VERTEX_SIZE));
 
-            GL11.glDrawArrays(mode, 0, count);
+                GL11.glDrawArrays(mode, 0, count);
 
-            registerArrays();
+                registerArrays();
+            } catch (Throwable t) {
+                throw new RuntimeException("drawLine: " + t);
+            }
         });
 
         cachedVertices = 0;
@@ -310,9 +330,13 @@ public class VertexInterceptor {
         log(VertexInterceptor.class, "resize draw buffer to " + newSize + " vertices");
 
         exec.wait(() -> {
-            vertexPointer = BufferUtils.createFloatBuffer(newSize * STRIDE);
+            try {
+                vertexPointer = BufferUtils.createFloatBuffer(newSize * STRIDE);
 
-            update();
+                update();
+            } catch (Throwable t) {
+                throw new RuntimeException("resizeDrawBuffers: " + t);
+            }
         });
     }
 }
