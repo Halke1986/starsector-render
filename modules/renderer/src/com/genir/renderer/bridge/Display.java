@@ -49,7 +49,7 @@ public class Display {
     }
 
     public static void create(PixelFormat pixel_format) throws LWJGLException {
-        renderContext.clear();
+        attribTracker.clear();
 
         exec.wait(() -> {
             try {

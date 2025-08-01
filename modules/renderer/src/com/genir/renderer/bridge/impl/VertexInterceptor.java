@@ -21,7 +21,7 @@ public class VertexInterceptor {
 
     private final Executor exec;
     private final MatrixStack modelView;
-    private final RenderContext renderContext;
+    private final AttribTracker attribTracker;
 
     private boolean shouldRegisterArrays = false;
 
@@ -49,10 +49,10 @@ public class VertexInterceptor {
     private FloatBuffer externalTexCoordsPointer;
     private FloatBuffer externalVertexPointer;
 
-    public VertexInterceptor(Executor exec, MatrixStack modelView, RenderContext renderContext) {
+    public VertexInterceptor(Executor exec, MatrixStack modelView, AttribTracker attribTracker) {
         this.exec = exec;
         this.modelView = modelView;
-        this.renderContext = renderContext;
+        this.attribTracker = attribTracker;
     }
 
     public void update() {
@@ -106,7 +106,7 @@ public class VertexInterceptor {
         resizeDrawBuffers(count);
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
-        renderContext.applyEnableAndColorBufferBit();
+        attribTracker.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
                 if (shouldRegisterArrays) {
@@ -157,13 +157,13 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 6] = alpha;
 
         // Define vertex texture.
-        if (renderContext.enableTexture()) {
+        if (attribTracker.enableTexture()) {
             vertexScratchpad[offset + 7] = texS;
             vertexScratchpad[offset + 8] = texT;
         }
 
         // Transform normals.
-        if (renderContext.enableLighting()) {
+        if (attribTracker.enableLighting()) {
             // Assume model view is just rotations and translations, no shear or scale.
             // Otherwise, the upper left 3x3 part of transformation matrix would have
             // to be inversed and transposed first.
@@ -208,8 +208,8 @@ public class VertexInterceptor {
         mBuffer.flip();
 
         // Draw.
-        renderContext.applyEnableAndColorBufferBit();
-        renderContext.forceMatrixMode(GL11.GL_MODELVIEW);
+        attribTracker.applyEnableAndColorBufferBit();
+        attribTracker.forceMatrixMode(GL11.GL_MODELVIEW);
         exec.execute(() -> {
             try {
                 GL11.glMultMatrix(mBuffer);
@@ -269,7 +269,7 @@ public class VertexInterceptor {
 
             vertexPointer.put(vertexSnapshot, 0, count * STRIDE);
 
-            renderContext.applyEnableAndColorBufferBit();
+            attribTracker.applyEnableAndColorBufferBit();
             exec.execute(() -> {
                 try {
                     if (shouldRegisterArrays) {
@@ -302,7 +302,7 @@ public class VertexInterceptor {
             linePointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
         }
 
-        renderContext.applyEnableAndColorBufferBit();
+        attribTracker.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
                 GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));

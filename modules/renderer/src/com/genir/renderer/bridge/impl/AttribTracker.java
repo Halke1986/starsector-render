@@ -5,9 +5,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.Stack;
 
 /**
- * RenderContext optimizes state changes by filtering out redundant calls (e.g., consecutive glEnable calls).
+ * AttribTracker optimizes state changes by filtering out redundant calls (e.g., consecutive glEnable calls).
  */
-public class RenderContext {
+public class AttribTracker {
     private final Executor exec;
 
     private final Snapshot expected = new Snapshot();
@@ -16,7 +16,7 @@ public class RenderContext {
     private final Stack<Snapshot> expectedStack = new Stack<>();
     private final Stack<Snapshot> actualStack = new Stack<>();
 
-    public RenderContext(Executor exec) {
+    public AttribTracker(Executor exec) {
         this.exec = exec;
     }
 
