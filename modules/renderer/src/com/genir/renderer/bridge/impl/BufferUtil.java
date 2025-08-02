@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.impl;
 
 import java.lang.reflect.Array;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
@@ -45,5 +46,21 @@ public class BufferUtil {
         System.arraycopy(old, 0, n, 0, Math.min(size, old.length));
 
         return n;
+    }
+
+    public static int capacityRequired(Buffer buffer, int elements) {
+        int capacityRequired = buffer.position() + elements;
+        int capacity = buffer.capacity();
+
+        // Resize only if needed.
+        if (capacity >= capacityRequired) {
+            return -1;
+        }
+
+        do {
+            capacity *= 2;
+        } while (capacity < capacityRequired);
+
+        return capacity;
     }
 }

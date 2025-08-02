@@ -9,6 +9,7 @@ import java.nio.FloatBuffer;
 
 import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.Debug.log;
+import static com.genir.renderer.bridge.impl.BufferUtil.capacityRequired;
 
 public class VertexInterceptor {
     private final int BUFFER_SIZE = 1 << 16;
@@ -44,7 +45,7 @@ public class VertexInterceptor {
     // Draw buffers.
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
     private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
-    private FloatBuffer auxDataBuffer = BufferUtils.createFloatBuffer(1);
+    private ByteBuffer auxDataBuffer = BufferUtils.createByteBuffer(1);
 
     public VertexInterceptor(
             Executor exec,
@@ -185,14 +186,14 @@ public class VertexInterceptor {
         // Array draw, as opposed to glBegin/gEnd block doesn't
         // have model matrix applied on the CPU side.
         Matrix4f m = modelView.getMatrix();
-        final FloatBuffer mBuffer = allocateAuxData(16);
+        final FloatBuffer mBuffer = allocateAuxDataf(16);
         m.storeTranspose(mBuffer);
         mBuffer.flip();
 
         // Vertex array snapshot. Not required if vertices are defined via VBO.
         FloatBuffer vertexPointer = clientAttribTracker.vertexPointer();
         if (vertexPointer != null) {
-            final FloatBuffer snapshot = allocateAuxData(vertexPointer.limit());
+            final FloatBuffer snapshot = allocateAuxDataf(vertexPointer.limit());
             FloatBuffer reader = vertexPointer.duplicate().rewind();
             snapshot.put(reader).rewind();
 
@@ -202,7 +203,7 @@ public class VertexInterceptor {
         // Texture array snapshot.
         FloatBuffer texCoordPointer = clientAttribTracker.texCoordPointer();
         if (clientAttribTracker.enableTexCoordArray() && texCoordPointer != null) {
-            final FloatBuffer snapshot = allocateAuxData(texCoordPointer.limit());
+            final FloatBuffer snapshot = allocateAuxDataf(texCoordPointer.limit());
             FloatBuffer reader = texCoordPointer.duplicate().rewind();
             snapshot.put(reader).rewind();
 
@@ -210,9 +211,13 @@ public class VertexInterceptor {
         }
 
         // Color array snapshot.
-        if (clientAttribTracker.enableColorArray() && clientAttribTracker.colorPointer() != null) {
-            final ByteBuffer colorSnapshot = BufferUtil.snapshot(clientAttribTracker.colorPointer());
-            exec.execute(() -> GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot));
+        ByteBuffer colorPointer = clientAttribTracker.colorPointer();
+        if (clientAttribTracker.enableColorArray() && colorPointer != null) {
+            final ByteBuffer snapshot = allocateAuxData(colorPointer.limit());
+            ByteBuffer reader = colorPointer.duplicate().rewind();
+            snapshot.put(reader).rewind();
+
+            exec.execute(() -> GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, snapshot));
         }
 
         // Define color if GL_COLOR_ARRAY is disabled.
@@ -313,7 +318,7 @@ public class VertexInterceptor {
      */
     private void drawLine(int mode, int count) {
         final int LINE_STRIDE = VERTEX_SIZE + COLOR_SIZE;
-        final FloatBuffer linePointer = allocateAuxData(count * LINE_STRIDE);
+        final FloatBuffer linePointer = allocateAuxDataf(count * LINE_STRIDE);
 
         for (int i = 0; i < count; i++) {
             linePointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
@@ -339,33 +344,38 @@ public class VertexInterceptor {
     }
 
     private void resizeVertexPointer(int vertexNum) {
-        if (vertexPointer.remaining() >= vertexNum * STRIDE) {
-            return;
+        int capacityRequired = capacityRequired(vertexPointer, vertexNum * STRIDE);
+        if (capacityRequired > 0) {
+            log(VertexInterceptor.class, "resize vertex pointer to " + capacityRequired / STRIDE + " vertices");
+
+            vertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
+            arraysTouched();
         }
-
-        int currentSize = vertexPointer.capacity() / STRIDE;
-        final int newSize = Math.max(currentSize * 2, currentSize + vertexNum);
-
-        log(VertexInterceptor.class, "resize vertex pointer to " + newSize + " vertices");
-
-        vertexPointer = BufferUtils.createFloatBuffer(newSize * STRIDE);
-
-        arraysTouched();
     }
 
-    private FloatBuffer allocateAuxData(int floats) {
-        // Resize if needed.
-        if (auxDataBuffer.remaining() < floats) {
-            int currentCapacity = auxDataBuffer.capacity();
-            final int newSize = Math.max(currentCapacity * 2, currentCapacity + floats);
+    private void resizeAuxData(int bytes) {
+        int capacityRequired = capacityRequired(auxDataBuffer, bytes);
+        if (capacityRequired > 0) {
+            log(VertexInterceptor.class, "resize aux data buffer to " + capacityRequired + " bytes");
 
-            log(VertexInterceptor.class, "resize aux data buffer to " + newSize + " floats");
-
-            auxDataBuffer = BufferUtils.createFloatBuffer(newSize);
+            auxDataBuffer = BufferUtils.createByteBuffer(capacityRequired);
         }
+    }
 
-        FloatBuffer slice = auxDataBuffer.slice(auxDataBuffer.position(), floats);
-        auxDataBuffer.position(auxDataBuffer.position() + floats);
+    private ByteBuffer allocateAuxData(int bytes) {
+        resizeAuxData(bytes);
+
+        ByteBuffer slice = auxDataBuffer.slice(auxDataBuffer.position(), bytes);
+        auxDataBuffer.position(auxDataBuffer.position() + bytes);
+        return slice;
+    }
+
+    private FloatBuffer allocateAuxDataf(int floats) {
+        resizeAuxData(floats * Float.BYTES);
+
+        FloatBuffer slice = auxDataBuffer.asFloatBuffer().slice(0, floats);
+        auxDataBuffer.position(auxDataBuffer.position() + floats * Float.BYTES);
+
         return slice;
     }
 }
