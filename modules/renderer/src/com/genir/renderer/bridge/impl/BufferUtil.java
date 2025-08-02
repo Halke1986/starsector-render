@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-public class BufferUtils {
+public class BufferUtil {
     /**
      * Returns a snapshot copy of the given FloatBuffer, preserving its content from position 0 to limit.
      */

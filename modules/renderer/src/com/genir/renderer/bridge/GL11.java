@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.impl.BufferUtils;
+import com.genir.renderer.bridge.impl.BufferUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -126,7 +126,7 @@ public class GL11 {
     }
 
     /**
-     * Array draw.
+     * Client attributes.
      */
     public static void glEnableClientState(int cap) { // NoList
         clientAttribTracker.glEnableClientState(cap);
@@ -169,7 +169,7 @@ public class GL11 {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        vertexInterceptor.glVertexPointer(size, stride, pointer);
+        clientAttribTracker.glVertexPointer(size, stride, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
@@ -177,7 +177,7 @@ public class GL11 {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        vertexInterceptor.glColorPointer(size, unsigned, stride, pointer);
+        clientAttribTracker.glColorPointer(size, unsigned, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
@@ -185,9 +185,12 @@ public class GL11 {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        vertexInterceptor.glTexCoordPointer(size, stride, pointer);
+        clientAttribTracker.glTexCoordPointer(size, stride, pointer);
     }
 
+    /**
+     * Array draw.
+     */
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
@@ -322,7 +325,7 @@ public class GL11 {
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        final FloatBuffer snapshot = BufferUtils.snapshot(m);
+        final FloatBuffer snapshot = BufferUtil.snapshot(m);
         if (listManager.isRecording()) {
             listManager.record(() -> iglMultMatrix(snapshot));
         } else {
@@ -460,22 +463,22 @@ public class GL11 {
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
-        final ByteBuffer snapshot = BufferUtils.snapshot(pixels);
+        final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
-        final ByteBuffer snapshot = BufferUtils.snapshot(pixels);
+        final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
-        final FloatBuffer snapshot = BufferUtils.snapshot(params);
+        final FloatBuffer snapshot = BufferUtil.snapshot(params);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glLight(light, pname, snapshot));
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
-        final FloatBuffer snapshot = BufferUtils.snapshot(params);
+        final FloatBuffer snapshot = BufferUtil.snapshot(params);
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glMaterial(face, pname, snapshot));
     }
 

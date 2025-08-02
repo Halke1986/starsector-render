@@ -45,11 +45,6 @@ public class VertexInterceptor {
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
     private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
 
-    // External buffers.
-    private ByteBuffer externalColorPointer;
-    private FloatBuffer externalTexCoordsPointer;
-    private FloatBuffer externalVertexPointer;
-
     public VertexInterceptor(
             Executor exec,
             MatrixStack modelView,
@@ -181,21 +176,6 @@ public class VertexInterceptor {
         cachedVertices++;
     }
 
-    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-        arraysTouched();
-        externalColorPointer = pointer;
-    }
-
-    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        arraysTouched();
-        externalTexCoordsPointer = pointer;
-    }
-
-    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        arraysTouched();
-        externalVertexPointer = pointer;
-    }
-
     public void glDrawArrays(int mode, int first, int count) {
         arraysTouched();
 
@@ -207,20 +187,20 @@ public class VertexInterceptor {
         mBuffer.flip();
 
         // Vertex array snapshot. Not required if vertices are defined via VBO.
-        if (externalVertexPointer != null) {
-            final FloatBuffer vertexSnapshot = com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalVertexPointer);
+        if (clientAttribTracker.vertexPointer() != null) {
+            final FloatBuffer vertexSnapshot = BufferUtil.snapshot(clientAttribTracker.vertexPointer());
             exec.execute(() -> GL11.glVertexPointer(VERTEX_SIZE_2D, 0, vertexSnapshot));
         }
 
         // Texture array snapshot.
-        if (clientAttribTracker.enableTexCoordArray() && externalTexCoordsPointer != null) {
-            final FloatBuffer texCoordSnapshot = com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalTexCoordsPointer);
+        if (clientAttribTracker.enableTexCoordArray() && clientAttribTracker.texCoordPointer() != null) {
+            final FloatBuffer texCoordSnapshot = BufferUtil.snapshot(clientAttribTracker.texCoordPointer());
             exec.execute(() -> GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordSnapshot));
         }
 
         // Color array snapshot.
-        if (clientAttribTracker.enableColorArray() && externalColorPointer != null) {
-            final ByteBuffer colorSnapshot = com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalColorPointer);
+        if (clientAttribTracker.enableColorArray() && clientAttribTracker.colorPointer() != null) {
+            final ByteBuffer colorSnapshot = BufferUtil.snapshot(clientAttribTracker.colorPointer());
             exec.execute(() -> GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot));
         }
 
@@ -253,9 +233,9 @@ public class VertexInterceptor {
         asert(first == 0);
 
         // Take snapshot of the buffers at the time of list recording.
-        ByteBuffer colorReader = externalColorPointer.duplicate().position(0);
-        FloatBuffer vertexReader = externalVertexPointer.duplicate().position(0);
-        FloatBuffer texCoordReader = externalTexCoordsPointer.duplicate().position(0);
+        ByteBuffer colorReader = clientAttribTracker.colorPointer().duplicate().position(0);
+        FloatBuffer vertexReader = clientAttribTracker.vertexPointer().duplicate().position(0);
+        FloatBuffer texCoordReader = clientAttribTracker.texCoordPointer().duplicate().position(0);
 
         final float[] vertexSnapshot = new float[count * STRIDE];
         for (int i = 0; i < count; i++) {

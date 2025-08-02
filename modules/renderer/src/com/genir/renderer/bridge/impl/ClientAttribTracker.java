@@ -2,14 +2,14 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Stack;
 
 public class ClientAttribTracker {
     public final Snapshot expected = new Snapshot();
-    public final Snapshot actual = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
-    private final Stack<Snapshot> actualStack = new Stack<>();
 
     public boolean enableTexCoordArray() {
         return expected.enableTexCoordArray;
@@ -17,6 +17,18 @@ public class ClientAttribTracker {
 
     public boolean enableColorArray() {
         return expected.enableColorArray;
+    }
+
+    public FloatBuffer vertexPointer() {
+        return expected.vertexPointer;
+    }
+
+    public FloatBuffer texCoordPointer() {
+        return expected.texCoordPointer;
+    }
+
+    public ByteBuffer colorPointer() {
+        return expected.colorPointer;
     }
 
     public void glEnableClientState(int cap) {
@@ -29,49 +41,32 @@ public class ClientAttribTracker {
 
     public void glPushClientAttrib(int mask) {
         expected.attribMask = mask;
-        actual.attribMask = mask;
 
         // Save expected state.
         Snapshot savedExpected = new Snapshot();
         expected.save(savedExpected);
         expectedStack.push(savedExpected);
-
-        // Save actual state.
-        Snapshot savedActual = new Snapshot();
-        actual.save(savedActual);
-        actualStack.push(savedActual);
     }
 
     public void glPopClientAttrib() {
         Snapshot savedCurrent = expectedStack.pop();
-        Snapshot savedPrevious = actualStack.pop();
 
         if (savedCurrent != null) {
             savedCurrent.save(expected);
-            savedPrevious.save(actual);
         }
     }
 
-//    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-//        asert(stride == 0);
-//        asert(size == 4);
-//
-//        expected.colorPointer = pointer;
-//    }
-//
-//    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-//        asert(stride == 0);
-//        asert(size == 2);
-//
-//        expected.texCoordPointer = pointer;
-//    }
-//
-//    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-//        asert(stride == 0);
-//        asert(size == 2);
-//
-//        expected.vertexPointer = pointer;
-//    }
+    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
+        expected.colorPointer = pointer;
+    }
+
+    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+        expected.texCoordPointer = pointer;
+    }
+
+    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        expected.vertexPointer = pointer;
+    }
 
     private void setState(int cap, boolean value) {
         switch (cap) {
@@ -94,9 +89,9 @@ public class ClientAttribTracker {
         boolean enableTexCoordArray = false;
         boolean enableColorArray = false;
 
-//        FloatBuffer vertexPointer = null;
-//        FloatBuffer texCoordPointer = null;
-//        ByteBuffer colorPointer = null;
+        FloatBuffer vertexPointer = null;
+        FloatBuffer texCoordPointer = null;
+        ByteBuffer colorPointer = null;
 
         void save(Snapshot other) {
             other.attribMask = attribMask;
@@ -106,9 +101,9 @@ public class ClientAttribTracker {
                 other.enableTexCoordArray = enableTexCoordArray;
                 other.enableColorArray = enableColorArray;
 
-//                other.vertexPointer = vertexPointer;
-//                other.texCoordPointer = texCoordPointer;
-//                other.colorPointer = colorPointer;
+                other.vertexPointer = vertexPointer;
+                other.texCoordPointer = texCoordPointer;
+                other.colorPointer = colorPointer;
             }
         }
     }

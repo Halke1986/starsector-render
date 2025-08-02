@@ -25,7 +25,7 @@ public class MatrixStack {
     public void glPushMatrix() {
         int next = matrixIdx + 1;
         if (next == stack.length) {
-            stack = BufferUtils.reallocate(Matrix4f.class, stack.length * 2, stack);
+            stack = BufferUtil.reallocate(Matrix4f.class, stack.length * 2, stack);
         }
 
         if (stack[next] == null) {

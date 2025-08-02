@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.impl.BufferUtils;
+import com.genir.renderer.bridge.impl.BufferUtil;
 
 import java.nio.FloatBuffer;
 
@@ -9,9 +9,11 @@ import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL15 {
     public static void glBindBuffer(int target, int buffer) {
-        vertexInterceptor.glVertexPointer(0, 0, null);
-        vertexInterceptor.glColorPointer(0, false, 0, null);
-        vertexInterceptor.glTexCoordPointer(0, 0, null);
+        clientAttribTracker.glVertexPointer(0, 0, null);
+        clientAttribTracker.glColorPointer(0, false, 0, null);
+        clientAttribTracker.glTexCoordPointer(0, 0, null);
+
+        vertexInterceptor.arraysTouched();
 
         if (listManager.isRecording()) {
             throwUnsupportedOperation("glBindBuffer");
@@ -41,7 +43,7 @@ public class GL15 {
     }
 
     public static void glBufferData(int target, FloatBuffer data, int usage) {
-        final FloatBuffer snapshot = BufferUtils.snapshot(data);
+        final FloatBuffer snapshot = BufferUtil.snapshot(data);
 
         if (listManager.isRecording()) {
             throwUnsupportedOperation("glBufferData");
