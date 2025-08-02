@@ -206,53 +206,40 @@ public class VertexInterceptor {
         m.storeTranspose(mBuffer);
         mBuffer.flip();
 
-        final FloatBuffer vertexSnapshot = (externalVertexPointer != null) ?
-                com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalVertexPointer) :
-                null;
+        // Vertex array snapshot. Not required if vertices are defined via VBO.
+        if (externalVertexPointer != null) {
+            final FloatBuffer vertexSnapshot = com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalVertexPointer);
+            exec.execute(() -> GL11.glVertexPointer(VERTEX_SIZE_2D, 0, vertexSnapshot));
+        }
 
-        final ByteBuffer colorSnapshot = (clientAttribTracker.enableColorArray() && externalColorPointer != null) ?
-                com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalColorPointer) :
-                null;
+        // Texture array snapshot.
+        if (clientAttribTracker.enableTexCoordArray() && externalTexCoordsPointer != null) {
+            final FloatBuffer texCoordSnapshot = com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalTexCoordsPointer);
+            exec.execute(() -> GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordSnapshot));
+        }
 
-        final FloatBuffer texCoordSnapshot = (clientAttribTracker.enableTexCoordArray() && externalTexCoordsPointer != null) ?
-                com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalTexCoordsPointer) :
-                null;
+        // Color array snapshot.
+        if (clientAttribTracker.enableColorArray() && externalColorPointer != null) {
+            final ByteBuffer colorSnapshot = com.genir.renderer.bridge.impl.BufferUtils.snapshot(externalColorPointer);
+            exec.execute(() -> GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot));
+        }
 
-
+        // Define color if GL_COLOR_ARRAY is disabled.
         if (!clientAttribTracker.enableColorArray()) {
-            final float r = red;
-            final float g = green;
-            final float b = blue;
-            final float a = alpha;
+            final float r = red, g = green, b = blue, a = alpha;
 
             exec.execute(() -> {
-                try {
-                    GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-
-                    GL11.glColor4f(r, g, b, a);
-                } catch (Throwable t) {
-                    throw new RuntimeException("glEnd set color: " + t);
-                }
+                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                GL11.glColor4f(r, g, b, a);
             });
         }
 
-        // Draw.
         attribTracker.applyEnableAndColorBufferBit();
         attribTracker.forceMatrixMode(GL11.GL_MODELVIEW);
+
+        // Draw.
         exec.execute(() -> {
             try {
-                if (vertexSnapshot != null) {
-                    GL11.glVertexPointer(VERTEX_SIZE_2D, 0, vertexSnapshot);
-                }
-
-                if (colorSnapshot != null) {
-                    GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot);
-                }
-
-                if (texCoordSnapshot != null) {
-                    GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordSnapshot);
-                }
-
                 GL11.glMultMatrix(mBuffer);
                 GL11.glDrawArrays(mode, first, count);
                 GL11.glLoadIdentity();

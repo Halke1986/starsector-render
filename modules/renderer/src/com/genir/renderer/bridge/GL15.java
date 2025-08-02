@@ -9,7 +9,9 @@ import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL15 {
     public static void glBindBuffer(int target, int buffer) {
-        vertexInterceptor.arraysTouched();
+        vertexInterceptor.glVertexPointer(0, 0, null);
+        vertexInterceptor.glColorPointer(0, false, 0, null);
+        vertexInterceptor.glTexCoordPointer(0, 0, null);
 
         if (listManager.isRecording()) {
             throwUnsupportedOperation("glBindBuffer");
@@ -18,7 +20,7 @@ public class GL15 {
         }
     }
 
-    public static void glDeleteBuffers(int buffer) { // MOD
+    public static void glDeleteBuffers(int buffer) {
         if (listManager.isRecording()) {
             throwUnsupportedOperation("glDeleteBuffers");
         } else {

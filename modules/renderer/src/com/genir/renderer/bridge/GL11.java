@@ -167,6 +167,7 @@ public class GL11 {
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
         asert(size == 2);
         asert(stride == 0);
+        asert(pointer.position() == 0);
 
         vertexInterceptor.glVertexPointer(size, stride, pointer);
     }
@@ -174,6 +175,7 @@ public class GL11 {
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
         asert(size == 4);
         asert(stride == 0);
+        asert(pointer.position() == 0);
 
         vertexInterceptor.glColorPointer(size, unsigned, stride, pointer);
     }
@@ -181,25 +183,20 @@ public class GL11 {
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
         asert(size == 2);
         asert(stride == 0);
+        asert(pointer.position() == 0);
 
         vertexInterceptor.glTexCoordPointer(size, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        vertexInterceptor.glVertexPointer(0, 0, null);
-
         exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        vertexInterceptor.glColorPointer(0, false, 0, null);
-
         exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        vertexInterceptor.glTexCoordPointer(0, 0, null);
-
         exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
