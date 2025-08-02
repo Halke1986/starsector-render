@@ -44,6 +44,7 @@ public class VertexInterceptor {
     // Draw buffers.
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
     private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
+    private FloatBuffer auxDataPointer = BufferUtils.createFloatBuffer(1);
 
     public VertexInterceptor(
             Executor exec,
@@ -61,16 +62,17 @@ public class VertexInterceptor {
         // runs within a synchronized executor operation (wait or barrier).
         // Otherwise, concurrent modification may occur.
         vertexPointer.clear();
+        auxDataPointer.clear();
 
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-        registerArrays();
+        registerArrays(vertexPointer);
     }
 
-    private void registerArrays() {
+    private void registerArrays(FloatBuffer vertexPointer) {
         FloatBuffer pointer = vertexPointer.duplicate();
 
         GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, pointer.position(0));
@@ -101,17 +103,18 @@ public class VertexInterceptor {
             return;
         }
 
-        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
-        this.shouldRegisterArrays = false;
-
-        resizeDrawBuffers(count);
+        resizeVertexPointer(count);
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
+
+        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
+        final FloatBuffer vertexPointerFinal = this.vertexPointer;
+        this.shouldRegisterArrays = false;
 
         attribTracker.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
                 if (shouldRegisterArrays) {
-                    registerArrays();
+                    registerArrays(vertexPointerFinal);
                 }
 
                 GL11.glDrawArrays(drawMode, drawBufferOffset, count);
@@ -257,7 +260,7 @@ public class VertexInterceptor {
 
         return () -> {
             // Prepare draw buffers.
-            resizeDrawBuffers(count);
+            resizeVertexPointer(count);
             final int drawBufferSize = vertexPointer.position() / STRIDE;
 
             final boolean shouldRegisterArrays = this.shouldRegisterArrays;
@@ -276,12 +279,13 @@ public class VertexInterceptor {
             }
 
             vertexPointer.put(vertexSnapshot, 0, count * STRIDE);
+            final FloatBuffer vertexPointerFinal = this.vertexPointer;
 
             attribTracker.applyEnableAndColorBufferBit();
             exec.execute(() -> {
                 try {
                     if (shouldRegisterArrays) {
-                        registerArrays();
+                        registerArrays(vertexPointerFinal);
                     }
 
                     GL11.glDrawArrays(mode, drawBufferSize, count);
@@ -310,6 +314,8 @@ public class VertexInterceptor {
             linePointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
         }
 
+        final FloatBuffer vertexPointerFinal = this.vertexPointer;
+
         attribTracker.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
@@ -318,7 +324,7 @@ public class VertexInterceptor {
 
                 GL11.glDrawArrays(mode, 0, count);
 
-                registerArrays();
+                registerArrays(vertexPointerFinal);
             } catch (Throwable t) {
                 throw new RuntimeException("drawLine: " + t);
             }
@@ -327,7 +333,7 @@ public class VertexInterceptor {
         cachedVertices = 0;
     }
 
-    private void resizeDrawBuffers(int vertexNum) {
+    private void resizeVertexPointer(int vertexNum) {
         if (vertexPointer.remaining() >= vertexNum * STRIDE) {
             return;
         }
@@ -335,16 +341,10 @@ public class VertexInterceptor {
         int currentSize = vertexPointer.capacity() / STRIDE;
         final int newSize = Math.max(currentSize * 2, currentSize + vertexNum);
 
-        log(VertexInterceptor.class, "resize draw buffer to " + newSize + " vertices");
+        log(VertexInterceptor.class, "resize vertex pointer to " + newSize + " vertices");
 
-        exec.wait(() -> {
-            try {
-                vertexPointer = BufferUtils.createFloatBuffer(newSize * STRIDE);
+        vertexPointer = BufferUtils.createFloatBuffer(newSize * STRIDE);
 
-                update();
-            } catch (Throwable t) {
-                throw new RuntimeException("resizeDrawBuffers: " + t);
-            }
-        });
+        arraysTouched();
     }
 }
