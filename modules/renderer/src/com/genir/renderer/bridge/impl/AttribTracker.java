@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import java.util.Stack;
 
@@ -118,6 +119,10 @@ public class AttribTracker {
         expected.blendDfactor = dfactor;
     }
 
+    public void glBlendEquation(int mode) {
+        expected.blendEquation = mode;
+    }
+
     public void glMatrixMode(int mode) {
         expected.matrixMode = mode;
     }
@@ -158,6 +163,14 @@ public class AttribTracker {
                 final int dfactor = expected.blendDfactor;
 
                 exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
+            }
+
+            if (actual.blendEquation != expected.blendEquation) {
+                actual.blendEquation = expected.blendEquation;
+
+                final int equation = expected.blendEquation;
+
+                exec.execute(() -> GL14.glBlendEquation(equation));
             }
         }
     }
@@ -205,8 +218,15 @@ public class AttribTracker {
         boolean enableTexture2D = false;
         boolean enableBlend = false;
         boolean enableLighting = false;
+
+        // Texture.
+        int textureTarget = 0;
+        int textureID = 0;
+
+        // Blend.
         int blendSfactor = 0;
         int blendDfactor = 0;
+        int blendEquation = GL14.GL_FUNC_ADD;
 
         public int matrixMode = GL11.GL_MODELVIEW;
 
@@ -224,6 +244,7 @@ public class AttribTracker {
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
                 other.blendSfactor = blendSfactor;
                 other.blendDfactor = blendDfactor;
+                other.blendEquation = blendEquation;
             }
 
             if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
