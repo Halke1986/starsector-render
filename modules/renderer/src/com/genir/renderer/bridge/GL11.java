@@ -385,6 +385,14 @@ public class GL11 {
         }
     }
 
+    public static void glBindTexture(int target, int texture) {
+        if (listManager.isRecording()) {
+            listManager.record(() -> attribTracker.glBindTexture(target, texture));
+        } else {
+            attribTracker.glBindTexture(target, texture);
+        }
+    }
+
     public static void glPushAttrib(int mask) { // NoList
         attribTracker.glPushAttrib(mask);
         exec.execute(() -> org.lwjgl.opengl.GL11.glPushAttrib(mask));
@@ -398,10 +406,6 @@ public class GL11 {
     /**
      * Other calls.
      */
-    public static void glBindTexture(int target, int texture) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glBindTexture(target, texture));
-    }
-
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha));
     }
@@ -464,12 +468,12 @@ public class GL11 {
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
-    public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) {
+    public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {

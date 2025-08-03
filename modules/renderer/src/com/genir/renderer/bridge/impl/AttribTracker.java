@@ -6,7 +6,8 @@ import org.lwjgl.opengl.GL14;
 import java.util.Stack;
 
 /**
- * AttribTracker optimizes state changes by filtering out redundant calls (e.g., consecutive glEnable calls).
+ * AttribTracker optimizes state changes by filtering out redundant calls
+ * (e.g., consecutive glEnable calls).
  */
 public class AttribTracker {
     private final Executor exec;
@@ -114,6 +115,13 @@ public class AttribTracker {
         }
     }
 
+    public void glBindTexture(int target, int texture) {
+        expected.textureTarget = target;
+        expected.textureID = texture;
+
+        exec.execute(() -> GL11.glBindTexture(target, texture));
+    }
+
     public void glBlendFunc(int sfactor, int dfactor) {
         expected.blendSfactor = sfactor;
         expected.blendDfactor = dfactor;
@@ -141,11 +149,23 @@ public class AttribTracker {
         }
     }
 
-    private void applyTexture() {
+    public void applyTexture() {
         if (actual.enableTexture2D != expected.enableTexture2D) {
             actual.enableTexture2D = expected.enableTexture2D;
             apply(GL11.GL_TEXTURE_2D, expected.enableTexture2D);
         }
+
+//        if (expected.enableTexture2D) {
+//            if (actual.textureTarget != expected.textureTarget || actual.textureID != expected.textureID) {
+//                actual.textureTarget = expected.textureTarget;
+//                actual.textureID = expected.textureID;
+//
+//                final int target = expected.textureTarget;
+//                final int texture = expected.textureID;
+//
+//                exec.execute(() -> GL11.glBindTexture(target, texture));
+//            }
+//        }
     }
 
     private void applyBlend() {
