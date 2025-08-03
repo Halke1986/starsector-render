@@ -1,0 +1,114 @@
+package com.genir.renderer.bridge.impl;
+
+public class ReorderedDrawContext {
+    // Mode.
+    public int mode;
+
+    // Texture.
+    public boolean enableTexture;
+    public int textureTarget;
+    public int textureID;
+
+    // Blend.
+    public boolean enableBlend;
+    public int blendSfactor;
+    public int blendDfactor;
+    public int blendEquation;
+
+//    public void glEnable(int cap) {
+//        switch (cap) {
+//            case GL11.GL_TEXTURE_2D:
+//                enableTexture = true;
+//                break;
+//            case GL11.GL_BLEND:
+//                enableBlend = true;
+//                break;
+//        }
+//    }
+//
+//    public void glDisable(int cap) {
+//        switch (cap) {
+//            case GL11.GL_TEXTURE_2D:
+//                enableTexture = false;
+//                break;
+//            case GL11.GL_BLEND:
+//                enableBlend = false;
+//                break;
+//        }
+//    }
+
+    public void glBegin(int mode) {
+        this.mode = mode;
+    }
+
+    public void glEnd() {
+        this.mode = -1;
+    }
+
+    public void glBindTexture(int target, int texture) {
+        textureTarget = target;
+        textureID = texture;
+    }
+
+    public void glBlendFunc(int sfactor, int dfactor) {
+        blendSfactor = sfactor;
+        blendDfactor = dfactor;
+    }
+
+    public void glBlendEquation(int mode) {
+        blendEquation = mode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReorderedDrawContext that = (ReorderedDrawContext) o;
+
+        // Compare mode and enabled tests.
+        if (mode != that.mode
+                || enableTexture != that.enableTexture
+                || enableBlend != that.enableBlend) {
+            return false;
+        }
+
+        // Compare texture context.
+        if (enableTexture
+                && (textureTarget != that.textureTarget
+                || textureID != that.textureID)) {
+            return false;
+        }
+
+        // Compare blend context.
+        if (enableBlend
+                && (blendSfactor != that.blendSfactor
+                || blendDfactor != that.blendDfactor
+                || blendEquation != that.blendEquation)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return textureID;
+    }
+
+    public ReorderedDrawContext copy() {
+        ReorderedDrawContext cpy = new ReorderedDrawContext();
+
+        cpy.mode = mode;
+
+        cpy.enableTexture = enableTexture;
+        cpy.textureTarget = textureTarget;
+        cpy.textureID = textureID;
+
+        cpy.enableBlend = enableBlend;
+        cpy.blendSfactor = blendSfactor;
+        cpy.blendDfactor = blendDfactor;
+        cpy.blendEquation = blendEquation;
+
+        return cpy;
+    }
+}

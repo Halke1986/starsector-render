@@ -1,9 +1,9 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.genir.renderer.bridge.impl.Bridge;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.Debug.log;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
@@ -63,9 +63,13 @@ public class CombatEngine {
 
     private static void renderLayer(CombatEngineLayers layer) {
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
+
+        Bridge.commitLayer();
     }
 
     private static void renderLayer(String layer) {
+        Bridge.setReorderDraw(true);
+
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
             case "SmokyContrailParticles" -> engine.getSmokyContrailParticles().render(0F, 0F);
@@ -83,5 +87,8 @@ public class CombatEngine {
             case "NegativeNebulaParticles" -> engine.getNegativeNebulaParticles().render(0F, 0F);
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
+
+        Bridge.setReorderDraw(false);
+        Bridge.commitLayer();
     }
 }

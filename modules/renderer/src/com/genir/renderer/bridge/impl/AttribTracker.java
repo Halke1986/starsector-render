@@ -43,6 +43,24 @@ public class AttribTracker {
         return expected.matrixMode;
     }
 
+    public ReorderedDrawContext getReorderedDrawContext(int mode) {
+        ReorderedDrawContext ctx = new ReorderedDrawContext();
+
+        ctx.mode = mode;
+
+        ctx.enableTexture = expected.enableTexture2D;
+        ctx.textureTarget = expected.textureTarget;
+        ctx.textureID = expected.textureID;
+
+        // Blend.
+        ctx.enableBlend = expected.enableBlend;
+        ctx.blendSfactor = expected.blendSfactor;
+        ctx.blendDfactor = expected.blendDfactor;
+        ctx.blendEquation = expected.blendEquation;
+
+        return ctx;
+    }
+
     public void applyEnableAndColorBufferBit() {
         applyStencil();
         applyAlpha();
@@ -248,7 +266,7 @@ public class AttribTracker {
         int blendDfactor = 0;
         int blendEquation = GL14.GL_FUNC_ADD;
 
-        public int matrixMode = GL11.GL_MODELVIEW;
+        int matrixMode = GL11.GL_MODELVIEW;
 
         void save(Snapshot other) {
             other.attribMask = attribMask;

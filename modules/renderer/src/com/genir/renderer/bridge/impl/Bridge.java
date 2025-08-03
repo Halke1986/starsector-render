@@ -21,4 +21,12 @@ public class Bridge {
         stateCache.update();
         vertexInterceptor.update();
     }
+
+    public static void setReorderDraw(boolean reorder) {
+        vertexInterceptor.setReorderDraw(reorder);
+    }
+
+    public static void commitLayer() {
+        vertexInterceptor.commitLayer();
+    }
 }

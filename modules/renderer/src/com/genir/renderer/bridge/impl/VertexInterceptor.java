@@ -6,6 +6,8 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.Debug.log;
@@ -26,6 +28,7 @@ public class VertexInterceptor {
     private final ClientAttribTracker clientAttribTracker;
 
     private boolean shouldRegisterArrays = false;
+    private boolean reorderDraw = false;
 
     // State.
     private int mode = 0;
@@ -46,6 +49,8 @@ public class VertexInterceptor {
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
     private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
     private ByteBuffer auxDataBuffer = BufferUtils.createByteBuffer(1);
+
+    private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
     public VertexInterceptor(
             Executor exec,
@@ -73,6 +78,16 @@ public class VertexInterceptor {
         registerArrays(vertexPointer);
     }
 
+    public void setReorderDraw(boolean reorder) {
+        reorderDraw = reorder;
+    }
+
+    public void commitLayer() {
+        for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
+            entry.getValue().clear();
+        }
+    }
+
     private void registerArrays(FloatBuffer vertexPointer) {
         FloatBuffer pointer = vertexPointer.duplicate();
 
@@ -91,38 +106,17 @@ public class VertexInterceptor {
     }
 
     public void glEnd() {
-        final int drawMode = mode;
-        final int drawBufferOffset = vertexPointer.position() / STRIDE;
         final int count = cachedVertices;
 
         if (count == 0) {
             return;
+        } else if (reorderDraw) {
+            storeReorderedDraw(mode, count);
+        } else if (mode == GL11.GL_LINE_LOOP || mode == GL11.GL_LINE_STRIP) {
+            drawLine(mode, count);
+        } else {
+            drawAsArray(mode, count);
         }
-
-        if (drawMode == GL11.GL_LINE_LOOP || drawMode == GL11.GL_LINE_STRIP) {
-            drawLine(drawMode, count);
-            return;
-        }
-
-        resizeVertexPointer(count);
-        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
-
-        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
-        final FloatBuffer vertexPointerFinal = this.vertexPointer;
-        this.shouldRegisterArrays = false;
-
-        attribTracker.applyEnableAndColorBufferBit();
-        exec.execute(() -> {
-            try {
-                if (shouldRegisterArrays) {
-                    registerArrays(vertexPointerFinal);
-                }
-
-                GL11.glDrawArrays(drawMode, drawBufferOffset, count);
-            } catch (Throwable t) {
-                throw new RuntimeException("glEnd: " + t);
-            }
-        });
 
         cachedVertices = 0;
     }
@@ -309,6 +303,24 @@ public class VertexInterceptor {
         };
     }
 
+    private void storeReorderedDraw(int mode, int count) {
+        ReorderedDrawContext ctx = attribTracker.getReorderedDrawContext(mode);
+
+        FloatBuffer vertexPointer = reorderBuffer.get(ctx);
+        if (vertexPointer == null) {
+            vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
+            reorderBuffer.put(ctx, vertexPointer);
+        }
+
+        int capacityRequired = capacityRequired(vertexPointer, count * STRIDE);
+        if (capacityRequired > 0) {
+            vertexPointer = BufferUtil.reallocate(capacityRequired, vertexPointer);
+            reorderBuffer.put(ctx, vertexPointer);
+        }
+
+        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
+    }
+
     /**
      * GL11.GL_LINE_LOOP and GL11.GL_LINE_STRIP cannot be converted from
      * a glBegin()/glEnd() block into glDrawArrays using the standard approach,
@@ -337,6 +349,35 @@ public class VertexInterceptor {
                 registerArrays(vertexPointerFinal);
             } catch (Throwable t) {
                 throw new RuntimeException("drawLine: " + t);
+            }
+        });
+
+        cachedVertices = 0;
+    }
+
+    /**
+     * Draw vertices recorded in glBegin/glEnd block using glDrawArrays command.
+     */
+    private void drawAsArray(int mode, int count) {
+        final int drawBufferOffset = vertexPointer.position() / STRIDE;
+
+        resizeVertexPointer(count);
+        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
+
+        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
+        final FloatBuffer vertexPointerFinal = this.vertexPointer;
+        this.shouldRegisterArrays = false;
+
+        attribTracker.applyEnableAndColorBufferBit();
+        exec.execute(() -> {
+            try {
+                if (shouldRegisterArrays) {
+                    registerArrays(vertexPointerFinal);
+                }
+
+                GL11.glDrawArrays(mode, drawBufferOffset, count);
+            } catch (Throwable t) {
+                throw new RuntimeException("glEnd: " + t);
             }
         });
 
