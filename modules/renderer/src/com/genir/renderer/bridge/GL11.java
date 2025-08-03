@@ -486,6 +486,10 @@ public class GL11 {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glMaterial(face, pname, snapshot));
     }
 
+    public static void glDeleteTextures(int texture) { // NoList
+        exec.execute(() -> org.lwjgl.opengl.GL11.glDeleteTextures(texture));
+    }
+
     /**
      * Blocking.
      */
@@ -495,6 +499,10 @@ public class GL11 {
 
     public static void glGenTextures(IntBuffer textures) { // NoList
         exec.wait(() -> org.lwjgl.opengl.GL11.glGenTextures(textures));
+    }
+
+    public static int glGenTextures() { // NoList
+        return exec.get(() -> org.lwjgl.opengl.GL11.glGenTextures());
     }
 
     public static int glGenLists(int range) { // NoList
@@ -511,6 +519,18 @@ public class GL11 {
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList
         exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
+    }
+
+    public static void glReadPixels(int x, int y, int width, int height, int format, int type, IntBuffer pixels) { // NoList
+        exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
+    }
+
+    public static void glReadPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) { // NoList
+        exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
+    }
+
+    public static int glGetError() {
+        return exec.get(() -> org.lwjgl.opengl.GL11.glGetError());
     }
 
     /**
@@ -550,10 +570,6 @@ public class GL11 {
 
     public static void glDeleteLists(int list, int range) { // NoList
         throwUnsupportedOperation("glDeleteLists");
-    }
-
-    public static void glDeleteTextures(int texture) {
-        throwUnsupportedOperation("glDeleteTextures");
     }
 
     public static void glFinish() { // NoList

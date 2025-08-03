@@ -125,4 +125,8 @@ public class Display {
     public static void processMessages() {
         exec.wait(() -> org.lwjgl.opengl.Display.processMessages());
     }
+
+    public static void sync(int fps) {
+        exec.wait(() -> org.lwjgl.opengl.Display.sync(fps));
+    }
 }
