@@ -24,7 +24,7 @@ public class VertexInterceptor {
 
     private final Executor exec;
     private final MatrixStack modelView;
-    private final AttribTracker attribTracker;
+    private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
 
     private boolean shouldRegisterArrays = false;
@@ -55,11 +55,11 @@ public class VertexInterceptor {
     public VertexInterceptor(
             Executor exec,
             MatrixStack modelView,
-            AttribTracker attribTracker,
+            AttribManager attribManager,
             ClientAttribTracker clientAttribTracker) {
         this.exec = exec;
         this.modelView = modelView;
-        this.attribTracker = attribTracker;
+        this.attribManager = attribManager;
         this.clientAttribTracker = clientAttribTracker;
     }
 
@@ -83,8 +83,44 @@ public class VertexInterceptor {
     }
 
     public void commitLayer() {
+        int count = 0;
         for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
-            entry.getValue().clear();
+            FloatBuffer vertices = entry.getValue();
+            count += vertices.position() / STRIDE;
+        }
+
+        if (count == 0) {
+            return;
+        }
+
+        resizeVertexPointer(count);
+
+        if (shouldRegisterArrays) {
+            final FloatBuffer vertexPointerFinal = vertexPointer;
+            exec.execute(() -> registerArrays(vertexPointerFinal));
+        }
+
+        for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
+            FloatBuffer vertexBatch = entry.getValue();
+            if (vertexBatch.position() == 0) {
+                continue;
+            }
+
+            ReorderedDrawContext ctx = entry.getKey();
+
+            final int batchMode = ctx.mode;
+            final int batchOffset = vertexPointer.position() / STRIDE;
+            final int batchCount = vertexBatch.position() / STRIDE;
+
+            vertexBatch.flip();
+            vertexPointer.put(vertexBatch);
+            vertexBatch.clear();
+
+            attribManager.forceReorderedDrawContext(ctx);
+
+            exec.execute(() -> {
+                GL11.glDrawArrays(batchMode, batchOffset, batchCount);
+            });
         }
     }
 
@@ -156,13 +192,13 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 6] = alpha;
 
         // Define vertex texture.
-        if (attribTracker.enableTexture()) {
+        if (attribManager.enableTexture()) {
             vertexScratchpad[offset + 7] = texS;
             vertexScratchpad[offset + 8] = texT;
         }
 
         // Transform normals.
-        if (attribTracker.enableLighting()) {
+        if (attribManager.enableLighting()) {
             // Assume model view is just rotations and translations, no shear or scale.
             // Otherwise, the upper left 3x3 part of transformation matrix would have
             // to be inversed and transposed first.
@@ -224,8 +260,8 @@ public class VertexInterceptor {
             });
         }
 
-        attribTracker.applyEnableAndColorBufferBit();
-        attribTracker.forceMatrixMode(GL11.GL_MODELVIEW);
+        attribManager.applyEnableAndColorBufferBit();
+        attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
 
         // Draw.
         exec.execute(() -> {
@@ -288,7 +324,7 @@ public class VertexInterceptor {
             vertexPointer.put(vertexSnapshot, 0, count * STRIDE);
             final FloatBuffer vertexPointerFinal = this.vertexPointer;
 
-            attribTracker.applyEnableAndColorBufferBit();
+            attribManager.applyEnableAndColorBufferBit();
             exec.execute(() -> {
                 try {
                     if (shouldRegisterArrays) {
@@ -304,7 +340,7 @@ public class VertexInterceptor {
     }
 
     private void storeReorderedDraw(int mode, int count) {
-        ReorderedDrawContext ctx = attribTracker.getReorderedDrawContext(mode);
+        ReorderedDrawContext ctx = attribManager.getReorderedDrawContext(mode);
 
         FloatBuffer vertexPointer = reorderBuffer.get(ctx);
         if (vertexPointer == null) {
@@ -338,7 +374,7 @@ public class VertexInterceptor {
 
         final FloatBuffer vertexPointerFinal = this.vertexPointer;
 
-        attribTracker.applyEnableAndColorBufferBit();
+        attribManager.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
                 GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));
@@ -359,16 +395,16 @@ public class VertexInterceptor {
      * Draw vertices recorded in glBegin/glEnd block using glDrawArrays command.
      */
     private void drawAsArray(int mode, int count) {
+        resizeVertexPointer(count);
         final int drawBufferOffset = vertexPointer.position() / STRIDE;
 
-        resizeVertexPointer(count);
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
         final boolean shouldRegisterArrays = this.shouldRegisterArrays;
         final FloatBuffer vertexPointerFinal = this.vertexPointer;
         this.shouldRegisterArrays = false;
 
-        attribTracker.applyEnableAndColorBufferBit();
+        attribManager.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
                 if (shouldRegisterArrays) {

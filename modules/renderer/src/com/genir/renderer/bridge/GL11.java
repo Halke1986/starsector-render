@@ -216,9 +216,9 @@ public class GL11 {
      */
     public static void glMatrixMode(int mode) {
         if (listManager.isRecording()) {
-            listManager.record(() -> attribTracker.glMatrixMode(mode));
+            listManager.record(() -> attribManager.glMatrixMode(mode));
         } else {
-            attribTracker.glMatrixMode(mode);
+            attribManager.glMatrixMode(mode);
         }
     }
 
@@ -231,10 +231,10 @@ public class GL11 {
     }
 
     private static void iglPushMatrix() {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glPushMatrix();
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glPushMatrix());
         }
     }
@@ -248,10 +248,10 @@ public class GL11 {
     }
 
     private static void iglPopMatrix() {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glPopMatrix();
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glPopMatrix());
         }
     }
@@ -265,10 +265,10 @@ public class GL11 {
     }
 
     private static void iglLoadIdentity() {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glLoadIdentity();
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
         }
     }
@@ -282,10 +282,10 @@ public class GL11 {
     }
 
     private static void iglTranslatef(float x, float y, float z) {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glTranslatef(x, y, z);
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
         }
     }
@@ -299,10 +299,10 @@ public class GL11 {
     }
 
     private static void iglRotatef(float angle, float x, float y, float z) {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glRotatef(angle, x, y, z);
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z));
         }
     }
@@ -316,10 +316,10 @@ public class GL11 {
     }
 
     private static void iglScalef(float x, float y, float z) {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glScalef(x, y, z);
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glScalef(x, y, z));
         }
     }
@@ -334,10 +334,10 @@ public class GL11 {
     }
 
     private static void iglMultMatrix(FloatBuffer m) {
-        if (attribTracker.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
             modelView.glMultMatrix(m);
         } else {
-            attribTracker.applyMatrixMode();
+            attribManager.applyMatrixMode();
             exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
         }
     }
@@ -354,8 +354,8 @@ public class GL11 {
     }
 
     private static void iglEnable(int cap) {
-        if (attribTracker.interceptEnable(cap)) {
-            attribTracker.glEnable(cap);
+        if (attribManager.interceptEnable(cap)) {
+            attribManager.glEnable(cap);
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glEnable(cap));
         }
@@ -370,8 +370,8 @@ public class GL11 {
     }
 
     private static void iglDisable(int cap) {
-        if (attribTracker.interceptEnable(cap)) {
-            attribTracker.glDisable(cap);
+        if (attribManager.interceptEnable(cap)) {
+            attribManager.glDisable(cap);
         } else {
             exec.execute(() -> org.lwjgl.opengl.GL11.glDisable(cap));
         }
@@ -379,27 +379,27 @@ public class GL11 {
 
     public static void glBlendFunc(int sfactor, int dfactor) {
         if (listManager.isRecording()) {
-            listManager.record(() -> attribTracker.glBlendFunc(sfactor, dfactor));
+            listManager.record(() -> attribManager.glBlendFunc(sfactor, dfactor));
         } else {
-            attribTracker.glBlendFunc(sfactor, dfactor);
+            attribManager.glBlendFunc(sfactor, dfactor);
         }
     }
 
     public static void glBindTexture(int target, int texture) {
         if (listManager.isRecording()) {
-            listManager.record(() -> attribTracker.glBindTexture(target, texture));
+            listManager.record(() -> attribManager.glBindTexture(target, texture));
         } else {
-            attribTracker.glBindTexture(target, texture);
+            attribManager.glBindTexture(target, texture);
         }
     }
 
     public static void glPushAttrib(int mask) { // NoList
-        attribTracker.glPushAttrib(mask);
+        attribManager.glPushAttrib(mask);
         exec.execute(() -> org.lwjgl.opengl.GL11.glPushAttrib(mask));
     }
 
     public static void glPopAttrib() { // NoList
-        attribTracker.glPopAttrib();
+        attribManager.glPopAttrib();
         exec.execute(() -> org.lwjgl.opengl.GL11.glPopAttrib());
     }
 

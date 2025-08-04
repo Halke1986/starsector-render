@@ -4,10 +4,10 @@ public class Bridge {
     public static final ListManager listManager = new ListManager();
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
-    public static final AttribTracker attribTracker = new AttribTracker(exec);
+    public static final AttribManager attribManager = new AttribManager(exec);
     public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
     public static final MatrixStack modelView = new MatrixStack();
-    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, attribTracker, clientAttribTracker);
+    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, attribManager, clientAttribTracker);
 
     public static void recordOrExecute(Runnable command) {
         if (listManager.isRecording()) {

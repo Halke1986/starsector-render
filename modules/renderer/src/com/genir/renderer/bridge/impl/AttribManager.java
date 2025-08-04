@@ -9,7 +9,7 @@ import java.util.Stack;
  * AttribTracker optimizes state changes by filtering out redundant calls
  * (e.g., consecutive glEnable calls).
  */
-public class AttribTracker {
+public class AttribManager {
     private final Executor exec;
 
     private final Snapshot expected = new Snapshot();
@@ -18,7 +18,7 @@ public class AttribTracker {
     private final Stack<Snapshot> expectedStack = new Stack<>();
     private final Stack<Snapshot> actualStack = new Stack<>();
 
-    public AttribTracker(Executor exec) {
+    public AttribManager(Executor exec) {
         this.exec = exec;
     }
 
@@ -59,6 +59,54 @@ public class AttribTracker {
         ctx.blendEquation = expected.blendEquation;
 
         return ctx;
+    }
+
+    public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
+        if (actual.enableAlphaTest) {
+            actual.enableBlend = false;
+            execGlEnableDisable(GL11.GL_ALPHA_TEST, false);
+        }
+
+        if (actual.enableStencilTest) {
+            actual.enableStencilTest = false;
+            execGlEnableDisable(GL11.GL_STENCIL_TEST, false);
+        }
+
+        if (actual.enableLighting) {
+            actual.enableLighting = false;
+            execGlEnableDisable(GL11.GL_LIGHTING, false);
+        }
+
+        if (actual.enableTexture2D != ctx.enableTexture) {
+            actual.enableTexture2D = ctx.enableTexture;
+            execGlEnableDisable(GL11.GL_TEXTURE_2D, ctx.enableTexture);
+        }
+
+        if (ctx.enableTexture) {
+            if (actual.textureTarget != ctx.textureTarget || actual.textureID != ctx.textureID) {
+                actual.textureTarget = ctx.textureTarget;
+                actual.textureID = ctx.textureID;
+                execGlBindTexture(ctx.textureTarget, ctx.textureID);
+            }
+        }
+
+        if (actual.enableBlend != ctx.enableBlend) {
+            actual.enableBlend = ctx.enableBlend;
+            execGlEnableDisable(GL11.GL_BLEND, ctx.enableBlend);
+        }
+
+        if (ctx.enableBlend) {
+            if (actual.blendSfactor != ctx.blendSfactor || actual.blendDfactor != ctx.blendDfactor) {
+                actual.blendSfactor = ctx.blendSfactor;
+                actual.blendDfactor = ctx.blendDfactor;
+                execGlBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
+            }
+
+            if (actual.blendEquation != ctx.blendEquation) {
+                actual.blendEquation = ctx.blendEquation;
+                execGlBlendEquation(ctx.blendEquation);
+            }
+        }
     }
 
     public void applyEnableAndColorBufferBit() {
@@ -156,40 +204,28 @@ public class AttribTracker {
     private void applyStencil() {
         if (actual.enableStencilTest != expected.enableStencilTest) {
             actual.enableStencilTest = expected.enableStencilTest;
-            apply(GL11.GL_STENCIL_TEST, expected.enableStencilTest);
+            execGlEnableDisable(GL11.GL_STENCIL_TEST, expected.enableStencilTest);
         }
     }
 
     private void applyAlpha() {
         if (actual.enableAlphaTest != expected.enableAlphaTest) {
             actual.enableAlphaTest = expected.enableAlphaTest;
-            apply(GL11.GL_ALPHA_TEST, expected.enableAlphaTest);
+            execGlEnableDisable(GL11.GL_ALPHA_TEST, expected.enableAlphaTest);
         }
     }
 
     public void applyTexture() {
         if (actual.enableTexture2D != expected.enableTexture2D) {
             actual.enableTexture2D = expected.enableTexture2D;
-            apply(GL11.GL_TEXTURE_2D, expected.enableTexture2D);
+            execGlEnableDisable(GL11.GL_TEXTURE_2D, expected.enableTexture2D);
         }
-
-//        if (expected.enableTexture2D) {
-//            if (actual.textureTarget != expected.textureTarget || actual.textureID != expected.textureID) {
-//                actual.textureTarget = expected.textureTarget;
-//                actual.textureID = expected.textureID;
-//
-//                final int target = expected.textureTarget;
-//                final int texture = expected.textureID;
-//
-//                exec.execute(() -> GL11.glBindTexture(target, texture));
-//            }
-//        }
     }
 
     private void applyBlend() {
         if (actual.enableBlend != expected.enableBlend) {
             actual.enableBlend = expected.enableBlend;
-            apply(GL11.GL_BLEND, expected.enableBlend);
+            execGlEnableDisable(GL11.GL_BLEND, expected.enableBlend);
         }
 
         if (expected.enableBlend) {
@@ -197,18 +233,13 @@ public class AttribTracker {
                 actual.blendSfactor = expected.blendSfactor;
                 actual.blendDfactor = expected.blendDfactor;
 
-                final int sfactor = expected.blendSfactor;
-                final int dfactor = expected.blendDfactor;
-
-                exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
+                execGlBlendFunc(expected.blendSfactor, expected.blendDfactor);
             }
 
             if (actual.blendEquation != expected.blendEquation) {
                 actual.blendEquation = expected.blendEquation;
 
-                final int equation = expected.blendEquation;
-
-                exec.execute(() -> GL14.glBlendEquation(equation));
+                execGlBlendEquation(expected.blendEquation);
             }
         }
     }
@@ -216,16 +247,28 @@ public class AttribTracker {
     private void applyLighting() {
         if (actual.enableLighting != expected.enableLighting) {
             actual.enableLighting = expected.enableLighting;
-            apply(GL11.GL_LIGHTING, expected.enableLighting);
+            execGlEnableDisable(GL11.GL_LIGHTING, expected.enableLighting);
         }
     }
 
-    private void apply(int cap, boolean value) {
+    private void execGlEnableDisable(int cap, boolean value) {
         if (value) {
             exec.execute(() -> GL11.glEnable(cap));
         } else {
             exec.execute(() -> GL11.glDisable(cap));
         }
+    }
+
+    private void execGlBindTexture(int target, int texture) {
+        exec.execute(() -> GL11.glBindTexture(target, texture));
+    }
+
+    private void execGlBlendFunc(int sfactor, int dfactor) {
+        exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
+    }
+
+    private void execGlBlendEquation(int mode) {
+        exec.execute(() -> GL14.glBlendEquation(mode));
     }
 
     private void setState(int cap, boolean value) {
