@@ -27,7 +27,7 @@ public class VertexInterceptor {
     private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
 
-    private boolean shouldRegisterArrays = false;
+    private boolean shouldRegisterArrays = true;
     private boolean reorderDraw = false;
 
     // State.
@@ -93,12 +93,7 @@ public class VertexInterceptor {
             return;
         }
 
-        resizeVertexPointer(count);
-
-        if (shouldRegisterArrays) {
-            final FloatBuffer vertexPointerFinal = vertexPointer;
-            exec.execute(() -> registerArrays(vertexPointerFinal));
-        }
+        prepareVertexPointer(count);
 
         for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
             FloatBuffer vertexBatch = entry.getValue();
@@ -117,9 +112,12 @@ public class VertexInterceptor {
             vertexBatch.clear();
 
             attribManager.forceReorderedDrawContext(ctx);
-
             exec.execute(() -> {
-                GL11.glDrawArrays(batchMode, batchOffset, batchCount);
+                try {
+                    GL11.glDrawArrays(batchMode, batchOffset, batchCount);
+                } catch (Throwable t) {
+                    throw new RuntimeException("commitLayer: " + t);
+                }
             });
         }
     }
@@ -302,13 +300,6 @@ public class VertexInterceptor {
         }
 
         return () -> {
-            // Prepare draw buffers.
-            resizeVertexPointer(count);
-            final int drawBufferSize = vertexPointer.position() / STRIDE;
-
-            final boolean shouldRegisterArrays = this.shouldRegisterArrays;
-            this.shouldRegisterArrays = false;
-
             // Transform vertices;
             Matrix4f m = modelView.getMatrix();
             for (int i = 0; i < count; i++) {
@@ -321,17 +312,16 @@ public class VertexInterceptor {
                 vertexSnapshot[offset + 1] = x * m.m10 + y * m.m11 + m.m13;
             }
 
+            // Prepare draw buffers.
+            prepareVertexPointer(count);
+
+            final int offset = vertexPointer.position() / STRIDE;
             vertexPointer.put(vertexSnapshot, 0, count * STRIDE);
-            final FloatBuffer vertexPointerFinal = this.vertexPointer;
 
             attribManager.applyEnableAndColorBufferBit();
             exec.execute(() -> {
                 try {
-                    if (shouldRegisterArrays) {
-                        registerArrays(vertexPointerFinal);
-                    }
-
-                    GL11.glDrawArrays(mode, drawBufferSize, count);
+                    GL11.glDrawArrays(mode, offset, count);
                 } catch (Throwable t) {
                     throw new RuntimeException("recordedGlDrawArrays: " + t);
                 }
@@ -342,12 +332,14 @@ public class VertexInterceptor {
     private void storeReorderedDraw(int mode, int count) {
         ReorderedDrawContext ctx = attribManager.getReorderedDrawContext(mode);
 
+        // Create buffer if absent.
         FloatBuffer vertexPointer = reorderBuffer.get(ctx);
         if (vertexPointer == null) {
             vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
             reorderBuffer.put(ctx, vertexPointer);
         }
 
+        // Resize buffer if necessary.
         int capacityRequired = capacityRequired(vertexPointer, count * STRIDE);
         if (capacityRequired > 0) {
             vertexPointer = BufferUtil.reallocate(capacityRequired, vertexPointer);
@@ -395,23 +387,15 @@ public class VertexInterceptor {
      * Draw vertices recorded in glBegin/glEnd block using glDrawArrays command.
      */
     private void drawAsArray(int mode, int count) {
-        resizeVertexPointer(count);
-        final int drawBufferOffset = vertexPointer.position() / STRIDE;
+        prepareVertexPointer(count);
 
+        final int offset = vertexPointer.position() / STRIDE;
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
-
-        final boolean shouldRegisterArrays = this.shouldRegisterArrays;
-        final FloatBuffer vertexPointerFinal = this.vertexPointer;
-        this.shouldRegisterArrays = false;
 
         attribManager.applyEnableAndColorBufferBit();
         exec.execute(() -> {
             try {
-                if (shouldRegisterArrays) {
-                    registerArrays(vertexPointerFinal);
-                }
-
-                GL11.glDrawArrays(mode, drawBufferOffset, count);
+                GL11.glDrawArrays(mode, offset, count);
             } catch (Throwable t) {
                 throw new RuntimeException("glEnd: " + t);
             }
@@ -420,14 +404,24 @@ public class VertexInterceptor {
         cachedVertices = 0;
     }
 
-    private void resizeVertexPointer(int vertexNum) {
+    private void prepareVertexPointer(int vertexNum) {
         int capacityRequired = capacityRequired(vertexPointer, vertexNum * STRIDE);
         if (capacityRequired > 0) {
-            log(VertexInterceptor.class, "resize vertex pointer to " + capacityRequired / STRIDE + " vertices");
-
             vertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
-            arraysTouched();
         }
+
+        if (shouldRegisterArrays || capacityRequired > 0) {
+            final FloatBuffer vertexPointerFinal = vertexPointer;
+            exec.execute(() -> {
+                try {
+                    registerArrays(vertexPointerFinal);
+                } catch (Throwable t) {
+                    throw new RuntimeException("prepareVertexPointer: " + t);
+                }
+            });
+        }
+
+        shouldRegisterArrays = false;
     }
 
     private void resizeAuxData(int bytes) {

@@ -34,10 +34,8 @@ public class BufferUtil {
     public static FloatBuffer reallocate(int size, FloatBuffer old) {
         FloatBuffer n = org.lwjgl.BufferUtils.createFloatBuffer(size);
 
-        FloatBuffer oldReader = old.duplicate();
-        oldReader.flip();
-
-        n.put(0, oldReader, 0, Math.min(size, oldReader.limit()));
+        n.put(0, old, 0, Math.min(size, old.limit()));
+        n.position(Math.min(size, old.position()));
         return n;
     }
 
