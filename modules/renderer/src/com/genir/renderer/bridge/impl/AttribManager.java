@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 
 import java.util.Stack;
@@ -37,6 +38,14 @@ public class AttribManager {
 
     public boolean enableLighting() {
         return expected.enableLighting;
+    }
+
+    public int textureBinding() {
+        return expected.textureID;
+    }
+
+    public int activeTexture() {
+        return expected.activeTexture;
     }
 
     public int matrixMode() {
@@ -201,6 +210,12 @@ public class AttribManager {
         expected.matrixMode = mode;
     }
 
+    public void glActiveTexture(int mode) {
+        expected.activeTexture = mode;
+
+        exec.execute(() -> GL13.glActiveTexture(mode));
+    }
+
     private void applyStencil() {
         if (actual.enableStencilTest != expected.enableStencilTest) {
             actual.enableStencilTest = expected.enableStencilTest;
@@ -300,9 +315,10 @@ public class AttribManager {
         boolean enableBlend = false;
         boolean enableLighting = false;
 
-        // Texture.
+        // Texture. Only tracking, no application.
         int textureTarget = 0;
         int textureID = 0;
+        int activeTexture = GL13.GL_TEXTURE0;
 
         // Blend.
         int blendSfactor = 0;
@@ -330,6 +346,12 @@ public class AttribManager {
 
             if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
                 other.matrixMode = matrixMode;
+            }
+
+            if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
+                other.textureTarget = textureTarget;
+                other.textureID = textureID;
+                other.activeTexture = activeTexture;
             }
         }
     }

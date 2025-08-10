@@ -540,7 +540,14 @@ public class GL11 {
      * Blocking.
      */
     public static int glGetInteger(int pname) { // NoList
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
+        switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
+                return attribManager.textureBinding();
+            case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
+                return attribManager.activeTexture();
+            default:
+                return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
+        }
     }
 
     public static void glGenTextures(IntBuffer textures) { // NoList
