@@ -10,6 +10,10 @@ public class BufferUtil {
      * Returns a snapshot copy of the given FloatBuffer, preserving its content from position 0 to limit.
      */
     public static FloatBuffer snapshot(FloatBuffer params) {
+        if (params == null) {
+            return null;
+        }
+
         FloatBuffer reader = params.duplicate();
         reader.rewind();
 
@@ -21,6 +25,10 @@ public class BufferUtil {
     }
 
     public static ByteBuffer snapshot(ByteBuffer params) {
+        if (params == null) {
+            return null;
+        }
+
         ByteBuffer reader = params.duplicate();
         reader.rewind();
 

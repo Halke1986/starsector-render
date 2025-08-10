@@ -55,11 +55,20 @@ public class GL11 {
         );
     }
 
+    public static void glColor3f(float red, float green, float blue) {
+        glColor4f(
+                red,
+                green,
+                blue,
+                1f
+        );
+    }
+
     public static void glColor3d(double red, double green, double blue) {
         glColor4f(
-                (float) red * 255,
-                (float) green * 255,
-                (float) blue * 255,
+                (float) red,
+                (float) green,
+                (float) blue,
                 1f
         );
     }
@@ -442,8 +451,16 @@ public class GL11 {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask));
     }
 
+    public static void glStencilMask(int mask) {
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glStencilMask(mask));
+    }
+
     public static void glStencilOp(int fail, int zfail, int zpass) {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass));
+    }
+
+    public static void glClearStencil(int s) {
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glClearStencil(s));
     }
 
     public static void glAlphaFunc(int func, float ref) {
@@ -464,6 +481,11 @@ public class GL11 {
 
     public static void glShadeModel(int mode) {
         recordOrExecute(() -> org.lwjgl.opengl.GL11.glShadeModel(mode));
+    }
+
+    public static void glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) { // NoList
+        final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
@@ -488,6 +510,18 @@ public class GL11 {
 
     public static void glDeleteTextures(int texture) { // NoList
         exec.execute(() -> org.lwjgl.opengl.GL11.glDeleteTextures(texture));
+    }
+
+    public static void glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
+    }
+
+    public static void glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) {
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height));
+    }
+
+    public static void glEdgeFlag(boolean flag) {
+        recordOrExecute(() -> org.lwjgl.opengl.GL11.glEdgeFlag(flag));
     }
 
     /**
@@ -529,8 +563,16 @@ public class GL11 {
         exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
     }
 
-    public static int glGetError() {
+    public static int glGetError() { // NoList
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetError());
+    }
+
+    public static int glGetTexLevelParameteri(int target, int level, int pname) { // NoList
+        return exec.get(() -> org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname));
+    }
+
+    public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) { // NoList
+        exec.wait(() -> org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels));
     }
 
     /**
@@ -558,10 +600,6 @@ public class GL11 {
 
     public static void glTexEnvf(int target, int pname, float param) {
         throwUnsupportedOperation("glTexEnvf");
-    }
-
-    public static void glColor3f(float red, float green, float blue) {
-        throwUnsupportedOperation("glColor3f");
     }
 
     public static void glArrayElement(int i) {
