@@ -8,10 +8,10 @@ public class GL14 {
         record glBlendEquation(int mode) implements Runnable {
             @Override
             public void run() {
-                if (listManager.isRecording(this))
-                    return;
+//                if (listManager.isRecording(this))
+//                    return;
 
-                attribManager.glBlendEquation(mode);
+                org.lwjgl.opengl.GL14.glBlendEquation(mode);
             }
         }
         exec.execute(new glBlendEquation(mode));
