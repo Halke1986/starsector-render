@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.Debug.*;
+import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
 import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
@@ -49,8 +49,6 @@ public class GL11 {
      * Draw.
      */
     public static void glBegin(int mode) {
-        assertNoUnsupportedOperation();
-
         record glBegin(int mode) implements Runnable {
             @Override
             public void run() {
@@ -1030,73 +1028,5 @@ public class GL11 {
             }
         }
         exec.wait(new glGetTexImage(target, level, format, type, pixels));
-    }
-
-    /**
-     * Unsupported.
-     */
-    public static void glTranslated(double x, double y, double z) {
-        throwUnsupportedOperation("glTranslated");
-    }
-
-    public static void glPolygonMode(int face, int mode) {
-        throwUnsupportedOperation("glPolygonMode");
-    }
-
-    public static void glPointSize(float size) {
-        throwUnsupportedOperation("glPointSize");
-    }
-
-    public static void glMateriali(int face, int pname, int param) {
-        throwUnsupportedOperation("glMateriali");
-    }
-
-    public static void glColor3ub(byte red, byte green, byte blue) {
-        throwUnsupportedOperation("glColor3ub");
-    }
-
-    public static void glTexEnvf(int target, int pname, float param) {
-        throwUnsupportedOperation("glTexEnvf");
-    }
-
-    public static void glArrayElement(int i) {
-        throwUnsupportedOperation("glArrayElement");
-    }
-
-    public static void glDeleteLists(int list, int range) { // NoList
-        throwUnsupportedOperation("glDeleteLists");
-    }
-
-    public static void glFinish() { // NoList
-        throwUnsupportedOperation("glFinish");
-    }
-
-    public static boolean glIsEnabled(int cap) { // NoList
-        throwUnsupportedOperation("glIsEnabled");
-        return false;
-    }
-
-    public static void glVertexPointer(int size, int stride, IntBuffer pointer) { // NoList
-        throwUnsupportedOperation("glVertexPointer");
-    }
-
-    public static void glDrawElements(int mode, IntBuffer indices) {
-        throwUnsupportedOperation("glDrawElements");
-    }
-
-    public static void glDeleteTextures(IntBuffer textures) { // NoList
-        throwUnsupportedOperation("glDeleteTextures");
-    }
-
-    public static void glInterleavedArrays(int format, int stride, FloatBuffer pointer) { // NoList
-        throwUnsupportedOperation("glInterleavedArrays");
-    }
-
-    public static void glGetInteger(int pname, IntBuffer params) { // NoList
-        throwUnsupportedOperation("glGetInteger");
-    }
-
-    public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels_buffer_offset) {
-        throwUnsupportedOperation("glTexSubImage2D");
     }
 }

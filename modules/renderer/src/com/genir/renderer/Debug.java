@@ -126,17 +126,4 @@ public class Debug {
     public static void log(Object msg) {
         Logger.getLogger(Debug.class).info(msg);
     }
-
-    private static String unsupportedOperation;
-
-    public static void throwUnsupportedOperation(String operation) {
-        unsupportedOperation = operation;
-        throw new UnsupportedOperationException(operation);
-    }
-
-    public static void assertNoUnsupportedOperation() {
-        if (unsupportedOperation != null) {
-            throw new UnsupportedOperationException(unsupportedOperation);
-        }
-    }
 }
