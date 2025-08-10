@@ -18,7 +18,7 @@ public class StateCache {
 
     public boolean isAvailable() {
         // Inactive displays use stale cache, causing a black screen on reactivation.
-        // Starector never updates the cache while inactive.
+        // Starsector never updates the cache while inactive.
         return initialized && displayIsActive;
     }
 
@@ -50,6 +50,7 @@ public class StateCache {
         return contextCapabilities;
     }
 
+    // Run by rendering thread.
     synchronized public void update() {
         displayPixelScaleFactor = Display.getPixelScaleFactor();
         displayIsActive = Display.isActive();

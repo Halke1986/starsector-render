@@ -8,6 +8,7 @@ import org.lwjgl.opengl.PixelFormat;
 import java.nio.ByteBuffer;
 
 import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
 public class Display {
     public static DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
@@ -67,10 +68,9 @@ public class Display {
     }
 
     public static float getPixelScaleFactor() {
-        //TODO
-//        if (stateCache.isAvailable()) {
-//            return stateCache.getDisplayPixelScaleFactor();
-//        }
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayPixelScaleFactor();
+        }
 
         return exec.get(() -> org.lwjgl.opengl.Display.getPixelScaleFactor());
     }
@@ -90,19 +90,17 @@ public class Display {
     }
 
     public static boolean isCloseRequested() {
-        //TODO
-//        if (stateCache.isAvailable()) {
-//            return stateCache.getDisplayIsCloseRequested();
-//        }
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayIsCloseRequested();
+        }
 
         return exec.get(() -> org.lwjgl.opengl.Display.isCloseRequested());
     }
 
     public static boolean isActive() {
-        //TODO
-//        if (stateCache.isAvailable()) {
-//            return stateCache.getDisplayIsActive();
-//        }
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayIsActive();
+        }
 
         return exec.get(() -> org.lwjgl.opengl.Display.isActive());
     }
@@ -112,19 +110,17 @@ public class Display {
     }
 
     public static boolean isFullscreen() {
-        //TODO
-//        if (stateCache.isAvailable()) {
-//            return stateCache.getDisplayIsFullscreen();
-//        }
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayIsFullscreen();
+        }
 
         return exec.get(() -> org.lwjgl.opengl.Display.isFullscreen());
     }
 
     public static boolean isVisible() {
-        //TODO
-//        if (stateCache.isAvailable()) {
-//            return stateCache.getDisplayIsVisible();
-//        }
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayIsVisible();
+        }
 
         return exec.get(() -> org.lwjgl.opengl.Display.isVisible());
     }

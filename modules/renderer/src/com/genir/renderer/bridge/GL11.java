@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 
 import static com.genir.renderer.Debug.*;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
 public class GL11 {
     /**
@@ -359,7 +360,7 @@ public class GL11 {
 //                    modelView.glPushMatrix();
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glPushMatrix();
+                org.lwjgl.opengl.GL11.glPushMatrix();
 //                }
             }
         }
@@ -377,7 +378,7 @@ public class GL11 {
 //                    modelView.glPopMatrix();
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glPopMatrix();
+                org.lwjgl.opengl.GL11.glPopMatrix();
 //                }
             }
         }
@@ -395,7 +396,7 @@ public class GL11 {
 //                    modelView.glLoadIdentity();
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glLoadIdentity();
+                org.lwjgl.opengl.GL11.glLoadIdentity();
 //                }
             }
         }
@@ -413,7 +414,7 @@ public class GL11 {
 //                    modelView.glTranslatef(x, y, z);
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
+                org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
 //                }
             }
         }
@@ -431,7 +432,7 @@ public class GL11 {
 //                    modelView.glRotatef(angle, x, y, z);
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
+                org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
 //                }
             }
         }
@@ -449,7 +450,7 @@ public class GL11 {
 //                    modelView.glScalef(x, y, z);
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glScalef(x, y, z);
+                org.lwjgl.opengl.GL11.glScalef(x, y, z);
 //                }
             }
         }
@@ -467,7 +468,7 @@ public class GL11 {
 //                    modelView.glMultMatrix(m);
 //                } else {
 //                    attribManager.applyMatrixMode();
-                    exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
+                exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
 //                }
             }
         }
@@ -488,7 +489,7 @@ public class GL11 {
 //                if (attribManager.interceptEnable(cap)) {
 //                    attribManager.glEnable(cap);
 //                } else {
-                    org.lwjgl.opengl.GL11.glEnable(cap);
+                org.lwjgl.opengl.GL11.glEnable(cap);
 //                }
             }
         }
@@ -505,7 +506,7 @@ public class GL11 {
 //                if (attribManager.interceptEnable(cap)) {
 //                    attribManager.glDisable(cap);
 //                } else {
-                    org.lwjgl.opengl.GL11.glDisable(cap);
+                org.lwjgl.opengl.GL11.glDisable(cap);
 //                }
             }
         }
@@ -959,10 +960,9 @@ public class GL11 {
     }
 
     public static String glGetString(int name) { // NoList
-        // TODO
-//        if (stateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
-//            return stateCache.getGlStringExtensions();
-//        }
+        if (stateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
+            return stateCache.getGlStringExtensions();
+        }
 
         record glGetString(int name) implements Callable<String> {
             @Override
