@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.impl.BufferUtil;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.concurrent.Callable;
 
 import static com.genir.renderer.Debug.*;
 import static com.genir.renderer.bridge.impl.Bridge.*;
@@ -14,15 +15,33 @@ public class GL11 {
      * Lists.
      */
     public static void glNewList(int list, int mode) {
-        listManager.glNewList(list, mode);
+        record glNewList(int list, int mode) implements Runnable {
+            @Override
+            public void run() {
+                listManager.glNewList(list, mode);
+            }
+        }
+        exec.execute(new glNewList(list, mode));
     }
 
     public static void glEndList() {
-        listManager.glEndList();
+        record glEndList() implements Runnable {
+            @Override
+            public void run() {
+                listManager.glEndList();
+            }
+        }
+        exec.execute(new glEndList());
     }
 
     public static void glCallList(int list) {
-        listManager.glCallList(list);
+        record glCallList(int list) implements Runnable {
+            @Override
+            public void run() {
+                listManager.glCallList(list);
+            }
+        }
+        exec.execute(new glCallList(list));
     }
 
     /**
@@ -31,19 +50,29 @@ public class GL11 {
     public static void glBegin(int mode) {
         assertNoUnsupportedOperation();
 
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glBegin(mode));
-        } else {
-            vertexInterceptor.glBegin(mode);
+        record glBegin(int mode) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                vertexInterceptor.glBegin(mode);
+            }
         }
+        exec.execute(new glBegin(mode));
     }
 
     public static void glEnd() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glEnd());
-        } else {
-            vertexInterceptor.glEnd();
+        record glEnd() implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                vertexInterceptor.glEnd();
+            }
         }
+        exec.execute(new glEnd());
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -74,19 +103,29 @@ public class GL11 {
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glColor4f(red, green, blue, alpha));
-        } else {
-            vertexInterceptor.glColor4f(red, green, blue, alpha);
+        record glColor4f(float red, float green, float blue, float alpha) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                vertexInterceptor.glColor4f(red, green, blue, alpha);
+            }
         }
+        exec.execute(new glColor4f(red, green, blue, alpha));
     }
 
     public static void glTexCoord2f(float s, float t) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glTexCoord2f(s, t));
-        } else {
-            vertexInterceptor.glTexCoord2f(s, t);
+        record glTexCoord2f(float s, float t) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                vertexInterceptor.glTexCoord2f(s, t);
+            }
         }
+        exec.execute(new glTexCoord2f(s, t));
     }
 
     public static void glTexCoord2d(double s, double t) {
@@ -97,19 +136,31 @@ public class GL11 {
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glNormal3f(nx, ny, nz));
-        } else {
-            vertexInterceptor.glNormal3f(nx, ny, nz);
+        record glNormal3f(float nx, float ny, float nz) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                vertexInterceptor.glNormal3f(nx, ny, nz);
+
+            }
         }
+        exec.execute(new glNormal3f(nx, ny, nz));
     }
 
     public static void glVertex3f(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> vertexInterceptor.glVertex3f(x, y, z));
-        } else {
-            vertexInterceptor.glVertex3f(x, y, z);
+        record glVertex3f(float x, float y, float z) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                vertexInterceptor.glVertex3f(x, y, z);
+
+            }
         }
+        exec.execute(new glVertex3f(x, y, z));
     }
 
     public static void glVertex2f(float x, float y) {
@@ -145,39 +196,51 @@ public class GL11 {
      * Client attributes.
      */
     public static void glEnableClientState(int cap) { // NoList
-        clientAttribTracker.glEnableClientState(cap);
+        record glEnableClientState(int cap) implements Runnable {
+            @Override
+            public void run() {
+                clientAttribTracker.glEnableClientState(cap);
+            }
+        }
+        exec.execute(new glEnableClientState(cap));
     }
 
     public static void glDisableClientState(int cap) { // NoList
-        clientAttribTracker.glDisableClientState(cap);
+        record glDisableClientState(int cap) implements Runnable {
+            @Override
+            public void run() {
+                clientAttribTracker.glDisableClientState(cap);
+            }
+        }
+        exec.execute(new glDisableClientState(cap));
     }
 
     public static void glPushClientAttrib(int mask) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglPushClientAttrib(mask));
-        } else {
-            iglPushClientAttrib(mask);
+        record glPushClientAttrib(int mask) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                clientAttribTracker.glPushClientAttrib(mask);
+                org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
+            }
         }
-    }
-
-    private static void iglPushClientAttrib(int mask) {
-        clientAttribTracker.glPushClientAttrib(mask);
-
-        exec.execute(() -> org.lwjgl.opengl.GL11.glPushClientAttrib(mask));
+        exec.execute(new glPushClientAttrib(mask));
     }
 
     public static void glPopClientAttrib() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglPopClientAttrib());
-        } else {
-            iglPopClientAttrib();
+        record glPopClientAttrib() implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                clientAttribTracker.glPopClientAttrib();
+                exec.execute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
+            }
         }
-    }
-
-    public static void iglPopClientAttrib() {
-        clientAttribTracker.glPopClientAttrib();
-
-        exec.execute(() -> org.lwjgl.opengl.GL11.glPopClientAttrib());
+        exec.execute(new glPopClientAttrib());
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
@@ -185,7 +248,13 @@ public class GL11 {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        clientAttribTracker.glVertexPointer(size, stride, pointer);
+        record glVertexPointer(int size, int stride, FloatBuffer pointer) implements Runnable {
+            @Override
+            public void run() {
+                clientAttribTracker.glVertexPointer(size, stride, pointer);
+            }
+        }
+        exec.execute(new glVertexPointer(size, stride, pointer));
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
@@ -193,7 +262,13 @@ public class GL11 {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        clientAttribTracker.glColorPointer(size, unsigned, stride, pointer);
+        record glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) implements Runnable {
+            @Override
+            public void run() {
+                clientAttribTracker.glColorPointer(size, unsigned, stride, pointer);
+            }
+        }
+        exec.execute(new glColorPointer(size, unsigned, stride, pointer));
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
@@ -201,397 +276,761 @@ public class GL11 {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        clientAttribTracker.glTexCoordPointer(size, stride, pointer);
+        record glTexCoordPointer(int size, int stride, FloatBuffer pointer) implements Runnable {
+            @Override
+            public void run() {
+                clientAttribTracker.glTexCoordPointer(size, stride, pointer);
+            }
+        }
+        exec.execute(new glTexCoordPointer(size, stride, pointer));
     }
 
     /**
      * Array draw.
      */
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
+        record glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
+            }
+        }
+        exec.execute(new glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
+        record glColorPointer(int size, int type, int stride, long pointer_buffer_offset) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
+            }
+        }
+        exec.execute(new glColorPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
+        record glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
+            }
+        }
+        exec.execute(new glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        if (listManager.isRecording()) {
-            listManager.record(vertexInterceptor.recordedGlDrawArrays(mode, first, count));
-        } else {
-            vertexInterceptor.glDrawArrays(mode, first, count);
+        record glDrawArrays(int mode, int first, int count) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording()) {
+                    listManager.record(vertexInterceptor.recordedGlDrawArrays(mode, first, count));
+                } else {
+                    vertexInterceptor.glDrawArrays(mode, first, count);
+                }
+            }
         }
+        exec.execute(new glDrawArrays(mode, first, count));
     }
 
     /**
      * Matrix.
      */
     public static void glMatrixMode(int mode) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> attribManager.glMatrixMode(mode));
-        } else {
-            attribManager.glMatrixMode(mode);
+        record glMatrixMode(int mode) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                attribManager.glMatrixMode(mode);
+            }
         }
+        exec.execute(new glMatrixMode(mode));
     }
 
     public static void glPushMatrix() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglPushMatrix());
-        } else {
-            iglPushMatrix();
-        }
-    }
+        record glPushMatrix() implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglPushMatrix() {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glPushMatrix();
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glPushMatrix());
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glPushMatrix();
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glPushMatrix();
+                }
+            }
         }
+        exec.execute(new glPushMatrix());
     }
 
     public static void glPopMatrix() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglPopMatrix());
-        } else {
-            iglPopMatrix();
-        }
-    }
+        record glPopMatrix() implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglPopMatrix() {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glPopMatrix();
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glPopMatrix());
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glPopMatrix();
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glPopMatrix();
+                }
+            }
         }
+        exec.execute(new glPopMatrix());
     }
 
     public static void glLoadIdentity() {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglLoadIdentity());
-        } else {
-            iglLoadIdentity();
-        }
-    }
+        record glLoadIdentity() implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglLoadIdentity() {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glLoadIdentity();
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glLoadIdentity());
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glLoadIdentity();
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glLoadIdentity();
+                }
+            }
         }
+        exec.execute(new glLoadIdentity());
     }
 
     public static void glTranslatef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglTranslatef(x, y, z));
-        } else {
-            iglTranslatef(x, y, z);
-        }
-    }
+        record glTranslatef(float x, float y, float z) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglTranslatef(float x, float y, float z) {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glTranslatef(x, y, z);
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glTranslatef(x, y, z));
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glTranslatef(x, y, z);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
+                }
+            }
         }
+        exec.execute(new glTranslatef(x, y, z));
     }
 
     public static void glRotatef(float angle, float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglRotatef(angle, x, y, z));
-        } else {
-            iglRotatef(angle, x, y, z);
-        }
-    }
+        record glRotatef(float angle, float x, float y, float z) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglRotatef(float angle, float x, float y, float z) {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glRotatef(angle, x, y, z);
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z));
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glRotatef(angle, x, y, z);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
+                }
+            }
         }
+        exec.execute(new glRotatef(angle, x, y, z));
     }
 
     public static void glScalef(float x, float y, float z) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglScalef(x, y, z));
-        } else {
-            iglScalef(x, y, z);
-        }
-    }
+        record glScalef(float x, float y, float z) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglScalef(float x, float y, float z) {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glScalef(x, y, z);
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glScalef(x, y, z));
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glScalef(x, y, z);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glScalef(x, y, z);
+                }
+            }
         }
+        exec.execute(new glScalef(x, y, z));
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        final FloatBuffer snapshot = BufferUtil.snapshot(m);
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglMultMatrix(snapshot));
-        } else {
-            iglMultMatrix(snapshot);
-        }
-    }
+        record glMultMatrix(FloatBuffer m) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglMultMatrix(FloatBuffer m) {
-        if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-            modelView.glMultMatrix(m);
-        } else {
-            attribManager.applyMatrixMode();
-            exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glMultMatrix(m);
+                } else {
+                    attribManager.applyMatrixMode();
+                    exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
+                }
+            }
         }
+        final FloatBuffer snapshot = BufferUtil.snapshot(m);
+        exec.execute(new glMultMatrix(m));
     }
 
     /**
      * Render context.
      */
     public static void glEnable(int cap) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglEnable(cap));
-        } else {
-            iglEnable(cap);
-        }
-    }
+        record glEnable(int cap) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglEnable(int cap) {
-        if (attribManager.interceptEnable(cap)) {
-            attribManager.glEnable(cap);
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glEnable(cap));
+                if (attribManager.interceptEnable(cap)) {
+                    attribManager.glEnable(cap);
+                } else {
+                    org.lwjgl.opengl.GL11.glEnable(cap);
+                }
+            }
         }
+        exec.execute(new glEnable(cap));
     }
 
     public static void glDisable(int cap) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> iglDisable(cap));
-        } else {
-            iglDisable(cap);
-        }
-    }
+        record glDisable(int cap) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
 
-    private static void iglDisable(int cap) {
-        if (attribManager.interceptEnable(cap)) {
-            attribManager.glDisable(cap);
-        } else {
-            exec.execute(() -> org.lwjgl.opengl.GL11.glDisable(cap));
+                if (attribManager.interceptEnable(cap)) {
+                    attribManager.glDisable(cap);
+                } else {
+                    org.lwjgl.opengl.GL11.glDisable(cap);
+                }
+            }
         }
+        exec.execute(new glDisable(cap));
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> attribManager.glBlendFunc(sfactor, dfactor));
-        } else {
-            attribManager.glBlendFunc(sfactor, dfactor);
+        record glBlendFunc(int sfactor, int dfactor) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                attribManager.glBlendFunc(sfactor, dfactor);
+            }
         }
+        exec.execute(new glBlendFunc(sfactor, dfactor));
     }
 
     public static void glBindTexture(int target, int texture) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> attribManager.glBindTexture(target, texture));
-        } else {
-            attribManager.glBindTexture(target, texture);
+        record glBindTexture(int target, int texture) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                attribManager.glBindTexture(target, texture);
+            }
         }
+        exec.execute(new glBindTexture(target, texture));
     }
 
     public static void glPushAttrib(int mask) { // NoList
-        attribManager.glPushAttrib(mask);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glPushAttrib(mask));
+        record glPushAttrib(int mask) implements Runnable {
+            @Override
+            public void run() {
+                attribManager.glPushAttrib(mask);
+                org.lwjgl.opengl.GL11.glPushAttrib(mask);
+            }
+        }
+        exec.execute(new glPushAttrib(mask));
     }
 
     public static void glPopAttrib() { // NoList
-        attribManager.glPopAttrib();
-        exec.execute(() -> org.lwjgl.opengl.GL11.glPopAttrib());
+        record glPopAttrib() implements Runnable {
+            @Override
+            public void run() {
+                attribManager.glPopAttrib();
+                org.lwjgl.opengl.GL11.glPopAttrib();
+            }
+        }
+        exec.execute(new glPopAttrib());
     }
 
     /**
      * Other calls.
      */
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha));
+        record glColorMask(boolean red, boolean green, boolean blue, boolean alpha) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
+            }
+        }
+        exec.execute(new glColorMask(red, green, blue, alpha));
     }
 
     public static void glViewport(int x, int y, int width, int height) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glViewport(x, y, width, height));
+        record glViewport(int x, int y, int width, int height) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
+            }
+        }
+        exec.execute(new glViewport(x, y, width, height));
     }
 
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar));
+        record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
+            }
+        }
+        exec.execute(new glOrtho(left, right, bottom, top, zNear, zFar));
     }
 
     public static void glTexParameteri(int target, int pname, int param) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param));
+        record glTexParameteri(int target, int pname, int param) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
+            }
+        }
+        exec.execute(new glTexParameteri(target, pname, param));
     }
 
     public static void glClearColor(float red, float green, float blue, float alpha) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha));
+        record glClearColor(float red, float green, float blue, float alpha) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
+            }
+        }
+        exec.execute(new glClearColor(red, green, blue, alpha));
     }
 
     public static void glClear(int mask) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glClear(mask));
+        record glClear(int mask) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glClear(mask);
+            }
+        }
+        exec.execute(new glClear(mask));
     }
 
     public static void glFlush() { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glFlush());
+        record glFlush() implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glFlush();
+            }
+        }
+        exec.execute(new glFlush());
     }
 
     public static void glScissor(int x, int y, int width, int height) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glScissor(x, y, width, height));
+        record glScissor(int x, int y, int width, int height) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
+            }
+        }
+        exec.execute(new glScissor(x, y, width, height));
     }
 
     public static void glStencilFunc(int func, int ref, int mask) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask));
+        record glStencilFunc(int func, int ref, int mask) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
+            }
+        }
+        exec.execute(new glStencilFunc(func, ref, mask));
     }
 
     public static void glStencilMask(int mask) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glStencilMask(mask));
+        record glStencilMask(int mask) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glStencilMask(mask);
+            }
+        }
+        exec.execute(new glStencilMask(mask));
     }
 
     public static void glStencilOp(int fail, int zfail, int zpass) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass));
+        record glStencilOp(int fail, int zfail, int zpass) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
+            }
+        }
+        exec.execute(new glStencilOp(fail, zfail, zpass));
     }
 
     public static void glClearStencil(int s) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glClearStencil(s));
+        record glClearStencil(int s) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glClearStencil(s);
+            }
+        }
+        exec.execute(new glClearStencil(s));
     }
 
     public static void glAlphaFunc(int func, float ref) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glAlphaFunc(func, ref));
+        record glAlphaFunc(int func, float ref) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
+            }
+        }
+        exec.execute(new glAlphaFunc(func, ref));
     }
 
     public static void glHint(int target, int mode) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glHint(target, mode));
+        record glHint(int target, int mode) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glHint(target, mode);
+            }
+        }
+        exec.execute(new glHint(target, mode));
     }
 
     public static void glLineWidth(float width) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glLineWidth(width));
+        record glLineWidth(float width) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glLineWidth(width);
+            }
+        }
+        exec.execute(new glLineWidth(width));
     }
 
     public static void glColorMaterial(int face, int mode) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glColorMaterial(face, mode));
+        record glColorMaterial(int face, int mode) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
+            }
+        }
+        exec.execute(new glColorMaterial(face, mode));
     }
 
     public static void glShadeModel(int mode) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glShadeModel(mode));
+        record glShadeModel(int mode) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glShadeModel(mode);
+            }
+        }
+        exec.execute(new glShadeModel(mode));
     }
 
     public static void glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) { // NoList
+        record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels);
+            }
+        }
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
+        exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
+        record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+            }
+        }
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
+        exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
+        record glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+            }
+        }
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
+        exec.execute(new glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
 
     public static void glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) { // NoList ?
+        record glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+            }
+        }
         final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
+        exec.execute(new glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
+        record glLight(int light, int pname, FloatBuffer params) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glLight(light, pname, params);
+            }
+        }
         final FloatBuffer snapshot = BufferUtil.snapshot(params);
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glLight(light, pname, snapshot));
+        exec.execute(new glLight(light, pname, snapshot));
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
+        record glMaterial(int face, int pname, FloatBuffer params) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
+            }
+        }
         final FloatBuffer snapshot = BufferUtil.snapshot(params);
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glMaterial(face, pname, snapshot));
+        exec.execute(new glMaterial(face, pname, snapshot));
     }
 
     public static void glDeleteTextures(int texture) { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glDeleteTextures(texture));
+        record glDeleteTextures(int texture) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glDeleteTextures(texture);
+            }
+        }
+        exec.execute(new glDeleteTextures(texture));
     }
 
     public static void glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
+        record glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
+            }
+        }
+        exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
     }
 
     public static void glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height));
+        record glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+            }
+        }
+        exec.execute(new glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height));
     }
 
     public static void glEdgeFlag(boolean flag) {
-        recordOrExecute(() -> org.lwjgl.opengl.GL11.glEdgeFlag(flag));
+        record glEdgeFlag(boolean flag) implements Runnable {
+            @Override
+            public void run() {
+                if (listManager.isRecording(this))
+                    return;
+
+                org.lwjgl.opengl.GL11.glEdgeFlag(flag);
+            }
+        }
+        exec.execute(new glEdgeFlag(flag));
     }
 
     /**
      * Blocking.
      */
     public static int glGetInteger(int pname) { // NoList
-        switch (pname) {
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-                return attribManager.textureBinding();
-            case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
-                return attribManager.activeTexture();
-            default:
-                return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
+        // TODO
+//        switch (pname) {
+//            case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
+//                return attribManager.textureBinding();
+//            case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
+//                return attribManager.activeTexture();
+//            default:
+//                return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
+//        }
+        record glGetInteger(int pname) implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.GL11.glGetInteger(pname);
+            }
         }
+        return exec.get(new glGetInteger(pname));
+
     }
 
     public static void glGenTextures(IntBuffer textures) { // NoList
-        exec.wait(() -> org.lwjgl.opengl.GL11.glGenTextures(textures));
+        record glGenTextures(IntBuffer textures) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glGenTextures(textures);
+            }
+        }
+        exec.wait(new glGenTextures(textures));
     }
 
     public static int glGenTextures() { // NoList
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGenTextures());
+        record glGenTextures() implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.GL11.glGenTextures();
+            }
+        }
+        return exec.get(new glGenTextures());
     }
 
     public static int glGenLists(int range) { // NoList
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGenLists(range));
+        record glGenLists(int range) implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.GL11.glGenLists(range);
+            }
+        }
+        return exec.get(new glGenLists(range));
     }
 
     public static String glGetString(int name) { // NoList
-        if (stateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
-            return stateCache.getGlStringExtensions();
-        }
+        // TODO
+//        if (stateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
+//            return stateCache.getGlStringExtensions();
+//        }
 
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGetString(name));
+        record glGetString(int name) implements Callable<String> {
+            @Override
+            public String call() throws Exception {
+                return org.lwjgl.opengl.GL11.glGetString(name);
+            }
+        }
+        return exec.get(new glGetString(name));
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList
-        exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
+        record glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
+            }
+        }
+        exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, IntBuffer pixels) { // NoList
-        exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
+        record glReadPixels(int x, int y, int width, int height, int format, int type, IntBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
+            }
+        }
+        exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) { // NoList
-        exec.wait(() -> org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels));
+        record glReadPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
+            }
+        }
+        exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     public static int glGetError() { // NoList
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGetError());
+        record glGetError() implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.GL11.glGetError();
+            }
+        }
+        return exec.get(new glGetError());
     }
 
     public static int glGetTexLevelParameteri(int target, int level, int pname) { // NoList
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname));
+        record glGetTexLevelParameteri(int target, int level, int pname) implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
+            }
+        }
+        return exec.get(new glGetTexLevelParameteri(target, level, pname));
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) { // NoList
-        exec.wait(() -> org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels));
+        record glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
+            }
+        }
+        exec.wait(new glGetTexImage(target, level, format, type, pixels));
     }
 
     /**

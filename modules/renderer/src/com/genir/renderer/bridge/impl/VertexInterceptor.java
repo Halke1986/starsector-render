@@ -22,7 +22,6 @@ public class VertexInterceptor {
     private final int VERTEX_SIZE_2D = 2;
     private final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + NORMAL_SIZE;
 
-    private final Executor exec;
     private final MatrixStack modelView;
     private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
@@ -53,11 +52,9 @@ public class VertexInterceptor {
     private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
     public VertexInterceptor(
-            Executor exec,
             MatrixStack modelView,
             AttribManager attribManager,
             ClientAttribTracker clientAttribTracker) {
-        this.exec = exec;
         this.modelView = modelView;
         this.attribManager = attribManager;
         this.clientAttribTracker = clientAttribTracker;
@@ -112,13 +109,7 @@ public class VertexInterceptor {
             vertexBatch.clear();
 
             attribManager.forceReorderedDrawContext(ctx);
-            exec.execute(() -> {
-                try {
-                    GL11.glDrawArrays(batchMode, batchOffset, batchCount);
-                } catch (Throwable t) {
-                    throw new RuntimeException("commitLayer: " + t);
-                }
-            });
+            GL11.glDrawArrays(batchMode, batchOffset, batchCount);
         }
     }
 
@@ -225,7 +216,7 @@ public class VertexInterceptor {
             FloatBuffer reader = vertexPointer.duplicate().rewind();
             snapshot.put(reader).rewind();
 
-            exec.execute(() -> GL11.glVertexPointer(VERTEX_SIZE_2D, 0, snapshot));
+            GL11.glVertexPointer(VERTEX_SIZE_2D, 0, snapshot);
         }
 
         // Texture array snapshot.
@@ -235,7 +226,7 @@ public class VertexInterceptor {
             FloatBuffer reader = texCoordPointer.duplicate().rewind();
             snapshot.put(reader).rewind();
 
-            exec.execute(() -> GL11.glTexCoordPointer(TEX_SIZE, 0, snapshot));
+            GL11.glTexCoordPointer(TEX_SIZE, 0, snapshot);
         }
 
         // Color array snapshot.
@@ -245,32 +236,24 @@ public class VertexInterceptor {
             ByteBuffer reader = colorPointer.duplicate().rewind();
             snapshot.put(reader).rewind();
 
-            exec.execute(() -> GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, snapshot));
+            GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, snapshot);
         }
 
         // Define color if GL_COLOR_ARRAY is disabled.
         if (!clientAttribTracker.enableColorArray()) {
             final float r = red, g = green, b = blue, a = alpha;
 
-            exec.execute(() -> {
-                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-                GL11.glColor4f(r, g, b, a);
-            });
+            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            GL11.glColor4f(r, g, b, a);
         }
 
         attribManager.applyEnableAndColorBufferBit();
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
 
         // Draw.
-        exec.execute(() -> {
-            try {
-                GL11.glMultMatrix(mBuffer);
-                GL11.glDrawArrays(mode, first, count);
-                GL11.glLoadIdentity();
-            } catch (Throwable t) {
-                throw new RuntimeException("glEnd: " + t);
-            }
-        });
+        GL11.glMultMatrix(mBuffer);
+        GL11.glDrawArrays(mode, first, count);
+        GL11.glLoadIdentity();
     }
 
     public Runnable recordedGlDrawArrays(int mode, int first, int count) {
@@ -319,13 +302,7 @@ public class VertexInterceptor {
             vertexPointer.put(vertexSnapshot, 0, count * STRIDE);
 
             attribManager.applyEnableAndColorBufferBit();
-            exec.execute(() -> {
-                try {
-                    GL11.glDrawArrays(mode, offset, count);
-                } catch (Throwable t) {
-                    throw new RuntimeException("recordedGlDrawArrays: " + t);
-                }
-            });
+            GL11.glDrawArrays(mode, offset, count);
         };
     }
 
@@ -367,18 +344,12 @@ public class VertexInterceptor {
         final FloatBuffer vertexPointerFinal = this.vertexPointer;
 
         attribManager.applyEnableAndColorBufferBit();
-        exec.execute(() -> {
-            try {
-                GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));
-                GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(VERTEX_SIZE));
+        GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(0));
+        GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, linePointer.position(VERTEX_SIZE));
 
-                GL11.glDrawArrays(mode, 0, count);
+        GL11.glDrawArrays(mode, 0, count);
 
-                registerArrays(vertexPointerFinal);
-            } catch (Throwable t) {
-                throw new RuntimeException("drawLine: " + t);
-            }
-        });
+        registerArrays(vertexPointerFinal);
 
         cachedVertices = 0;
     }
@@ -393,13 +364,7 @@ public class VertexInterceptor {
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyEnableAndColorBufferBit();
-        exec.execute(() -> {
-            try {
-                GL11.glDrawArrays(mode, offset, count);
-            } catch (Throwable t) {
-                throw new RuntimeException("glEnd: " + t);
-            }
-        });
+        GL11.glDrawArrays(mode, offset, count);
 
         cachedVertices = 0;
     }
@@ -412,13 +377,7 @@ public class VertexInterceptor {
 
         if (shouldRegisterArrays || capacityRequired > 0) {
             final FloatBuffer vertexPointerFinal = vertexPointer;
-            exec.execute(() -> {
-                try {
-                    registerArrays(vertexPointerFinal);
-                } catch (Throwable t) {
-                    throw new RuntimeException("prepareVertexPointer: " + t);
-                }
-            });
+            registerArrays(vertexPointerFinal);
         }
 
         shouldRegisterArrays = false;

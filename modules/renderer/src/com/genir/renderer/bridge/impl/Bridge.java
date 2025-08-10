@@ -5,18 +5,10 @@ public class Bridge {
     public static final Executor exec = new Executor();
     public static final StateCache stateCache = new StateCache();
 
-    public static final AttribManager attribManager = new AttribManager(exec);
+    public static final AttribManager attribManager = new AttribManager();
     public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
     public static final MatrixStack modelView = new MatrixStack();
-    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(exec, modelView, attribManager, clientAttribTracker);
-
-    public static void recordOrExecute(Runnable command) {
-        if (listManager.isRecording()) {
-            listManager.record(() -> exec.execute(command));
-        } else {
-            exec.execute(command);
-        }
-    }
+    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(modelView, attribManager, clientAttribTracker);
 
     public static void update() {
         stateCache.update();
@@ -24,10 +16,10 @@ public class Bridge {
     }
 
     public static void setReorderDraw(boolean reorder) {
-        vertexInterceptor.setReorderDraw(reorder);
+//        vertexInterceptor.setReorderDraw(reorder);
     }
 
     public static void commitLayer() {
-        vertexInterceptor.commitLayer();
+//        vertexInterceptor.commitLayer();
     }
 }

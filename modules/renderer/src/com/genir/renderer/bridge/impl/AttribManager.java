@@ -11,17 +11,11 @@ import java.util.Stack;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
-    private final Executor exec;
-
     private final Snapshot expected = new Snapshot();
     private final Snapshot actual = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
     private final Stack<Snapshot> actualStack = new Stack<>();
-
-    public AttribManager(Executor exec) {
-        this.exec = exec;
-    }
 
     public boolean interceptEnable(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
@@ -95,7 +89,7 @@ public class AttribManager {
             if (actual.textureTarget != ctx.textureTarget || actual.textureID != ctx.textureID) {
                 actual.textureTarget = ctx.textureTarget;
                 actual.textureID = ctx.textureID;
-                execGlBindTexture(ctx.textureTarget, ctx.textureID);
+                GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
             }
         }
 
@@ -108,12 +102,12 @@ public class AttribManager {
             if (actual.blendSfactor != ctx.blendSfactor || actual.blendDfactor != ctx.blendDfactor) {
                 actual.blendSfactor = ctx.blendSfactor;
                 actual.blendDfactor = ctx.blendDfactor;
-                execGlBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
+                GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
             }
 
             if (actual.blendEquation != ctx.blendEquation) {
                 actual.blendEquation = ctx.blendEquation;
-                execGlBlendEquation(ctx.blendEquation);
+                GL14.glBlendEquation(ctx.blendEquation);
             }
         }
     }
@@ -131,8 +125,7 @@ public class AttribManager {
         if (actual.matrixMode != expected.matrixMode) {
             actual.matrixMode = expected.matrixMode;
 
-            final int mode = expected.matrixMode;
-            exec.execute(() -> GL11.glMatrixMode(mode));
+            GL11.glMatrixMode(expected.matrixMode);
         }
     }
 
@@ -142,7 +135,7 @@ public class AttribManager {
         if (actual.matrixMode != mode) {
             actual.matrixMode = mode;
 
-            exec.execute(() -> GL11.glMatrixMode(mode));
+            GL11.glMatrixMode(mode);
         }
     }
 
@@ -194,7 +187,7 @@ public class AttribManager {
         expected.textureTarget = target;
         expected.textureID = texture;
 
-        exec.execute(() -> GL11.glBindTexture(target, texture));
+        GL11.glBindTexture(target, texture);
     }
 
     public void glBlendFunc(int sfactor, int dfactor) {
@@ -213,7 +206,7 @@ public class AttribManager {
     public void glActiveTexture(int mode) {
         expected.activeTexture = mode;
 
-        exec.execute(() -> GL13.glActiveTexture(mode));
+        GL13.glActiveTexture(mode);
     }
 
     private void applyStencil() {
@@ -248,13 +241,13 @@ public class AttribManager {
                 actual.blendSfactor = expected.blendSfactor;
                 actual.blendDfactor = expected.blendDfactor;
 
-                execGlBlendFunc(expected.blendSfactor, expected.blendDfactor);
+                GL11.glBlendFunc(expected.blendSfactor, expected.blendDfactor);
             }
 
             if (actual.blendEquation != expected.blendEquation) {
                 actual.blendEquation = expected.blendEquation;
 
-                execGlBlendEquation(expected.blendEquation);
+                GL14.glBlendEquation(expected.blendEquation);
             }
         }
     }
@@ -268,22 +261,10 @@ public class AttribManager {
 
     private void execGlEnableDisable(int cap, boolean value) {
         if (value) {
-            exec.execute(() -> GL11.glEnable(cap));
+            GL11.glEnable(cap);
         } else {
-            exec.execute(() -> GL11.glDisable(cap));
+            GL11.glDisable(cap);
         }
-    }
-
-    private void execGlBindTexture(int target, int texture) {
-        exec.execute(() -> GL11.glBindTexture(target, texture));
-    }
-
-    private void execGlBlendFunc(int sfactor, int dfactor) {
-        exec.execute(() -> GL11.glBlendFunc(sfactor, dfactor));
-    }
-
-    private void execGlBlendEquation(int mode) {
-        exec.execute(() -> GL14.glBlendEquation(mode));
     }
 
     private void setState(int cap, boolean value) {

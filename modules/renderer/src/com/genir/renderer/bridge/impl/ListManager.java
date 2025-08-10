@@ -14,6 +14,14 @@ public class ListManager {
 
     private final Map<Integer, Runnable[]> lists = new HashMap<>();
 
+    public boolean isRecording(Runnable command) {
+        if (mode != 0) {
+            record(command);
+        }
+
+        return mode != 0;
+    }
+
     public boolean isRecording() {
         return mode != 0;
     }
@@ -22,7 +30,9 @@ public class ListManager {
         newList.add(command);
 
         if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
+            mode = 0;
             command.run();
+            mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         }
     }
 
