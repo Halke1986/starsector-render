@@ -89,6 +89,13 @@ public class GL11 {
         }
     }
 
+    public static void glTexCoord2d(double s, double t) {
+        glTexCoord2f(
+                (float) s,
+                (float) t
+        );
+    }
+
     public static void glNormal3f(float nx, float ny, float nz) {
         if (listManager.isRecording()) {
             listManager.record(() -> vertexInterceptor.glNormal3f(nx, ny, nz));
@@ -496,6 +503,11 @@ public class GL11 {
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
         exec.execute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
+    }
+
+    public static void glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) { // NoList ?
+        final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
