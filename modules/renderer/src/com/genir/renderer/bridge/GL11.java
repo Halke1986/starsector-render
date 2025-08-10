@@ -921,12 +921,11 @@ public class GL11 {
 //        }
         record glGetInteger(int pname) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL11.glGetInteger(pname);
             }
         }
         return exec.get(new glGetInteger(pname));
-
     }
 
     public static void glGenTextures(IntBuffer textures) { // NoList
@@ -942,7 +941,7 @@ public class GL11 {
     public static int glGenTextures() { // NoList
         record glGenTextures() implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL11.glGenTextures();
             }
         }
@@ -952,7 +951,7 @@ public class GL11 {
     public static int glGenLists(int range) { // NoList
         record glGenLists(int range) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL11.glGenLists(range);
             }
         }
@@ -966,7 +965,7 @@ public class GL11 {
 
         record glGetString(int name) implements Callable<String> {
             @Override
-            public String call() throws Exception {
+            public String call() {
                 return org.lwjgl.opengl.GL11.glGetString(name);
             }
         }
@@ -1006,7 +1005,7 @@ public class GL11 {
     public static int glGetError() { // NoList
         record glGetError() implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL11.glGetError();
             }
         }
@@ -1016,7 +1015,7 @@ public class GL11 {
     public static int glGetTexLevelParameteri(int target, int level, int pname) { // NoList
         record glGetTexLevelParameteri(int target, int level, int pname) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
             }
         }

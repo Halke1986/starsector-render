@@ -11,7 +11,7 @@ public class Bridge {
 //    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(modelView, attribManager, clientAttribTracker);
 
     public static void update() {
-        stateCache.update();
+
 //        vertexInterceptor.update();
     }
 
