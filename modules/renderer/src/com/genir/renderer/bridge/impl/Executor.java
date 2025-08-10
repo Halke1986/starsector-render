@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge.impl;
 
-import org.lwjgl.opengl.Display;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -40,28 +38,17 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-//        log(Executor.class, "wait");
-//        logStack();
-
-        flushCommands();
-
-        try {
-            exec.submit(() -> tryRun(List.of(command))).get();
-        } catch (Throwable t) {
-            throw new RuntimeException(command + " " + t);
-        }
+        wait(command, false);
     }
 
-    /**
-     * Executes callable and block until it returns.
-     * Same as wait, but stalls the concurrent pipeline
-     * on purpose, to synchronize threads.
-     */
-    public void barrier(Runnable command) {
+    public void wait(Runnable command, boolean cleanup) {
+        //        log(Executor.class, "wait");
+        //        logStack();
+
         flushCommands();
 
         try {
-            exec.submit(() -> tryRun(List.of(command))).get();
+            exec.submit(() -> tryRun(List.of(command), cleanup)).get();
         } catch (Throwable t) {
             throw new RuntimeException(command + " " + t);
         }
@@ -100,11 +87,15 @@ public class Executor {
     }
 
     private void tryRun(List<Runnable> commands) {
+        tryRun(commands, false);
+    }
+
+    private void tryRun(List<Runnable> commands, boolean cleanup) {
         for (Runnable command : commands) {
             // Rendering thread has already thrown an exception.
-            // Skip further commands, except get, to avoid a potential
-            // hard crash without logging.
-            if (exceptionCaptured) {
+            // Skip further commands, except get and cleanup,
+            // to avoid a potential hard crash without logging.
+            if (exceptionCaptured && !cleanup) {
                 return;
             }
 
@@ -113,10 +104,6 @@ public class Executor {
             } catch (Throwable t) {
                 exceptionCaptured = true;
                 exception.set(new RuntimeException(command + " " + t));
-
-                // Destroy the display. Main thread will attempt to do the cleanup itself,
-                // but its commands are ignored after an exception was thrown.
-                Display.destroy();
             }
         }
     }
