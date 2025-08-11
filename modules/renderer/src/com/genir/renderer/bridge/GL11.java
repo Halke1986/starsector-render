@@ -466,7 +466,7 @@ public class GL11 {
 //                    modelView.glMultMatrix(m);
 //                } else {
 //                    attribManager.applyMatrixMode();
-                exec.execute(() -> org.lwjgl.opengl.GL11.glMultMatrix(m));
+                org.lwjgl.opengl.GL11.glMultMatrix(m);
 //                }
             }
         }
@@ -915,7 +915,7 @@ public class GL11 {
 //            case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
 //                return attribManager.activeTexture();
 //            default:
-//                return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
+//                 org.lwjgl.opengl.GL11.glGetInteger(pname);
 //        }
         record glGetInteger(int pname) implements Callable<Integer> {
             @Override
