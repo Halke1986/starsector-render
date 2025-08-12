@@ -8,8 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
 import static com.genir.renderer.Debug.log;
-import static com.genir.renderer.bridge.impl.Bridge.exec;
-import static com.genir.renderer.bridge.impl.Bridge.stateCache;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class Display {
     public static DisplayMode[] getAvailableDisplayModes() {
@@ -147,6 +146,7 @@ public class Display {
             @Override
             public void run() {
                 stateCache.update();
+                vertexInterceptor.update();
                 org.lwjgl.opengl.Display.update(processMessages);
             }
         }
@@ -158,6 +158,7 @@ public class Display {
             @Override
             public void run() {
                 stateCache.update();
+                vertexInterceptor.update();
                 org.lwjgl.opengl.Display.update();
             }
         }

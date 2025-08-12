@@ -14,10 +14,6 @@ public class Bridge {
 //    public static final AttribManager attribManager = new AttribManager();
 //    public static final MatrixStack modelView = new MatrixStack();
 
-    public static void update() {
-//        vertexInterceptor.update();
-    }
-
     public static void setReorderDraw(boolean reorder) {
 //        vertexInterceptor.setReorderDraw(reorder);
     }

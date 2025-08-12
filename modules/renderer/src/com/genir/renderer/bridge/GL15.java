@@ -5,15 +5,14 @@ import com.genir.renderer.bridge.impl.BufferUtil;
 import java.nio.FloatBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.impl.Bridge.clientAttribTracker;
-import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL15 {
     public static void glBindBuffer(int target, int buffer) {
         record glBindBuffer(int target, int buffer) implements Runnable {
             @Override
             public void run() {
-                //        vertexInterceptor.arraysTouched();
+                vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }

@@ -53,7 +53,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glBegin(mode);
+                vertexInterceptor.glBegin(mode);
             }
         }
         exec.execute(new glBegin(mode));
@@ -66,7 +66,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glEnd();
+                vertexInterceptor.glEnd();
             }
         }
         exec.execute(new glEnd());
@@ -106,7 +106,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
+                vertexInterceptor.glColor4f(red, green, blue, alpha);
             }
         }
         exec.execute(new glColor4f(red, green, blue, alpha));
@@ -119,7 +119,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glTexCoord2f(s, t);
+                vertexInterceptor.glTexCoord2f(s, t);
             }
         }
         exec.execute(new glTexCoord2f(s, t));
@@ -139,7 +139,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
+                vertexInterceptor.glNormal3f(nx, ny, nz);
             }
         }
         exec.execute(new glNormal3f(nx, ny, nz));
@@ -152,7 +152,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glVertex3f(x, y, z);
+                vertexInterceptor.glVertex3f(x, y, z);
             }
         }
         exec.execute(new glVertex3f(x, y, z));
@@ -202,6 +202,7 @@ public class GL11 {
         record glPushClientAttrib(int mask) implements Runnable {
             @Override
             public void run() {
+                vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
             }
         }
@@ -214,6 +215,7 @@ public class GL11 {
         record glPopClientAttrib() implements Runnable {
             @Override
             public void run() {
+                vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL11.glPopClientAttrib();
             }
         }
