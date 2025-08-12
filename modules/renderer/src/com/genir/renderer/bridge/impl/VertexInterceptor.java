@@ -184,34 +184,23 @@ public class VertexInterceptor {
         // Vertex array snapshot. Not required if vertices are defined via VBO.
         FloatBuffer vertexSnapshot = null;
         FloatBuffer vertexPointer = clientAttribTracker.getVertexPointer();
-        boolean enableVertexArray = clientAttribTracker.getEnableVertexArray();
-        if (vertexPointer != null && enableVertexArray) {
+        if (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) {
             vertexSnapshot = BufferUtil.snapshot(vertexPointer);
         }
 
         // Texture array snapshot.
         FloatBuffer texCoordSnapshot = null;
         FloatBuffer texCoordPointer = clientAttribTracker.getTexCoordPointer();
-        boolean enableTexCoordArray = clientAttribTracker.getEnableTexCoordArray();
-        if (texCoordPointer != null && enableTexCoordArray) {
+        if (texCoordPointer != null && clientAttribTracker.getEnableTexCoordArray()) {
             texCoordSnapshot = BufferUtil.snapshot(texCoordPointer);
         }
 
         // Color array snapshot.
         ByteBuffer colorSnapshot = null;
         ByteBuffer colorPointer = clientAttribTracker.getColorPointer();
-        boolean enableColorArray = clientAttribTracker.getEnableColorArray();
-        if (colorPointer != null && enableColorArray) {
+        if (colorPointer != null && clientAttribTracker.getEnableColorArray()) {
             colorSnapshot = BufferUtil.snapshot(colorPointer);
         }
-
-        // Define color if GL_COLOR_ARRAY is disabled.
-//        if (!clientAttribTracker.getEnableColorArray()) {
-//            final float r = red, g = green, b = blue, a = alpha;
-
-//            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-//            GL11.glColor4f(r, g, b, a);
-//        }
 
 //        attribManager.applyEnableAndColorBufferBit();
 //        attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
@@ -223,24 +212,18 @@ public class VertexInterceptor {
                 FloatBuffer vertexSnapshot,
                 FloatBuffer texCoordSnapshot,
                 ByteBuffer colorSnapshot,
-                boolean enableVertexArray,
-                boolean enableTexCoordArray,
                 boolean enableColorArray,
                 VertexInterceptor parent) implements Runnable {
             @Override
             public void run() {
                 parent.arraysTouched();
 
-                if (enableVertexArray) {
-                    GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                }
-
-                if (enableTexCoordArray) {
-                    GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                }
-
                 if (enableColorArray) {
                     GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+                } else {
+                    // Define color if GL_COLOR_ARRAY is disabled.
+                    GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                    GL11.glColor4f(parent.red, parent.green, parent.blue, parent.alpha);
                 }
 
                 if (vertexSnapshot != null) {
@@ -268,9 +251,7 @@ public class VertexInterceptor {
                 vertexSnapshot,
                 texCoordSnapshot,
                 colorSnapshot,
-                enableVertexArray,
-                enableTexCoordArray,
-                enableColorArray,
+                clientAttribTracker.getEnableColorArray(),
                 this);
     }
 
