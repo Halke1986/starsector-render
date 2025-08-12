@@ -7,6 +7,7 @@ import org.lwjgl.opengl.PixelFormat;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
+import static com.genir.renderer.Debug.log;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
 import static com.genir.renderer.bridge.impl.Bridge.stateCache;
 
@@ -75,7 +76,29 @@ public class Display {
         record setVSyncEnabled(boolean sync) implements Runnable {
             @Override
             public void run() {
-                org.lwjgl.opengl.Display.setVSyncEnabled(sync);
+                // Drain OpenGL error queue and log errors. NOTE: As of 0.98a vanilla
+                // ignores OpenGL errors and lets setVSyncEnabled drain the error
+                // queue and throw an exception.
+                try {
+                    int err = 0;
+                    do {
+                        err = org.lwjgl.opengl.GL11.glGetError();
+                        if (err != 0) {
+                            log("OpenGL error: " + err);
+                        }
+                    } while (err != 0);
+                } catch (Throwable ignored) {
+                    // glGetError may throw at application startup,
+                    // when called before OpenGL context is created.
+                }
+
+                // setVSyncEnabled error does not prevent the application from
+                // continuing to work correctly.
+                try {
+                    org.lwjgl.opengl.Display.setVSyncEnabled(sync);
+                } catch (Throwable t) {
+                    log("OpenGL setVSyncEnabled error: " + t);
+                }
             }
         }
         exec.wait(new setVSyncEnabled(sync));

@@ -141,7 +141,6 @@ public class GL11 {
                     return;
 
                 org.lwjgl.opengl.GL11.glNormal3f(nx, ny, nz);
-
             }
         }
         exec.execute(new glNormal3f(nx, ny, nz));
@@ -155,7 +154,6 @@ public class GL11 {
                     return;
 
                 org.lwjgl.opengl.GL11.glVertex3f(x, y, z);
-
             }
         }
         exec.execute(new glVertex3f(x, y, z));
