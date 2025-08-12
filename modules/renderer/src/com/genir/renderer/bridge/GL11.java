@@ -7,7 +7,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.Debug.asert;
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL11 {
@@ -192,93 +191,47 @@ public class GL11 {
      * Client attributes.
      */
     public static void glEnableClientState(int cap) { // NoList
-        record glEnableClientState(int cap) implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glEnableClientState(cap);
-            }
-        }
-        exec.execute(new glEnableClientState(cap));
+        clientAttribTracker.glEnableClientState(cap);
     }
 
     public static void glDisableClientState(int cap) { // NoList
-        record glDisableClientState(int cap) implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glDisableClientState(cap);
-            }
-        }
-        exec.execute(new glDisableClientState(cap));
+        clientAttribTracker.glDisableClientState(cap);
     }
 
-    public static void glPushClientAttrib(int mask) {
+    public static void glPushClientAttrib(int mask) { // NoList
         record glPushClientAttrib(int mask) implements Runnable {
             @Override
             public void run() {
-                if (listManager.isRecording(this))
-                    return;
-
-//                clientAttribTracker.glPushClientAttrib(mask);
                 org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
             }
         }
+
+        clientAttribTracker.glPushClientAttrib(mask);
         exec.execute(new glPushClientAttrib(mask));
     }
 
-    public static void glPopClientAttrib() {
+    public static void glPopClientAttrib() { // NoList
         record glPopClientAttrib() implements Runnable {
             @Override
             public void run() {
-                if (listManager.isRecording(this))
-                    return;
-
-//                clientAttribTracker.glPopClientAttrib();
                 org.lwjgl.opengl.GL11.glPopClientAttrib();
             }
         }
+
+        clientAttribTracker.glPopClientAttrib();
         exec.execute(new glPopClientAttrib());
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        asert(size == 2);
-        asert(stride == 0);
-        asert(pointer.position() == 0);
-
-        record glVertexPointer(int size, int stride, FloatBuffer pointer) implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
-            }
-        }
-        exec.execute(new glVertexPointer(size, stride, pointer));
+        clientAttribTracker.glVertexPointer(size, stride, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
-        asert(size == 4);
-        asert(stride == 0);
-        asert(pointer.position() == 0);
-
-        record glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glColorPointer(size, unsigned, stride, pointer);
-            }
-        }
-        exec.execute(new glColorPointer(size, unsigned, stride, pointer));
+        clientAttribTracker.glColorPointer(size, unsigned, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        asert(size == 2);
-        asert(stride == 0);
-        asert(pointer.position() == 0);
-
-        record glTexCoordPointer(int size, int stride, FloatBuffer pointer) implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer);
-            }
-        }
-        exec.execute(new glTexCoordPointer(size, stride, pointer));
+        clientAttribTracker.glTexCoordPointer(size, stride, pointer);
     }
 
     /**
@@ -315,20 +268,18 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        record glDrawArrays(int mode, int first, int count) implements Runnable {
+        record glDrawArrays(Runnable recordedGlDrawArrays) implements Runnable {
             @Override
             public void run() {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (listManager.isRecording()) {
-//                    listManager.record(vertexInterceptor.recordedGlDrawArrays(mode, first, count));
-//                } else {
-                org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
-//                }
+                recordedGlDrawArrays.run();
             }
         }
-        exec.execute(new glDrawArrays(mode, first, count));
+
+        Runnable recordedGlDrawArrays = vertexInterceptor.recordGlDrawArrays(mode, first, count);
+        exec.execute(new glDrawArrays(recordedGlDrawArrays));
     }
 
     /**

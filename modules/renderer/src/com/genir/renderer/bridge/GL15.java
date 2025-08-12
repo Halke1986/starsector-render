@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.impl.BufferUtil;
 import java.nio.FloatBuffer;
 import java.util.concurrent.Callable;
 
+import static com.genir.renderer.bridge.impl.Bridge.clientAttribTracker;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL15 {
@@ -12,14 +13,12 @@ public class GL15 {
         record glBindBuffer(int target, int buffer) implements Runnable {
             @Override
             public void run() {
-                //        clientAttribTracker.glVertexPointer(0, 0, null);
-                //        clientAttribTracker.glColorPointer(0, false, 0, null);
-                //        clientAttribTracker.glTexCoordPointer(0, 0, null);
-
                 //        vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }
+
+        clientAttribTracker.glBindBuffer(target, buffer);
         exec.execute(new glBindBuffer(target, buffer));
     }
 

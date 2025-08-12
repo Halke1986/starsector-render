@@ -6,36 +6,50 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Stack;
 
+import static com.genir.renderer.Debug.asert;
+
 public class ClientAttribTracker {
     public final Snapshot expected = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
 
-    public boolean enableTexCoordArray() {
+    public boolean getEnableVertexArray() {
+        return expected.enableVertexArray;
+    }
+
+    public boolean getEnableTexCoordArray() {
         return expected.enableTexCoordArray;
     }
 
-    public boolean enableColorArray() {
+    public boolean getEnableColorArray() {
         return expected.enableColorArray;
     }
 
-    public FloatBuffer vertexPointer() {
+    public FloatBuffer getVertexPointer() {
         return expected.vertexPointer;
     }
 
-    public FloatBuffer texCoordPointer() {
+    public FloatBuffer getTexCoordPointer() {
         return expected.texCoordPointer;
     }
 
-    public ByteBuffer colorPointer() {
+    public ByteBuffer getColorPointer() {
         return expected.colorPointer;
     }
 
     public void glEnableClientState(int cap) {
+        asert(cap == org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY ||
+                cap == org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY ||
+                cap == org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
+
         setState(cap, true);
     }
 
     public void glDisableClientState(int cap) {
+        asert(cap == org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY ||
+                cap == org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY ||
+                cap == org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
+
         setState(cap, false);
     }
 
@@ -57,15 +71,33 @@ public class ClientAttribTracker {
     }
 
     public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
+        asert(size == 4);
+        asert(stride == 0);
+        asert(pointer.position() == 0);
+
         expected.colorPointer = pointer;
     }
 
     public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+        asert(size == 2);
+        asert(stride == 0);
+        asert(pointer.position() == 0);
+
         expected.texCoordPointer = pointer;
     }
 
     public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        asert(size == 2);
+        asert(stride == 0);
+        asert(pointer.position() == 0);
+
         expected.vertexPointer = pointer;
+    }
+
+    public void glBindBuffer(int target, int buffer) {
+        expected.colorPointer = null;
+        expected.vertexPointer = null;
+        expected.texCoordPointer = null;
     }
 
     private void setState(int cap, boolean value) {
