@@ -64,53 +64,53 @@ public class AttribManager {
         return ctx;
     }
 
-//    public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
-//        if (actual.enableAlphaTest) {
-//            actual.enableBlend = false;
-//            execGlEnableDisable(GL11.GL_ALPHA_TEST, false);
-//        }
-//
-//        if (actual.enableStencilTest) {
-//            actual.enableStencilTest = false;
-//            execGlEnableDisable(GL11.GL_STENCIL_TEST, false);
-//        }
-//
-//        if (actual.enableLighting) {
-//            actual.enableLighting = false;
-//            execGlEnableDisable(GL11.GL_LIGHTING, false);
-//        }
-//
-//        if (actual.enableTexture2D != ctx.enableTexture) {
-//            actual.enableTexture2D = ctx.enableTexture;
-//            execGlEnableDisable(GL11.GL_TEXTURE_2D, ctx.enableTexture);
-//        }
-//
-//        if (ctx.enableTexture) {
-//            if (actual.textureTarget != ctx.textureTarget || actual.textureID != ctx.textureID) {
-//                actual.textureTarget = ctx.textureTarget;
-//                actual.textureID = ctx.textureID;
-//                GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
-//            }
-//        }
-//
-//        if (actual.enableBlend != ctx.enableBlend) {
-//            actual.enableBlend = ctx.enableBlend;
-//            execGlEnableDisable(GL11.GL_BLEND, ctx.enableBlend);
-//        }
-//
-//        if (ctx.enableBlend) {
-//            if (actual.blendSfactor != ctx.blendSfactor || actual.blendDfactor != ctx.blendDfactor) {
-//                actual.blendSfactor = ctx.blendSfactor;
-//                actual.blendDfactor = ctx.blendDfactor;
-//                GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
-//            }
-//
-//            if (actual.blendEquation != ctx.blendEquation) {
-//                actual.blendEquation = ctx.blendEquation;
-//                GL14.glBlendEquation(ctx.blendEquation);
-//            }
-//        }
-//    }
+    public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
+        if (actual.enableAlphaTest) {
+            actual.enableBlend = false;
+            execGlEnableDisable(GL11.GL_ALPHA_TEST, false);
+        }
+
+        if (actual.enableStencilTest) {
+            actual.enableStencilTest = false;
+            execGlEnableDisable(GL11.GL_STENCIL_TEST, false);
+        }
+
+        if (actual.enableLighting) {
+            actual.enableLighting = false;
+            execGlEnableDisable(GL11.GL_LIGHTING, false);
+        }
+
+        if (actual.enableTexture2D != ctx.enableTexture) {
+            actual.enableTexture2D = ctx.enableTexture;
+            execGlEnableDisable(GL11.GL_TEXTURE_2D, ctx.enableTexture);
+        }
+
+        if (ctx.enableTexture) {
+            if (actual.textureTarget != ctx.textureTarget || actual.textureID != ctx.textureID) {
+                actual.textureTarget = ctx.textureTarget;
+                actual.textureID = ctx.textureID;
+                GL11.glBindTexture(ctx.textureTarget, ctx.textureID);
+            }
+        }
+
+        if (actual.enableBlend != ctx.enableBlend) {
+            actual.enableBlend = ctx.enableBlend;
+            execGlEnableDisable(GL11.GL_BLEND, ctx.enableBlend);
+        }
+
+        if (ctx.enableBlend) {
+            if (actual.blendSfactor != ctx.blendSfactor || actual.blendDfactor != ctx.blendDfactor) {
+                actual.blendSfactor = ctx.blendSfactor;
+                actual.blendDfactor = ctx.blendDfactor;
+                GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
+            }
+
+            if (actual.blendEquation != ctx.blendEquation) {
+                actual.blendEquation = ctx.blendEquation;
+                GL14.glBlendEquation(ctx.blendEquation);
+            }
+        }
+    }
 
     public void applyEnableAndColorBufferBit() {
         applyStencil();

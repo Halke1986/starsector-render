@@ -13,12 +13,11 @@ public class Bridge {
     public static final MatrixStack modelView = new MatrixStack();
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, modelView);
 
-
     public static void setReorderDraw(boolean reorder) {
-//        vertexInterceptor.setReorderDraw(reorder);
+        exec.execute(() -> vertexInterceptor.setReorderDraw(reorder));
     }
 
     public static void commitLayer() {
-//        vertexInterceptor.commitLayer();
+        exec.execute(() -> vertexInterceptor.commitLayer());
     }
 }

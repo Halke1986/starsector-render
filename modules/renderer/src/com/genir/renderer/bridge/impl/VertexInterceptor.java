@@ -6,9 +6,11 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VertexInterceptor {
-    private final int BUFFER_SIZE = 1 << 16;
+    private static final int BUFFER_SIZE = 1 << 16;
     private static final int VERTEX_SIZE = 3;
     private static final int COLOR_SIZE = 4;
     private static final int TEX_SIZE = 2;
@@ -20,11 +22,10 @@ public class VertexInterceptor {
     private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
 
-    //
     private boolean shouldRegisterArrays = true;
-    //    private boolean reorderDraw = false;
-//
-//    // State.
+    private boolean reorderDraw = false;
+
+    // State.
     private int mode = 0;
     private float red;
     private float green;
@@ -41,11 +42,10 @@ public class VertexInterceptor {
 
     // Draw buffers.
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
-    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(BUFFER_SIZE * STRIDE);
+    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+    private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
-    //    private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
-//
     public VertexInterceptor(
             ClientAttribTracker clientAttribTracker,
             AttribManager attribManager,
@@ -59,58 +59,8 @@ public class VertexInterceptor {
         registerDefaultVertexPointer();
     }
 
-//    public void setReorderDraw(boolean reorder) {
-//        reorderDraw = reorder;
-//    }
-//
-//    public void commitLayer() {
-//        int count = 0;
-//        for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
-//            FloatBuffer vertices = entry.getValue();
-//            count += vertices.position() / STRIDE;
-//        }
-//
-//        if (count == 0) {
-//            return;
-//        }
-//
-//        prepareVertexPointer(count);
-//
-//        for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
-//            FloatBuffer vertexBatch = entry.getValue();
-//            if (vertexBatch.position() == 0) {
-//                continue;
-//            }
-//
-//            ReorderedDrawContext ctx = entry.getKey();
-//
-//            final int batchMode = ctx.mode;
-//            final int batchOffset = vertexPointer.position() / STRIDE;
-//            final int batchCount = vertexBatch.position() / STRIDE;
-//
-//            vertexBatch.flip();
-//            vertexPointer.put(vertexBatch);
-//            vertexBatch.clear();
-//
-//            attribManager.forceReorderedDrawContext(ctx);
-//            GL11.glDrawArrays(batchMode, batchOffset, batchCount);
-//        }
-//    }
-
-    private void registerDefaultVertexPointer() {
-        FloatBuffer p = vertexPointer;
-
-        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-
-        GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
-        GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(p.position() + VERTEX_SIZE));
-        GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(p.position() + COLOR_SIZE));
-        GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(p.position() + TEX_SIZE));
-
-        shouldRegisterArrays = false;
+    public void setReorderDraw(boolean reorder) {
+        reorderDraw = reorder;
     }
 
     public void arraysTouched() {
@@ -126,8 +76,8 @@ public class VertexInterceptor {
 
         if (count == 0) {
             return;
-//        } else if (reorderDraw) {
-//            storeReorderedDraw(mode, count);
+        } else if (reorderDraw) {
+            storeReorderedDraw(mode, count);
         } else if (mode == GL11.GL_LINE_LOOP || mode == GL11.GL_LINE_STRIP) {
             drawLine(mode, count);
         } else {
@@ -192,6 +142,49 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 11] = nzt;
 
         cachedVertices++;
+    }
+
+    public void commitLayer() {
+        for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
+            FloatBuffer vertexBatch = entry.getValue();
+            if (vertexBatch.position() == 0) {
+                continue;
+            }
+
+            ReorderedDrawContext ctx = entry.getKey();
+
+            final int batchMode = ctx.mode;
+            final int batchCount = vertexBatch.position() / STRIDE;
+
+            prepareDefaultVertexPointer(batchCount);
+
+            vertexBatch.flip();
+            vertexPointer.put(vertexBatch);
+            vertexBatch.clear();
+
+            attribManager.forceReorderedDrawContext(ctx);
+            GL11.glDrawArrays(batchMode, 0, batchCount);
+        }
+    }
+
+    private void storeReorderedDraw(int mode, int count) {
+        ReorderedDrawContext ctx = attribManager.getReorderedDrawContext(mode);
+
+        // Create buffer if absent.
+        FloatBuffer vertexPointer = reorderBuffer.get(ctx);
+        if (vertexPointer == null) {
+            vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
+            reorderBuffer.put(ctx, vertexPointer);
+        }
+
+        // Resize buffer if necessary.
+        int capacityRequired = BufferUtil.capacityRequired(vertexPointer, count * STRIDE);
+        if (capacityRequired > 0) {
+            vertexPointer = BufferUtil.reallocate(capacityRequired, vertexPointer);
+            reorderBuffer.put(ctx, vertexPointer);
+        }
+
+        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
     }
 
     public Runnable recordGlDrawArrays(int mode, int first, int count) {
@@ -273,27 +266,6 @@ public class VertexInterceptor {
                 this);
     }
 
-//
-//    private void storeReorderedDraw(int mode, int count) {
-//        ReorderedDrawContext ctx = attribManager.getReorderedDrawContext(mode);
-//
-//        // Create buffer if absent.
-//        FloatBuffer vertexPointer = reorderBuffer.get(ctx);
-//        if (vertexPointer == null) {
-//            vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
-//            reorderBuffer.put(ctx, vertexPointer);
-//        }
-//
-//        // Resize buffer if necessary.
-//        int capacityRequired = capacityRequired(vertexPointer, count * STRIDE);
-//        if (capacityRequired > 0) {
-//            vertexPointer = BufferUtil.reallocate(capacityRequired, vertexPointer);
-//            reorderBuffer.put(ctx, vertexPointer);
-//        }
-//
-//        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
-//    }
-
     /**
      * GL11.GL_LINE_LOOP and GL11.GL_LINE_STRIP cannot be converted from
      * a glBegin()/glEnd() block into glDrawArrays using the standard approach,
@@ -304,7 +276,7 @@ public class VertexInterceptor {
     private void drawLine(int mode, int count) {
         final int LINE_STRIDE = VERTEX_SIZE + COLOR_SIZE;
 
-        vertexPointer.clear();
+        prepareDefaultVertexPointer(count);
         for (int i = 0; i < count; i++) {
             vertexPointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
         }
@@ -322,14 +294,41 @@ public class VertexInterceptor {
      * Draw vertices recorded in glBegin/glEnd block using glDrawArrays command.
      */
     private void drawAsArray(int mode, int count) {
+        prepareDefaultVertexPointer(count);
+        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
+
+        attribManager.applyEnableAndColorBufferBit();
+        GL11.glDrawArrays(mode, 0, count);
+    }
+
+    private void prepareDefaultVertexPointer(int count) {
+        int capacityRequired = count * STRIDE;
+        if (vertexPointer.capacity() < capacityRequired) {
+            vertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
+
+            registerDefaultVertexPointer();
+        }
+
         if (shouldRegisterArrays) {
             registerDefaultVertexPointer();
         }
 
         vertexPointer.clear();
-        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
+    }
 
-        attribManager.applyEnableAndColorBufferBit();
-        GL11.glDrawArrays(mode, 0, count);
+    private void registerDefaultVertexPointer() {
+        FloatBuffer p = vertexPointer;
+
+        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+
+        GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
+        GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(p.position() + VERTEX_SIZE));
+        GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(p.position() + COLOR_SIZE));
+        GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(p.position() + TEX_SIZE));
+
+        shouldRegisterArrays = false;
     }
 }
