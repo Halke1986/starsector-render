@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -15,7 +16,7 @@ public class VertexInterceptor {
     private static final int VERTEX_SIZE_2D = 2;
     private static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + NORMAL_SIZE;
 
-    //    private final MatrixStack modelView;
+    private final MatrixStack modelView;
     private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
 
@@ -41,15 +42,17 @@ public class VertexInterceptor {
     // Draw buffers.
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
     private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(BUFFER_SIZE * STRIDE);
+    private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     //    private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 //
     public VertexInterceptor(
             ClientAttribTracker clientAttribTracker,
-            AttribManager attribManager) {
-//        this.modelView = modelView;
-        this.attribManager = attribManager;
+            AttribManager attribManager,
+            MatrixStack modelView) {
         this.clientAttribTracker = clientAttribTracker;
+        this.attribManager = attribManager;
+        this.modelView = modelView;
     }
 
     public void update() {
@@ -155,10 +158,24 @@ public class VertexInterceptor {
     public void glVertex3f(float x, float y, float z) {
         int offset = cachedVertices * STRIDE;
 
+        Matrix4f m = modelView.getMatrix();
+
         // Transform vertices;
-        vertexScratchpad[offset + 0] = x;
-        vertexScratchpad[offset + 1] = y;
-        vertexScratchpad[offset + 2] = z;
+        float xt = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
+        float yt = x * m.m10 + y * m.m11 + z * m.m12 + m.m13;
+        float zt = x * m.m20 + y * m.m21 + z * m.m22 + m.m23;
+
+        // Transform normals.
+        // Assume model view is just rotations and translations, no shear or scale.
+        // Otherwise, the upper left 3x3 part of transformation matrix would have
+        // to be inversed and transposed first.
+        float nxt = nx * m.m00 + ny * m.m01 + nz * m.m02;
+        float nyt = nx * m.m10 + ny * m.m11 + nz * m.m12;
+        float nzt = nx * m.m20 + ny * m.m21 + nz * m.m22;
+
+        vertexScratchpad[offset + 0] = xt;
+        vertexScratchpad[offset + 1] = yt;
+        vertexScratchpad[offset + 2] = zt;
 
         // Define vertex color.
         vertexScratchpad[offset + 3] = red;
@@ -170,13 +187,9 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 7] = texS;
         vertexScratchpad[offset + 8] = texT;
 
-        // Transform normals.
-        // Assume model view is just rotations and translations, no shear or scale.
-        // Otherwise, the upper left 3x3 part of transformation matrix would have
-        // to be inversed and transposed first.
-        vertexScratchpad[offset + 9] = nx;
-        vertexScratchpad[offset + 10] = ny;
-        vertexScratchpad[offset + 11] = nz;
+        vertexScratchpad[offset + 9] = nxt;
+        vertexScratchpad[offset + 10] = nyt;
+        vertexScratchpad[offset + 11] = nzt;
 
         cachedVertices++;
     }
@@ -202,8 +215,6 @@ public class VertexInterceptor {
         if (colorPointer != null && clientAttribTracker.getEnableColorArray()) {
             colorSnapshot = BufferUtil.snapshot(colorPointer);
         }
-
-//        attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
 
         record recordedGlDrawArrays(
                 int mode,
@@ -239,11 +250,16 @@ public class VertexInterceptor {
                 }
 
                 parent.attribManager.applyEnableAndColorBufferBit();
+                parent.attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
+
+                parent.matrixBuffer.clear();
+                parent.modelView.getMatrix().storeTranspose(parent.matrixBuffer);
+                parent.matrixBuffer.flip();
 
                 // Draw.
-//                GL11.glMultMatrix(mBuffer);
+                GL11.glMultMatrix(parent.matrixBuffer);
                 GL11.glDrawArrays(mode, first, count);
-//                GL11.glLoadIdentity();
+                GL11.glLoadIdentity();
             }
         }
 
@@ -309,7 +325,6 @@ public class VertexInterceptor {
         if (shouldRegisterArrays) {
             registerDefaultVertexPointer();
         }
-//        prepareVertexPointer(count);
 
         vertexPointer.clear();
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
@@ -317,44 +332,4 @@ public class VertexInterceptor {
         attribManager.applyEnableAndColorBufferBit();
         GL11.glDrawArrays(mode, 0, count);
     }
-
-//    private void prepareVertexPointer(int vertexNum) {
-//        int capacityRequired = capacityRequired(vertexPointer, vertexNum * STRIDE);
-//        if (capacityRequired > 0) {
-//            vertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
-//        }
-//
-//        if (shouldRegisterArrays || capacityRequired > 0) {
-//            final FloatBuffer vertexPointerFinal = vertexPointer;
-//            registerArrays(vertexPointerFinal);
-//        }
-//
-//        shouldRegisterArrays = false;
-//    }
-
-//    private void resizeAuxData(int bytes) {
-//        int capacityRequired = capacityRequired(auxDataBuffer, bytes);
-//        if (capacityRequired > 0) {
-//            log(VertexInterceptor.class, "resize aux data buffer to " + capacityRequired + " bytes");
-//
-//            auxDataBuffer = BufferUtils.createByteBuffer(capacityRequired);
-//        }
-//    }
-//
-//    private ByteBuffer allocateAuxData(int bytes) {
-//        resizeAuxData(bytes);
-//
-//        ByteBuffer slice = auxDataBuffer.slice(auxDataBuffer.position(), bytes);
-//        auxDataBuffer.position(auxDataBuffer.position() + bytes);
-//        return slice;
-//    }
-//
-//    private FloatBuffer allocateAuxDataf(int floats) {
-//        resizeAuxData(floats * Float.BYTES);
-//
-//        FloatBuffer slice = auxDataBuffer.asFloatBuffer().slice(0, floats);
-//        auxDataBuffer.position(auxDataBuffer.position() + floats * Float.BYTES);
-//
-//        return slice;
-//    }
 }

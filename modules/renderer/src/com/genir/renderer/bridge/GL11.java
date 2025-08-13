@@ -294,7 +294,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glMatrixMode(mode);
+                attribManager.glMatrixMode(mode);
             }
         }
         exec.execute(new glMatrixMode(mode));
@@ -306,13 +306,13 @@ public class GL11 {
             public void run() {
                 if (listManager.isRecording(this))
                     return;
-//
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glPushMatrix();
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glPushMatrix();
-//                }
+
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glPushMatrix();
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glPushMatrix();
+                }
             }
         }
         exec.execute(new glPushMatrix());
@@ -324,13 +324,13 @@ public class GL11 {
             public void run() {
                 if (listManager.isRecording(this))
                     return;
-//
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glPopMatrix();
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glPopMatrix();
-//                }
+
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glPopMatrix();
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glPopMatrix();
+                }
             }
         }
         exec.execute(new glPopMatrix());
@@ -342,13 +342,13 @@ public class GL11 {
             public void run() {
                 if (listManager.isRecording(this))
                     return;
-//
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glLoadIdentity();
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glLoadIdentity();
-//                }
+
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glLoadIdentity();
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glLoadIdentity();
+                }
             }
         }
         exec.execute(new glLoadIdentity());
@@ -361,12 +361,12 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glTranslatef(x, y, z);
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
-//                }
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glTranslatef(x, y, z);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
+                }
             }
         }
         exec.execute(new glTranslatef(x, y, z));
@@ -379,12 +379,12 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glRotatef(angle, x, y, z);
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
-//                }
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glRotatef(angle, x, y, z);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
+                }
             }
         }
         exec.execute(new glRotatef(angle, x, y, z));
@@ -397,12 +397,12 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glScalef(x, y, z);
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glScalef(x, y, z);
-//                }
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glScalef(x, y, z);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glScalef(x, y, z);
+                }
             }
         }
         exec.execute(new glScalef(x, y, z));
@@ -415,12 +415,12 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-//                    modelView.glMultMatrix(m);
-//                } else {
-//                    attribManager.applyMatrixMode();
-                org.lwjgl.opengl.GL11.glMultMatrix(m);
-//                }
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glMultMatrix(m);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glMultMatrix(m);
+                }
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
