@@ -437,11 +437,11 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (attribManager.interceptEnable(cap)) {
-//                    attribManager.glEnable(cap);
-//                } else {
-                org.lwjgl.opengl.GL11.glEnable(cap);
-//                }
+                if (attribManager.interceptEnable(cap)) {
+                    attribManager.glEnable(cap);
+                } else {
+                    org.lwjgl.opengl.GL11.glEnable(cap);
+                }
             }
         }
         exec.execute(new glEnable(cap));
@@ -454,11 +454,11 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-//                if (attribManager.interceptEnable(cap)) {
-//                    attribManager.glDisable(cap);
-//                } else {
-                org.lwjgl.opengl.GL11.glDisable(cap);
-//                }
+                if (attribManager.interceptEnable(cap)) {
+                    attribManager.glDisable(cap);
+                } else {
+                    org.lwjgl.opengl.GL11.glDisable(cap);
+                }
             }
         }
         exec.execute(new glDisable(cap));
@@ -471,7 +471,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glBlendFunc(sfactor, dfactor);
+                attribManager.glBlendFunc(sfactor, dfactor);
             }
         }
         exec.execute(new glBlendFunc(sfactor, dfactor));
@@ -484,7 +484,7 @@ public class GL11 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+                attribManager.glBindTexture(target, texture);
             }
         }
         exec.execute(new glBindTexture(target, texture));
@@ -494,7 +494,7 @@ public class GL11 {
         record glPushAttrib(int mask) implements Runnable {
             @Override
             public void run() {
-//                attribManager.glPushAttrib(mask);
+                attribManager.glPushAttrib(mask);
                 org.lwjgl.opengl.GL11.glPushAttrib(mask);
             }
         }
@@ -505,7 +505,7 @@ public class GL11 {
         record glPopAttrib() implements Runnable {
             @Override
             public void run() {
-//                attribManager.glPopAttrib();
+                attribManager.glPopAttrib();
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }

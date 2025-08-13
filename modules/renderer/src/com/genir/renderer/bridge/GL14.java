@@ -1,8 +1,7 @@
 package com.genir.renderer.bridge;
 
 
-import static com.genir.renderer.bridge.impl.Bridge.exec;
-import static com.genir.renderer.bridge.impl.Bridge.listManager;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
@@ -12,7 +11,7 @@ public class GL14 {
                 if (listManager.isRecording(this))
                     return;
 
-                org.lwjgl.opengl.GL14.glBlendEquation(mode);
+                attribManager.glBlendEquation(mode);
             }
         }
         exec.execute(new glBlendEquation(mode));

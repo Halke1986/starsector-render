@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 
+import static com.genir.renderer.bridge.impl.Bridge.attribManager;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL13 {
@@ -8,6 +9,7 @@ public class GL13 {
         record glActiveTexture(int mode) implements Runnable {
             @Override
             public void run() {
+                attribManager.glActiveTexture(mode);
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }

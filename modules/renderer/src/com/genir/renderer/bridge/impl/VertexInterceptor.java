@@ -16,7 +16,7 @@ public class VertexInterceptor {
     private static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + NORMAL_SIZE;
 
     //    private final MatrixStack modelView;
-//    private final AttribManager attribManager;
+    private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
 
     //
@@ -45,9 +45,10 @@ public class VertexInterceptor {
     //    private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 //
     public VertexInterceptor(
-            ClientAttribTracker clientAttribTracker) {
+            ClientAttribTracker clientAttribTracker,
+            AttribManager attribManager) {
 //        this.modelView = modelView;
-//        this.attribManager = attribManager;
+        this.attribManager = attribManager;
         this.clientAttribTracker = clientAttribTracker;
     }
 
@@ -202,7 +203,6 @@ public class VertexInterceptor {
             colorSnapshot = BufferUtil.snapshot(colorPointer);
         }
 
-//        attribManager.applyEnableAndColorBufferBit();
 //        attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
 
         record recordedGlDrawArrays(
@@ -237,6 +237,8 @@ public class VertexInterceptor {
                 if (colorSnapshot != null) {
                     GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot);
                 }
+
+                parent.attribManager.applyEnableAndColorBufferBit();
 
                 // Draw.
 //                GL11.glMultMatrix(mBuffer);
@@ -291,12 +293,12 @@ public class VertexInterceptor {
             vertexPointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
         }
 
-//        attribManager.applyEnableAndColorBufferBit();
         arraysTouched();
 
         GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, vertexPointer.position(0));
         GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, vertexPointer.position(VERTEX_SIZE));
 
+        attribManager.applyEnableAndColorBufferBit();
         GL11.glDrawArrays(mode, 0, count);
     }
 
@@ -312,7 +314,7 @@ public class VertexInterceptor {
         vertexPointer.clear();
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
-//        attribManager.applyEnableAndColorBufferBit();
+        attribManager.applyEnableAndColorBufferBit();
         GL11.glDrawArrays(mode, 0, count);
     }
 

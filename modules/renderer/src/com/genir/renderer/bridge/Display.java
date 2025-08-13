@@ -108,6 +108,8 @@ public class Display {
             @Override
             public void run() {
                 try {
+                    // Clear server attributes when a new display is created.
+                    attribManager.clear();
                     org.lwjgl.opengl.Display.create(pixel_format);
                 } catch (LWJGLException e) {
                     throw new RuntimeException(e);
