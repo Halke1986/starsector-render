@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,13 +20,15 @@ public class Executor {
         return t;
     });
 
-    static final int batchCapacity = 128;
-    private List<Runnable> commandBuffer = new ArrayList<>(batchCapacity);
+    static final int BATCH_CAPACITY = 512;
+    private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
+    private int batchSize = 0;
 
     public void execute(Runnable command) {
-        commandBuffer.add(command);
+        commandBatch[batchSize] = command;
+        batchSize++;
 
-        if (commandBuffer.size() == batchCapacity) {
+        if (batchSize == BATCH_CAPACITY) {
             flushCommands();
         }
     }
@@ -48,7 +48,7 @@ public class Executor {
         flushCommands();
 
         try {
-            exec.submit(() -> tryRun(List.of(command), cleanup)).get();
+            exec.submit(() -> tryRun(command, cleanup)).get();
         } catch (Throwable t) {
             throw new RuntimeException(command + " " + t);
         }
@@ -72,10 +72,13 @@ public class Executor {
     }
 
     private void flushCommands() {
-        final List<Runnable> currentBatch = commandBuffer;
-        commandBuffer = new ArrayList<>(batchCapacity);
+        final Runnable[] currentBatch = commandBatch;
+        final int count = batchSize;
 
-        exec.execute(() -> tryRun(currentBatch));
+        commandBatch = new Runnable[BATCH_CAPACITY];
+        batchSize = 0;
+
+        exec.execute(() -> tryRun(currentBatch, count));
 
         // If the rendering thread throws an exception, crash the application.
         // This ensures a clear log message. Rethrow the exception only once,
@@ -86,22 +89,37 @@ public class Executor {
         }
     }
 
-    private void tryRun(List<Runnable> commands) {
-        tryRun(commands, false);
-    }
+    private void tryRun(Runnable[] commands, int count) {
+        // Rendering thread has already thrown an exception.
+        // Skip further commands, except get and cleanup,
+        // to avoid a potential hard crash without logging.
+        if (exceptionCaptured) {
+            return;
+        }
 
-    private void tryRun(List<Runnable> commands, boolean cleanup) {
-        for (Runnable command : commands) {
-            // Rendering thread has already thrown an exception.
-            // Skip further commands, except get and cleanup,
-            // to avoid a potential hard crash without logging.
-            if (exceptionCaptured && !cleanup) {
-                return;
-            }
-
+        for (int i = 0; i < count; i++) {
+            Runnable command = commands[i];
             try {
                 command.run();
             } catch (Throwable t) {
+                if (!exceptionCaptured) {
+                    exceptionCaptured = true;
+                    exception.set(new RuntimeException(command + " " + t));
+                }
+                return;
+            }
+        }
+    }
+
+    private void tryRun(Runnable command, boolean cleanup) {
+        if (exceptionCaptured && !cleanup) {
+            return;
+        }
+
+        try {
+            command.run();
+        } catch (Throwable t) {
+            if (!exceptionCaptured) {
                 exceptionCaptured = true;
                 exception.set(new RuntimeException(command + " " + t));
             }

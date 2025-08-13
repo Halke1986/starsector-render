@@ -22,8 +22,8 @@ public class ListManager {
         return mode != 0;
     }
 
-    public boolean isRecording() {
-        return mode != 0;
+    public boolean isNotRecording() {
+        return mode == 0;
     }
 
     public void record(Runnable command) {
@@ -37,7 +37,7 @@ public class ListManager {
     }
 
     public void glNewList(int list, int mode) {
-        asert(!isRecording());
+        asert(isNotRecording());
         asert(mode == org.lwjgl.opengl.GL11.GL_COMPILE || mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE);
 
         this.newListID = list;
@@ -53,7 +53,7 @@ public class ListManager {
     }
 
     public void glCallList(int list) {
-        asert(!isRecording());
+        asert(isNotRecording());
 
         Runnable[] listToCall = lists.get(list);
         if (listToCall != null) {
