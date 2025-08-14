@@ -14,16 +14,8 @@ public class ListManager {
 
     private final Map<Integer, Runnable[]> lists = new HashMap<>();
 
-    public boolean isRecording(Runnable command) {
-        if (mode != 0) {
-            record(command);
-        }
-
+    public boolean isRecording() {
         return mode != 0;
-    }
-
-    public boolean isNotRecording() {
-        return mode == 0;
     }
 
     public void record(Runnable command) {
@@ -37,7 +29,7 @@ public class ListManager {
     }
 
     public void glNewList(int list, int mode) {
-        asert(isNotRecording());
+        asert(!isRecording());
         asert(mode == org.lwjgl.opengl.GL11.GL_COMPILE || mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE);
 
         this.newListID = list;
@@ -53,7 +45,7 @@ public class ListManager {
     }
 
     public void glCallList(int list) {
-        asert(isNotRecording());
+        asert(!isRecording());
 
         Runnable[] listToCall = lists.get(list);
         if (listToCall != null) {

@@ -7,8 +7,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Executor {
-    private static final AtomicInteger threadCounter = new AtomicInteger(0);
+    private final ListManager listManager;
 
+    private static final AtomicInteger threadCounter = new AtomicInteger(0);
     private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
     private boolean exceptionCaptured = false; // Accessed by rendering thread.
 
@@ -19,6 +20,10 @@ public class Executor {
 
         return t;
     });
+
+    public Executor(ListManager listManager) {
+        this.listManager = listManager;
+    }
 
     static final int BATCH_CAPACITY = 2048;
     private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
@@ -97,6 +102,11 @@ public class Executor {
 
         for (int i = 0; i < count; i++) {
             Runnable command = commands[i];
+            if (command instanceof Recordable && listManager.isRecording()) {
+                listManager.record(command);
+                continue;
+            }
+
             try {
                 command.run();
             } catch (RuntimeException e) {

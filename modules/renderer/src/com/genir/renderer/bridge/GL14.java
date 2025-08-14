@@ -1,16 +1,16 @@
 package com.genir.renderer.bridge;
 
 
-import static com.genir.renderer.bridge.impl.Bridge.*;
+import com.genir.renderer.bridge.impl.Recordable;
+
+import static com.genir.renderer.bridge.impl.Bridge.attribManager;
+import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
-        record glBlendEquation(int mode) implements Runnable {
+        record glBlendEquation(int mode) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (listManager.isRecording(this))
-                    return;
-
                 attribManager.glBlendEquation(mode);
             }
         }

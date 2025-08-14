@@ -1,8 +1,6 @@
 package com.genir.renderer.bridge.impl;
 
 public class Bridge {
-    public static final Executor exec = new Executor();
-
     // Client state.
     public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
     public static final AttribTracker attribTracker = new AttribTracker();
@@ -13,6 +11,8 @@ public class Bridge {
     public static final AttribManager attribManager = new AttribManager();
     public static final MatrixStack modelView = new MatrixStack();
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, modelView);
+
+    public static final Executor exec = new Executor(listManager);
 
     public static void setReorderDraw(boolean reorder) {
         exec.execute(() -> vertexInterceptor.setReorderDraw(reorder));
