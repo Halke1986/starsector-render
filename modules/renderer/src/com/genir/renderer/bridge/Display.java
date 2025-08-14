@@ -95,6 +95,7 @@ public class Display {
         exec.wait(() -> {
             stateCache.update();
             vertexInterceptor.update();
+            arrayGenerator.update();
             org.lwjgl.opengl.Display.update(processMessages);
         });
     }
@@ -103,6 +104,7 @@ public class Display {
         exec.wait(() -> {
             stateCache.update();
             vertexInterceptor.update();
+            arrayGenerator.update();
             org.lwjgl.opengl.Display.update();
         });
     }

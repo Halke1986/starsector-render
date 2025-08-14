@@ -13,6 +13,7 @@ public class Bridge {
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, modelView);
 
     public static final Executor exec = new Executor(listManager);
+    public static final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
 
     public static void setReorderDraw(boolean reorder) {
         exec.execute(() -> vertexInterceptor.setReorderDraw(reorder));

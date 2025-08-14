@@ -3,6 +3,7 @@ package com.genir.renderer.bridge;
 
 import java.nio.IntBuffer;
 
+import static com.genir.renderer.bridge.impl.Bridge.arrayGenerator;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL30 {
@@ -59,6 +60,6 @@ public class GL30 {
     }
 
     public static int glGenVertexArrays() {
-        return exec.get(() -> org.lwjgl.opengl.GL30.glGenVertexArrays());
+        return arrayGenerator.get();
     }
 }
