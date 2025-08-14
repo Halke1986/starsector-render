@@ -6,6 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.genir.renderer.Debug.log;
+
 public class Executor {
     private final ListManager listManager;
 
@@ -47,6 +49,7 @@ public class Executor {
     }
 
     public void wait(Runnable command, boolean cleanup) {
+//        log("wait");
         flushCommands();
 
         try {
@@ -63,6 +66,7 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public <T> T get(Callable<T> task) {
+//        log("get");
         flushCommands();
 
         try {
