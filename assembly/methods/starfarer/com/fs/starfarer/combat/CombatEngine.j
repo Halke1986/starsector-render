@@ -3500,6 +3500,28 @@ L5:
 .end method 
 
 .method public advance : (FLcom/fs/starfarer/util/A/new;)V 
+    .code stack 3 locals 3 
+L0:     invokestatic Method com/genir/renderer/overrides/CombatEngine preAdvance ()V 
+L3:     aload_0 
+L4:     fload_1 
+L5:     aload_2 
+L6:     invokevirtual Method com/fs/starfarer/combat/CombatEngine advanceImpl (FLcom/fs/starfarer/util/A/new;)V
+L9:     return 
+L10:    
+        .linenumbertable 
+            L0 104 
+            L3 106 
+            L9 107 
+        .end linenumbertable 
+        .localvariabletable 
+            0 is this Lcom/fs/starfarer/combat/CombatEngine; from L0 to L10 
+            1 is var1 F from L0 to L10 
+            2 is var2 Lcom/fs/starfarer/util/A/new; from L0 to L10 
+        .end localvariabletable 
+    .end code 
+.end method 
+
+.method public advanceImpl : (FLcom/fs/starfarer/util/A/new;)V
     .code stack 7 locals 7 
 L0:     aload_0 
 L1:     getfield Field com/fs/starfarer/combat/CombatEngine 'interface.super' Z 

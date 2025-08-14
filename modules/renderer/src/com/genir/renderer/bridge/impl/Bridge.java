@@ -20,4 +20,8 @@ public class Bridge {
     public static void commitLayer() {
         exec.execute(() -> vertexInterceptor.commitLayer());
     }
+
+    public static void flushDraw() {
+        exec.flushCommands();
+    }
 }

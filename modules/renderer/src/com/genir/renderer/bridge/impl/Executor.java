@@ -20,7 +20,7 @@ public class Executor {
         return t;
     });
 
-    static final int BATCH_CAPACITY = 512;
+    static final int BATCH_CAPACITY = 2048;
     private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
     private int batchSize = 0;
 
@@ -71,7 +71,7 @@ public class Executor {
         }
     }
 
-    private void flushCommands() {
+    public void flushCommands() {
         final Runnable[] currentBatch = commandBatch;
         final int count = batchSize;
 
