@@ -5,6 +5,7 @@ public class Bridge {
 
     // Client state.
     public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
+    public static final AttribTracker attribTracker = new AttribTracker();
 
     // Server state.
     public static final ListManager listManager = new ListManager();

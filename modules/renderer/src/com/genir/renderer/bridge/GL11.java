@@ -485,8 +485,11 @@ public class GL11 {
                     return;
 
                 attribManager.glBindTexture(target, texture);
+                org.lwjgl.opengl.GL11.glBindTexture(target, texture);
             }
         }
+
+        attribTracker.glBindTexture(target, texture);
         exec.execute(new glBindTexture(target, texture));
     }
 
@@ -498,6 +501,8 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPushAttrib(mask);
             }
         }
+
+        attribTracker.glPushAttrib(mask);
         exec.execute(new glPushAttrib(mask));
     }
 
@@ -509,6 +514,8 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }
+
+        attribTracker.glPopAttrib();
         exec.execute(new glPopAttrib());
     }
 
@@ -861,15 +868,13 @@ public class GL11 {
      * Blocking.
      */
     public static int glGetInteger(int pname) { // NoList
-        // TODO
-//        switch (pname) {
-//            case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-//                return attribManager.textureBinding();
-//            case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
-//                return attribManager.activeTexture();
-//            default:
-//                 org.lwjgl.opengl.GL11.glGetInteger(pname);
-//        }
+        switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
+                return attribTracker.textureBinding();
+            case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
+                return attribTracker.activeTexture();
+        }
+
         record glGetInteger(int pname) implements Callable<Integer> {
             @Override
             public Integer call() {

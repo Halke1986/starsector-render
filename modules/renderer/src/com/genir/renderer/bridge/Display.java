@@ -116,6 +116,8 @@ public class Display {
                 }
             }
         }
+
+        attribTracker.clear();
         exec.wait(new create(pixel_format));
     }
 
