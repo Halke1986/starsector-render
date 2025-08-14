@@ -42,15 +42,14 @@ public class Executor {
     }
 
     public void wait(Runnable command, boolean cleanup) {
-        //        log(Executor.class, "wait");
-        //        logStack();
-
         flushCommands();
 
         try {
             exec.submit(() -> tryRun(command, cleanup)).get();
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Throwable t) {
-            throw new RuntimeException(command + " " + t);
+            throw new RuntimeException(t);
         }
     }
 
@@ -59,15 +58,14 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public <T> T get(Callable<T> task) {
-//        log(Executor.class, "get");
-//        logStack();
-
         flushCommands();
 
         try {
             return exec.submit(task).get();
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Throwable t) {
-            throw new RuntimeException(task + " " + t);
+            throw new RuntimeException(t);
         }
     }
 
@@ -101,11 +99,11 @@ public class Executor {
             Runnable command = commands[i];
             try {
                 command.run();
+            } catch (RuntimeException e) {
+                setException(e);
+                return;
             } catch (Throwable t) {
-                if (!exceptionCaptured) {
-                    exceptionCaptured = true;
-                    exception.set(new RuntimeException(command + " " + t));
-                }
+                setException(new RuntimeException(t));
                 return;
             }
         }
@@ -118,11 +116,17 @@ public class Executor {
 
         try {
             command.run();
+        } catch (RuntimeException e) {
+            setException(e);
         } catch (Throwable t) {
-            if (!exceptionCaptured) {
-                exceptionCaptured = true;
-                exception.set(new RuntimeException(command + " " + t));
-            }
+            setException(new RuntimeException(t));
+        }
+    }
+
+    private void setException(RuntimeException e) {
+        if (!exceptionCaptured) {
+            exceptionCaptured = true;
+            exception.set(e);
         }
     }
 }
