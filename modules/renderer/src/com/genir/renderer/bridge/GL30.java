@@ -49,4 +49,16 @@ public class GL30 {
     public static int glCheckFramebufferStatus(int target) {
         return exec.get(() -> org.lwjgl.opengl.GL30.glCheckFramebufferStatus(target));
     }
+
+    public static void glBindVertexArray(int array) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glBindVertexArray(array));
+    }
+
+    public static void glDeleteVertexArrays(int array) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glDeleteVertexArrays(array));
+    }
+
+    public static int glGenVertexArrays() {
+        return exec.get(() -> org.lwjgl.opengl.GL30.glGenVertexArrays());
+    }
 }
