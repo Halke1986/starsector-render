@@ -39,6 +39,28 @@ public class BufferUtil {
         return snapshot;
     }
 
+    public static float[] snapshotArray(FloatBuffer params) {
+        if (params == null) {
+            return null;
+        }
+
+        float[] snapshot = new float[params.limit()];
+        params.get(0, snapshot, 0, snapshot.length);
+
+        return snapshot;
+    }
+
+    public static byte[] snapshotArray(ByteBuffer params) {
+        if (params == null) {
+            return null;
+        }
+
+        byte[] snapshot = new byte[params.limit()];
+        params.get(0, snapshot, 0, snapshot.length);
+
+        return snapshot;
+    }
+
     public static FloatBuffer reallocate(int size, FloatBuffer old) {
         FloatBuffer n = org.lwjgl.BufferUtils.createFloatBuffer(size);
 

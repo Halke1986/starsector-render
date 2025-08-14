@@ -46,6 +46,9 @@ public class VertexInterceptor {
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
+    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
+    private FloatBuffer texCoordPointer = BufferUtils.createFloatBuffer(0);
+
     public VertexInterceptor(
             ClientAttribTracker clientAttribTracker,
             AttribManager attribManager,
@@ -189,81 +192,88 @@ public class VertexInterceptor {
 
     public Runnable recordGlDrawArrays(int mode, int first, int count) {
         // Vertex array snapshot. Not required if vertices are defined via VBO.
-        FloatBuffer vertexSnapshot = null;
-        FloatBuffer vertexPointer = clientAttribTracker.getVertexPointer();
-        if (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) {
-            vertexSnapshot = BufferUtil.snapshot(vertexPointer);
-        }
+        final FloatBuffer vertexPointer = clientAttribTracker.getVertexPointer();
+        final float[] vertexSnapshot = (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) ?
+                BufferUtil.snapshotArray(vertexPointer) : null;
 
         // Texture array snapshot.
-        FloatBuffer texCoordSnapshot = null;
-        FloatBuffer texCoordPointer = clientAttribTracker.getTexCoordPointer();
-        if (texCoordPointer != null && clientAttribTracker.getEnableTexCoordArray()) {
-            texCoordSnapshot = BufferUtil.snapshot(texCoordPointer);
-        }
+        final FloatBuffer texCoordPointer = clientAttribTracker.getTexCoordPointer();
+        final float[] texCoordSnapshot = (texCoordPointer != null && clientAttribTracker.getEnableTexCoordArray()) ?
+                BufferUtil.snapshotArray(texCoordPointer) : null;
 
         // Color array snapshot.
-        ByteBuffer colorSnapshot = null;
-        ByteBuffer colorPointer = clientAttribTracker.getColorPointer();
-        if (colorPointer != null && clientAttribTracker.getEnableColorArray()) {
-            colorSnapshot = BufferUtil.snapshot(colorPointer);
-        }
+        final ByteBuffer colorPointer = clientAttribTracker.getColorPointer();
+        final boolean enableColorArray = clientAttribTracker.getEnableColorArray();
+        final byte[] colorSnapshot = (colorPointer != null && enableColorArray) ?
+                BufferUtil.snapshotArray(colorPointer) : null;
 
-        record recordedGlDrawArrays(
-                int mode,
-                int first,
-                int count,
-                FloatBuffer vertexSnapshot,
-                FloatBuffer texCoordSnapshot,
-                ByteBuffer colorSnapshot,
-                boolean enableColorArray,
-                VertexInterceptor parent) implements Runnable {
-            @Override
-            public void run() {
-                parent.arraysTouched();
-
-                if (enableColorArray) {
-                    GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                } else {
-                    // Define color if GL_COLOR_ARRAY is disabled.
-                    GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-                    GL11.glColor4f(parent.red, parent.green, parent.blue, parent.alpha);
-                }
-
-                if (vertexSnapshot != null) {
-                    GL11.glVertexPointer(VERTEX_SIZE_2D, 0, vertexSnapshot);
-                }
-
-                if (texCoordSnapshot != null) {
-                    GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordSnapshot);
-                }
-
-                if (colorSnapshot != null) {
-                    GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorSnapshot);
-                }
-
-                parent.attribManager.applyEnableAndColorBufferBit();
-                parent.attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
-
-                parent.matrixBuffer.clear();
-                parent.modelView.getMatrix().storeTranspose(parent.matrixBuffer);
-                parent.matrixBuffer.flip();
-
-                // Draw.
-                GL11.glMultMatrix(parent.matrixBuffer);
-                GL11.glDrawArrays(mode, first, count);
-                GL11.glLoadIdentity();
-            }
-        }
-
-        return new recordedGlDrawArrays(mode,
+        return () -> drawRecordedArray(
+                mode,
                 first,
                 count,
                 vertexSnapshot,
                 texCoordSnapshot,
                 colorSnapshot,
-                clientAttribTracker.getEnableColorArray(),
-                this);
+                enableColorArray);
+    }
+
+    private void drawRecordedArray(
+            int mode,
+            int first,
+            int count,
+            float[] vertexSnapshot,
+            float[] texCoordSnapshot,
+            byte[] colorSnapshot,
+            boolean enableColorArray
+    ) {
+        arraysTouched();
+
+        if (enableColorArray) {
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        } else {
+            // Define color if GL_COLOR_ARRAY is disabled.
+            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            GL11.glColor4f(red, green, blue, alpha);
+        }
+
+        if (vertexSnapshot != null) {
+            if (vertexPointer.capacity() < vertexSnapshot.length) {
+                vertexPointer = BufferUtils.createFloatBuffer(vertexSnapshot.length);
+            }
+
+            vertexPointer.clear().put(vertexSnapshot).flip();
+            GL11.glVertexPointer(VERTEX_SIZE_2D, 0, vertexPointer);
+        }
+
+        if (texCoordSnapshot != null) {
+            if (texCoordPointer.capacity() < texCoordSnapshot.length) {
+                texCoordPointer = BufferUtils.createFloatBuffer(texCoordSnapshot.length);
+            }
+
+            texCoordPointer.clear().put(texCoordSnapshot).flip();
+            GL11.glTexCoordPointer(TEX_SIZE, 0, texCoordPointer);
+        }
+
+        if (colorSnapshot != null) {
+            if (colorPointer.capacity() < colorSnapshot.length) {
+                colorPointer = BufferUtils.createByteBuffer(colorSnapshot.length);
+            }
+
+            colorPointer.clear().put(colorSnapshot).flip();
+            GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorPointer);
+        }
+
+        attribManager.applyEnableAndColorBufferBit();
+        attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
+
+        matrixBuffer.clear();
+        modelView.getMatrix().storeTranspose(matrixBuffer);
+        matrixBuffer.flip();
+
+        // Draw.
+        GL11.glMultMatrix(matrixBuffer);
+        GL11.glDrawArrays(mode, first, count);
+        GL11.glLoadIdentity();
     }
 
     /**
