@@ -8,7 +8,7 @@ import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL15 {
     public static int glGenBuffers() {
-        return exec.get(() -> org.lwjgl.opengl.GL15.glGenBuffers());
+        return bufferGenerator.get();
     }
 
     public static void glDeleteBuffers(int buffer) {

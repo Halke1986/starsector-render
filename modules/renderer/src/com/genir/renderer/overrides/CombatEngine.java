@@ -4,11 +4,13 @@ import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.impl.Bridge;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
+import static com.genir.renderer.bridge.impl.Bridge.flushDraw;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
 
     public static void preAdvance() {
+        flushDraw();
     }
 
     public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {

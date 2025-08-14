@@ -26,16 +26,14 @@ public class ResourceGenerator {
     }
 
     public void update() {
-        exec.wait(() -> {
-            while (stash.size() < requiredPerFrame) {
-                try {
-                    stash.push(generate.call());
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Throwable t) {
-                    throw new RuntimeException(t);
-                }
+        while (stash.size() < requiredPerFrame) {
+            try {
+                stash.push(generate.call());
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
             }
-        });
+        }
     }
 }

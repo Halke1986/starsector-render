@@ -8,6 +8,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.uniformLocationTracker;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {
@@ -63,7 +64,7 @@ public class GL20 {
     }
 
     public static int glGetUniformLocation(int program, CharSequence name) {
-        return exec.get(() -> org.lwjgl.opengl.GL20.glGetUniformLocation(program, name));
+        return uniformLocationTracker.glGetUniformLocation(program, name);
     }
 
     public static void glLinkProgram(int program) {
