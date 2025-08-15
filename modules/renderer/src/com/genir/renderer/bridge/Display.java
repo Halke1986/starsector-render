@@ -15,10 +15,6 @@ public class Display {
         return exec.get(() -> org.lwjgl.opengl.Display.getAvailableDisplayModes());
     }
 
-    public static int getWidth() {
-        return exec.get(() -> org.lwjgl.opengl.Display.getWidth());
-    }
-
     public static int setIcon(ByteBuffer[] icons) {
         return exec.get(() -> org.lwjgl.opengl.Display.setIcon(icons));
     }
@@ -67,11 +63,14 @@ public class Display {
 
     public static void create(PixelFormat pixel_format) {
         attribTracker.clear();
+
         exec.wait(() -> {
             try {
+                org.lwjgl.opengl.Display.create(pixel_format);
+
                 // Clear server attributes when a new display is created.
                 attribManager.clear();
-                org.lwjgl.opengl.Display.create(pixel_format);
+                Bridge.update();
             } catch (RuntimeException e) {
                 throw e;
             } catch (Throwable t) {
@@ -81,7 +80,19 @@ public class Display {
     }
 
     public static int getHeight() {
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayHeight();
+        }
+
         return exec.get(() -> org.lwjgl.opengl.Display.getHeight());
+    }
+
+    public static int getWidth() {
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayWidth();
+        }
+
+        return exec.get(() -> org.lwjgl.opengl.Display.getWidth());
     }
 
     public static float getPixelScaleFactor() {
