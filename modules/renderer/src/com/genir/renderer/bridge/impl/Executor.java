@@ -1,34 +1,25 @@
 package com.genir.renderer.bridge.impl;
 
+import com.genir.renderer.bridge.impl.stall.StallDetector;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.genir.renderer.Debug.log;
-
 public class Executor {
     private final ListManager listManager;
+    private final StallDetector stallDetector;
 
-    // Exception handling.
-    private static final AtomicInteger threadCounter = new AtomicInteger(0);
     private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
     private boolean exceptionCaptured = false;
 
-    // Command batch.
     static final int BATCH_CAPACITY = 2048;
     private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
     private int batchSize = 0;
 
-    // Stall detection.
-    static final int STALL_FRAMES = 60;
-    static final int STALL_THRESHOLD = STALL_FRAMES + 60;
-    private boolean stallLastFrame = false;
-    private boolean stallThresholdExceeded = false;
-    private int stallNumber = 0;
-    private int frameNumber = 0;
-
+    private static final AtomicInteger threadCounter = new AtomicInteger(0);
     private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
         t.setDaemon(true);
@@ -37,40 +28,9 @@ public class Executor {
         return t;
     });
 
-    public Executor(ListManager listManager) {
+    public Executor(ListManager listManager, StallDetector stallDetector) {
         this.listManager = listManager;
-    }
-
-    public void update() {
-        if (stallLastFrame) {
-            stallNumber++;
-        }
-
-        stallLastFrame = false;
-        frameNumber++;
-
-        if (frameNumber >= STALL_FRAMES) {
-            log("stall number: " + stallNumber);
-
-            if (stallNumber >= STALL_THRESHOLD) {
-                stallThresholdExceeded = true;
-            }
-
-            stallNumber = 0;
-            frameNumber = 0;
-        }
-    }
-
-    private void detectStall(Object command) {
-//        if (!stallLastFrame) {
-//            log(command);
-//        }
-
-        stallLastFrame = true;
-
-        if (stallThresholdExceeded) {
-            throw new RuntimeException("Asynchronous pipeline stall");
-        }
+        this.stallDetector = stallDetector;
     }
 
     public void execute(Runnable command) {
@@ -87,8 +47,7 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        detectStall(command);
-
+        stallDetector.detectStall();
         barrier(command, false);
     }
 
@@ -109,7 +68,7 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public <T> T get(Callable<T> task) {
-        detectStall(task);
+        stallDetector.detectStall();
         flushCommands();
 
         try {

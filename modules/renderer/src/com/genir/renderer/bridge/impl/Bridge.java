@@ -1,9 +1,6 @@
 package com.genir.renderer.bridge.impl;
 
-import com.genir.renderer.bridge.impl.stall.AttribTracker;
-import com.genir.renderer.bridge.impl.stall.ResourceGenerator;
-import com.genir.renderer.bridge.impl.stall.StateCache;
-import com.genir.renderer.bridge.impl.stall.UniformLocationTracker;
+import com.genir.renderer.bridge.impl.stall.*;
 
 public class Bridge {
     // Server state.
@@ -12,7 +9,8 @@ public class Bridge {
     public static final AttribManager attribManager = new AttribManager();
     public static final MatrixStack modelView = new MatrixStack();
 
-    public static final Executor exec = new Executor(listManager);
+    public static final StallDetector stallDetector = new StallDetector();
+    public static final Executor exec = new Executor(listManager, stallDetector);
 
     // Client state.
     public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
@@ -36,9 +34,14 @@ public class Bridge {
     }
 
     public static void update() {
+        stallDetector.update();
         stateCache.update();
         vertexInterceptor.update();
         arrayGenerator.update();
         bufferGenerator.update();
+    }
+
+    public static void enableStallDetection() {
+        stallDetector.enableDetection();
     }
 }

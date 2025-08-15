@@ -93,7 +93,7 @@ public class Display {
     }
 
     public static void update(boolean processMessages) {
-        exec.update();
+        stallDetector.update();
         exec.barrier(() -> {
             Bridge.update();
             org.lwjgl.opengl.Display.update(processMessages);
@@ -101,7 +101,7 @@ public class Display {
     }
 
     public static void update() {
-        exec.update();
+        stallDetector.update();
         exec.barrier(() -> {
             Bridge.update();
             org.lwjgl.opengl.Display.update();
