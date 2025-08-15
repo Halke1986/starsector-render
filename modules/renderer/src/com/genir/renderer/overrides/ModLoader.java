@@ -46,8 +46,20 @@ public class ModLoader extends URLClassLoader {
         }
 
         try {
-            byte[] classBytes = transformer.apply(classStream.readAllBytes());
-            Class<?> c = super.defineClass(name, classBytes, 0, classBytes.length);
+            byte[] originalBytes = classStream.readAllBytes();
+            byte[] transformedBytes = transformer.apply(originalBytes);
+
+            Class<?> c;
+
+            if (Arrays.equals(originalBytes, transformedBytes)) {
+                // Use the original class if no transformation was required.
+                // This helps to prevent errors with mods that use custom
+                // class loaders.
+                c = super.loadClass(name, resolve);
+            } else {
+                // Define the transformed class.
+                c = super.defineClass(name, transformedBytes, 0, transformedBytes.length);
+            }
 
             cache.put(name, c);
             return c;
