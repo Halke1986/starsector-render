@@ -1,0 +1,14 @@
+v0.1.0
+
+- Added support for GraphicsLib, including shaders. Note: GraphicsLib is still slow and may reduce FPS.
+- Added support for Fast Engine Rendering. It’s not faster than vanilla.
+- Added support for "forceNoVBO": false in Starsector config. May cause visual glitches with damage decals in fleet view.
+- Added support for Unthemed Weapons Collection.
+- Added support for various other mods.
+- Improved performance.
+- Significantly improved error reporting.
+- Fixed errors in Officer Retrain tab rendering. Reported by Ubernoob. 
+
+v0.0.0
+
+- Initial version.
