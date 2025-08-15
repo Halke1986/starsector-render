@@ -22,36 +22,36 @@ public class StateCache {
         return initialized && displayIsActive;
     }
 
-    synchronized public float getDisplayPixelScaleFactor() {
+    public float getDisplayPixelScaleFactor() {
         return displayPixelScaleFactor;
     }
 
-    synchronized public boolean getDisplayIsActive() {
+    public boolean getDisplayIsActive() {
         return displayIsActive;
     }
 
-    synchronized public boolean getDisplayIsVisible() {
+    public boolean getDisplayIsVisible() {
         return displayIsVisible;
     }
 
-    synchronized public boolean getDisplayIsFullscreen() {
+    public boolean getDisplayIsFullscreen() {
         return displayIsFullscreen;
     }
 
-    synchronized public boolean getDisplayIsCloseRequested() {
+    public boolean getDisplayIsCloseRequested() {
         return displayIsCloseRequested;
     }
 
-    synchronized public String getGlStringExtensions() {
+    public String getGlStringExtensions() {
         return glStringExtensions;
     }
 
-    synchronized public ContextCapabilities getContextCapabilities() {
+    public ContextCapabilities getContextCapabilities() {
         return contextCapabilities;
     }
 
     // Run by rendering thread.
-    synchronized public void update() {
+    public void update() {
         displayPixelScaleFactor = Display.getPixelScaleFactor();
         displayIsActive = Display.isActive();
         displayIsVisible = Display.isVisible();

@@ -11,9 +11,23 @@ import static com.genir.renderer.Debug.log;
 public class Executor {
     private final ListManager listManager;
 
+    // Exception handling.
     private static final AtomicInteger threadCounter = new AtomicInteger(0);
     private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-    private boolean exceptionCaptured = false; // Accessed by rendering thread.
+    private boolean exceptionCaptured = false;
+
+    // Command batch.
+    static final int BATCH_CAPACITY = 2048;
+    private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
+    private int batchSize = 0;
+
+    // Stall detection.
+    static final int STALL_FRAMES = 60;
+    static final int STALL_THRESHOLD = STALL_FRAMES + 60;
+    private boolean stallLastFrame = false;
+    private boolean stallThresholdExceeded = false;
+    private int stallNumber = 0;
+    private int frameNumber = 0;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
@@ -27,9 +41,37 @@ public class Executor {
         this.listManager = listManager;
     }
 
-    static final int BATCH_CAPACITY = 2048;
-    private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
-    private int batchSize = 0;
+    public void update() {
+        if (stallLastFrame) {
+            stallNumber++;
+        }
+
+        stallLastFrame = false;
+        frameNumber++;
+
+        if (frameNumber >= STALL_FRAMES) {
+            log("stall number: " + stallNumber);
+
+            if (stallNumber >= STALL_THRESHOLD) {
+                stallThresholdExceeded = true;
+            }
+
+            stallNumber = 0;
+            frameNumber = 0;
+        }
+    }
+
+    private void detectStall(Object command) {
+//        if (!stallLastFrame) {
+//            log(command);
+//        }
+
+        stallLastFrame = true;
+
+        if (stallThresholdExceeded) {
+            throw new RuntimeException("Asynchronous pipeline stall");
+        }
+    }
 
     public void execute(Runnable command) {
         commandBatch[batchSize] = command;
@@ -45,11 +87,12 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        wait(command, false);
+        detectStall(command);
+
+        barrier(command, false);
     }
 
-    public void wait(Runnable command, boolean cleanup) {
-//        log("wait");
+    public void barrier(Runnable command, boolean cleanup) {
         flushCommands();
 
         try {
@@ -66,7 +109,7 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public <T> T get(Callable<T> task) {
-//        log("get");
+        detectStall(task);
         flushCommands();
 
         try {

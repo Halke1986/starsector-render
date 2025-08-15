@@ -93,17 +93,19 @@ public class Display {
     }
 
     public static void update(boolean processMessages) {
-        exec.wait(() -> {
+        exec.update();
+        exec.barrier(() -> {
             Bridge.update();
             org.lwjgl.opengl.Display.update(processMessages);
-        });
+        }, false);
     }
 
     public static void update() {
-        exec.wait(() -> {
+        exec.update();
+        exec.barrier(() -> {
             Bridge.update();
             org.lwjgl.opengl.Display.update();
-        });
+        }, false);
     }
 
     public static boolean isCloseRequested() {
@@ -123,7 +125,7 @@ public class Display {
     }
 
     public static void destroy() {
-        exec.wait(() -> org.lwjgl.opengl.Display.destroy(), true);
+        exec.barrier(() -> org.lwjgl.opengl.Display.destroy(), true);
     }
 
     public static boolean isFullscreen() {
