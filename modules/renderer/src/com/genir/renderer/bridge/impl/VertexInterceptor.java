@@ -42,12 +42,14 @@ public class VertexInterceptor {
 
     // Draw buffers.
     private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
-    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(STRIDE);
+    private FloatBuffer defaultVertexPointer = BufferUtils.createFloatBuffer(STRIDE);
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
-    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
+    // Recorded array draw buffers.
     private FloatBuffer texCoordPointer = BufferUtils.createFloatBuffer(0);
+    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(0);
+    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
 
     public VertexInterceptor(
             ClientAttribTracker clientAttribTracker,
@@ -162,7 +164,7 @@ public class VertexInterceptor {
             prepareDefaultVertexPointer(batchCount);
 
             vertexBatch.flip();
-            vertexPointer.put(vertexBatch);
+            defaultVertexPointer.put(vertexBatch);
             vertexBatch.clear();
 
             attribManager.forceReorderedDrawContext(ctx);
@@ -288,13 +290,13 @@ public class VertexInterceptor {
 
         prepareDefaultVertexPointer(count);
         for (int i = 0; i < count; i++) {
-            vertexPointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
+            defaultVertexPointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
         }
 
         arraysTouched();
 
-        GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, vertexPointer.position(0));
-        GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, vertexPointer.position(VERTEX_SIZE));
+        GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(0));
+        GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(VERTEX_SIZE));
 
         attribManager.applyEnableAndColorBufferBit();
         GL11.glDrawArrays(mode, 0, count);
@@ -305,7 +307,7 @@ public class VertexInterceptor {
      */
     private void drawAsArray(int mode, int count) {
         prepareDefaultVertexPointer(count);
-        vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
+        defaultVertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyEnableAndColorBufferBit();
         GL11.glDrawArrays(mode, 0, count);
@@ -313,9 +315,8 @@ public class VertexInterceptor {
 
     private void prepareDefaultVertexPointer(int count) {
         int capacityRequired = count * STRIDE;
-        if (vertexPointer.capacity() < capacityRequired) {
-            vertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
-
+        if (defaultVertexPointer.capacity() < capacityRequired) {
+            defaultVertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
             registerDefaultVertexPointer();
         }
 
@@ -323,11 +324,11 @@ public class VertexInterceptor {
             registerDefaultVertexPointer();
         }
 
-        vertexPointer.clear();
+        defaultVertexPointer.clear();
     }
 
     private void registerDefaultVertexPointer() {
-        FloatBuffer p = vertexPointer;
+        FloatBuffer p = defaultVertexPointer;
 
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
