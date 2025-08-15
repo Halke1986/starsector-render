@@ -1,4 +1,6 @@
-package com.genir.renderer.bridge.impl;
+package com.genir.renderer.bridge.impl.stall;
+
+import com.genir.renderer.bridge.impl.Executor;
 
 import java.util.Stack;
 import java.util.concurrent.Callable;

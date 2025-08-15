@@ -1,5 +1,10 @@
 package com.genir.renderer.bridge.impl;
 
+import com.genir.renderer.bridge.impl.stall.AttribTracker;
+import com.genir.renderer.bridge.impl.stall.ResourceGenerator;
+import com.genir.renderer.bridge.impl.stall.StateCache;
+import com.genir.renderer.bridge.impl.stall.UniformLocationTracker;
+
 public class Bridge {
     // Server state.
     public static final ListManager listManager = new ListManager();

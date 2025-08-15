@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.impl;
+package com.genir.renderer.bridge.impl.stall;
 
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
