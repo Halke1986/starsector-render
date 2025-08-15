@@ -70,6 +70,7 @@ public class Display {
 
                 // Clear server attributes when a new display is created.
                 attribManager.clear();
+                vertexInterceptor.clear();
                 Bridge.update();
             } catch (RuntimeException e) {
                 throw e;
