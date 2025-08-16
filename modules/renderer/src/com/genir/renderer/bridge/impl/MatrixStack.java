@@ -177,4 +177,26 @@ public class MatrixStack {
         Matrix4f m = current;
         Matrix4f.mul(m2, m, m);
     }
+
+    public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
+        Matrix4f p = new Matrix4f();
+
+        float l = (float) left;
+        float r = (float) right;
+        float t = (float) top;
+        float b = (float) bottom;
+        float n = (float) zNear;
+        float f = (float) zFar;
+
+        p.m00 = 2 / (r - l);
+        p.m11 = 2 / (t - b);
+        p.m22 = -2 / (f - n);
+        p.m03 = -(r + f) / (r - f);
+        p.m13 = -(t + b) / (t - b);
+        p.m23 = -(f + n) / (f - n);
+        p.m33 = 1;
+
+        Matrix4f m = current;
+        Matrix4f.mul(p, m, m);
+    }
 }

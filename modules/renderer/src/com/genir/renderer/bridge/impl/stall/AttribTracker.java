@@ -37,11 +37,13 @@ public class AttribTracker {
     }
 
     public void glPopAttrib() {
-        Snapshot savedCurrent = expectedStack.pop();
-
-        if (savedCurrent != null) {
-            savedCurrent.save(expected);
+        // GL_STACK_UNDERFLOW
+        if (expectedStack.isEmpty()) {
+            return;
         }
+
+        Snapshot savedExpected = expectedStack.pop();
+        savedExpected.save(expected);
     }
 
     public void glBindTexture(int target, int texture) {

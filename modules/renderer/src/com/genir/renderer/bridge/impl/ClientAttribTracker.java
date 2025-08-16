@@ -63,11 +63,13 @@ public class ClientAttribTracker {
     }
 
     public void glPopClientAttrib() {
-        Snapshot savedCurrent = expectedStack.pop();
-
-        if (savedCurrent != null) {
-            savedCurrent.save(expected);
+        // GL_STACK_UNDERFLOW
+        if (expectedStack.isEmpty()) {
+            return;
         }
+
+        Snapshot savedExpected = expectedStack.pop();
+        savedExpected.save(expected);
     }
 
     public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {

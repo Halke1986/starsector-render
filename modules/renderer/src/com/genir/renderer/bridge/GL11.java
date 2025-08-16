@@ -336,6 +336,21 @@ public class GL11 {
         exec.execute(new glMultMatrix(m));
     }
 
+    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
+        record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
+                    modelView.glOrtho(left, right, bottom, top, zNear, zFar);
+                } else {
+                    attribManager.applyMatrixMode();
+                    org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
+                }
+            }
+        }
+        exec.execute(new glOrtho(left, right, bottom, top, zNear, zFar));
+    }
+
     /**
      * Render context.
      */
@@ -427,16 +442,6 @@ public class GL11 {
             }
         }
         exec.execute(new glViewport(x, y, width, height));
-    }
-
-    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable, Recordable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
-            }
-        }
-        exec.execute(new glOrtho(left, right, bottom, top, zNear, zFar));
     }
 
     public static void glTexParameteri(int target, int pname, int param) {

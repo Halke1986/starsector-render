@@ -157,13 +157,16 @@ public class AttribManager {
     }
 
     public void glPopAttrib() {
-        Snapshot savedCurrent = expectedStack.pop();
-        Snapshot savedPrevious = actualStack.pop();
-
-        if (savedCurrent != null) {
-            savedCurrent.save(expected);
-            savedPrevious.save(actual);
+        // GL_STACK_UNDERFLOW
+        if (expectedStack.isEmpty()) {
+            return;
         }
+
+        Snapshot savedExpected = expectedStack.pop();
+        Snapshot savedActual = actualStack.pop();
+
+        savedExpected.save(expected);
+        savedActual.save(actual);
     }
 
     public void glBindTexture(int target, int texture) {
