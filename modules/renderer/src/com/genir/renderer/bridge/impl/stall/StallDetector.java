@@ -28,8 +28,6 @@ public class StallDetector {
 
         if (frameNumber >= STALL_FRAMES) {
             if (displayIsActive) {
-//                log("stall number: " + stallNumber);
-
                 if (stallNumber >= STALL_THRESHOLD) {
                     stallThresholdExceeded = true;
                 }
@@ -46,6 +44,7 @@ public class StallDetector {
         }
 
         if (stallThresholdExceeded) {
+            stallThresholdExceeded = false;
             throw new RuntimeException("Asynchronous pipeline stall");
         }
     }

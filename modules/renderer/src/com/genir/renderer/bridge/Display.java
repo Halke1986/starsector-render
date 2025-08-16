@@ -170,6 +170,6 @@ public class Display {
     }
 
     public static void sync(int fps) {
-        exec.wait(() -> org.lwjgl.opengl.Display.sync(fps));
+        exec.execute(() -> org.lwjgl.opengl.Display.sync(fps));
     }
 }

@@ -1,4 +1,5 @@
 - Fixed visual glitches on damage decals in fleet view when the "forceNoVBO" option is disabled in the Starsector config.
+- Fixed asynchronous pipeline stall when using Console Commands. Reported by Ubernoob.
 
 v0.1.0
 
@@ -9,7 +10,7 @@ v0.1.0
 - Added support for various other mods.
 - Improved performance.
 - Significantly improved error reporting.
-- Fixed errors in Officer Retrain tab rendering. Reported by Ubernoob. 
+- Fixed errors in Officer Retrain tab rendering. Reported by Ubernoob.
 
 v0.0.0
 
