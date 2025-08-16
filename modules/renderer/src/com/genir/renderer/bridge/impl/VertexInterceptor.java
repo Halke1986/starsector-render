@@ -51,6 +51,8 @@ public class VertexInterceptor {
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
+    private int offset = 0;
+
     // Recorded array draw buffers.
 //    private FloatBuffer texCoordPointer = BufferUtils.createFloatBuffer(0);
 //    private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(0);
@@ -67,6 +69,7 @@ public class VertexInterceptor {
 
     public void update() {
         registerDefaultVertexPointer();
+        offset = 0;
     }
 
     public void clear() {
@@ -174,11 +177,13 @@ public class VertexInterceptor {
             prepareDefaultVertexPointer(batchCount);
 
             vertexBatch.flip();
-            GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertexBatch);
+            GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset * STRIDE * Float.BYTES, vertexBatch);
             vertexBatch.clear();
 
             attribManager.forceReorderedDrawContext(ctx);
-            GL11.glDrawArrays(batchMode, 0, batchCount);
+            GL11.glDrawArrays(batchMode, offset, batchCount);
+
+            offset += batchCount;
         }
     }
 
@@ -277,7 +282,8 @@ public class VertexInterceptor {
 
             vertexTransferBuffer.put(vertexScratchpad, 0, count * STRIDE);
             vertexTransferBuffer.flip();
-            GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertexTransferBuffer);
+
+            GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset * STRIDE * Float.BYTES, vertexTransferBuffer);
 
 //            if (vertexPointer.capacity() < vertexSnapshot.length) {
 //                vertexPointer = BufferUtils.createFloatBuffer(vertexSnapshot.length);
@@ -313,9 +319,22 @@ public class VertexInterceptor {
         matrixBuffer.flip();
 
         // Draw.
-        GL11.glMultMatrix(matrixBuffer);
-        GL11.glDrawArrays(mode, first, count);
-        GL11.glLoadIdentity();
+//        GL11.glMultMatrix(matrixBuffer);
+//        GL11.glDrawArrays(mode, offset, count);
+//        GL11.glLoadIdentity();
+
+        // Draw.
+        if (vertexSnapshot != null) {
+            GL11.glMultMatrix(matrixBuffer);
+            GL11.glDrawArrays(mode, offset, count);
+            GL11.glLoadIdentity();
+
+            offset += count;
+        } else {
+            GL11.glMultMatrix(matrixBuffer);
+            GL11.glDrawArrays(mode, 0, count);
+            GL11.glLoadIdentity();
+        }
     }
 
     /**
@@ -349,15 +368,20 @@ public class VertexInterceptor {
         prepareDefaultVertexPointer(count);
         vertexTransferBuffer.put(vertexScratchpad, 0, count * STRIDE);
         vertexTransferBuffer.flip();
-        GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertexTransferBuffer);
+
+        GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset * STRIDE * Float.BYTES, vertexTransferBuffer);
 
         attribManager.applyEnableAndColorBufferBit();
-        GL11.glDrawArrays(mode, 0, count);
+        GL11.glDrawArrays(mode, offset, count);
+
+        offset += count;
     }
 
     private void prepareDefaultVertexPointer(int count) {
         if (vbo == 0) {
             vbo = GL15.glGenBuffers();
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 10000000 * Float.BYTES, GL15.GL_STREAM_DRAW);
         }
 
         int capacityRequired = count * STRIDE;
@@ -365,9 +389,6 @@ public class VertexInterceptor {
             vertexTransferBuffer = BufferUtils.createFloatBuffer(capacityRequired);
 
             log("resize " + capacityRequired);
-
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, capacityRequired * Float.BYTES, GL15.GL_DYNAMIC_DRAW);
 
             registerDefaultVertexPointer();
         }
