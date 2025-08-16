@@ -682,11 +682,23 @@ public class GL11 {
     }
 
     public static String glGetString(int name) { // NoList
+        String result;
+
         if (stateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
-            return stateCache.getGlStringExtensions();
+            result = stateCache.getGlStringExtensions();
+        } else {
+            result = exec.get(() -> org.lwjgl.opengl.GL11.glGetString(name));
         }
 
-        return exec.get(() -> org.lwjgl.opengl.GL11.glGetString(name));
+        // Disable vanilla usage of VBOs. When VBO array draws are recorded
+        // in a display list, they cause visual glitches. Correct handling of
+        // VBOs inside display lists is possible, but complicated and offers
+        // no performance benefits.
+        if (name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
+            return result.replace("GL_ARB_vertex_buffer_object", "");
+        }
+
+        return result;
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList

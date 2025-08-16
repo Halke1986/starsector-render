@@ -1,3 +1,5 @@
+- Fixed visual glitches on damage decals in fleet view when the "forceNoVBO" option is disabled in the Starsector config.
+
 v0.1.0
 
 - Added support for GraphicsLib, including shaders. Note: GraphicsLib is still slow and may reduce FPS.
