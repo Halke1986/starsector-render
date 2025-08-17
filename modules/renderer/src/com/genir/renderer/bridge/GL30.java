@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static com.genir.renderer.bridge.impl.Bridge.arrayGenerator;
@@ -61,5 +62,13 @@ public class GL30 {
 
     public static int glGenVertexArrays() {
         return arrayGenerator.get();
+    }
+
+    public static void glBindBufferBase(int target, int index, int buffer) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glBindBufferBase(target, index, buffer));
+    }
+
+    public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
+        return exec.get(() -> org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer));
     }
 }

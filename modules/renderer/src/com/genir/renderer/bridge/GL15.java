@@ -36,4 +36,8 @@ public class GL15 {
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
     }
+
+    public static boolean glUnmapBuffer(int target) {
+        return exec.get(() -> org.lwjgl.opengl.GL15.glUnmapBuffer(target));
+    }
 }
