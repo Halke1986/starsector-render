@@ -1,0 +1,1 @@
+Copy the included .jar files into the starsector-core directory and overwrite the vanilla jars (back them up first if you want to restore later).
