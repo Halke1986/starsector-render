@@ -1,5 +1,7 @@
 - Fixed visual glitches on damage decals in fleet view when the "forceNoVBO" option is disabled in the Starsector config.
 - Fixed asynchronous pipeline stall when using Console Commands. Reported by Ubernoob.
+- Fixed asynchronous pipeline stall when entering RAT Abyssal Depths. Reported by Lukas.
+- Fixed a EmptyStackException when using QoL Pack Ship Direction Marker. Reported by Seekers.
 
 v0.1.0
 

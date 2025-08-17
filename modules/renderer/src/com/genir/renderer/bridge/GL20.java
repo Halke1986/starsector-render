@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static com.genir.renderer.bridge.impl.Bridge.exec;
-import static com.genir.renderer.bridge.impl.Bridge.uniformLocationTracker;
+import static com.genir.renderer.bridge.impl.Bridge.shaderTracker;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {
@@ -47,10 +47,6 @@ public class GL20 {
         return exec.get(() -> org.lwjgl.opengl.GL20.glGetProgramInfoLog(program, maxLength));
     }
 
-    public static int glGetProgrami(int program, int pname) {
-        return exec.get(() -> org.lwjgl.opengl.GL20.glGetProgrami(program, pname));
-    }
-
     public static void glGetShaderInfoLog(int shader, IntBuffer length, ByteBuffer infoLog) {
         exec.wait(() -> org.lwjgl.opengl.GL20.glGetShaderInfoLog(shader, length, infoLog));
     }
@@ -64,10 +60,15 @@ public class GL20 {
     }
 
     public static int glGetUniformLocation(int program, CharSequence name) {
-        return uniformLocationTracker.glGetUniformLocation(program, name);
+        return shaderTracker.glGetUniformLocation(program, name);
+    }
+
+    public static int glGetProgrami(int program, int pname) {
+        return shaderTracker.glGetProgrami(program, pname);
     }
 
     public static void glLinkProgram(int program) {
+        shaderTracker.glLinkProgram(program);
         exec.execute(() -> org.lwjgl.opengl.GL20.glLinkProgram(program));
     }
 
