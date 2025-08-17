@@ -48,6 +48,15 @@ public class GL11 {
         exec.execute(new glEnd());
     }
 
+    public static void glColor3ub(byte red, byte green, byte blue, byte alpha) {
+        glColor4f(
+                (red & 0xFF) / 255f,
+                (green & 0xFF) / 255f,
+                (blue & 0xFF) / 255f,
+                1f
+        );
+    }
+
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         glColor4f(
                 (red & 0xFF) / 255f,
@@ -621,13 +630,12 @@ public class GL11 {
     }
 
     public static void glDeleteTextures(int texture) { // NoList
-        record glDeleteTextures(int texture) implements Runnable, Recordable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glDeleteTextures(texture);
-            }
-        }
-        exec.execute(new glDeleteTextures(texture));
+        exec.execute(() -> org.lwjgl.opengl.GL11.glDeleteTextures(texture));
+    }
+
+    public static void glDeleteTextures(IntBuffer textures) { // NoList
+        final IntBuffer snapshot = BufferUtil.snapshot(textures);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glDeleteTextures(snapshot));
     }
 
     public static void glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
@@ -660,6 +668,60 @@ public class GL11 {
         exec.execute(new glEdgeFlag(flag));
     }
 
+    public static void glCullFace(int mode) {
+        record glCullFace(int mode) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glCullFace(mode);
+            }
+        }
+        exec.execute(new glCullFace(mode));
+    }
+
+    public static void glDepthFunc(int func) {
+        record glDepthFunc(int func) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glDepthFunc(func);
+            }
+        }
+        exec.execute(new glDepthFunc(func));
+    }
+
+    public static void glDepthRange(double zNear, double zFar) {
+        record glDepthRange(double zNear, double zFar) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glDepthRange(zNear, zFar);
+            }
+        }
+        exec.execute(new glDepthRange(zNear, zFar));
+    }
+
+    public static void glFrontFace(int mode) {
+        record glFrontFace(int mode) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glFrontFace(mode);
+            }
+        }
+        exec.execute(new glFrontFace(mode));
+    }
+
+    public static void glPixelStorei(int pname, int param) { // NoList
+        exec.execute(() -> org.lwjgl.opengl.GL11.glPixelStorei(pname, param));
+    }
+
+    public static void glReadBuffer(int mode) {
+        record glReadBuffer(int mode) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glReadBuffer(mode);
+            }
+        }
+        exec.execute(new glReadBuffer(mode));
+    }
+
     /**
      * Blocking.
      */
@@ -672,6 +734,10 @@ public class GL11 {
         }
 
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
+    }
+
+    public static float glGetFloat(int pname) { // NoList
+        return exec.get(() -> org.lwjgl.opengl.GL11.glGetFloat(pname));
     }
 
     public static void glGenTextures(IntBuffer textures) { // NoList
@@ -728,5 +794,9 @@ public class GL11 {
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) { // NoList
         exec.wait(() -> org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels));
+    }
+
+    public static void glFinish() { // NoList
+        exec.wait(() -> org.lwjgl.opengl.GL11.glFinish());
     }
 }

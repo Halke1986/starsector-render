@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class BufferUtil {
     /**
@@ -33,6 +34,21 @@ public class BufferUtil {
         reader.rewind();
 
         ByteBuffer snapshot = org.lwjgl.BufferUtils.createByteBuffer(reader.limit());
+        snapshot.put(reader);
+
+        snapshot.flip();
+        return snapshot;
+    }
+
+    public static IntBuffer snapshot(IntBuffer params) {
+        if (params == null) {
+            return null;
+        }
+
+        IntBuffer reader = params.duplicate();
+        reader.rewind();
+
+        IntBuffer snapshot = org.lwjgl.BufferUtils.createIntBuffer(reader.limit());
         snapshot.put(reader);
 
         snapshot.flip();
