@@ -1,3 +1,7 @@
+v0.2.0
+
+- Added support for Particle Engine.
+
 v0.1.1
 
 - Fixed visual glitches on damage decals in fleet view when the "forceNoVBO" option is disabled in the Starsector config.
