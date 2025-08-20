@@ -9,7 +9,7 @@ public class Bridge {
     public static final AttribManager attribManager = new AttribManager();
     public static final MatrixStack modelView = new MatrixStack();
 
-    public static final StallDetector stallDetector = new StallDetector();
+    public static final StallDetector stallDetector = new StallDetector(stateCache);
     public static final Executor exec = new Executor(listManager, stallDetector);
 
     // Client state.
@@ -34,7 +34,6 @@ public class Bridge {
     }
 
     public static void update() {
-        stallDetector.update();
         stateCache.update();
         vertexInterceptor.update();
         arrayGenerator.update();

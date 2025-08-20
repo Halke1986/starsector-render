@@ -4,6 +4,8 @@ public class StallDetector {
     static final int STALL_FRAMES = 60;
     static final int STALL_THRESHOLD = 30;
 
+    private final StateCache stateCache;
+
     private boolean stallLastFrame = false;
     private boolean stallThresholdExceeded = false;
     private int stallNumber = 0;
@@ -11,6 +13,10 @@ public class StallDetector {
 
     private boolean stallDetectionEnabled = false;
     private boolean displayIsActive = true;
+
+    public StallDetector(StateCache stateCache) {
+        this.stateCache = stateCache;
+    }
 
     public void enableDetection() {
         stallDetectionEnabled = true;
@@ -24,7 +30,7 @@ public class StallDetector {
         stallLastFrame = false;
         frameNumber++;
 
-        displayIsActive = org.lwjgl.opengl.Display.isActive();
+        displayIsActive = stateCache.isAvailable() && stateCache.getDisplayIsActive();
 
         if (frameNumber >= STALL_FRAMES) {
             if (displayIsActive) {

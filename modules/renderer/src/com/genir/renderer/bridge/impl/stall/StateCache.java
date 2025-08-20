@@ -19,50 +19,49 @@ public class StateCache {
     private String glStringExtensions;
     private ContextCapabilities contextCapabilities;
 
-    public boolean isAvailable() {
+    synchronized public boolean isAvailable() {
         // Inactive displays use stale cache, causing a black screen on reactivation.
-        // Starsector never updates the cache while inactive.
+        // Starsector never updates the display while inactive.
         return initialized && displayIsActive;
     }
 
-    public float getDisplayPixelScaleFactor() {
+    synchronized public float getDisplayPixelScaleFactor() {
         return displayPixelScaleFactor;
     }
 
-    public boolean getDisplayIsActive() {
+    synchronized public boolean getDisplayIsActive() {
         return displayIsActive;
     }
 
-    public boolean getDisplayIsVisible() {
+    synchronized public boolean getDisplayIsVisible() {
         return displayIsVisible;
     }
 
-    public boolean getDisplayIsFullscreen() {
+    synchronized public boolean getDisplayIsFullscreen() {
         return displayIsFullscreen;
     }
 
-    public boolean getDisplayIsCloseRequested() {
+    synchronized public boolean getDisplayIsCloseRequested() {
         return displayIsCloseRequested;
     }
 
-    public int getDisplayWidth() {
+    synchronized public int getDisplayWidth() {
         return displayWidth;
     }
 
-    public int getDisplayHeight() {
+    synchronized public int getDisplayHeight() {
         return displayHeight;
     }
 
-    public String getGlStringExtensions() {
+    synchronized public String getGlStringExtensions() {
         return glStringExtensions;
     }
 
-    public ContextCapabilities getContextCapabilities() {
+    synchronized public ContextCapabilities getContextCapabilities() {
         return contextCapabilities;
     }
 
-    // Run by rendering thread.
-    public void update() {
+    synchronized public void update() { // Render thread
         displayPixelScaleFactor = Display.getPixelScaleFactor();
         displayIsActive = Display.isActive();
         displayIsVisible = Display.isVisible();

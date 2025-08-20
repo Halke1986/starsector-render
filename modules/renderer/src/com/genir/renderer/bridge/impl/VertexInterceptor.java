@@ -192,7 +192,7 @@ public class VertexInterceptor {
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
     }
 
-    public Runnable recordGlDrawArrays(int mode, int first, int count) {
+    public Runnable recordGlDrawArrays(int mode, int first, int count) { // Main tread
         // Vertex array snapshot. Not required if vertices are defined via VBO.
         final FloatBuffer vertexPointer = clientAttribTracker.getVertexPointer();
         final float[] vertexSnapshot = (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) ?
