@@ -1,3 +1,12 @@
+v0.2.1
+
+- Added support for Combat Chatter. Incompatibility reported by SanityAdrift.
+- Added support for Nexerelin. Incompatibility reported by DreadfulDrifter.
+
+v0.2.0
+
+- Added support for Particle Engine.
+
 v0.1.1
 
 - Fixed visual glitches on damage decals in fleet view when the "forceNoVBO" option is disabled in the Starsector config.

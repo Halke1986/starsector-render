@@ -48,24 +48,6 @@ public class GL11 {
         exec.execute(new glEnd());
     }
 
-    public static void glColor3ub(byte red, byte green, byte blue, byte alpha) {
-        glColor4f(
-                (red & 0xFF) / 255f,
-                (green & 0xFF) / 255f,
-                (blue & 0xFF) / 255f,
-                1f
-        );
-    }
-
-    public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        glColor4f(
-                (red & 0xFF) / 255f,
-                (green & 0xFF) / 255f,
-                (blue & 0xFF) / 255f,
-                (alpha & 0xFF) / 255f
-        );
-    }
-
     public static void glColor3f(float red, float green, float blue) {
         glColor4f(
                 red,
@@ -84,6 +66,15 @@ public class GL11 {
         );
     }
 
+    public static void glColor3ub(byte red, byte green, byte blue, byte alpha) {
+        glColor4f(
+                (red & 0xFF) / 255f,
+                (green & 0xFF) / 255f,
+                (blue & 0xFF) / 255f,
+                1f
+        );
+    }
+
     public static void glColor4f(float red, float green, float blue, float alpha) {
         record glColor4f(float red, float green, float blue, float alpha) implements Runnable, Recordable {
             @Override
@@ -92,6 +83,15 @@ public class GL11 {
             }
         }
         exec.execute(new glColor4f(red, green, blue, alpha));
+    }
+
+    public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
+        glColor4f(
+                (red & 0xFF) / 255f,
+                (green & 0xFF) / 255f,
+                (blue & 0xFF) / 255f,
+                (alpha & 0xFF) / 255f
+        );
     }
 
     public static void glTexCoord2f(float s, float t) {
@@ -121,6 +121,26 @@ public class GL11 {
         exec.execute(new glNormal3f(nx, ny, nz));
     }
 
+    public static void glVertex2f(float x, float y) {
+        glVertex3f(x, y, 0);
+    }
+
+    public static void glVertex2d(double x, double y) {
+        glVertex3f(
+                (float) x,
+                (float) y,
+                0
+        );
+    }
+
+    public static void glVertex2i(int x, int y) {
+        glVertex3f(
+                (float) x,
+                (float) y,
+                0
+        );
+    }
+
     public static void glVertex3f(float x, float y, float z) {
         record glVertex3f(float x, float y, float z) implements Runnable, Recordable {
             @Override
@@ -131,23 +151,11 @@ public class GL11 {
         exec.execute(new glVertex3f(x, y, z));
     }
 
-    public static void glVertex2f(float x, float y) {
-        glVertex3f(x, y, 0);
-    }
-
     public static void glVertex3d(double x, double y, double z) {
         glVertex3f(
                 (float) x,
                 (float) y,
                 (float) z
-        );
-    }
-
-    public static void glVertex2d(double x, double y) {
-        glVertex3f(
-                (float) x,
-                (float) y,
-                0
         );
     }
 
