@@ -29,10 +29,6 @@ public class Bridge {
         exec.execute(() -> vertexInterceptor.commitLayer());
     }
 
-    public static void flushDraw() {
-        exec.flushCommands();
-    }
-
     public static void update() {
         stateCache.update();
         vertexInterceptor.update();

@@ -86,7 +86,7 @@ public class Executor {
         }
     }
 
-    public void flushCommands() {
+    private void flushCommands() {
         final Runnable[] currentBatch = commandBatch;
         final int count = batchSize;
 

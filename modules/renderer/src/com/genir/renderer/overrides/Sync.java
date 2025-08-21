@@ -1,10 +1,6 @@
 package com.genir.renderer.overrides;
 
 
-import com.genir.renderer.bridge.Display;
-
-import static com.genir.renderer.bridge.impl.Bridge.stallDetector;
-
 public class Sync {
     static long prevUpdateTimestamp = 0;
 
@@ -32,11 +28,5 @@ public class Sync {
         }
 
         prevUpdateTimestamp = System.nanoTime();
-
-        stallDetector.update();
-        Display.update();
-    }
-
-    public static void update(boolean ignored) {
     }
 }

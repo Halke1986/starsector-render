@@ -4989,7 +4989,7 @@ L8099:  invokestatic Method com/genir/renderer/bridge/GL11 glFinish ()V
 
         .stack same 
 L8102:  iconst_1 
-L8103:  invokestatic Method com/genir/renderer/overrides/Sync update (Z)V
+L8103:  invokestatic Method com/genir/renderer/bridge/Display update (Z)V
 L8106:  invokestatic Method com/fs/graphics/util/B 'Ô00000' ()J 
 L8109:  lstore 43 
 L8111:  lload 43 
