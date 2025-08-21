@@ -6,6 +6,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.Future;
 
 import static com.genir.renderer.Debug.log;
 import static com.genir.renderer.bridge.impl.Bridge.*;
@@ -63,6 +64,7 @@ public class Display {
 
     public static void create(PixelFormat pixel_format) {
         attribTracker.clear();
+        prevFrameFinished = null;
 
         exec.wait(() -> {
             try {
@@ -103,20 +105,31 @@ public class Display {
         return exec.get(() -> org.lwjgl.opengl.Display.getPixelScaleFactor());
     }
 
+    private static Future<?> prevFrameFinished = null;
+
+
     public static void update(boolean processMessages) {
-        stallDetector.update();
-        exec.barrier(() -> {
-            Bridge.update();
-            org.lwjgl.opengl.Display.update(processMessages);
-        }, false);
+        try {
+            if (prevFrameFinished != null) {
+                prevFrameFinished.get();
+            }
+
+            stallDetector.update();
+
+            prevFrameFinished = exec.submit(() -> {
+                Bridge.update();
+                org.lwjgl.opengl.Display.update(processMessages);
+            });
+
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
     public static void update() {
-        stallDetector.update();
-        exec.barrier(() -> {
-            Bridge.update();
-            org.lwjgl.opengl.Display.update();
-        }, false);
+        update(true);
     }
 
     public static boolean isCloseRequested() {
@@ -136,7 +149,7 @@ public class Display {
     }
 
     public static void destroy() {
-        exec.barrier(() -> org.lwjgl.opengl.Display.destroy(), true);
+        exec.wait(() -> org.lwjgl.opengl.Display.destroy(), true);
     }
 
     public static boolean isFullscreen() {

@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.impl.stall.StallDetector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,11 +48,11 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        stallDetector.detectStall();
-        barrier(command, false);
+        wait(command, false);
     }
 
-    public void barrier(Runnable command, boolean cleanup) {
+    public void wait(Runnable command, boolean cleanup) {
+        stallDetector.detectStall();
         flushCommands();
 
         try {
@@ -61,6 +62,11 @@ public class Executor {
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    public Future<?> submit(Runnable command) {
+        flushCommands();
+        return exec.submit(() -> tryRun(command, false));
     }
 
     /**
