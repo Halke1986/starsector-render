@@ -14,8 +14,6 @@ public class CombatEngine {
 
         CombatEngine.engine = engine;
 
-//        log(CombatEngine.class, " ");
-
         if (engine.isDestroyed()) {
             return;
         }
