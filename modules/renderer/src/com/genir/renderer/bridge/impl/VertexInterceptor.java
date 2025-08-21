@@ -192,11 +192,11 @@ public class VertexInterceptor {
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
     }
 
-    public Runnable recordGlDrawArrays(int mode, int first, int count) { // Main tread
+    public Runnable recordGlDrawArrays(int mode, int first, int count) { // Main thread
         // Vertex array snapshot. Not required if vertices are defined via VBO.
-        final FloatBuffer vertexPointer = clientAttribTracker.getVertexPointer();
-        final float[] vertexSnapshot = (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) ?
-                BufferUtil.snapshotArray(vertexPointer) : null;
+        final ArrayPointer vertexPointer = clientAttribTracker.getVertexPointer();
+        final ArraySnapshot vertexSnapshot = (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) ?
+                vertexPointer.getSnapshot() : null;
 
         // Texture array snapshot.
         final FloatBuffer texCoordPointer = clientAttribTracker.getTexCoordPointer();
@@ -223,7 +223,7 @@ public class VertexInterceptor {
             int mode,
             int first,
             int count,
-            float[] vertexSnapshot,
+            ArraySnapshot vertexSnapshot,
             float[] texCoordSnapshot,
             byte[] colorSnapshot,
             boolean enableColorArray
@@ -239,13 +239,12 @@ public class VertexInterceptor {
         }
 
         if (vertexSnapshot != null) {
-            int requiredCapacity = vertexSnapshot.length * Float.BYTES;
-            if (vertexPointer.capacity() < requiredCapacity) {
-                vertexPointer = BufferUtils.createByteBuffer(requiredCapacity);
+            if (vertexPointer.capacity() < vertexSnapshot.bytes()) {
+                vertexPointer = BufferUtils.createByteBuffer(vertexSnapshot.bytes());
             }
 
-            vertexPointer.clear().asFloatBuffer().put(vertexSnapshot);
-            GL11.glVertexPointer(VERTEX_SIZE_2D, GL11.GL_FLOAT, 0, vertexPointer);
+            vertexSnapshot.store(vertexPointer.clear());
+            GL11.glVertexPointer(vertexSnapshot.size(), vertexSnapshot.type(), vertexSnapshot.stride(), vertexPointer.flip());
         }
 
         if (texCoordSnapshot != null) {
