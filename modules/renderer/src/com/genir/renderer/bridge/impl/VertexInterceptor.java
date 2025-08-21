@@ -199,9 +199,9 @@ public class VertexInterceptor {
                 vertexPointer.getSnapshot() : null;
 
         // Texture array snapshot.
-        final FloatBuffer texCoordPointer = clientAttribTracker.getTexCoordPointer();
-        final float[] texCoordSnapshot = (texCoordPointer != null && clientAttribTracker.getEnableTexCoordArray()) ?
-                BufferUtil.snapshotArray(texCoordPointer) : null;
+        final ArrayPointer texCoordPointer = clientAttribTracker.getTexCoordPointer();
+        final ArraySnapshot texCoordSnapshot = (texCoordPointer != null && clientAttribTracker.getEnableTexCoordArray()) ?
+                texCoordPointer.getSnapshot() : null;
 
         // Color array snapshot.
         final ByteBuffer colorPointer = clientAttribTracker.getColorPointer();
@@ -224,7 +224,7 @@ public class VertexInterceptor {
             int first,
             int count,
             ArraySnapshot vertexSnapshot,
-            float[] texCoordSnapshot,
+            ArraySnapshot texCoordSnapshot,
             byte[] colorSnapshot,
             boolean enableColorArray
     ) {
@@ -244,17 +244,24 @@ public class VertexInterceptor {
             }
 
             vertexSnapshot.store(vertexPointer.clear());
-            GL11.glVertexPointer(vertexSnapshot.size(), vertexSnapshot.type(), vertexSnapshot.stride(), vertexPointer.flip());
+            GL11.glVertexPointer(
+                    vertexSnapshot.size(),
+                    vertexSnapshot.type(),
+                    vertexSnapshot.stride(),
+                    vertexPointer.flip());
         }
 
         if (texCoordSnapshot != null) {
-            int requiredCapacity = texCoordSnapshot.length * Float.BYTES;
-            if (texCoordPointer.capacity() < requiredCapacity) {
-                texCoordPointer = BufferUtils.createByteBuffer(requiredCapacity);
+            if (texCoordPointer.capacity() < texCoordSnapshot.bytes()) {
+                texCoordPointer = BufferUtils.createByteBuffer(texCoordSnapshot.bytes());
             }
 
-            texCoordPointer.clear().asFloatBuffer().put(texCoordSnapshot);
-            GL11.glTexCoordPointer(TEX_SIZE, GL11.GL_FLOAT, 0, texCoordPointer);
+            texCoordSnapshot.store(texCoordPointer.clear());
+            GL11.glTexCoordPointer(
+                    texCoordSnapshot.size(),
+                    texCoordSnapshot.type(),
+                    texCoordSnapshot.stride(),
+                    texCoordPointer.flip());
         }
 
         if (colorSnapshot != null) {

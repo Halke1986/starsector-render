@@ -29,7 +29,7 @@ public class ClientAttribTracker {
         return expected.vertexPointer;
     }
 
-    public FloatBuffer getTexCoordPointer() {
+    public ArrayPointer getTexCoordPointer() {
         return expected.texCoordPointer;
     }
 
@@ -85,7 +85,7 @@ public class ClientAttribTracker {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        expected.texCoordPointer = pointer;
+        expected.texCoordPointer = new ArrayPointer(size, GL11.GL_FLOAT, stride, pointer);
     }
 
     public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
@@ -93,7 +93,7 @@ public class ClientAttribTracker {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        expected.vertexPointer = new ArrayPointer(size, stride, pointer);
+        expected.vertexPointer = new ArrayPointer(size, GL11.GL_FLOAT, stride, pointer);
     }
 
     public void glBindBuffer(int target, int buffer) {
@@ -124,7 +124,7 @@ public class ClientAttribTracker {
         boolean enableColorArray = false;
 
         ArrayPointer vertexPointer = null;
-        FloatBuffer texCoordPointer = null;
+        ArrayPointer texCoordPointer = null;
         ByteBuffer colorPointer = null;
 
         void save(Snapshot other) {
