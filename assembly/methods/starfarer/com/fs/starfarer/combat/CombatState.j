@@ -5090,7 +5090,7 @@ L8277:  iload 47
 L8279:  pop
 L8282:  iload 47 
 L8284:  i2l 
-L8285:  invokestatic Method com/genir/renderer/overrides/Sync sync (J)V
+L8285:  invokestatic Method com/genir/renderer/overrides/CombatState sync (J)V
 L8288:  goto L8303 
 
         .stack full 

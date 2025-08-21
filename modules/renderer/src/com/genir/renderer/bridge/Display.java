@@ -12,6 +12,36 @@ import static com.genir.renderer.Debug.log;
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class Display {
+    private static Future<?> prevFrameFinished = null;
+
+    public static void update(boolean processMessages) {
+        try {
+            if (prevFrameFinished != null) {
+                prevFrameFinished.get();
+            }
+
+            stallDetector.update();
+
+            // Swap OpenGL buffers and update the bridge state.
+            // Ideally, these would run on the render thread synchronously
+            // to avoid concurrency issues. However, profiling showed a ~5%
+            // performance penalty from lock contention when blocking.
+            // To avoid this, the update is executed asynchronously.
+            prevFrameFinished = exec.submit(() -> {
+                Bridge.update();
+                org.lwjgl.opengl.Display.update(processMessages);
+            });
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    public static void update() {
+        update(true);
+    }
+
     public static DisplayMode[] getAvailableDisplayModes() {
         return exec.get(() -> org.lwjgl.opengl.Display.getAvailableDisplayModes());
     }
@@ -103,33 +133,6 @@ public class Display {
         }
 
         return exec.get(() -> org.lwjgl.opengl.Display.getPixelScaleFactor());
-    }
-
-    private static Future<?> prevFrameFinished = null;
-
-
-    public static void update(boolean processMessages) {
-        try {
-            if (prevFrameFinished != null) {
-                prevFrameFinished.get();
-            }
-
-            stallDetector.update();
-
-            prevFrameFinished = exec.submit(() -> {
-                Bridge.update();
-                org.lwjgl.opengl.Display.update(processMessages);
-            });
-
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    public static void update() {
-        update(true);
     }
 
     public static boolean isCloseRequested() {

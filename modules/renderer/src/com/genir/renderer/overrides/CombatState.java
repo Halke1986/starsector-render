@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides;
 
 
-public class Sync {
+public class CombatState {
     static long prevUpdateTimestamp = 0;
 
     public static void sync(long ignored) {

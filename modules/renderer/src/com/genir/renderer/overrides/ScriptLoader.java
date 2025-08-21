@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModLoader extends URLClassLoader {
+public class ScriptLoader extends URLClassLoader {
     private final Map<String, Class<?>> cache = new HashMap<>();
 
     private static final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
@@ -24,7 +24,7 @@ public class ModLoader extends URLClassLoader {
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext")
     ));
 
-    public ModLoader(URL[] urls, ClassLoader parent) {
+    public ScriptLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 

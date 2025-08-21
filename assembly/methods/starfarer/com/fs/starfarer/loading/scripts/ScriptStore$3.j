@@ -86,11 +86,11 @@ L129:   ifne L42
 L132:   getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'Ö00000' Lorg/apache/log4j/Logger; 
 L135:   ldc 'Loading jar files' 
 L137:   invokevirtual Method org/apache/log4j/Logger info (Ljava/lang/Object;)V 
-L140:   new com/genir/renderer/overrides/ModLoader
+L140:   new com/genir/renderer/overrides/ScriptLoader
 L143:   dup 
 L144:   aload_2 
 L145:   getstatic Field com/fs/starfarer/loading/scripts/ScriptStore if Lcom/fs/starfarer/loading/scripts/B; 
-L148:   invokespecial Method com/genir/renderer/overrides/ModLoader <init> ([Ljava/net/URL;Ljava/lang/ClassLoader;)V
+L148:   invokespecial Method com/genir/renderer/overrides/ScriptLoader <init> ([Ljava/net/URL;Ljava/lang/ClassLoader;)V
 L151:   astore_1 
 
         .stack full 
