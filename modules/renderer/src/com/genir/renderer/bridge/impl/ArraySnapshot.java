@@ -4,7 +4,9 @@ import java.nio.ByteBuffer;
 
 public record ArraySnapshot(int size, int type, int stride, int bytes, Object array) {
     public void store(ByteBuffer buffer) {
-        if (array instanceof float[]) {
+        if (array instanceof byte[]) {
+            buffer.put((byte[]) array);
+        } else if (array instanceof float[]) {
             buffer.asFloatBuffer().put((float[]) array);
         }
     }

@@ -33,7 +33,7 @@ public class ClientAttribTracker {
         return expected.texCoordPointer;
     }
 
-    public ByteBuffer getColorPointer() {
+    public ArrayPointer getColorPointer() {
         return expected.colorPointer;
     }
 
@@ -77,7 +77,8 @@ public class ClientAttribTracker {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        expected.colorPointer = pointer;
+        int type = unsigned ? GL11.GL_UNSIGNED_BYTE : GL11.GL_BYTE;
+        expected.colorPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
     public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
@@ -125,7 +126,7 @@ public class ClientAttribTracker {
 
         ArrayPointer vertexPointer = null;
         ArrayPointer texCoordPointer = null;
-        ByteBuffer colorPointer = null;
+        ArrayPointer colorPointer = null;
 
         void save(Snapshot other) {
             other.attribMask = attribMask;

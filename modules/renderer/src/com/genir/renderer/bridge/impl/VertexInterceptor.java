@@ -204,10 +204,10 @@ public class VertexInterceptor {
                 texCoordPointer.getSnapshot() : null;
 
         // Color array snapshot.
-        final ByteBuffer colorPointer = clientAttribTracker.getColorPointer();
+        final ArrayPointer colorPointer = clientAttribTracker.getColorPointer();
         final boolean enableColorArray = clientAttribTracker.getEnableColorArray();
-        final byte[] colorSnapshot = (colorPointer != null && enableColorArray) ?
-                BufferUtil.snapshotArray(colorPointer) : null;
+        final ArraySnapshot colorSnapshot = (colorPointer != null && enableColorArray) ?
+                colorPointer.getSnapshot() : null;
 
         return () -> drawRecordedArray(
                 mode,
@@ -225,7 +225,7 @@ public class VertexInterceptor {
             int count,
             ArraySnapshot vertexSnapshot,
             ArraySnapshot texCoordSnapshot,
-            byte[] colorSnapshot,
+            ArraySnapshot colorSnapshot,
             boolean enableColorArray
     ) {
         arraysTouched();
@@ -265,12 +265,16 @@ public class VertexInterceptor {
         }
 
         if (colorSnapshot != null) {
-            if (colorPointer.capacity() < colorSnapshot.length) {
-                colorPointer = BufferUtils.createByteBuffer(colorSnapshot.length);
+            if (colorPointer.capacity() < colorSnapshot.bytes()) {
+                colorPointer = BufferUtils.createByteBuffer(colorSnapshot.bytes());
             }
 
-            colorPointer.clear().put(colorSnapshot).flip();
-            GL11.glColorPointer(COLOR_SIZE, GL11.GL_UNSIGNED_BYTE, 0, colorPointer);
+            colorSnapshot.store(colorPointer.clear());
+            GL11.glColorPointer(
+                    colorSnapshot.size(),
+                    colorSnapshot.type(),
+                    colorSnapshot.stride(),
+                    colorPointer.flip());
         }
 
         attribManager.applyEnableAndColorBufferBit();
