@@ -196,11 +196,20 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        clientAttribTracker.glVertexPointer(size, stride, pointer);
+        clientAttribTracker.glVertexPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+    }
+
+    public static void glVertexPointer(int size, int type, int stride, ByteBuffer pointer) { // NoList
+        clientAttribTracker.glVertexPointer(size, stride, type, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) { // NoList
-        clientAttribTracker.glColorPointer(size, unsigned, stride, pointer);
+        int type = unsigned ? org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE : org.lwjgl.opengl.GL11.GL_BYTE;
+        clientAttribTracker.glColorPointer(size, type, stride, pointer);
+    }
+
+    public static void glColorPointer(int size, int stride, FloatBuffer pointer) { // NoList
+        clientAttribTracker.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
@@ -230,8 +239,17 @@ public class GL11 {
             }
         }
 
-        Runnable recordedGlDrawArrays = vertexInterceptor.recordGlDrawArrays(mode, first, count);
-        exec.execute(new glDrawArrays(recordedGlDrawArrays));
+        Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
+        Runnable glDrawArraysWithContext = vertexInterceptor.glDrawArraysWithContext(glDrawArrays);
+        exec.execute(new glDrawArrays(glDrawArraysWithContext));
+    }
+
+    public static void glDrawElements(int mode, IntBuffer indices) { // Modded
+        final IntBuffer snapshot = BufferUtil.snapshot(indices);
+
+        Runnable glDrawElements = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, snapshot);
+        Runnable glDrawArraysWithContext = vertexInterceptor.glDrawArraysWithContext(glDrawElements);
+        exec.execute(glDrawArraysWithContext);
     }
 
     /**
@@ -728,6 +746,10 @@ public class GL11 {
             }
         }
         exec.execute(new glReadBuffer(mode));
+    }
+
+    public static void glTexEnvi(int target, int pname, int param) { // Modded
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexEnvi(target, pname, param));
     }
 
     /**

@@ -192,7 +192,7 @@ public class VertexInterceptor {
         vertexPointer.put(vertexScratchpad, 0, count * STRIDE);
     }
 
-    public Runnable recordGlDrawArrays(int mode, int first, int count) { // Main thread
+    public Runnable glDrawArraysWithContext(Runnable drawArraysCommand) { // Main thread
         // Vertex array snapshot. Not required if vertices are defined via VBO.
         final ArrayPointer vertexPointer = clientAttribTracker.getVertexPointer();
         final ArraySnapshot vertexSnapshot = (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) ?
@@ -210,9 +210,7 @@ public class VertexInterceptor {
                 colorPointer.getSnapshot() : null;
 
         return () -> drawRecordedArray(
-                mode,
-                first,
-                count,
+                drawArraysCommand,
                 vertexSnapshot,
                 texCoordSnapshot,
                 colorSnapshot,
@@ -220,9 +218,7 @@ public class VertexInterceptor {
     }
 
     private void drawRecordedArray(
-            int mode,
-            int first,
-            int count,
+            Runnable drawArraysCommand,
             ArraySnapshot vertexSnapshot,
             ArraySnapshot texCoordSnapshot,
             ArraySnapshot colorSnapshot,
@@ -286,7 +282,7 @@ public class VertexInterceptor {
 
         // Draw.
         GL11.glMultMatrix(matrixBuffer);
-        GL11.glDrawArrays(mode, first, count);
+        drawArraysCommand.run();
         GL11.glLoadIdentity();
     }
 

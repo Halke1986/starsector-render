@@ -2,7 +2,7 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
 
-import java.nio.ByteBuffer;
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.Stack;
 
@@ -72,12 +72,10 @@ public class ClientAttribTracker {
         savedExpected.save(expected);
     }
 
-    public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
-        asert(size == 4);
+    public void glColorPointer(int size, int type, int stride, Buffer pointer) {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        int type = unsigned ? GL11.GL_UNSIGNED_BYTE : GL11.GL_BYTE;
         expected.colorPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
@@ -89,12 +87,11 @@ public class ClientAttribTracker {
         expected.texCoordPointer = new ArrayPointer(size, GL11.GL_FLOAT, stride, pointer);
     }
 
-    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        asert(size == 2);
+    public void glVertexPointer(int size, int type, int stride, Buffer pointer) {
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        expected.vertexPointer = new ArrayPointer(size, GL11.GL_FLOAT, stride, pointer);
+        expected.vertexPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
     public void glBindBuffer(int target, int buffer) {

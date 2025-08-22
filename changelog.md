@@ -1,5 +1,6 @@
 - Increased frame sync resolution from milliseconds to microseconds. This removes visible stutter in smooth motion as long as FPS matches (or divides evenly into) the monitor refresh rate. Change applies only in combat, not campaign.
 - Reduced main/render thread synchronization overhead, improving performance by a few percent. 
+- Added support for Combat Radar. Incompatibility reported by Bûğäţţï Êçhëłøñ.
 
 v0.2.1
 

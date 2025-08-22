@@ -2,7 +2,9 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.impl.BufferUtil;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
@@ -11,8 +13,19 @@ public class GL15 {
         return bufferGenerator.get();
     }
 
+    public static void glGenBuffers(IntBuffer buffers) {
+        while (buffers.remaining() > 0) {
+            buffers.put(bufferGenerator.get());
+        }
+    }
+
     public static void glDeleteBuffers(int buffer) {
         exec.execute(() -> org.lwjgl.opengl.GL15.glDeleteBuffers(buffer));
+    }
+
+    public static void glDeleteBuffers(IntBuffer buffers) {
+        final IntBuffer snapshot = BufferUtil.snapshot(buffers);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glDeleteBuffers(snapshot));
     }
 
     public static void glBindBuffer(int target, int buffer) {
@@ -29,6 +42,11 @@ public class GL15 {
 
     public static void glBufferData(int target, FloatBuffer data, int usage) {
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
+    }
+
+    public static void glBufferData(int target, ByteBuffer data, int usage) {
+        final ByteBuffer snapshot = BufferUtil.snapshot(data);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
     }
 
