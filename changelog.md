@@ -1,3 +1,5 @@
+- Added support for Starhammer 40K: Persean Expedition. Incompatibility reported by SanityAdrift.
+
 v0.3.0
 
 - Increased frame sync resolution from milliseconds to microseconds. This removes visible stutter in smooth motion as long as FPS matches (or divides evenly into) the monitor refresh rate. Change applies only in combat, not campaign.

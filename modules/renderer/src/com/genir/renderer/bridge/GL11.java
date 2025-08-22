@@ -95,13 +95,7 @@ public class GL11 {
     }
 
     public static void glTexCoord2f(float s, float t) {
-        record glTexCoord2f(float s, float t) implements Runnable, Recordable {
-            @Override
-            public void run() {
-                vertexInterceptor.glTexCoord2f(s, t);
-            }
-        }
-        exec.execute(new glTexCoord2f(s, t));
+        glTexCoord4f(s, t, 0, 1);
     }
 
     public static void glTexCoord2d(double s, double t) {
@@ -110,6 +104,17 @@ public class GL11 {
                 (float) t
         );
     }
+
+    public static void glTexCoord4f(float s, float t, float r, float q) {
+        record glTexCoord4f(float s, float t, float r, float q) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                vertexInterceptor.glTexCoord4f(s, t, r, q);
+            }
+        }
+        exec.execute(new glTexCoord4f(s, t, r, q));
+    }
+
 
     public static void glNormal3f(float nx, float ny, float nz) {
         record glNormal3f(float nx, float ny, float nz) implements Runnable, Recordable {

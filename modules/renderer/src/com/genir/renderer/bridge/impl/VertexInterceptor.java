@@ -13,7 +13,7 @@ public class VertexInterceptor {
     private static final int BUFFER_SIZE = 1 << 16;
     private static final int VERTEX_SIZE = 3;
     private static final int COLOR_SIZE = 4;
-    private static final int TEX_SIZE = 2;
+    private static final int TEX_SIZE = 4;
     private static final int NORMAL_SIZE = 3;
     private static final int VERTEX_SIZE_2D = 2;
     private static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + NORMAL_SIZE;
@@ -33,6 +33,8 @@ public class VertexInterceptor {
     private float alpha;
     private float texS;
     private float texT;
+    private float texR;
+    private float texQ;
     private float nx;
     private float ny;
     private float nz;
@@ -99,9 +101,11 @@ public class VertexInterceptor {
         this.alpha = alpha;
     }
 
-    public void glTexCoord2f(float s, float t) {
+    public void glTexCoord4f(float s, float t, float r, float q) {
         texS = s;
         texT = t;
+        texR = r;
+        texQ = q;
     }
 
     public void glNormal3f(float nx, float ny, float nz) {
@@ -132,19 +136,22 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 1] = yt;
         vertexScratchpad[offset + 2] = zt;
 
-        // Define vertex color.
+        // Vertex color.
         vertexScratchpad[offset + 3] = red;
         vertexScratchpad[offset + 4] = green;
         vertexScratchpad[offset + 5] = blue;
         vertexScratchpad[offset + 6] = alpha;
 
-        // Define vertex texture.
+        // Vertex texture.
         vertexScratchpad[offset + 7] = texS;
         vertexScratchpad[offset + 8] = texT;
+        vertexScratchpad[offset + 9] = texR;
+        vertexScratchpad[offset + 10] = texQ;
 
-        vertexScratchpad[offset + 9] = nxt;
-        vertexScratchpad[offset + 10] = nyt;
-        vertexScratchpad[offset + 11] = nzt;
+        // Vertex normal.
+        vertexScratchpad[offset + 11] = nxt;
+        vertexScratchpad[offset + 12] = nyt;
+        vertexScratchpad[offset + 13] = nzt;
 
         cachedVertices++;
     }
