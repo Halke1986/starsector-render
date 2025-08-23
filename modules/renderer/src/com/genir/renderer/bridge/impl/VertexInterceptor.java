@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VertexInterceptor {
-    private static final int BUFFER_SIZE = 1 << 16;
     private static final int VERTEX_SIZE = 3;
     private static final int COLOR_SIZE = 4;
     private static final int TEX_SIZE = 4;
@@ -43,7 +42,7 @@ public class VertexInterceptor {
     private int cachedVertices = 0;
 
     // Draw buffers.
-    private final float[] vertexScratchpad = new float[BUFFER_SIZE * STRIDE];
+    private float[] vertexScratchpad = new float[STRIDE];
     private FloatBuffer defaultVertexPointer = BufferUtils.createFloatBuffer(STRIDE);
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
@@ -115,8 +114,6 @@ public class VertexInterceptor {
     }
 
     public void glVertex3f(float x, float y, float z) {
-        int offset = cachedVertices * STRIDE;
-
         Matrix4f m = modelView.getMatrix();
 
         // Transform vertices;
@@ -132,6 +129,13 @@ public class VertexInterceptor {
         float nyt = nx * m.m10 + ny * m.m11 + nz * m.m12;
         float nzt = nx * m.m20 + ny * m.m21 + nz * m.m22;
 
+        // Prepare vertext scratchpad.
+        int offset = cachedVertices * STRIDE;
+        if (vertexScratchpad.length <= offset) {
+            vertexScratchpad = BufferUtil.reallocate(vertexScratchpad.length * 2, vertexScratchpad);
+        }
+
+        // Vertex.
         vertexScratchpad[offset + 0] = xt;
         vertexScratchpad[offset + 1] = yt;
         vertexScratchpad[offset + 2] = zt;

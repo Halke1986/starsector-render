@@ -92,6 +92,13 @@ public class BufferUtil {
         return n;
     }
 
+    public static float[] reallocate(int size, float[] old) {
+        float[] n = new float[size];
+        System.arraycopy(old, 0, n, 0, Math.min(size, old.length));
+
+        return n;
+    }
+
     public static int capacityRequired(Buffer buffer, int elements) {
         int capacityRequired = buffer.position() + elements;
         int capacity = buffer.capacity();
