@@ -66,7 +66,7 @@ public class GL11 {
         );
     }
 
-    public static void glColor3ub(byte red, byte green, byte blue, byte alpha) {
+    public static void glColor3ub(byte red, byte green, byte blue) {
         glColor4f(
                 (red & 0xFF) / 255f,
                 (green & 0xFF) / 255f,

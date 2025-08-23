@@ -1,3 +1,5 @@
+- Fixed GL11.glColor3ub to no longer expect an alpha parameter. Reported by float.
+
 v0.3.1
 
 - Added support for Starhammer 40K: Persean Expedition. Incompatibility reported by SanityAdrift.
