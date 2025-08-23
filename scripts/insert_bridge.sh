@@ -11,7 +11,9 @@ find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/Pbuffer ^com/ge
 find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/ARBVertexBufferObject ^com/genir/renderer/bridge/ARBVertexBufferObject ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/opengl/EXTFramebufferObject ^com/genir/renderer/bridge/EXTFramebufferObject ^g' {} +
 find ./assembly/bridged -type f -exec sed -i 's^org/lwjgl/util/Display ^com/genir/renderer/bridge/DisplayUtil ^g' {} +
+find ./assembly/bridged -type f -exec sed -i 's^java/net/URLClassLoader ^com/genir/renderer/overrides/URLClassLoader ^g' {} +
 
 # lwjgl_util should have only opengl calls bridged, not its own methods
 find ./assembly/bridged/lwjgl_util -type f -exec sed -i 's^com/genir/renderer/bridge/DisplayUtil ^org/lwjgl/util/Display ^g' {} +
 find ./assembly/bridged/lwjgl_util -type f -exec sed -i 's^com/genir/renderer/bridge/Display ^org/lwjgl/opengl/Display ^g' {} +
+find ./assembly/bridged/lwjgl_util -type f -exec sed -i 's^com/genir/renderer/overrides/URLClassLoader ^java/net/URLClassLoader ^g' {} +

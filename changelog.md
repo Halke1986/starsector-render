@@ -1,4 +1,5 @@
 - Added support for Starhammer 40K: Persean Expedition. Incompatibility reported by SanityAdrift.
+- Added support for Ship Mastery System. Incompatibility reported by Levidos and YukiM.
 
 v0.3.0
 

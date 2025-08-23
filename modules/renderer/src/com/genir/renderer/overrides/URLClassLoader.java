@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSigner;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 
-public class ScriptLoader extends URLClassLoader {
+public class URLClassLoader extends java.net.URLClassLoader {
     private static final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
             // Replace OpenGL calls.
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
@@ -26,14 +25,14 @@ public class ScriptLoader extends URLClassLoader {
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
 
             // Replace URLClassLoader with this implementation, to support mods that use custom class loaders to bypass reflection ban.
-            ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/overrides/ScriptLoader")
+            ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/overrides/URLClassLoader")
     ));
 
-    public ScriptLoader(URL[] urls, ClassLoader parent) {
+    public URLClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 
-    public ScriptLoader(URL[] urls) {
+    public URLClassLoader(URL[] urls) {
         super(urls);
     }
 
