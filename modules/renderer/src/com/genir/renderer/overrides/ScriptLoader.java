@@ -9,13 +9,10 @@ import java.security.CodeSigner;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ScriptLoader extends URLClassLoader {
-    private final Map<String, Class<?>> cache = new HashMap<>();
-
     private static final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
+            // Replace OpenGL calls.
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL13", "com/genir/renderer/bridge/GL13"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/GL14"),
@@ -27,6 +24,8 @@ public class ScriptLoader extends URLClassLoader {
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL43", "com/genir/renderer/bridge/GL43"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/Display"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
+
+            // Replace URLClassLoader with this implementation, to support mods that use custom class loaders to bypass reflection ban.
             ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/overrides/ScriptLoader")
     ));
 
@@ -39,29 +38,8 @@ public class ScriptLoader extends URLClassLoader {
     }
 
     @Override
-    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        Class<?> cached = findLoadedClass(name);
-        if (cached != null) {
-            return cached;
-        }
-
-        // Do not try to transform Starsector core and libraries.
-        try {
-//            return ClassLoader.getSystemClassLoader().loadClass(name);
-            return super.loadClass(name, resolve);
-        } catch (ClassNotFoundException ignored) {
-        }
-
-        return findClass(name);
-    }
-
-    @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         String binaryName = name.replace('.', '/') + ".class";
-
-        if (name.contains("RefitTabListenerAndScript")) {
-//            logStack();
-        }
 
         // Get class resource stream.
         InputStream classStream = super.getResourceAsStream(binaryName);
