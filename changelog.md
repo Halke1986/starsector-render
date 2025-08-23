@@ -1,3 +1,5 @@
+v0.3.1
+
 - Added support for Starhammer 40K: Persean Expedition. Incompatibility reported by SanityAdrift.
 - Added support for Ship Mastery System. Incompatibility reported by Levidos and YukiM.
 - Fixed an ArrayIndexOutOfBoundsException when many vertices were being displayed. Reported by Ubernoob.
