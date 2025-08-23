@@ -218,21 +218,24 @@ public class GL11 {
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) { // NoList
-        clientAttribTracker.glTexCoordPointer(size, stride, pointer);
+        clientAttribTracker.glTexCoordPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     /**
      * Array draw.
      */
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        clientAttribTracker.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
         exec.execute(() -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        clientAttribTracker.glColorPointer(size, type, stride, pointer_buffer_offset);
         exec.execute(() -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
+        clientAttribTracker.glVertexPointer(size, type, stride, pointer_buffer_offset);
         exec.execute(() -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 

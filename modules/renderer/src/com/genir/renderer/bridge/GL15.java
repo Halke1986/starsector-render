@@ -6,7 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.impl.Bridge.*;
+import static com.genir.renderer.bridge.impl.Bridge.bufferGenerator;
+import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL15 {
     public static int glGenBuffers() {
@@ -29,11 +30,7 @@ public class GL15 {
     }
 
     public static void glBindBuffer(int target, int buffer) {
-        clientAttribTracker.glBindBuffer(target, buffer);
-        exec.execute(() -> {
-            vertexInterceptor.arraysTouched();
-            org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
-        });
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBindBuffer(target, buffer));
     }
 
     public static void glBufferData(int target, long data_size, int usage) {

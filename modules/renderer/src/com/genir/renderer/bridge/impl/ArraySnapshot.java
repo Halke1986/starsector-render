@@ -2,12 +2,14 @@ package com.genir.renderer.bridge.impl;
 
 import java.nio.ByteBuffer;
 
-public record ArraySnapshot(int size, int type, int stride, int bytes, Object array) {
+public record ArraySnapshot(int size, int type, int stride, int bytes, Object snapshot) {
     public void store(ByteBuffer buffer) {
-        if (array instanceof byte[]) {
-            buffer.put((byte[]) array);
-        } else if (array instanceof float[]) {
-            buffer.asFloatBuffer().put((float[]) array);
+        if (snapshot instanceof byte[]) {
+            buffer.put((byte[]) snapshot);
+        } else if (snapshot instanceof float[]) {
+            buffer.asFloatBuffer().put((float[]) snapshot);
+        } else if (snapshot == null) {
+            // Do not store, data is already in GPU side VBO buffer.
         }
     }
 }

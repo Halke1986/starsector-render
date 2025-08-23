@@ -3,7 +3,6 @@ package com.genir.renderer.bridge.impl;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 import java.util.Stack;
 
 import static com.genir.renderer.Debug.asert;
@@ -79,12 +78,12 @@ public class ClientAttribTracker {
         expected.colorPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
-    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+    public void glTexCoordPointer(int size, int type, int stride, Buffer pointer) {
         asert(size == 2);
         asert(stride == 0);
         asert(pointer.position() == 0);
 
-        expected.texCoordPointer = new ArrayPointer(size, GL11.GL_FLOAT, stride, pointer);
+        expected.texCoordPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
     public void glVertexPointer(int size, int type, int stride, Buffer pointer) {
@@ -94,10 +93,16 @@ public class ClientAttribTracker {
         expected.vertexPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
-    public void glBindBuffer(int target, int buffer) {
-        expected.colorPointer = null;
-        expected.vertexPointer = null;
-        expected.texCoordPointer = null;
+    public void glColorPointer(int size, int type, int stride, Long pointer) {
+        expected.colorPointer = new ArrayPointer(size, type, stride, null);
+    }
+
+    public void glTexCoordPointer(int size, int type, int stride, Long pointer) {
+        expected.texCoordPointer = new ArrayPointer(size, type, stride, null);
+    }
+
+    public void glVertexPointer(int size, int type, int stride, Long pointer) {
+        expected.vertexPointer = new ArrayPointer(size, type, stride, null);
     }
 
     private void setState(int cap, boolean value) {

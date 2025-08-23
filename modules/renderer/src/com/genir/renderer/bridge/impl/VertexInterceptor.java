@@ -204,85 +204,88 @@ public class VertexInterceptor {
     }
 
     public Runnable glDrawArraysWithContext(Runnable drawArraysCommand) { // Main thread
-        // Vertex array snapshot. Not required if vertices are defined via VBO.
+        // Vertex array snapshot.
         final ArrayPointer vertexPointer = clientAttribTracker.getVertexPointer();
-        final ArraySnapshot vertexSnapshot = (vertexPointer != null && clientAttribTracker.getEnableVertexArray()) ?
+        final ArraySnapshot vertexSnapshot = (clientAttribTracker.getEnableVertexArray()) ?
                 vertexPointer.getSnapshot() : null;
 
         // Texture array snapshot.
         final ArrayPointer texCoordPointer = clientAttribTracker.getTexCoordPointer();
-        final ArraySnapshot texCoordSnapshot = (texCoordPointer != null && clientAttribTracker.getEnableTexCoordArray()) ?
+        final ArraySnapshot texCoordSnapshot = (clientAttribTracker.getEnableTexCoordArray()) ?
                 texCoordPointer.getSnapshot() : null;
 
         // Color array snapshot.
         final ArrayPointer colorPointer = clientAttribTracker.getColorPointer();
-        final boolean enableColorArray = clientAttribTracker.getEnableColorArray();
-        final ArraySnapshot colorSnapshot = (colorPointer != null && enableColorArray) ?
+        final ArraySnapshot colorSnapshot = (clientAttribTracker.getEnableColorArray()) ?
                 colorPointer.getSnapshot() : null;
 
         return () -> drawRecordedArray(
                 drawArraysCommand,
                 vertexSnapshot,
                 texCoordSnapshot,
-                colorSnapshot,
-                enableColorArray);
+                colorSnapshot);
     }
 
     private void drawRecordedArray(
             Runnable drawArraysCommand,
-            ArraySnapshot vertexSnapshot,
-            ArraySnapshot texCoordSnapshot,
-            ArraySnapshot colorSnapshot,
-            boolean enableColorArray
+            ArraySnapshot vs,
+            ArraySnapshot ts,
+            ArraySnapshot cs
     ) {
         arraysTouched();
 
-        if (enableColorArray) {
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        // Vertex array.
+        if (vs != null) {
+            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+
+            if (vs.snapshot() != null) {
+                if (vertexPointer.capacity() < vs.bytes()) {
+                    vertexPointer = BufferUtils.createByteBuffer(vs.bytes());
+                }
+
+                vs.store(vertexPointer.clear());
+                GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer.flip()); // Legacy
+            }
+        } else {
+            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        }
+
+        // Texture array.
+        if (ts != null) {
+            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+            if (ts.snapshot() != null) {
+                if (texCoordPointer.capacity() < ts.bytes()) {
+                    texCoordPointer = BufferUtils.createByteBuffer(ts.bytes());
+                }
+
+                ts.store(texCoordPointer.clear());
+                GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer.flip()); // Legacy
+            }
+        } else {
+            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+        }
+
+        // Color array.
+        if (cs != null) {
+            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+            if (cs.snapshot() != null) {
+                if (colorPointer.capacity() < cs.bytes()) {
+                    colorPointer = BufferUtils.createByteBuffer(cs.bytes());
+                }
+
+                cs.store(colorPointer.clear());
+                GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer.flip()); // Legacy
+            }
         } else {
             // Define color if GL_COLOR_ARRAY is disabled.
             GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
             GL11.glColor4f(red, green, blue, alpha);
         }
 
-        if (vertexSnapshot != null) {
-            if (vertexPointer.capacity() < vertexSnapshot.bytes()) {
-                vertexPointer = BufferUtils.createByteBuffer(vertexSnapshot.bytes());
-            }
-
-            vertexSnapshot.store(vertexPointer.clear());
-            GL11.glVertexPointer(
-                    vertexSnapshot.size(),
-                    vertexSnapshot.type(),
-                    vertexSnapshot.stride(),
-                    vertexPointer.flip());
-        }
-
-        if (texCoordSnapshot != null) {
-            if (texCoordPointer.capacity() < texCoordSnapshot.bytes()) {
-                texCoordPointer = BufferUtils.createByteBuffer(texCoordSnapshot.bytes());
-            }
-
-            texCoordSnapshot.store(texCoordPointer.clear());
-            GL11.glTexCoordPointer(
-                    texCoordSnapshot.size(),
-                    texCoordSnapshot.type(),
-                    texCoordSnapshot.stride(),
-                    texCoordPointer.flip());
-        }
-
-        if (colorSnapshot != null) {
-            if (colorPointer.capacity() < colorSnapshot.bytes()) {
-                colorPointer = BufferUtils.createByteBuffer(colorSnapshot.bytes());
-            }
-
-            colorSnapshot.store(colorPointer.clear());
-            GL11.glColorPointer(
-                    colorSnapshot.size(),
-                    colorSnapshot.type(),
-                    colorSnapshot.stride(),
-                    colorPointer.flip());
-        }
+        // Normal array.
+        GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 
         attribManager.applyEnableAndColorBufferBit();
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
