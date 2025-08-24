@@ -8,20 +8,19 @@ import java.nio.IntBuffer;
 
 public class BufferUtil {
     /**
-     * Returns a snapshot copy of the given FloatBuffer, preserving its content from position 0 to limit.
+     * Returns a snapshot copy of the given FloatBuffer, preserving its content and state.
      */
     public static FloatBuffer snapshot(FloatBuffer params) {
         if (params == null) {
             return null;
         }
 
-        FloatBuffer reader = params.duplicate();
-        reader.rewind();
+        FloatBuffer snapshot = org.lwjgl.BufferUtils.createFloatBuffer(params.capacity());
+        snapshot.put(0, params, 0, params.limit());
 
-        FloatBuffer snapshot = org.lwjgl.BufferUtils.createFloatBuffer(reader.limit());
-        snapshot.put(reader);
+        snapshot.position(params.position());
+        snapshot.limit(params.limit());
 
-        snapshot.flip();
         return snapshot;
     }
 
@@ -30,13 +29,12 @@ public class BufferUtil {
             return null;
         }
 
-        ByteBuffer reader = params.duplicate();
-        reader.rewind();
+        ByteBuffer snapshot = org.lwjgl.BufferUtils.createByteBuffer(params.capacity());
+        snapshot.put(0, params, 0, params.limit());
 
-        ByteBuffer snapshot = org.lwjgl.BufferUtils.createByteBuffer(reader.limit());
-        snapshot.put(reader);
+        snapshot.position(params.position());
+        snapshot.limit(params.limit());
 
-        snapshot.flip();
         return snapshot;
     }
 
@@ -45,13 +43,12 @@ public class BufferUtil {
             return null;
         }
 
-        IntBuffer reader = params.duplicate();
-        reader.rewind();
+        IntBuffer snapshot = org.lwjgl.BufferUtils.createIntBuffer(params.capacity());
+        snapshot.put(0, params, 0, params.limit());
 
-        IntBuffer snapshot = org.lwjgl.BufferUtils.createIntBuffer(reader.limit());
-        snapshot.put(reader);
+        snapshot.position(params.position());
+        snapshot.limit(params.limit());
 
-        snapshot.flip();
         return snapshot;
     }
 
