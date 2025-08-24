@@ -1,3 +1,5 @@
+v0.3.2
+
 - Fixed GL11.glColor3ub to no longer expect an alpha parameter. Reported by float.
 - Fixed an EXCEPTION_ACCESS_VIOLATION when rendering LazyFont from LazyLib. Reported by float.
 - Fixed an IllegalArgumentException when loading textures at startup. Reported by float.
