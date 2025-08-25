@@ -3,7 +3,7 @@ package com.genir.renderer.overrides;
 
 import com.fs.starfarer.settings.StarfarerSettings;
 
-public class CombatState {
+public class Sync {
     static long prevUpdateTimestamp = 0;
 
     /**
