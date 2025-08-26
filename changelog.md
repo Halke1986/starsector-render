@@ -1,3 +1,5 @@
+- Increased frame sync resolution from milliseconds to microseconds in campaign. 
+
 v0.3.2
 
 - Fixed GL11.glColor3ub to no longer expect an alpha parameter. Reported by float.
