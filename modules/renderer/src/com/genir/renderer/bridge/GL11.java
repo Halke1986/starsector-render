@@ -35,6 +35,7 @@ public class GL11 {
                 vertexInterceptor.glBegin(mode);
             }
         }
+
         exec.execute(new glBegin(mode));
     }
 
@@ -467,6 +468,14 @@ public class GL11 {
     /**
      * Other calls.
      */
+    public static void glFlush() { // NoList
+        // Don't do anything. glFlush and glFinish are mostly
+        // redundant when Display update is being called.
+    }
+
+    public static void glFinish() { // NoList
+    }
+
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         record glColorMask(boolean red, boolean green, boolean blue, boolean alpha) implements Runnable, Recordable {
             @Override
@@ -515,10 +524,6 @@ public class GL11 {
             }
         }
         exec.execute(new glClear(mask));
-    }
-
-    public static void glFlush() { // NoList
-        exec.execute(() -> org.lwjgl.opengl.GL11.glFlush());
     }
 
     public static void glScissor(int x, int y, int width, int height) {
@@ -832,9 +837,5 @@ public class GL11 {
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) { // NoList
         exec.wait(() -> org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels));
-    }
-
-    public static void glFinish() { // NoList
-        exec.wait(() -> org.lwjgl.opengl.GL11.glFinish());
     }
 }
