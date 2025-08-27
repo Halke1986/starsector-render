@@ -1,4 +1,5 @@
-- Increased frame sync resolution from milliseconds to microseconds in campaign. 
+- Increased frame sync resolution from milliseconds to microseconds in campaign.
+- Fixed an RuntimeException when using AI Tweaks shield assist. Reported by Minh.
 
 v0.3.2
 

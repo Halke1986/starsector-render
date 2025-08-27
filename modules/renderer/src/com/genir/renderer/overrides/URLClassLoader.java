@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -37,6 +38,24 @@ public class URLClassLoader extends java.net.URLClassLoader {
     }
 
     @Override
+    public InputStream getResourceAsStream(String name) {
+        InputStream classStream = super.getResourceAsStream(name);
+        if (classStream == null) {
+            return null;
+        }
+
+        // Transform the class.
+        try {
+            byte[] originalBytes = classStream.readAllBytes();
+            byte[] transformedBytes = transformer.apply(originalBytes);
+
+            return new ByteArrayInputStream(transformedBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(name, e);
+        }
+    }
+
+    @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         String binaryName = name.replace('.', '/') + ".class";
 
@@ -51,7 +70,7 @@ public class URLClassLoader extends java.net.URLClassLoader {
         try {
             originalBytes = classStream.readAllBytes();
         } catch (IOException e) {
-            throw new ClassNotFoundException(name, e);
+            throw new RuntimeException(name, e);
         }
 
         // Read class code source.
