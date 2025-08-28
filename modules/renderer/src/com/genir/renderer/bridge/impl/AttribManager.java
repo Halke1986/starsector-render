@@ -296,6 +296,10 @@ public class AttribManager {
                 other.enableLighting = enableLighting;
             }
 
+            if ((attribMask & GL11.GL_STENCIL_BUFFER_BIT) != 0) {
+                other.enableStencilTest = enableStencilTest;
+            }
+
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
                 other.blendSfactor = blendSfactor;
                 other.blendDfactor = blendDfactor;

@@ -1,5 +1,7 @@
 - Increased frame sync resolution from milliseconds to microseconds in campaign.
 - Fixed an RuntimeException when using AI Tweaks shield assist. Reported by Minh.
+- Fixed asynchronous pipeline stalls caused by GL11.glFinish calls. Reported by Minh.
+- Fixed visual errors that would appear after opening the AoTD Vaults of Knowledge Special Projects tab. Reported by Dakkadakka.
 
 v0.3.2
 
