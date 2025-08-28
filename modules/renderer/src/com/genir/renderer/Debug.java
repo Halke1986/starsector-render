@@ -5,6 +5,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -125,5 +126,62 @@ public class Debug {
 
     public static void log(Object msg) {
         Logger.getLogger(Debug.class).info(msg);
+    }
+
+    public static int calculateTexImage2DStorage(Buffer buffer, int format, int type, int width, int height) {
+        return calculateTexImage2DStorage(format, type, width, height) >> BufferUtils.getElementSizeExponent(buffer);
+    }
+
+    private static int calculateTexImage2DStorage(int format, int type, int width, int height) {
+        return calculateTexImage1DStorage(format, type, width) * height;
+    }
+
+    private static int calculateTexImage1DStorage(int format, int type, int width) {
+        return calculateBytesPerPixel(format, type) * width;
+    }
+
+    private static int calculateBytesPerPixel(int format, int type) {
+        byte bpe;
+        switch (type) {
+            case 5120:
+            case GL11.GL_UNSIGNED_BYTE:
+                bpe = 1;
+                break;
+            case 5122:
+            case 5123:
+                bpe = 2;
+                break;
+            case 5124:
+            case 5125:
+            case 5126:
+                bpe = 4;
+                break;
+            default:
+                return 0;
+        }
+
+        byte epp;
+        switch (format) {
+            case 6406:
+            case 6409:
+                epp = 1;
+                break;
+            case GL11.GL_RGB: // 6407
+            case 32992:
+                epp = 3;
+                break;
+            case GL11.GL_RGBA:  // 6408
+            case 32768:
+            case 32993:
+                epp = 4;
+                break;
+            case 6410:
+                epp = 2;
+                break;
+            default:
+                return 0;
+        }
+
+        return bpe * epp;
     }
 }

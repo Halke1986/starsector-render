@@ -2,11 +2,13 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.impl.BufferUtil;
 import com.genir.renderer.bridge.impl.Recordable;
+import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static com.genir.renderer.Debug.calculateTexImage2DStorage;
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL11 {
@@ -377,7 +379,7 @@ public class GL11 {
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
-        exec.execute(new glMultMatrix(m));
+        exec.execute(new glMultMatrix(snapshot));
     }
 
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
@@ -633,7 +635,36 @@ public class GL11 {
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        exec.execute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
+
+        int required = calculateTexImage2DStorage(pixels, format, type, width, height);
+        int s = snapshot.remaining();
+        int p = pixels.remaining();
+
+        StackTraceElement[] stack = new Exception().getStackTrace();
+
+        record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer snapshot, int required, int s, int p, int p_cap, int p_pos, int p_lim, StackTraceElement[] stack) implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot);
+                } catch (Throwable t) {
+                    RuntimeException cause = new RuntimeException(this.toString());
+                    cause.setStackTrace(stack);
+
+                    try {
+                        t.initCause(cause);
+                    } catch (Throwable ignored) {
+                    }
+
+                    throw t;
+                }
+            }
+        }
+
+        glTexImage2D command = new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot,
+                required, s, p, pixels.capacity(), pixels.position(), pixels.limit(), stack);
+
+        exec.execute(command);
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?

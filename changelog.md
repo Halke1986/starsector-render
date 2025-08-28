@@ -1,7 +1,8 @@
 - Increased frame sync resolution from milliseconds to microseconds in campaign.
-- Fixed an RuntimeException when using AI Tweaks shield assist. Reported by Minh.
+- Fixed a RuntimeException when using AI Tweaks shield assist. Reported by Minh.
 - Fixed asynchronous pipeline stalls caused by GL11.glFinish calls. Reported by Minh.
 - Fixed visual errors that would appear after opening the AoTD Vaults of Knowledge Special Projects tab. Reported by Dakkadakka.
+- Improved logging when GL11.glTexImage2D throws an exception. This will make it easier to diagnose the IllegalArgumentException crash at startup reported by float and LujaCro.  
 
 v0.3.2
 
