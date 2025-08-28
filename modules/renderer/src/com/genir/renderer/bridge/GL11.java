@@ -2,7 +2,6 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.impl.BufferUtil;
 import com.genir.renderer.bridge.impl.Recordable;
-import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -648,15 +647,10 @@ public class GL11 {
                 try {
                     org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot);
                 } catch (Throwable t) {
-                    RuntimeException cause = new RuntimeException(this.toString());
-                    cause.setStackTrace(stack);
+                    RuntimeException e = new RuntimeException(this.toString(), t);
+                    e.setStackTrace(stack);
 
-                    try {
-                        t.initCause(cause);
-                    } catch (Throwable ignored) {
-                    }
-
-                    throw t;
+                    throw e;
                 }
             }
         }

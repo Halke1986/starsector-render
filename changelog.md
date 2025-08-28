@@ -1,3 +1,5 @@
+v0.3.3
+
 - Increased frame sync resolution from milliseconds to microseconds in campaign.
 - Fixed a RuntimeException when using AI Tweaks shield assist. Reported by Minh.
 - Fixed asynchronous pipeline stalls caused by GL11.glFinish calls. Reported by Minh.
