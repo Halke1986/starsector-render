@@ -1,3 +1,5 @@
+- Fixed an "IllegalStateException: Unsupported buffer type: null" crash at game startup. Reported by LujaCro and Seekers.
+
 v0.3.3
 
 - Increased frame sync resolution from milliseconds to microseconds in campaign.

@@ -144,7 +144,7 @@ public class Debug {
         byte bpe;
         switch (type) {
             case 5120:
-            case GL11.GL_UNSIGNED_BYTE:
+            case GL11.GL_UNSIGNED_BYTE: // 5121
                 bpe = 1;
                 break;
             case 5122:
