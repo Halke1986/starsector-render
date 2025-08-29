@@ -1,3 +1,5 @@
+v0.3.4
+
 - Fixed an "IllegalStateException: Unsupported buffer type: null" crash at game startup. Reported by LujaCro and Seekers.
 
 v0.3.3
