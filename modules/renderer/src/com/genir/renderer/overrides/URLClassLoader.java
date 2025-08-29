@@ -44,6 +44,11 @@ public class URLClassLoader extends java.net.URLClassLoader {
             return null;
         }
 
+        // Do not transform files other than Java class.
+        if (!name.endsWith(".class")) {
+            return classStream;
+        }
+
         // Transform the class.
         try {
             byte[] originalBytes = classStream.readAllBytes();

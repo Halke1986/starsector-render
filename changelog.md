@@ -1,3 +1,5 @@
+- Fixed the "RuntimeException: Unknown constant tag 51" crash at game startup when loading Particle Engine classes. Reported by Bûğäţţï Êçhëłøñ.
+
 v0.3.4
 
 - Fixed an "IllegalStateException: Unsupported buffer type: null" crash at game startup. Reported by LujaCro and Seekers.
