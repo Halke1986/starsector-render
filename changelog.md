@@ -1,4 +1,5 @@
 - Fixed the "RuntimeException: Unknown constant tag 51" crash at game startup when loading Particle Engine classes. Reported by Bûğäţţï Êçhëłøñ.
+- Fixed a race condition in Starsector’s texture loading code, which could cause an IllegalArgumentException at startup or intermittent visual errors. Issue reported by Seekers, Dakkadakka, float, and LujaCro.
 
 v0.3.4
 
