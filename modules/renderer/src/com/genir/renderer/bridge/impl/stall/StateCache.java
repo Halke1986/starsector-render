@@ -15,6 +15,8 @@ public class StateCache {
     private boolean displayIsCloseRequested;
     private int displayWidth;
     private int displayHeight;
+    private int displayX;
+    private int displayY;
 
     private String glStringExtensions;
     private ContextCapabilities contextCapabilities;
@@ -53,6 +55,14 @@ public class StateCache {
         return displayHeight;
     }
 
+    synchronized public int getDisplayX() {
+        return displayX;
+    }
+
+    synchronized public int getDisplayY() {
+        return displayY;
+    }
+
     synchronized public String getGlStringExtensions() {
         return glStringExtensions;
     }
@@ -69,6 +79,8 @@ public class StateCache {
         displayIsCloseRequested = Display.isCloseRequested();
         displayWidth = Display.getWidth();
         displayHeight = Display.getHeight();
+        displayX = Display.getX();
+        displayY = Display.getY();
         glStringExtensions = GL11.glGetString(GL11.GL_EXTENSIONS);
         contextCapabilities = GLContext.getCapabilities();
 

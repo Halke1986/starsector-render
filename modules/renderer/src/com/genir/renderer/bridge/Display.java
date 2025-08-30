@@ -188,4 +188,20 @@ public class Display {
     public static void sync(int fps) {
         exec.execute(() -> org.lwjgl.opengl.Display.sync(fps));
     }
+
+    public static int getX() {
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayX();
+        }
+
+        return exec.get(() -> org.lwjgl.opengl.Display.getX());
+    }
+
+    public static int getY() {
+        if (stateCache.isAvailable()) {
+            return stateCache.getDisplayY();
+        }
+
+        return exec.get(() -> org.lwjgl.opengl.Display.getY());
+    }
 }
