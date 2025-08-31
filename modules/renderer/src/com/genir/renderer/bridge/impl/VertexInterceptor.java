@@ -263,12 +263,12 @@ public class VertexInterceptor {
                 GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer.flip()); // Legacy
             }
         } else {
-            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         }
 
         // Color array.
         if (cs != null) {
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
             if (cs.snapshot() != null) {
                 if (colorPointer.capacity() < cs.bytes()) {

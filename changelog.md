@@ -1,3 +1,5 @@
+- Fixed visual errors when rendering the Combat Radar. Reported by Bûğäţţï Êçhëłøñ.
+
 v0.3.5
 
 - Fixed the "RuntimeException: Unknown constant tag 51" crash at game startup when loading Particle Engine classes. Reported by Bûğäţţï Êçhëłøñ.
