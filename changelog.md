@@ -1,3 +1,5 @@
+v0.3.6
+
 - Fixed visual errors when rendering the Combat Radar. Reported by Bûğäţţï Êçhëłøñ.
 
 v0.3.5
