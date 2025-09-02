@@ -1,8 +1,4 @@
-package com.genir.renderer.overrides;
-
-import com.genir.renderer.loaders.ClassConstantTransformer;
-import com.genir.renderer.loaders.ClassLoaderBridge;
-import com.genir.renderer.loaders.ClassTransformer;
+package com.genir.renderer.loaders;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -25,7 +21,7 @@ public class URLClassLoader extends java.net.URLClassLoader implements ClassLoad
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
 
             // Replace URLClassLoader with this implementation, to support mods that use custom class loaders to bypass reflection ban.
-            ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/overrides/URLClassLoader")
+            ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/URLClassLoader")
     ));
 
     private final ClassTransformer classTransformer = new ClassTransformer(this);
