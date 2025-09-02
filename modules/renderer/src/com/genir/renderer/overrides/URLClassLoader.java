@@ -1,17 +1,15 @@
 package com.genir.renderer.overrides;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import com.genir.renderer.overrides.loaders.ClassLoaderBridge;
+import com.genir.renderer.overrides.loaders.ClassTransformer;
+
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.CodeSigner;
-import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 
-public class URLClassLoader extends java.net.URLClassLoader {
-    private static final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
+public class URLClassLoader extends java.net.URLClassLoader implements ClassLoaderBridge {
+    private final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
             // Replace OpenGL calls.
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL13", "com/genir/renderer/bridge/GL13"),
@@ -29,6 +27,8 @@ public class URLClassLoader extends java.net.URLClassLoader {
             ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/overrides/URLClassLoader")
     ));
 
+    private final ClassTransformer classTransformer = new ClassTransformer(this);
+
     public URLClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
@@ -39,64 +39,26 @@ public class URLClassLoader extends java.net.URLClassLoader {
 
     @Override
     public InputStream getResourceAsStream(String name) {
-        InputStream classStream = super.getResourceAsStream(name);
-        if (classStream == null) {
-            return null;
-        }
-
-        // Do not transform files other than Java class.
-        if (!name.endsWith(".class")) {
-            return classStream;
-        }
-
-        // Transform the class.
-        try {
-            byte[] originalBytes = classStream.readAllBytes();
-            byte[] transformedBytes = transformer.apply(originalBytes);
-
-            return new ByteArrayInputStream(transformedBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(name, e);
-        }
+        return classTransformer.getResourceAsStream(name, transformer);
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        String binaryName = name.replace('.', '/') + ".class";
+        return classTransformer.findClass(name, transformer);
+    }
 
-        // Get class resource stream.
-        InputStream classStream = super.getResourceAsStream(binaryName);
-        if (classStream == null) {
-            throw new ClassNotFoundException(name);
-        }
+    @Override
+    public InputStream superGetResourceAsStream(String name) {
+        return super.getResourceAsStream(name);
+    }
 
-        // Read class bytes.
-        byte[] originalBytes;
-        try {
-            originalBytes = classStream.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(name, e);
-        }
+    @Override
+    public URL superFindResource(String name) {
+        return super.findResource(name);
+    }
 
-        // Read class code source.
-        URL url = super.findResource(binaryName);
-        if (url != null) {
-            String urlStr = url.toString();
-            int i = urlStr.lastIndexOf(binaryName);
-            if (i > 0) {
-                try {
-                    url = new URL(urlStr.substring(0, i));
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        CodeSource source = new CodeSource(url, (CodeSigner[]) null);
-        ProtectionDomain pd = new ProtectionDomain(source, null, this, null);
-
-        // Define transformed class.
-        byte[] transformedBytes = transformer.apply(originalBytes);
-        return super.defineClass(name, transformedBytes, 0, transformedBytes.length, pd);
+    @Override
+    public Class<?> superDefineClass(String name, byte[] b, int off, int len, ProtectionDomain protectionDomain) {
+        return super.defineClass(name, b, off, len, protectionDomain);
     }
 }
