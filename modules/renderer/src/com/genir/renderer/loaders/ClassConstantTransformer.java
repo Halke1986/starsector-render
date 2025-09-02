@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package com.genir.renderer.overrides;
+package com.genir.renderer.loaders;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,7 +1,8 @@
 package com.genir.renderer.overrides;
 
-import com.genir.renderer.overrides.loaders.ClassLoaderBridge;
-import com.genir.renderer.overrides.loaders.ClassTransformer;
+import com.genir.renderer.loaders.ClassConstantTransformer;
+import com.genir.renderer.loaders.ClassLoaderBridge;
+import com.genir.renderer.loaders.ClassTransformer;
 
 import java.io.InputStream;
 import java.net.URL;

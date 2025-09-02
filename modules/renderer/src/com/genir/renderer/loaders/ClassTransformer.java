@@ -1,6 +1,4 @@
-package com.genir.renderer.overrides.loaders;
-
-import com.genir.renderer.overrides.ClassConstantTransformer;
+package com.genir.renderer.loaders;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

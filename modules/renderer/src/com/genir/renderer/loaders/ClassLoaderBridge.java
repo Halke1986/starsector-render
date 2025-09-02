@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.loaders;
+package com.genir.renderer.loaders;
 
 import java.io.InputStream;
 import java.net.URL;
