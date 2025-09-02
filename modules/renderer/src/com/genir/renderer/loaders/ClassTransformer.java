@@ -8,6 +8,7 @@ import java.net.URL;
 import java.security.CodeSigner;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.util.List;
 
 public class ClassTransformer {
     private final ClassLoaderBridge bridge;
@@ -16,7 +17,7 @@ public class ClassTransformer {
         this.bridge = bridge;
     }
 
-    public InputStream getResourceAsStream(String name, ClassConstantTransformer transformer) {
+    public InputStream getResourceAsStream(String name, List<ClassConstantTransformer> transformers) {
         InputStream classStream = bridge.superGetResourceAsStream(name);
         if (classStream == null) {
             return null;
@@ -30,7 +31,7 @@ public class ClassTransformer {
         // Transform the class.
         try {
             byte[] originalBytes = classStream.readAllBytes();
-            byte[] transformedBytes = (transformer != null) ? transformer.apply(originalBytes) : originalBytes;
+            byte[] transformedBytes = applyTransformers(originalBytes, transformers);
 
             return new ByteArrayInputStream(transformedBytes);
         } catch (IOException e) {
@@ -38,7 +39,7 @@ public class ClassTransformer {
         }
     }
 
-    public Class<?> findClass(String name, ClassConstantTransformer transformer) throws ClassNotFoundException {
+    public Class<?> findClass(String name, List<ClassConstantTransformer> transformers) throws ClassNotFoundException {
         String binaryName = name.replace('.', '/') + ".class";
 
         // Get class resource stream.
@@ -73,7 +74,20 @@ public class ClassTransformer {
         ProtectionDomain pd = new ProtectionDomain(source, null, (ClassLoader) bridge, null);
 
         // Define transformed class.
-        byte[] transformedBytes = (transformer != null) ? transformer.apply(originalBytes) : originalBytes;
+        byte[] transformedBytes = applyTransformers(originalBytes, transformers);
         return bridge.superDefineClass(name, transformedBytes, 0, transformedBytes.length, pd);
+    }
+
+    private byte[] applyTransformers(byte[] inputBytes, List<ClassConstantTransformer> transformers) {
+        if (transformers == null) {
+            return inputBytes;
+        }
+
+        byte[] outputBytes = inputBytes;
+        for (ClassConstantTransformer t : transformers) {
+            outputBytes = t.apply(outputBytes);
+        }
+
+        return outputBytes;
     }
 }

@@ -4,9 +4,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.List;
 
 public class URLClassLoader extends java.net.URLClassLoader implements ClassLoaderBridge {
-    private final ClassConstantTransformer transformer = new ClassConstantTransformer(Arrays.asList(
+    private final List<ClassConstantTransformer> transformers = List.of(new ClassConstantTransformer(Arrays.asList(
             // Replace OpenGL calls.
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL13", "com/genir/renderer/bridge/GL13"),
@@ -22,7 +23,7 @@ public class URLClassLoader extends java.net.URLClassLoader implements ClassLoad
 
             // Replace URLClassLoader with this implementation, to support mods that use custom class loaders to bypass reflection ban.
             ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/URLClassLoader")
-    ));
+    )));
 
     private final ClassTransformer classTransformer = new ClassTransformer(this);
 
@@ -36,12 +37,12 @@ public class URLClassLoader extends java.net.URLClassLoader implements ClassLoad
 
     @Override
     public InputStream getResourceAsStream(String name) {
-        return classTransformer.getResourceAsStream(name, transformer);
+        return classTransformer.getResourceAsStream(name, transformers);
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        return classTransformer.findClass(name, transformer);
+        return classTransformer.findClass(name, transformers);
     }
 
     @Override
