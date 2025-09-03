@@ -68,6 +68,7 @@
 -Djava.library.path=native\\windows
 -XX:-BytecodeVerificationLocal
 -XX:-BytecodeVerificationRemote
+-Djava.system.class.loader=com.genir.renderer.loaders.AppClassLoader
 -Djava.util.Arrays.useLegacyMergeSort=true
 --enable-preview
 --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
@@ -94,5 +95,5 @@
 -Dcom.fs.starfarer.settings.paths.mods=..\\mods
 -Dcom.fs.starfarer.settings.paths.logs=.
 -classpath
-janino.jar;commons-compiler.jar;commons-compiler-jdk.jar;starfarer.api.jar;starfarer_obf.jar;jogg-0.0.7.jar;jorbis-0.0.15.jar;json.jar;lwjgl.jar;jinput.jar;log4j-1.2.9.jar;lwjgl_util.jar;fs.sound_obf.jar;fs.common_obf.jar;xstream-1.4.10.jar;txw2-3.0.2.jar;jaxb-api-2.4.0-b180830.0359.jar;webp-imageio-0.1.6.jar
+fr.jar;janino.jar;commons-compiler.jar;commons-compiler-jdk.jar;starfarer.api.jar;starfarer_obf.jar;jogg-0.0.7.jar;jorbis-0.0.15.jar;json.jar;lwjgl.jar;jinput.jar;log4j-1.2.9.jar;lwjgl_util.jar;fs.sound_obf.jar;fs.common_obf.jar;xstream-1.4.10.jar;txw2-3.0.2.jar;jaxb-api-2.4.0-b180830.0359.jar
 com.fs.starfarer.StarfarerLauncher
