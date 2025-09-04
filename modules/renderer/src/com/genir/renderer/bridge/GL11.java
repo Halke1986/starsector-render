@@ -652,6 +652,11 @@ public class GL11 {
         exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot, stack));
     }
 
+    public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBuffer pixels) { // NoList
+        final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
+        exec.execute(() -> org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
+    }
+
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
         exec.execute(() -> org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
@@ -852,6 +857,10 @@ public class GL11 {
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) { // NoList
+        exec.wait(() -> org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels));
+    }
+
+    public static void glGetTexImage(int target, int level, int format, int type, FloatBuffer pixels) { // NoList
         exec.wait(() -> org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels));
     }
 }

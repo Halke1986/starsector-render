@@ -1,3 +1,5 @@
+- Added support for Portrait Replacer by CombustibleLemon. Incompatibility reported by Versil.
+
 v0.3.6
 
 - Fixed visual errors when rendering the Combat Radar. Reported by Bûğäţţï Êçhëłøñ.

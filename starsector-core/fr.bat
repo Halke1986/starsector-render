@@ -1,1 +1,1 @@
-java.exe @fr.vmparams
+..\jre\bin\java.exe @fr.vmparams
