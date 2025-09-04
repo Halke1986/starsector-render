@@ -7,6 +7,6 @@ Starsector rendering engine overhaul.
 
 INSTALLATION
 
-Copy the included .jar files into the starsector-core directory and overwrite the vanilla jars (back them up first if you want to restore later).
+Copy the included files into the starsector-core directory and run the game using fr.bat instead of starsector.exe.
 
 Can be added and removed mid-save.
