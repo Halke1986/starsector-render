@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
 import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL11 {
@@ -427,13 +428,7 @@ public class GL11 {
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
-        record glBlendFunc(int sfactor, int dfactor) implements Runnable, Recordable {
-            @Override
-            public void run() {
-                attribManager.glBlendFunc(sfactor, dfactor);
-            }
-        }
-        exec.execute(new glBlendFunc(sfactor, dfactor));
+        glBlendFuncSeparate(sfactor, dfactor, sfactor, dfactor);
     }
 
     public static void glBindTexture(int target, int texture) {
