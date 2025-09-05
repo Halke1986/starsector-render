@@ -11,4 +11,16 @@ public class GL31 {
             org.lwjgl.opengl.GL31.glDrawArraysInstanced(mode, first, count, primcount);
         });
     }
+
+    public static void glTexBuffer(int target, int internalformat, int buffer) {
+        exec.execute(() -> org.lwjgl.opengl.GL31.glTexBuffer(target, internalformat, buffer));
+    }
+
+    public static int glGetUniformBlockIndex(int program, CharSequence uniformBlockName) {
+        return exec.get(() -> org.lwjgl.opengl.GL31.glGetUniformBlockIndex(program, uniformBlockName));
+    }
+
+    public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {
+        exec.execute(() -> org.lwjgl.opengl.GL31.glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding));
+    }
 }

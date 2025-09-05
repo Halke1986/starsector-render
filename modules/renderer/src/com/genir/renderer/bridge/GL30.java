@@ -71,4 +71,8 @@ public class GL30 {
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
         return exec.get(() -> org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer));
     }
+
+    public static int glGetInteger(int value, int index) {
+        return exec.get(() -> org.lwjgl.opengl.GL30.glGetInteger(value, index));
+    }
 }

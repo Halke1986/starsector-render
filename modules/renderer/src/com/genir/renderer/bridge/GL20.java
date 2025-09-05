@@ -129,4 +129,14 @@ public class GL20 {
     public static void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset));
     }
+
+    public static void glDrawBuffers(IntBuffer buffers) {
+        final IntBuffer snapshot = BufferUtil.snapshot(buffers);
+        exec.execute(() -> org.lwjgl.opengl.GL20.glDrawBuffers(snapshot));
+    }
+
+    public static void glDrawBuffers(int buffer) {
+        exec.execute(() -> org.lwjgl.opengl.GL20.glDrawBuffers(buffer));
+    }
+
 }
