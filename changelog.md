@@ -1,3 +1,7 @@
+v0.4.1
+
+- Added experimental support for BoxUtil. Tested with Loulan Industries and the default BoxUtil configuration.
+
 v0.4.0
 
 - Improved the installation method: vanilla JAR files no longer need to be replaced, and Fast Rendering is now enabled via a dedicated .bat file. Suggested by Lukas.
