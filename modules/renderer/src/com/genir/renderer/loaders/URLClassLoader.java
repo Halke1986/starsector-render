@@ -20,6 +20,7 @@ public class URLClassLoader extends java.net.URLClassLoader implements ClassLoad
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL33", "com/genir/renderer/bridge/GL33"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL40", "com/genir/renderer/bridge/GL40"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL41", "com/genir/renderer/bridge/GL41"),
+            ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL42", "com/genir/renderer/bridge/GL42"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL43", "com/genir/renderer/bridge/GL43"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/Display"),
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),

@@ -75,4 +75,8 @@ public class GL30 {
     public static int glGetInteger(int value, int index) {
         return exec.get(() -> org.lwjgl.opengl.GL30.glGetInteger(value, index));
     }
+
+    public static void glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
+    }
 }
