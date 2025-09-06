@@ -101,6 +101,11 @@ public class GL20 {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4f(location, v0, v1, v2, v3));
     }
 
+    public static void glUniform4(int location, FloatBuffer values) {
+        final FloatBuffer snapshot = BufferUtil.snapshot(values);
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4(location, snapshot));
+    }
+
     public static void glUseProgram(int program) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUseProgram(program));
     }

@@ -1,10 +1,7 @@
 package com.genir.renderer.bridge.impl;
 
 import java.lang.reflect.Array;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 
 public class BufferUtil {
     /**
@@ -44,6 +41,20 @@ public class BufferUtil {
         }
 
         IntBuffer snapshot = org.lwjgl.BufferUtils.createIntBuffer(params.capacity());
+        snapshot.put(0, params, 0, params.limit());
+
+        snapshot.position(params.position());
+        snapshot.limit(params.limit());
+
+        return snapshot;
+    }
+
+    public static ShortBuffer snapshot(ShortBuffer params) {
+        if (params == null) {
+            return null;
+        }
+
+        ShortBuffer snapshot = org.lwjgl.BufferUtils.createShortBuffer(params.capacity());
         snapshot.put(0, params, 0, params.limit());
 
         snapshot.position(params.position());

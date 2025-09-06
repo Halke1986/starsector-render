@@ -20,4 +20,8 @@ public class GL40 {
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
         exec.execute(() -> org.lwjgl.opengl.GL40.glUniformSubroutinesu(shadertype, snapshot));
     }
+
+    public static void glPatchParameteri(int pname, int value) {
+        exec.execute(() -> org.lwjgl.opengl.GL40.glPatchParameteri(pname, value));
+    }
 }

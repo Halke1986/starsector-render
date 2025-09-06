@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.impl.BufferUtil;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import static com.genir.renderer.bridge.impl.Bridge.bufferGenerator;
 import static com.genir.renderer.bridge.impl.Bridge.exec;
@@ -49,6 +50,11 @@ public class GL15 {
 
     public static void glBufferSubData(int target, long offset, FloatBuffer data) {
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
+    }
+
+    public static void glBufferSubData(int target, long offset, ShortBuffer data) {
+        final ShortBuffer snapshot = BufferUtil.snapshot(data);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
     }
 

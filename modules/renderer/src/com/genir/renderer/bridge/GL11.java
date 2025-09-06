@@ -800,8 +800,6 @@ public class GL11 {
     }
 
     public static float glGetFloat(int pname) { // NoList
-//        log(pname);
-
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_LINE_WIDTH:
                 return attribTracker.getLineWidth();
