@@ -272,6 +272,8 @@ public class GL11 {
                 attribManager.glMatrixMode(mode);
             }
         }
+
+        attribTracker.glMatrixMode(mode);
         exec.execute(new glMatrixMode(mode));
     }
 
@@ -787,15 +789,24 @@ public class GL11 {
     public static int glGetInteger(int pname) { // NoList
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-                return attribTracker.textureBinding();
+                return attribTracker.getTextureBinding();
+            case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
+                return attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
-                return attribTracker.activeTexture();
+                return attribTracker.getActiveTexture();
         }
 
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));
     }
 
     public static float glGetFloat(int pname) { // NoList
+//        log(pname);
+
+        switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_LINE_WIDTH:
+                return attribTracker.getLineWidth();
+        }
+
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetFloat(pname));
     }
 
