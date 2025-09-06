@@ -794,6 +794,8 @@ public class GL11 {
                 return attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
                 return attribTracker.getActiveTexture();
+            case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
+                return attribTracker.getFramebufferBinding();
         }
 
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));

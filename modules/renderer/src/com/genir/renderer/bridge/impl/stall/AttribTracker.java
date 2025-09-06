@@ -15,8 +15,10 @@ import java.util.Stack;
  */
 public class AttribTracker {
     private final Snapshot expected = new Snapshot();
-
     private final Stack<Snapshot> expectedStack = new Stack<>();
+
+    // Values not being a part of attributes stack.
+    private int framebufferBinding = 0;
 
     public int getTextureBinding() {
         return expected.textureID;
@@ -34,6 +36,10 @@ public class AttribTracker {
         return expected.lineWidth;
     }
 
+    public int getFramebufferBinding() {
+        return framebufferBinding;
+    }
+
     public void clear() {
         Snapshot cleanContext = new Snapshot();
         cleanContext.attribMask = -1;
@@ -41,6 +47,8 @@ public class AttribTracker {
         cleanContext.save(expected);
 
         expectedStack.clear();
+
+        framebufferBinding = 0;
     }
 
     public void glPushAttrib(int mask) {
@@ -76,6 +84,10 @@ public class AttribTracker {
 
     public void glLineWidth(float width) {
         expected.lineWidth = width;
+    }
+
+    public void glBindFramebuffer(int target, int framebuffer) {
+        framebufferBinding = framebuffer;
     }
 
     public static class Snapshot {

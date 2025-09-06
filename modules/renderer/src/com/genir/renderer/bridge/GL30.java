@@ -4,8 +4,7 @@ package com.genir.renderer.bridge;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.impl.Bridge.arrayGenerator;
-import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL30 {
     public static void glGenerateMipmap(int target) {
@@ -33,6 +32,7 @@ public class GL30 {
     }
 
     public static void glBindFramebuffer(int target, int framebuffer) {
+        attribTracker.glBindFramebuffer(target, framebuffer);
         exec.execute(() -> org.lwjgl.opengl.GL30.glBindFramebuffer(target, framebuffer));
     }
 
