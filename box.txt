@@ -1,0 +1,28 @@
+invokespecial Method org/lwjgl/opengl/KHRDebugCallback <init> ()V
+
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glGetImageHandleARB (IIZII)J
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glGetTextureHandleARB (I)J
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glIsImageHandleResidentARB (J)Z
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glIsTextureHandleResidentARB (J)Z
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glMakeImageHandleNonResidentARB (J)V
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glMakeImageHandleResidentARB (JI)V
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glMakeTextureHandleNonResidentARB (J)V
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glMakeTextureHandleResidentARB (J)V
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glProgramUniformHandleuARB (IILjava/nio/LongBuffer;)V
+invokestatic Method org/lwjgl/opengl/ARBBindlessTexture glProgramUniformHandleui64ARB (IIJ)V
+
+invokestatic Method org/lwjgl/opengl/GL43 glDebugMessageCallback (Lorg/lwjgl/opengl/KHRDebugCallback;)V
+invokestatic Method org/lwjgl/opengl/GL43 glDebugMessageControl (IIILjava/nio/IntBuffer;Z)V
+
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glGetImageHandleNV (IIZII)J
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glGetTextureHandleNV (I)J
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glIsImageHandleResidentNV (J)Z
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glIsTextureHandleResidentNV (J)Z
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glMakeImageHandleNonResidentNV (J)V
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glMakeImageHandleResidentNV (JI)V
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glMakeTextureHandleNonResidentNV (J)V
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glMakeTextureHandleResidentNV (J)V
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glProgramUniformHandleuNV (IILjava/nio/LongBuffer;)V
+invokestatic Method org/lwjgl/opengl/NVBindlessTexture glProgramUniformHandleui64NV (IIJ)V
+
+invokestatic Method org/lwjgl/opengl/Util checkGLError ()V

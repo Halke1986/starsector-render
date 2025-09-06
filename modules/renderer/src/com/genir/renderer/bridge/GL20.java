@@ -93,17 +93,29 @@ public class GL20 {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform2f(location, v0, v1));
     }
 
+    public static void glUniform2i(int location, int v0, int v1) {
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform2i(location, v0, v1));
+    }
+
     public static void glUniform3f(int location, float v0, float v1, float v2) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform3f(location, v0, v1, v2));
+    }
+
+    public static void glUniform3i(int location, int v0, int v1, int v2) {
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform3i(location, v0, v1, v2));
+    }
+
+    public static void glUniform4(int location, FloatBuffer values) {
+        final FloatBuffer snapshot = BufferUtil.snapshot(values);
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4(location, snapshot));
     }
 
     public static void glUniform4f(int location, float v0, float v1, float v2, float v3) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4f(location, v0, v1, v2, v3));
     }
 
-    public static void glUniform4(int location, FloatBuffer values) {
-        final FloatBuffer snapshot = BufferUtil.snapshot(values);
-        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4(location, snapshot));
+    public static void glUniform4i(int location, int v0, int v1, int v2, int v3) {
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4i(location, v0, v1, v2, v3));
     }
 
     public static void glUseProgram(int program) {

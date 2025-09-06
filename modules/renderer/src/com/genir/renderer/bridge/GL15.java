@@ -48,6 +48,11 @@ public class GL15 {
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
     }
 
+    public static void glBufferData(int target, ShortBuffer data, int usage) {
+        final ShortBuffer snapshot = BufferUtil.snapshot(data);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
+    }
+
     public static void glBufferSubData(int target, long offset, FloatBuffer data) {
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
@@ -55,6 +60,16 @@ public class GL15 {
 
     public static void glBufferSubData(int target, long offset, ShortBuffer data) {
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
+    }
+
+    public static void glBufferSubData(int target, long offset, IntBuffer data) {
+        final IntBuffer snapshot = BufferUtil.snapshot(data);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
+    }
+
+    public static void glBufferSubData(int target, long offset, ByteBuffer data) {
+        final ByteBuffer snapshot = BufferUtil.snapshot(data);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferSubData(target, offset, snapshot));
     }
 
