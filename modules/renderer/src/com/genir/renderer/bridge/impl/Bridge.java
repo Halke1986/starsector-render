@@ -8,6 +8,7 @@ public class Bridge {
     public static final StateCache stateCache = new StateCache();
     public static final AttribManager attribManager = new AttribManager();
     public static final MatrixStack modelView = new MatrixStack();
+    public static final TransformManager transformManager = new TransformManager(attribManager, modelView);
 
     public static final StallDetector stallDetector = new StallDetector(stateCache);
     public static final Executor exec = new Executor(listManager, stallDetector);

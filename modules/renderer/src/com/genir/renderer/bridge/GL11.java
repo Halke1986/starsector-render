@@ -281,12 +281,7 @@ public class GL11 {
         record glPushMatrix() implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glPushMatrix();
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glPushMatrix();
-                }
+                transformManager.glPushMatrix();
             }
         }
         exec.execute(new glPushMatrix());
@@ -296,12 +291,7 @@ public class GL11 {
         record glPopMatrix() implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glPopMatrix();
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glPopMatrix();
-                }
+                transformManager.glPopMatrix();
             }
         }
         exec.execute(new glPopMatrix());
@@ -311,12 +301,7 @@ public class GL11 {
         record glLoadIdentity() implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glLoadIdentity();
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glLoadIdentity();
-                }
+                transformManager.glLoadIdentity();
             }
         }
         exec.execute(new glLoadIdentity());
@@ -326,12 +311,7 @@ public class GL11 {
         record glTranslatef(float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glTranslatef(x, y, z);
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
-                }
+                transformManager.glTranslatef(x, y, z);
             }
         }
         exec.execute(new glTranslatef(x, y, z));
@@ -341,12 +321,7 @@ public class GL11 {
         record glRotatef(float angle, float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glRotatef(angle, x, y, z);
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
-                }
+                transformManager.glRotatef(angle, x, y, z);
             }
         }
         exec.execute(new glRotatef(angle, x, y, z));
@@ -356,12 +331,7 @@ public class GL11 {
         record glScalef(float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glScalef(x, y, z);
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glScalef(x, y, z);
-                }
+                transformManager.glScalef(x, y, z);
             }
         }
         exec.execute(new glScalef(x, y, z));
@@ -371,12 +341,7 @@ public class GL11 {
         record glMultMatrix(FloatBuffer m) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glMultMatrix(m);
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glMultMatrix(m);
-                }
+                transformManager.glMultMatrix(m);
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
@@ -387,12 +352,7 @@ public class GL11 {
         record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (attribManager.matrixMode() == org.lwjgl.opengl.GL11.GL_MODELVIEW) {
-                    modelView.glOrtho(left, right, bottom, top, zNear, zFar);
-                } else {
-                    attribManager.applyMatrixMode();
-                    org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
-                }
+                transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
         exec.execute(new glOrtho(left, right, bottom, top, zNear, zFar));
