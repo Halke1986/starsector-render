@@ -1,3 +1,7 @@
+v0.4.2
+
+- Fixed crashes and visual errors in BoxUtil test mission. Reported by Rrewin.
+
 v0.4.1
 
 - Added experimental support for BoxUtil. Tested with Loulan Industries and the default BoxUtil configuration.
