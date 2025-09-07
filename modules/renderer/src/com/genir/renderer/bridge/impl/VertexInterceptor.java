@@ -17,7 +17,7 @@ public class VertexInterceptor {
     private static final int VERTEX_SIZE_2D = 2;
     private static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + NORMAL_SIZE;
 
-    private final MatrixStack modelView;
+    private final TransformManager transformManager;
     private final AttribManager attribManager;
     private final ClientAttribTracker clientAttribTracker;
 
@@ -44,7 +44,6 @@ public class VertexInterceptor {
     // Draw buffers.
     private float[] vertexScratchpad = new float[STRIDE];
     private FloatBuffer defaultVertexPointer = BufferUtils.createFloatBuffer(STRIDE);
-    private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
     // Recorded array draw buffers.
@@ -55,10 +54,10 @@ public class VertexInterceptor {
     public VertexInterceptor(
             ClientAttribTracker clientAttribTracker,
             AttribManager attribManager,
-            MatrixStack modelView) {
+            TransformManager transformManager) {
         this.clientAttribTracker = clientAttribTracker;
         this.attribManager = attribManager;
-        this.modelView = modelView;
+        this.transformManager = transformManager;
     }
 
     public void update() {
@@ -114,7 +113,7 @@ public class VertexInterceptor {
     }
 
     public void glVertex3f(float x, float y, float z) {
-        Matrix4f m = modelView.getMatrix();
+        Matrix4f m = transformManager.getCPUModelView();
 
         // Transform vertices;
         float xt = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
@@ -287,17 +286,13 @@ public class VertexInterceptor {
         // Normal array.
         GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 
-        attribManager.applyEnableAndColorBufferBit();
-        attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
-
-        matrixBuffer.clear();
-        modelView.getMatrix().storeTranspose(matrixBuffer);
-        matrixBuffer.flip();
+        transformManager.setGPUModelView();
 
         // Draw.
-        GL11.glMultMatrix(matrixBuffer);
+        attribManager.applyEnableAndColorBufferBit();
         drawArraysCommand.run();
-        GL11.glLoadIdentity();
+
+        transformManager.setCPUModelView();
     }
 
     /**

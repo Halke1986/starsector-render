@@ -7,8 +7,7 @@ public class Bridge {
     public static final ListManager listManager = new ListManager();
     public static final StateCache stateCache = new StateCache();
     public static final AttribManager attribManager = new AttribManager();
-    public static final MatrixStack modelView = new MatrixStack();
-    public static final TransformManager transformManager = new TransformManager(attribManager, modelView);
+    public static final TransformManager transformManager = new TransformManager(attribManager);
 
     public static final StallDetector stallDetector = new StallDetector(stateCache);
     public static final Executor exec = new Executor(listManager, stallDetector);
@@ -21,7 +20,7 @@ public class Bridge {
     public static final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public static final BufferManager bufferManager = new BufferManager();
 
-    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, modelView);
+    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, transformManager);
 
     public static void setReorderDraw(boolean reorder) {
         exec.execute(() -> vertexInterceptor.setReorderDraw(reorder));
