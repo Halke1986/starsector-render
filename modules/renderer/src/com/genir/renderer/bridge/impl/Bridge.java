@@ -18,6 +18,7 @@ public class Bridge {
     public static final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
     public static final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
     public static final ShaderTracker shaderTracker = new ShaderTracker(exec);
+    public static final BufferManager bufferManager = new BufferManager();
 
     public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, modelView);
 

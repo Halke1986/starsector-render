@@ -69,6 +69,16 @@ public class GL30 {
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
+        try {
+            ByteBuffer range = bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
+            if (range != null) {
+                return range;
+            }
+        } catch (RuntimeException e) {
+            return null;
+        }
+
+        // Fall back to OpenGL glMapBufferRange if bufferManager cannot map the buffer.
         return exec.get(() -> org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer));
     }
 

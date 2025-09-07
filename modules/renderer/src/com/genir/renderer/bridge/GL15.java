@@ -7,8 +7,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import static com.genir.renderer.bridge.impl.Bridge.bufferGenerator;
-import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL15 {
     public static int glGenBuffers() {
@@ -31,6 +30,7 @@ public class GL15 {
     }
 
     public static void glBindBuffer(int target, int buffer) {
+        bufferManager.glBindBuffer(target, buffer);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBindBuffer(target, buffer));
     }
 
@@ -74,6 +74,12 @@ public class GL15 {
     }
 
     public static boolean glUnmapBuffer(int target) {
+        boolean handled = bufferManager.glUnmapBuffer(target);
+        if (handled) {
+            return true;
+        }
+
+        // Fall back to OpenGL glUnmapBuffer if bufferManager cannot handle the buffer.
         return exec.get(() -> org.lwjgl.opengl.GL15.glUnmapBuffer(target));
     }
 }
