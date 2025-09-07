@@ -7,8 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.impl.Bridge.exec;
-import static com.genir.renderer.bridge.impl.Bridge.shaderTracker;
+import static com.genir.renderer.bridge.impl.Bridge.*;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {
@@ -119,7 +118,19 @@ public class GL20 {
     }
 
     public static void glUseProgram(int program) {
-        exec.execute(() -> org.lwjgl.opengl.GL20.glUseProgram(program));
+        exec.execute(() -> {
+            if (program != 0) {
+                // Performing model view transformation on
+                // CPU may interfere with the shader program.
+                transformManager.setGPUModelView();
+            }
+
+            org.lwjgl.opengl.GL20.glUseProgram(program);
+
+            if (program == 0) {
+                transformManager.setCPUModelView();
+            }
+        });
     }
 
     public static void glValidateProgram(int program) {
@@ -155,5 +166,4 @@ public class GL20 {
     public static void glDrawBuffers(int buffer) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glDrawBuffers(buffer));
     }
-
 }

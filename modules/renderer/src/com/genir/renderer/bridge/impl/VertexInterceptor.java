@@ -286,12 +286,18 @@ public class VertexInterceptor {
         // Normal array.
         GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 
+        // Move model transformation from CPU to GPU.
+        // The vertex array is stored in object/local space rather than pre-transformed
+        // into model space, since the model matrix can change every time the array is drawn.
+        // Applying the transformation on the GPU avoids repeatedly un-packing the array,
+        // transforming vertices on the CPU, and re-packing the data for each draw call.
         transformManager.setGPUModelView();
 
         // Draw.
         attribManager.applyEnableAndColorBufferBit();
         drawArraysCommand.run();
 
+        // Move model transformation back to CPU.
         transformManager.setCPUModelView();
     }
 
