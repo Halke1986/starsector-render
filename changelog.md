@@ -1,4 +1,5 @@
 - Added support for Unnamed Fleet Presets mod. Incompatibility reported by Bûğäţţï Êçhëłøñ.
+- Fixed a race condition that could occasionally cause the game to crash during loading. Reported by Bûğäţţï Êçhëłøñ.
 
 v0.4.2
 

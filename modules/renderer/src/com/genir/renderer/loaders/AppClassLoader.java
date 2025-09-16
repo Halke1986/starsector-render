@@ -41,16 +41,18 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
 
     @Override
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        if (doNotIntercept(name)) {
-            return super.getParent().loadClass(name);
-        }
+        synchronized (getClassLoadingLock(name)) {
+            if (doNotIntercept(name)) {
+                return super.getParent().loadClass(name);
+            }
 
-        Class<?> loaded = findLoadedClass(name);
-        if (loaded != null) {
-            return loaded;
-        }
+            Class<?> loaded = findLoadedClass(name);
+            if (loaded != null) {
+                return loaded;
+            }
 
-        return findClass(name);
+            return findClass(name);
+        }
     }
 
     @Override
