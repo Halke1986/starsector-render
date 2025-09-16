@@ -1,3 +1,5 @@
+v0.4.3
+
 - Added support for Unnamed Fleet Presets mod. Incompatibility reported by Bûğäţţï Êçhëłøñ.
 - Fixed a race condition that could occasionally cause the game to crash during loading. Reported by Bûğäţţï Êçhëłøñ.
 - Fixed an Asynchronous pipeline stall that could crash the game when using Console Commands on a GPU other than Intel. Reported by Rayden_Solo.
