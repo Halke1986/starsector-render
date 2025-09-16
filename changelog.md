@@ -1,3 +1,5 @@
+- Added support for Unnamed Fleet Presets mod. Incompatibility reported by Bûğäţţï Êçhëłøñ.
+
 v0.4.2
 
 - Fixed crashes and visual errors in BoxUtil test mission. Reported by Rrewin.

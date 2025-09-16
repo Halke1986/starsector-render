@@ -443,6 +443,16 @@ public class GL11 {
         exec.execute(new glColorMask(red, green, blue, alpha));
     }
 
+    public static void glDepthMask(boolean flag) {
+        record glDepthMask(boolean flag) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glDepthMask(flag);
+            }
+        }
+        exec.execute(new glDepthMask(flag));
+    }
+
     public static void glViewport(int x, int y, int width, int height) {
         record glViewport(int x, int y, int width, int height) implements Runnable, Recordable {
             @Override
