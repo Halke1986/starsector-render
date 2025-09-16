@@ -2,6 +2,8 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.impl.BufferUtil;
 import com.genir.renderer.bridge.impl.Recordable;
+import org.lwjgl.opengl.ATIMeminfo;
+import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -766,6 +768,17 @@ public class GL11 {
                 return attribTracker.getActiveTexture();
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
                 return attribTracker.getFramebufferBinding();
+
+            case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
+            case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
+            case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
+            case ATIMeminfo.GL_TEXTURE_FREE_MEMORY_ATI:
+                if (stateCache.isAvailable()) {
+                    Integer value = stateCache.getOtherInteger(pname);
+                    if (value != null) {
+                        return value;
+                    }
+                }
         }
 
         return exec.get(() -> org.lwjgl.opengl.GL11.glGetInteger(pname));

@@ -5,6 +5,9 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StateCache {
     private boolean initialized = false;
 
@@ -17,6 +20,8 @@ public class StateCache {
     private int displayHeight;
     private int displayX;
     private int displayY;
+
+    private final Map<Integer, Integer> otherIntegers = new HashMap<>();
 
     private String glStringExtensions;
     private ContextCapabilities contextCapabilities;
@@ -71,6 +76,19 @@ public class StateCache {
         return contextCapabilities;
     }
 
+    synchronized public Integer getOtherInteger(int pname) {
+        Integer value = otherIntegers.get(pname);
+
+        // The parameter is requested for the first time.
+        // Register it, so it's updated during subsequent cache updates.
+        if (value == null) {
+            otherIntegers.put(pname, null);
+            return null;
+        }
+
+        return value;
+    }
+
     synchronized public void update() { // Render thread
         displayPixelScaleFactor = Display.getPixelScaleFactor();
         displayIsActive = Display.isActive();
@@ -83,6 +101,11 @@ public class StateCache {
         displayY = Display.getY();
         glStringExtensions = GL11.glGetString(GL11.GL_EXTENSIONS);
         contextCapabilities = GLContext.getCapabilities();
+
+        for (var entry : otherIntegers.entrySet()) {
+            Integer key = entry.getKey();
+            otherIntegers.put(key, GL11.glGetInteger(key));
+        }
 
         initialized = true;
     }
