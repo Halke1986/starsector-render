@@ -294,7 +294,7 @@ public class VertexInterceptor {
         transformManager.setGPUModelView();
 
         // Draw.
-        attribManager.applyEnableAndColorBufferBit();
+        attribManager.applyDrawAttribs();
         drawArraysCommand.run();
 
         // Move model transformation back to CPU.
@@ -321,7 +321,7 @@ public class VertexInterceptor {
         GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(0));
         GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(VERTEX_SIZE));
 
-        attribManager.applyEnableAndColorBufferBit();
+        attribManager.applyDrawAttribs();
         GL11.glDrawArrays(mode, 0, count);
     }
 
@@ -332,7 +332,7 @@ public class VertexInterceptor {
         prepareDefaultVertexPointer(count);
         defaultVertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
-        attribManager.applyEnableAndColorBufferBit();
+        attribManager.applyDrawAttribs();
         GL11.glDrawArrays(mode, 0, count);
     }
 

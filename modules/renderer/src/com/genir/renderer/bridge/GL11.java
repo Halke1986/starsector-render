@@ -475,6 +475,17 @@ public class GL11 {
         exec.execute(new glTexParameteri(target, pname, param));
     }
 
+    public static void glTexParameter(int target, int pname, FloatBuffer param) {
+        record glTexParameter(int target, int pname, FloatBuffer param) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glTexParameter(target, pname, param);
+            }
+        }
+        final FloatBuffer snapshot = BufferUtil.snapshot(param);
+        exec.execute(new glTexParameter(target, pname, snapshot));
+    }
+
     public static void glClearColor(float red, float green, float blue, float alpha) {
         record glClearColor(float red, float green, float blue, float alpha) implements Runnable, Recordable {
             @Override

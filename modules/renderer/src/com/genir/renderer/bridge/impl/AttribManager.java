@@ -97,7 +97,7 @@ public class AttribManager {
         }
     }
 
-    public void applyEnableAndColorBufferBit() {
+    public void applyDrawAttribs() {
         applyStencil();
         applyAlpha();
         applyTexture();
