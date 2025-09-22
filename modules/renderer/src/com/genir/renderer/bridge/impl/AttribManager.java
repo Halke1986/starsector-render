@@ -125,11 +125,11 @@ public class AttribManager {
     }
 
     public void clear() {
-        Snapshot cleanContext = new Snapshot();
-        cleanContext.attribMask = -1;
+        Snapshot emptyContext = new Snapshot();
+        emptyContext.attribMask = -1;
 
-        cleanContext.save(actual);
-        cleanContext.save(expected);
+        actual.copyFrom(emptyContext);
+        expected.copyFrom(emptyContext);
 
         expectedStack.clear();
         actualStack.clear();
@@ -149,12 +149,12 @@ public class AttribManager {
 
         // Save expected state.
         Snapshot savedExpected = new Snapshot();
-        expected.save(savedExpected);
+        savedExpected.copyFrom(expected);
         expectedStack.push(savedExpected);
 
         // Save actual state.
         Snapshot savedActual = new Snapshot();
-        actual.save(savedActual);
+        savedActual.copyFrom(actual);
         actualStack.push(savedActual);
     }
 
@@ -167,8 +167,8 @@ public class AttribManager {
         Snapshot savedExpected = expectedStack.pop();
         Snapshot savedActual = actualStack.pop();
 
-        savedExpected.save(expected);
-        savedActual.save(actual);
+        expected.copyFrom(savedExpected);
+        actual.copyFrom(savedActual);
     }
 
     public void glBindTexture(int target, int texture) {
@@ -296,36 +296,36 @@ public class AttribManager {
 
         int matrixMode = GL11.GL_MODELVIEW;
 
-        void save(Snapshot other) {
-            other.attribMask = attribMask;
+        void copyFrom(Snapshot source) {
+            attribMask = source.attribMask;
 
             if ((attribMask & GL11.GL_ENABLE_BIT) != 0) {
-                other.enableStencilTest = enableStencilTest;
-                other.enableAlphaTest = enableAlphaTest;
-                other.enableTexture2D = enableTexture2D;
-                other.enableBlend = enableBlend;
-                other.enableLighting = enableLighting;
+                enableStencilTest = source.enableStencilTest;
+                enableAlphaTest = source.enableAlphaTest;
+                enableTexture2D = source.enableTexture2D;
+                enableBlend = source.enableBlend;
+                enableLighting = source.enableLighting;
             }
 
             if ((attribMask & GL11.GL_STENCIL_BUFFER_BIT) != 0) {
-                other.enableStencilTest = enableStencilTest;
+                enableStencilTest = source.enableStencilTest;
             }
 
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
-                other.blendSfactorRGB = blendSfactorRGB;
-                other.blendDfactorRGB = blendDfactorRGB;
-                other.blendSfactorAlpha = blendSfactorAlpha;
-                other.blendDfactorAlpha = blendDfactorAlpha;
-                other.blendEquation = blendEquation;
+                blendSfactorRGB = source.blendSfactorRGB;
+                blendDfactorRGB = source.blendDfactorRGB;
+                blendSfactorAlpha = source.blendSfactorAlpha;
+                blendDfactorAlpha = source.blendDfactorAlpha;
+                blendEquation = source.blendEquation;
             }
 
             if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
-                other.matrixMode = matrixMode;
+                matrixMode = source.matrixMode;
             }
 
             if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
-                other.textureTarget = textureTarget;
-                other.textureID = textureID;
+                textureTarget = source.textureTarget;
+                textureID = source.textureID;
             }
         }
     }
