@@ -2,7 +2,10 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL40;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -181,10 +184,38 @@ public class AttribManager {
         expected.blend.dfactorRGB = dfactorRGB;
         expected.blend.sfactorAlpha = sfactorAlpha;
         expected.blend.dfactorAlpha = dfactorAlpha;
+
+        // glBlendFuncSeparate overwrites buffer-specific glBlendFuncSeparatei values.
+        expected.blendi = null;
+    }
+
+    public void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
+        if (expected.blendi == null) {
+            expected.blendi = new HashMap<>();
+        }
+
+        BlendFactors blend = new BlendFactors();
+        blend.sfactorRGB = srcRGB;
+        blend.dfactorRGB = dstRGB;
+        blend.sfactorAlpha = srcAlpha;
+        blend.dfactorAlpha = dstAlpha;
+
+        expected.blendi.put(buf, blend);
     }
 
     public void glBlendEquation(int mode) {
         expected.blendEquation = mode;
+
+        // glBlendEquation overwrites buffer-specific glBlendEquationi values.
+        expected.blendEquationi = null;
+    }
+
+    public void glBlendEquationi(int buf, int mode) {
+        if (expected.blendEquationi == null) {
+            expected.blendEquationi = new HashMap<>();
+        }
+
+        expected.blendEquationi.put(buf, mode);
     }
 
     public void glMatrixMode(int mode) {
@@ -231,10 +262,23 @@ public class AttribManager {
                 GL14.glBlendFuncSeparate(expected.blend.sfactorRGB, expected.blend.dfactorRGB, expected.blend.sfactorAlpha, expected.blend.dfactorAlpha);
             }
 
+            if (actual.blendi != null) {
+                for (Map.Entry<Integer, BlendFactors> entry : actual.blendi.entrySet()) {
+                    BlendFactors blend = entry.getValue();
+                    GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
+                }
+            }
+
             if (actual.blendEquation != expected.blendEquation) {
                 actual.blendEquation = expected.blendEquation;
 
                 GL14.glBlendEquation(expected.blendEquation);
+            }
+
+            if (actual.blendEquationi != null) {
+                for (Map.Entry<Integer, Integer> entry : actual.blendEquationi.entrySet()) {
+                    GL40.glBlendEquationi(entry.getKey(), entry.getValue());
+                }
             }
         }
     }
@@ -290,6 +334,8 @@ public class AttribManager {
         // Blend.
         BlendFactors blend = new BlendFactors();
         int blendEquation = GL14.GL_FUNC_ADD;
+        Map<Integer, BlendFactors> blendi = null;
+        Map<Integer, Integer> blendEquationi = null;
 
         int matrixMode = GL11.GL_MODELVIEW;
 
@@ -311,6 +357,30 @@ public class AttribManager {
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
                 blend.copyFrom(source.blend);
                 blendEquation = source.blendEquation;
+
+                if (source.blendi != null) {
+                    if (blendi == null) {
+                        blendi = new HashMap<>();
+                    } else {
+                        blendi.clear();
+                    }
+
+                    for (Map.Entry<Integer, BlendFactors> entry : source.blendi.entrySet()) {
+                        BlendFactors blend = new BlendFactors();
+                        blend.copyFrom(entry.getValue());
+                        blendi.put(entry.getKey(), blend);
+                    }
+                }
+
+                if (source.blendEquationi != null) {
+                    if (blendEquationi == null) {
+                        blendEquationi = new HashMap<>();
+                    } else {
+                        blendEquationi.clear();
+                    }
+
+                    blendEquationi.putAll(source.blendEquationi);
+                }
             }
 
             if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {

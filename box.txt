@@ -16,10 +16,6 @@ invokestatic Method org/lwjgl/opengl/GL30 glUniform1ui (II)V
 invokestatic Method org/lwjgl/opengl/GL30 glUniform2ui (III)V
 invokestatic Method org/lwjgl/opengl/GL30 glVertexAttribIPointer (IIIIJ)V
 
-invokestatic Method org/lwjgl/opengl/GL40 glBlendEquationi (II)V
-invokestatic Method org/lwjgl/opengl/GL40 glBlendFuncSeparatei (IIIII)V
-invokestatic Method org/lwjgl/opengl/GL40 glBlendFunci (III)V
-
 invokestatic Method org/lwjgl/opengl/GL42 glTexStorage1D (IIII)V
 invokestatic Method org/lwjgl/opengl/GL42 glTexStorage3D (IIIIII)V
 
