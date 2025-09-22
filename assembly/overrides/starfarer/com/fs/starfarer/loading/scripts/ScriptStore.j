@@ -4,7 +4,7 @@
 .field private static 'Ö00000' Lorg/apache/log4j/Logger; 
 .field private static volatile 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader; 
 .field private static volatile if Lcom/fs/starfarer/loading/scripts/B; 
-.field public static volatile 'Õ00000' Lcom/fs/util/container/repo/ObjectRepository;
+.field private static volatile 'Õ00000' Lcom/fs/util/container/repo/ObjectRepository;
 .field private static do Ljava/util/List; .fieldattributes
     .signature Ljava/util/List<Ljava/lang/String;>;
 .end fieldattributes
@@ -20,7 +20,7 @@
 .field private static String Ljava/lang/Exception;
 .field private static 'super' Ljava/lang/Thread;
 .field private static final 'Ó00000' Ljava/util/Set; .fieldattributes
-    .signature Lcom/genir/renderer/overrides/PluginSet;
+    .signature Ljava/util/Set<Ljava/lang/String;>;
 .end fieldattributes
 .field private static volatile 'ô00000' Z
 .field private static volatile OO0000 Z
@@ -86,7 +86,7 @@ L4:
 .end method
 
 .method public static 'Ò00000' : ()Ljava/util/Set;
-    .signature ()Lcom/genir/renderer/overrides/PluginSet;
+    .signature ()Ljava/util/Set<Ljava/lang/String;>;
     .code stack 1 locals 0
 L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'Ó00000' Ljava/util/Set;
 L3:     areturn
@@ -705,6 +705,23 @@ L1:
     .exceptions java/lang/Exception
 .end method
 
+.method public static runScriptLoadingThread : ()V
+    .exceptions java/lang/Exception
+    .code stack 4 locals 0
+L0:     new java/lang/Thread
+L3:     dup
+L4:     new com/fs/starfarer/loading/scripts/ScriptStore$3
+L7:     dup
+L8:     invokespecial Method com/fs/starfarer/loading/scripts/ScriptStore$3 <init> ()V
+L11:    invokespecial Method java/lang/Thread <init> (Ljava/lang/Runnable;)V
+L14:    putstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'super' Ljava/lang/Thread;
+L17:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'super' Ljava/lang/Thread;
+L20:    invokevirtual Method java/lang/Thread start ()V
+L23:    return
+L24:
+    .end code
+.end method
+
 .method public static 'Ø00000' : ()Lorg/codehaus/janino/JavaSourceClassLoader;
     .code stack 1 locals 0
 L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader;
@@ -732,57 +749,21 @@ L1:
     .exceptions java/lang/Exception
 .end method
 
-.method public static getScriptLoader : ()Ljava/lang/Object;
+.method public static 'joinScriptLoadingThread' : ()V
+    .exceptions java/lang/Exception
     .code stack 1 locals 0
-L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore if Lcom/fs/starfarer/loading/scripts/B;
-L3:     areturn
-L4:
-        .linenumbertable
-            L0 28
-        .end linenumbertable
-    .end code
-.end method
+L0:     iconst_1
+L1:     putstatic Field com/fs/starfarer/loading/scripts/ScriptStore OO0000 Z
+L4:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'super' Ljava/lang/Thread;
+L7:     invokevirtual Method java/lang/Thread join ()V
+L10:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore String Ljava/lang/Exception;
+L13:    ifnull L20
+L16:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore String Ljava/lang/Exception;
+L19:    athrow
 
-.method public static setScriptLoader : (Ljava/lang/ClassLoader;)V
-    .code stack 1 locals 1
-L0:     aload_0
-L1:     invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore o00000 (Ljava/lang/ClassLoader;)V
-L4:     return
-L5:
-        .linenumbertable
-            L0 33
-            L4 34
-        .end linenumbertable
-        .localvariabletable
-            0 is var0 Ljava/lang/ClassLoader; from L0 to L5
-        .end localvariabletable
-    .end code
-.end method
-
-.method public static getJarList : ()Ljava/util/List;
-    .code stack 1 locals 0
-L0:     invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'Õ00000' ()Ljava/util/List;
-L3:     areturn
-L4:
-        .linenumbertable
-            L0 38
-        .end linenumbertable
-    .end code
-    .signature ()Ljava/util/List<Ljava/lang/String;>;
-.end method
-
-.method public static getPlugin : (Ljava/lang/String;)Ljava/lang/Object;
-    .code stack 1 locals 1
-L0:     aload_0
-L1:     invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'Ò00000' (Ljava/lang/String;)Ljava/lang/Object;
-L4:     areturn
-L5:
-        .linenumbertable
-            L0 43
-        .end linenumbertable
-        .localvariabletable
-            0 is var0 Ljava/lang/String; from L0 to L5
-        .end localvariabletable
+        .stack same
+L20:    return
+L21:
     .end code
 .end method
 

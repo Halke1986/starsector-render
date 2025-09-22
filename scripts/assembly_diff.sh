@@ -1,1 +1,1 @@
-diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/settings/StarfarerSettings.j ./assembly/overrides/starfarer/com/fs/starfarer/settings/StarfarerSettings.j
+diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/loading/scripts/ScriptStore.j ./assembly/overrides/starfarer/com/fs/starfarer/loading/scripts/ScriptStore.j
