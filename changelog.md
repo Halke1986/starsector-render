@@ -1,3 +1,5 @@
+- Added support for BoxUtil 1.4.8.
+
 v0.4.3
 
 - Added support for Unnamed Fleet Presets mod. Incompatibility reported by Bûğäţţï Êçhëłøñ.
