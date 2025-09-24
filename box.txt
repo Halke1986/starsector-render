@@ -15,6 +15,4 @@ invokestatic Method org/lwjgl/opengl/GL12 glTexSubImage3D (IIIIIIIIIILjava/nio/F
 invokestatic Method org/lwjgl/opengl/GL42 glTexStorage1D (IIII)V
 invokestatic Method org/lwjgl/opengl/GL42 glTexStorage3D (IIIIII)V
 
-invokestatic Method org/lwjgl/opengl/GL43 glDebugMessageCallback (Lorg/lwjgl/opengl/KHRDebugCallback;)V
-invokestatic Method org/lwjgl/opengl/GL43 glDebugMessageControl (IIILjava/nio/IntBuffer;Z)V
 invokestatic Method org/lwjgl/opengl/GL43 glDispatchCompute (III)V
