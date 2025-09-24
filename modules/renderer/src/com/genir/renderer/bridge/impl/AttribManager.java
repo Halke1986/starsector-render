@@ -262,21 +262,24 @@ public class AttribManager {
                 GL14.glBlendFuncSeparate(expected.blend.sfactorRGB, expected.blend.dfactorRGB, expected.blend.sfactorAlpha, expected.blend.dfactorAlpha);
             }
 
-            if (actual.blendi != null) {
-                for (Map.Entry<Integer, BlendFactors> entry : actual.blendi.entrySet()) {
-                    BlendFactors blend = entry.getValue();
-                    GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
-                }
-            }
-
             if (actual.blendEquation != expected.blendEquation) {
                 actual.blendEquation = expected.blendEquation;
 
                 GL14.glBlendEquation(expected.blendEquation);
             }
 
-            if (actual.blendEquationi != null) {
-                for (Map.Entry<Integer, Integer> entry : actual.blendEquationi.entrySet()) {
+            // Apply the buffer-specific blend settings. No comparison with
+            // the actual state is performed for simplicity and because the
+            // buffer-specific settings are not in the hot path.
+            if (expected.blendi != null) {
+                for (Map.Entry<Integer, BlendFactors> entry : expected.blendi.entrySet()) {
+                    BlendFactors blend = entry.getValue();
+                    GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
+                }
+            }
+
+            if (expected.blendEquationi != null) {
+                for (Map.Entry<Integer, Integer> entry : expected.blendEquationi.entrySet()) {
                     GL40.glBlendEquationi(entry.getKey(), entry.getValue());
                 }
             }
