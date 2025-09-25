@@ -256,12 +256,19 @@ public class GL11 {
         exec.execute(new glDrawArrays(glDrawArraysWithContext));
     }
 
-    public static void glDrawElements(int mode, IntBuffer indices) { // Modded
+    public static void glDrawElements(int mode, IntBuffer indices) {
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
 
         Runnable glDrawElements = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, snapshot);
         Runnable glDrawArraysWithContext = vertexInterceptor.glDrawArraysWithContext(glDrawElements);
         exec.execute(glDrawArraysWithContext);
+    }
+
+    public static void glDrawElements(int mode, int indices_count, int type, long indices_buffer_offset) {
+        exec.execute(() -> {
+            attribManager.applyDrawAttribs();
+            org.lwjgl.opengl.GL11.glDrawElements(mode, indices_count, type, indices_buffer_offset);
+        });
     }
 
     /**
@@ -777,8 +784,12 @@ public class GL11 {
                 return attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
                 return attribTracker.getActiveTexture();
+            case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
+                return attribTracker.getArrayBufferBinding();
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
                 return attribTracker.getFramebufferBinding();
+            case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
+                return attribTracker.getVertexArrayBinding();
 
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:

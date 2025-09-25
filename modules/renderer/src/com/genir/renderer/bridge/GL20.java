@@ -96,6 +96,11 @@ public class GL20 {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform2i(location, v0, v1));
     }
 
+    public static void glUniform2(int location, FloatBuffer values) {
+        final FloatBuffer snapshot = BufferUtil.snapshot(values);
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform2(location, snapshot));
+    }
+
     public static void glUniform3f(int location, float v0, float v1, float v2) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform3f(location, v0, v1, v2));
     }
@@ -104,9 +109,9 @@ public class GL20 {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform3i(location, v0, v1, v2));
     }
 
-    public static void glUniform4(int location, FloatBuffer values) {
+    public static void glUniform3(int location, FloatBuffer values) {
         final FloatBuffer snapshot = BufferUtil.snapshot(values);
-        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4(location, snapshot));
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform3(location, snapshot));
     }
 
     public static void glUniform4f(int location, float v0, float v1, float v2, float v3) {
@@ -115,6 +120,11 @@ public class GL20 {
 
     public static void glUniform4i(int location, int v0, int v1, int v2, int v3) {
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4i(location, v0, v1, v2, v3));
+    }
+
+    public static void glUniform4(int location, FloatBuffer values) {
+        final FloatBuffer snapshot = BufferUtil.snapshot(values);
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniform4(location, snapshot));
     }
 
     public static void glUseProgram(int program) {
@@ -152,6 +162,11 @@ public class GL20 {
     public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) {
         final FloatBuffer snapshot = BufferUtil.snapshot(matrices);
         exec.execute(() -> org.lwjgl.opengl.GL20.glUniformMatrix4(location, transpose, snapshot));
+    }
+
+    public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) {
+        final FloatBuffer snapshot = BufferUtil.snapshot(matrices);
+        exec.execute(() -> org.lwjgl.opengl.GL20.glUniformMatrix3(location, transpose, snapshot));
     }
 
     public static void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) {

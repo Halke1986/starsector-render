@@ -53,6 +53,7 @@ public class GL30 {
     }
 
     public static void glBindVertexArray(int array) {
+        attribTracker.glBindVertexArray(array);
         exec.execute(() -> org.lwjgl.opengl.GL30.glBindVertexArray(array));
     }
 
