@@ -245,14 +245,17 @@ L73:
 .end method
 
 .method public static Object : (Ljava/lang/String;)V
-    .code stack 0 locals 1
-L0:     return
-L1:
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     invokestatic Method com/genir/renderer/overrides/ScriptStore addPlugin (Ljava/lang/String;)V
+L4:     return
+L5:
         .linenumbertable
-            L0 54
+            L0 16
+            L4 17
         .end linenumbertable
         .localvariabletable
-            0 is var0 Ljava/lang/String; from L0 to L1
+            0 is var0 Ljava/lang/String; from L0 to L5
         .end localvariabletable
     .end code
 .end method

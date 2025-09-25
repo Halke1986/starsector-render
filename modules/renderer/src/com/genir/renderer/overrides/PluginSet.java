@@ -1,35 +1,76 @@
 package com.genir.renderer.overrides;
 
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.loading.scripts.ScriptStore;
-import org.apache.log4j.Logger;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
-public class PluginSet extends PluginSetBase {
-    private static final Logger logger = Logger.getLogger(ScriptStore.class);
-    private static boolean loaderInitialized = false;
-
+public class PluginSet implements Set {
     @Override
     public boolean add(Object o) {
         if (!(o instanceof String className)) {
             return false;
         }
 
-        try {
-            if (!loaderInitialized) {
-                ScriptStore.runScriptLoadingThread();
-                ScriptStore.joinScriptLoadingThread();
-                loaderInitialized = true;
-            }
-
-            ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
-            Object plugin = scriptLoader.loadClass(className).newInstance();
-            ScriptStore.addPlugin(plugin);
-
-            logger.info("Class [" + className + "] preloaded.");
-        } catch (Throwable t) {
-            throw new RuntimeException("Problem loading class [" + className + "]", t);
-        }
-
+        ScriptStore.addPlugin(className);
         return true;
+    }
+
+    @Override
+    public int size() {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public boolean isEmpty() {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public Iterator iterator() {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public Object[] toArray() {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public boolean addAll(Collection c) {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    @Override
+    public boolean removeAll(Collection c) {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public boolean retainAll(Collection c) {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public boolean containsAll(Collection c) {
+        throw new RuntimeException("Unimplemented");
+    }
+
+    @Override
+    public Object[] toArray(Object[] a) {
+        throw new RuntimeException("Unimplemented");
     }
 }

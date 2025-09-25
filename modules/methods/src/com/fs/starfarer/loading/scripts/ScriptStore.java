@@ -13,6 +13,7 @@ public class ScriptStore {
     // MODIFIED METHOD
     // $FF: renamed from: Object (java.lang.String) void
     public static void addScript(String var0) {
+        com.genir.renderer.overrides.ScriptStore.addPlugin(var0);
     }
 
     // RENAMED AND MODIFIED METHOD
