@@ -1,4 +1,7 @@
-- Added support for BoxUtil 1.4.8.
+v0.4.4
+
+- Added support for BoxUtil 1.4.8. Incompatibility reported by several users.
+- Added support for UIUtil. Incompatibility reported Dwarden.
 
 v0.4.3
 
