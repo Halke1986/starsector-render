@@ -30,7 +30,8 @@ public class BufferManager {
     }
 
     public ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
-        if (access != GL30.GL_MAP_WRITE_BIT) {
+        int handledAccess = GL30.GL_MAP_WRITE_BIT | GL30.GL_MAP_UNSYNCHRONIZED_BIT | GL30.GL_MAP_INVALIDATE_RANGE_BIT;
+        if ((access & ~handledAccess) != 0) {
             // Unhandled access type. Delegate binding to OpenGL.
             return null;
         }

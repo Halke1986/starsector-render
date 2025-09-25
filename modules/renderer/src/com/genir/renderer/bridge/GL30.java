@@ -53,6 +53,7 @@ public class GL30 {
     }
 
     public static void glBindVertexArray(int array) {
+        attribTracker.glBindVertexArray(array);
         exec.execute(() -> org.lwjgl.opengl.GL30.glBindVertexArray(array));
     }
 
@@ -92,5 +93,17 @@ public class GL30 {
 
     public static void glDeleteRenderbuffers(int renderbuffer) {
         exec.execute(() -> org.lwjgl.opengl.GL30.glDeleteRenderbuffers(renderbuffer));
+    }
+
+    public static void glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset));
+    }
+
+    public static void glUniform1ui(int location, int v0) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glUniform1ui(location, v0));
+    }
+
+    public static void glUniform2ui(int location, int v0, int v1) {
+        exec.execute(() -> org.lwjgl.opengl.GL30.glUniform2ui(location, v0, v1));
     }
 }

@@ -31,6 +31,7 @@ public class GL15 {
 
     public static void glBindBuffer(int target, int buffer) {
         bufferManager.glBindBuffer(target, buffer);
+        attribTracker.glBindBuffer(target, buffer);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBindBuffer(target, buffer));
     }
 
@@ -50,6 +51,11 @@ public class GL15 {
 
     public static void glBufferData(int target, ShortBuffer data, int usage) {
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
+        exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
+    }
+
+    public static void glBufferData(int target, IntBuffer data, int usage) {
+        final IntBuffer snapshot = BufferUtil.snapshot(data);
         exec.execute(() -> org.lwjgl.opengl.GL15.glBufferData(target, snapshot, usage));
     }
 

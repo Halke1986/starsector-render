@@ -218,87 +218,86 @@ public class VertexInterceptor {
         final ArraySnapshot colorSnapshot = (clientAttribTracker.getEnableColorArray()) ?
                 colorPointer.getSnapshot() : null;
 
-        return () -> drawRecordedArray(
+        return new drawRecordedArray(
+                this,
                 drawArraysCommand,
                 vertexSnapshot,
                 texCoordSnapshot,
                 colorSnapshot);
     }
 
-    private void drawRecordedArray(
-            Runnable drawArraysCommand,
-            ArraySnapshot vs,
-            ArraySnapshot ts,
-            ArraySnapshot cs
-    ) {
-        arraysTouched();
+    public record drawRecordedArray(VertexInterceptor interceptor, Runnable drawArraysCommand, ArraySnapshot vs, ArraySnapshot ts, ArraySnapshot cs) implements Runnable {
+        @Override
+        public void run() {
+            interceptor.arraysTouched();
 
-        // Vertex array.
-        if (vs != null) {
-            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+            // Vertex array.
+            if (vs != null) {
+                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-            if (vs.snapshot() != null) {
-                if (vertexPointer.capacity() < vs.bytes()) {
-                    vertexPointer = BufferUtils.createByteBuffer(vs.bytes());
+                if (vs.snapshot() != null) {
+                    if (interceptor.vertexPointer.capacity() < vs.bytes()) {
+                        interceptor.vertexPointer = BufferUtils.createByteBuffer(vs.bytes());
+                    }
+
+                    vs.store(interceptor.vertexPointer.clear());
+                    GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), interceptor.vertexPointer.flip()); // Legacy
                 }
-
-                vs.store(vertexPointer.clear());
-                GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer.flip()); // Legacy
+            } else {
+                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
             }
-        } else {
-            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        }
 
-        // Texture array.
-        if (ts != null) {
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            // Texture array.
+            if (ts != null) {
+                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
-            if (ts.snapshot() != null) {
-                if (texCoordPointer.capacity() < ts.bytes()) {
-                    texCoordPointer = BufferUtils.createByteBuffer(ts.bytes());
+                if (ts.snapshot() != null) {
+                    if (interceptor.texCoordPointer.capacity() < ts.bytes()) {
+                        interceptor.texCoordPointer = BufferUtils.createByteBuffer(ts.bytes());
+                    }
+
+                    ts.store(interceptor.texCoordPointer.clear());
+                    GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), interceptor.texCoordPointer.flip()); // Legacy
                 }
-
-                ts.store(texCoordPointer.clear());
-                GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer.flip()); // Legacy
+            } else {
+                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
-        } else {
-            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        }
 
-        // Color array.
-        if (cs != null) {
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            // Color array.
+            if (cs != null) {
+                GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
-            if (cs.snapshot() != null) {
-                if (colorPointer.capacity() < cs.bytes()) {
-                    colorPointer = BufferUtils.createByteBuffer(cs.bytes());
+                if (cs.snapshot() != null) {
+                    if (interceptor.colorPointer.capacity() < cs.bytes()) {
+                        interceptor.colorPointer = BufferUtils.createByteBuffer(cs.bytes());
+                    }
+
+                    cs.store(interceptor.colorPointer.clear());
+                    GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), interceptor.colorPointer.flip()); // Legacy
                 }
-
-                cs.store(colorPointer.clear());
-                GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer.flip()); // Legacy
+            } else {
+                // Define color if GL_COLOR_ARRAY is disabled.
+                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                GL11.glColor4f(interceptor.red, interceptor.green, interceptor.blue, interceptor.alpha);
             }
-        } else {
-            // Define color if GL_COLOR_ARRAY is disabled.
-            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-            GL11.glColor4f(red, green, blue, alpha);
+
+            // Normal array.
+            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+
+            // Move model transformation from CPU to GPU.
+            // The vertex array is stored in object/local space rather than pre-transformed
+            // into model space, since the model matrix can change every time the array is drawn.
+            // Applying the transformation on the GPU avoids repeatedly un-packing the array,
+            // transforming vertices on the CPU, and re-packing the data for each draw call.
+            interceptor.transformManager.setGPUModelView();
+
+            // Draw.
+            interceptor.attribManager.applyDrawAttribs();
+            drawArraysCommand.run();
+
+            // Move model transformation back to CPU.
+            interceptor.transformManager.setCPUModelView();
         }
-
-        // Normal array.
-        GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
-
-        // Move model transformation from CPU to GPU.
-        // The vertex array is stored in object/local space rather than pre-transformed
-        // into model space, since the model matrix can change every time the array is drawn.
-        // Applying the transformation on the GPU avoids repeatedly un-packing the array,
-        // transforming vertices on the CPU, and re-packing the data for each draw call.
-        transformManager.setGPUModelView();
-
-        // Draw.
-        attribManager.applyEnableAndColorBufferBit();
-        drawArraysCommand.run();
-
-        // Move model transformation back to CPU.
-        transformManager.setCPUModelView();
     }
 
     /**
@@ -321,7 +320,7 @@ public class VertexInterceptor {
         GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(0));
         GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(VERTEX_SIZE));
 
-        attribManager.applyEnableAndColorBufferBit();
+        attribManager.applyDrawAttribs();
         GL11.glDrawArrays(mode, 0, count);
     }
 
@@ -332,7 +331,7 @@ public class VertexInterceptor {
         prepareDefaultVertexPointer(count);
         defaultVertexPointer.put(vertexScratchpad, 0, count * STRIDE);
 
-        attribManager.applyEnableAndColorBufferBit();
+        attribManager.applyDrawAttribs();
         GL11.glDrawArrays(mode, 0, count);
     }
 

@@ -7,8 +7,15 @@ import static com.genir.renderer.bridge.impl.Bridge.exec;
 public class GL31 {
     public static void glDrawArraysInstanced(int mode, int first, int count, int primcount) {
         exec.execute(() -> {
-            attribManager.applyEnableAndColorBufferBit();
+            attribManager.applyDrawAttribs();
             org.lwjgl.opengl.GL31.glDrawArraysInstanced(mode, first, count, primcount);
+        });
+    }
+
+    public static void glDrawElementsInstanced(int mode, int indices_count, int type, long indices_buffer_offset, int primcount) {
+        exec.execute(() -> {
+            attribManager.applyDrawAttribs();
+            org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices_count, type, indices_buffer_offset, primcount);
         });
     }
 
@@ -22,5 +29,9 @@ public class GL31 {
 
     public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {
         exec.execute(() -> org.lwjgl.opengl.GL31.glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding));
+    }
+
+    public static int glGetActiveUniformBlocki(int program, int uniformBlockIndex, int pname) {
+        return exec.get(() -> org.lwjgl.opengl.GL31.glGetActiveUniformBlocki(program, uniformBlockIndex, pname));
     }
 }

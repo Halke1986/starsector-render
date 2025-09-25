@@ -6,6 +6,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static com.genir.renderer.Debug.log;
@@ -27,10 +28,14 @@ public class Display {
             // to avoid concurrency issues. However, profiling showed a ~5%
             // performance penalty from lock contention when blocking.
             // To avoid this, the update is executed asynchronously.
-            prevFrameFinished = exec.submit(() -> {
-                Bridge.update();
-                org.lwjgl.opengl.Display.update(processMessages);
-            });
+            record update(boolean processMessages) implements Runnable {
+                @Override
+                public void run() {
+                    Bridge.update();
+                    org.lwjgl.opengl.Display.update(processMessages);
+                }
+            }
+            prevFrameFinished = exec.submit(new update(processMessages));
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {
@@ -43,72 +48,111 @@ public class Display {
     }
 
     public static DisplayMode[] getAvailableDisplayModes() {
-        return exec.get(() -> org.lwjgl.opengl.Display.getAvailableDisplayModes());
+        record getAvailableDisplayModes() implements Callable<DisplayMode[]> {
+            @Override
+            public DisplayMode[] call() throws Exception {
+                return org.lwjgl.opengl.Display.getAvailableDisplayModes();
+            }
+        }
+        return exec.get(new getAvailableDisplayModes());
     }
 
     public static int setIcon(ByteBuffer[] icons) {
-        return exec.get(() -> org.lwjgl.opengl.Display.setIcon(icons));
+        record setIcon(ByteBuffer[] icons) implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.Display.setIcon(icons);
+            }
+        }
+        return exec.get(new setIcon(icons));
     }
 
     public static DisplayMode getDesktopDisplayMode() {
-        return exec.get(() -> org.lwjgl.opengl.Display.getDesktopDisplayMode());
+        record getDesktopDisplayMode() implements Callable<DisplayMode> {
+            @Override
+            public DisplayMode call() throws Exception {
+                return org.lwjgl.opengl.Display.getDesktopDisplayMode();
+            }
+        }
+        return exec.get(new getDesktopDisplayMode());
     }
 
     public static DisplayMode getDisplayMode() {
-        return exec.get(() -> org.lwjgl.opengl.Display.getDisplayMode());
+        record getDisplayMode() implements Callable<DisplayMode> {
+            @Override
+            public DisplayMode call() throws Exception {
+                return org.lwjgl.opengl.Display.getDisplayMode();
+            }
+        }
+        return exec.get(new getDisplayMode());
     }
 
     public static void setTitle(String newTitle) {
-        exec.wait(() -> org.lwjgl.opengl.Display.setTitle(newTitle));
+        record setTitle(String newTitle) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.Display.setTitle(newTitle);
+            }
+        }
+
+        exec.wait(new setTitle(newTitle));
     }
 
     public static void setVSyncEnabled(boolean sync) {
-        exec.wait(() -> {
-            // Drain OpenGL error queue and log errors. NOTE: As of 0.98a vanilla
-            // ignores OpenGL errors and lets setVSyncEnabled drain the error
-            // queue and throw an exception.
-            try {
-                int err = 0;
-                do {
-                    err = org.lwjgl.opengl.GL11.glGetError();
-                    if (err != 0) {
-                        log("OpenGL error: " + err);
-                    }
-                } while (err != 0);
-            } catch (Throwable ignored) {
-                // glGetError may throw at application startup,
-                // when called before OpenGL context is created.
-            }
+        record setVSyncEnabled(boolean sync) implements Runnable {
+            @Override
+            public void run() {
+                // Drain OpenGL error queue and log errors. NOTE: As of 0.98a vanilla
+                // ignores OpenGL errors and lets setVSyncEnabled drain the error
+                // queue and throw an exception.
+                try {
+                    int err = 0;
+                    do {
+                        err = org.lwjgl.opengl.GL11.glGetError();
+                        if (err != 0) {
+                            log("OpenGL error: " + err);
+                        }
+                    } while (err != 0);
+                } catch (Throwable ignored) {
+                    // glGetError may throw at application startup,
+                    // when called before OpenGL context is created.
+                }
 
-            // setVSyncEnabled error does not prevent the application from
-            // continuing to work correctly.
-            try {
-                org.lwjgl.opengl.Display.setVSyncEnabled(sync);
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
+                // setVSyncEnabled error does not prevent the application from
+                // continuing to work correctly.
+                try {
+                    org.lwjgl.opengl.Display.setVSyncEnabled(sync);
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
-        });
+        }
+        exec.wait(new setVSyncEnabled(sync));
     }
 
     public static void create(PixelFormat pixel_format) {
         attribTracker.clear();
         prevFrameFinished = null;
 
-        exec.wait(() -> {
-            try {
-                org.lwjgl.opengl.Display.create(pixel_format);
+        record create(PixelFormat pixel_format) implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    org.lwjgl.opengl.Display.create(pixel_format);
 
-                // Clear server attributes when a new display is created.
-                attribManager.clear();
-                Bridge.update();
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
+                    // Clear server attributes when a new display is created.
+                    attribManager.clear();
+                    Bridge.update();
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
-        });
+        }
+        exec.wait(new create(pixel_format));
     }
 
     public static int getHeight() {
@@ -116,7 +160,13 @@ public class Display {
             return stateCache.getDisplayHeight();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.getHeight());
+        record getHeight() implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.Display.getHeight();
+            }
+        }
+        return exec.get(new getHeight());
     }
 
     public static int getWidth() {
@@ -124,7 +174,13 @@ public class Display {
             return stateCache.getDisplayWidth();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.getWidth());
+        record getWidth() implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.Display.getWidth();
+            }
+        }
+        return exec.get(new getWidth());
     }
 
     public static float getPixelScaleFactor() {
@@ -132,7 +188,13 @@ public class Display {
             return stateCache.getDisplayPixelScaleFactor();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.getPixelScaleFactor());
+        record getPixelScaleFactor() implements Callable<Float> {
+            @Override
+            public Float call() throws Exception {
+                return org.lwjgl.opengl.Display.getPixelScaleFactor();
+            }
+        }
+        return exec.get(new getPixelScaleFactor());
     }
 
     public static boolean isCloseRequested() {
@@ -140,7 +202,13 @@ public class Display {
             return stateCache.getDisplayIsCloseRequested();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.isCloseRequested());
+        record isCloseRequested() implements Callable<Boolean> {
+            @Override
+            public Boolean call() throws Exception {
+                return org.lwjgl.opengl.Display.isCloseRequested();
+            }
+        }
+        return exec.get(new isCloseRequested());
     }
 
     public static boolean isActive() {
@@ -148,11 +216,23 @@ public class Display {
             return stateCache.getDisplayIsActive();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.isActive());
+        record isActive() implements Callable<Boolean> {
+            @Override
+            public Boolean call() throws Exception {
+                return org.lwjgl.opengl.Display.isActive();
+            }
+        }
+        return exec.get(new isActive());
     }
 
     public static void destroy() {
-        exec.wait(() -> org.lwjgl.opengl.Display.destroy(), true);
+        record destroy() implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.Display.destroy();
+            }
+        }
+        exec.wait(new destroy(), true);
     }
 
     public static boolean isFullscreen() {
@@ -160,17 +240,27 @@ public class Display {
             return stateCache.getDisplayIsFullscreen();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.isFullscreen());
+        record isFullscreen() implements Callable<Boolean> {
+            @Override
+            public Boolean call() throws Exception {
+                return org.lwjgl.opengl.Display.isFullscreen();
+            }
+        }
+        return exec.get(new isFullscreen());
     }
 
     public static void setFullscreen(boolean fullscreen) {
-        exec.wait(() -> {
-            try {
-                org.lwjgl.opengl.Display.setFullscreen(fullscreen);
-            } catch (LWJGLException e) {
-                throw new RuntimeException(e);
+        record setFullscreen(boolean fullscreen) implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    org.lwjgl.opengl.Display.setFullscreen(fullscreen);
+                } catch (LWJGLException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        });
+        }
+        exec.wait(new setFullscreen(fullscreen));
     }
 
     public static boolean isVisible() {
@@ -178,15 +268,33 @@ public class Display {
             return stateCache.getDisplayIsVisible();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.isVisible());
+        record isVisible() implements Callable<Boolean> {
+            @Override
+            public Boolean call() throws Exception {
+                return org.lwjgl.opengl.Display.isVisible();
+            }
+        }
+        return exec.get(new isVisible());
     }
 
     public static void processMessages() {
-        exec.wait(() -> org.lwjgl.opengl.Display.processMessages());
+        record processMessages() implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.Display.processMessages();
+            }
+        }
+        exec.wait(new processMessages());
     }
 
     public static void sync(int fps) {
-        exec.execute(() -> org.lwjgl.opengl.Display.sync(fps));
+        record sync(int fps) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.Display.sync(fps);
+            }
+        }
+        exec.execute(new sync(fps));
     }
 
     public static int getX() {
@@ -194,7 +302,13 @@ public class Display {
             return stateCache.getDisplayX();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.getX());
+        record getX() implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.Display.getX();
+            }
+        }
+        return exec.get(new getX());
     }
 
     public static int getY() {
@@ -202,6 +316,12 @@ public class Display {
             return stateCache.getDisplayY();
         }
 
-        return exec.get(() -> org.lwjgl.opengl.Display.getY());
+        record getY() implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.Display.getY();
+            }
+        }
+        return exec.get(new getY());
     }
 }

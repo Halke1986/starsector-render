@@ -2,7 +2,10 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL40;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -40,8 +43,8 @@ public class AttribManager {
 
         // Blend.
         ctx.enableBlend = expected.enableBlend;
-        ctx.blendSfactor = expected.blendSfactorRGB;
-        ctx.blendDfactor = expected.blendDfactorRGB;
+        ctx.blendSfactor = expected.blend.sfactorRGB;
+        ctx.blendDfactor = expected.blend.dfactorRGB;
         ctx.blendEquation = expected.blendEquation;
 
         return ctx;
@@ -82,11 +85,11 @@ public class AttribManager {
         }
 
         if (ctx.enableBlend) {
-            if (actual.blendSfactorRGB != ctx.blendSfactor || actual.blendDfactorRGB != ctx.blendDfactor) {
-                actual.blendSfactorRGB = ctx.blendSfactor;
-                actual.blendDfactorRGB = ctx.blendDfactor;
-                actual.blendSfactorAlpha = ctx.blendSfactor;
-                actual.blendDfactorAlpha = ctx.blendDfactor;
+            if (actual.blend.sfactorRGB != ctx.blendSfactor || actual.blend.dfactorRGB != ctx.blendDfactor) {
+                actual.blend.sfactorRGB = ctx.blendSfactor;
+                actual.blend.dfactorRGB = ctx.blendDfactor;
+                actual.blend.sfactorAlpha = ctx.blendSfactor;
+                actual.blend.dfactorAlpha = ctx.blendDfactor;
                 GL11.glBlendFunc(ctx.blendSfactor, ctx.blendDfactor);
             }
 
@@ -97,7 +100,7 @@ public class AttribManager {
         }
     }
 
-    public void applyEnableAndColorBufferBit() {
+    public void applyDrawAttribs() {
         applyStencil();
         applyAlpha();
         applyTexture();
@@ -125,11 +128,11 @@ public class AttribManager {
     }
 
     public void clear() {
-        Snapshot cleanContext = new Snapshot();
-        cleanContext.attribMask = -1;
+        Snapshot emptyContext = new Snapshot();
+        emptyContext.attribMask = -1;
 
-        cleanContext.save(actual);
-        cleanContext.save(expected);
+        actual.copyFrom(emptyContext);
+        expected.copyFrom(emptyContext);
 
         expectedStack.clear();
         actualStack.clear();
@@ -149,12 +152,12 @@ public class AttribManager {
 
         // Save expected state.
         Snapshot savedExpected = new Snapshot();
-        expected.save(savedExpected);
+        savedExpected.copyFrom(expected);
         expectedStack.push(savedExpected);
 
         // Save actual state.
         Snapshot savedActual = new Snapshot();
-        actual.save(savedActual);
+        savedActual.copyFrom(actual);
         actualStack.push(savedActual);
     }
 
@@ -167,8 +170,8 @@ public class AttribManager {
         Snapshot savedExpected = expectedStack.pop();
         Snapshot savedActual = actualStack.pop();
 
-        savedExpected.save(expected);
-        savedActual.save(actual);
+        expected.copyFrom(savedExpected);
+        actual.copyFrom(savedActual);
     }
 
     public void glBindTexture(int target, int texture) {
@@ -177,14 +180,42 @@ public class AttribManager {
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        expected.blendSfactorRGB = sfactorRGB;
-        expected.blendDfactorRGB = dfactorRGB;
-        expected.blendSfactorAlpha = sfactorAlpha;
-        expected.blendDfactorAlpha = dfactorAlpha;
+        expected.blend.sfactorRGB = sfactorRGB;
+        expected.blend.dfactorRGB = dfactorRGB;
+        expected.blend.sfactorAlpha = sfactorAlpha;
+        expected.blend.dfactorAlpha = dfactorAlpha;
+
+        // glBlendFuncSeparate overwrites buffer-specific glBlendFuncSeparatei values.
+        expected.blendi = null;
+    }
+
+    public void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
+        if (expected.blendi == null) {
+            expected.blendi = new HashMap<>();
+        }
+
+        BlendFactors blend = new BlendFactors();
+        blend.sfactorRGB = srcRGB;
+        blend.dfactorRGB = dstRGB;
+        blend.sfactorAlpha = srcAlpha;
+        blend.dfactorAlpha = dstAlpha;
+
+        expected.blendi.put(buf, blend);
     }
 
     public void glBlendEquation(int mode) {
         expected.blendEquation = mode;
+
+        // glBlendEquation overwrites buffer-specific glBlendEquationi values.
+        expected.blendEquationi = null;
+    }
+
+    public void glBlendEquationi(int buf, int mode) {
+        if (expected.blendEquationi == null) {
+            expected.blendEquationi = new HashMap<>();
+        }
+
+        expected.blendEquationi.put(buf, mode);
     }
 
     public void glMatrixMode(int mode) {
@@ -219,22 +250,38 @@ public class AttribManager {
         }
 
         if (expected.enableBlend) {
-            if (actual.blendSfactorRGB != expected.blendSfactorRGB ||
-                    actual.blendDfactorRGB != expected.blendDfactorRGB ||
-                    actual.blendSfactorAlpha != expected.blendSfactorAlpha ||
-                    actual.blendDfactorAlpha != expected.blendDfactorAlpha) {
-                actual.blendSfactorRGB = expected.blendSfactorRGB;
-                actual.blendDfactorRGB = expected.blendDfactorRGB;
-                actual.blendSfactorAlpha = expected.blendSfactorAlpha;
-                actual.blendDfactorAlpha = expected.blendDfactorAlpha;
+            if (actual.blend.sfactorRGB != expected.blend.sfactorRGB ||
+                    actual.blend.dfactorRGB != expected.blend.dfactorRGB ||
+                    actual.blend.sfactorAlpha != expected.blend.sfactorAlpha ||
+                    actual.blend.dfactorAlpha != expected.blend.dfactorAlpha) {
+                actual.blend.sfactorRGB = expected.blend.sfactorRGB;
+                actual.blend.dfactorRGB = expected.blend.dfactorRGB;
+                actual.blend.sfactorAlpha = expected.blend.sfactorAlpha;
+                actual.blend.dfactorAlpha = expected.blend.dfactorAlpha;
 
-                GL14.glBlendFuncSeparate(expected.blendSfactorRGB, expected.blendDfactorRGB, expected.blendSfactorAlpha, expected.blendDfactorAlpha);
+                GL14.glBlendFuncSeparate(expected.blend.sfactorRGB, expected.blend.dfactorRGB, expected.blend.sfactorAlpha, expected.blend.dfactorAlpha);
             }
 
             if (actual.blendEquation != expected.blendEquation) {
                 actual.blendEquation = expected.blendEquation;
 
                 GL14.glBlendEquation(expected.blendEquation);
+            }
+
+            // Apply the buffer-specific blend settings. No comparison with
+            // the actual state is performed for simplicity and because the
+            // buffer-specific settings are not in the hot path.
+            if (expected.blendi != null) {
+                for (Map.Entry<Integer, BlendFactors> entry : expected.blendi.entrySet()) {
+                    BlendFactors blend = entry.getValue();
+                    GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
+                }
+            }
+
+            if (expected.blendEquationi != null) {
+                for (Map.Entry<Integer, Integer> entry : expected.blendEquationi.entrySet()) {
+                    GL40.glBlendEquationi(entry.getKey(), entry.getValue());
+                }
             }
         }
     }
@@ -288,45 +335,79 @@ public class AttribManager {
         int textureID = 0;
 
         // Blend.
-        int blendSfactorRGB = 0;
-        int blendDfactorRGB = 0;
-        int blendSfactorAlpha = 0;
-        int blendDfactorAlpha = 0;
+        BlendFactors blend = new BlendFactors();
         int blendEquation = GL14.GL_FUNC_ADD;
+        Map<Integer, BlendFactors> blendi = null;
+        Map<Integer, Integer> blendEquationi = null;
 
         int matrixMode = GL11.GL_MODELVIEW;
 
-        void save(Snapshot other) {
-            other.attribMask = attribMask;
+        void copyFrom(Snapshot source) {
+            attribMask = source.attribMask;
 
             if ((attribMask & GL11.GL_ENABLE_BIT) != 0) {
-                other.enableStencilTest = enableStencilTest;
-                other.enableAlphaTest = enableAlphaTest;
-                other.enableTexture2D = enableTexture2D;
-                other.enableBlend = enableBlend;
-                other.enableLighting = enableLighting;
+                enableStencilTest = source.enableStencilTest;
+                enableAlphaTest = source.enableAlphaTest;
+                enableTexture2D = source.enableTexture2D;
+                enableBlend = source.enableBlend;
+                enableLighting = source.enableLighting;
             }
 
             if ((attribMask & GL11.GL_STENCIL_BUFFER_BIT) != 0) {
-                other.enableStencilTest = enableStencilTest;
+                enableStencilTest = source.enableStencilTest;
             }
 
             if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
-                other.blendSfactorRGB = blendSfactorRGB;
-                other.blendDfactorRGB = blendDfactorRGB;
-                other.blendSfactorAlpha = blendSfactorAlpha;
-                other.blendDfactorAlpha = blendDfactorAlpha;
-                other.blendEquation = blendEquation;
+                blend.copyFrom(source.blend);
+                blendEquation = source.blendEquation;
+
+                if (source.blendi != null) {
+                    if (blendi == null) {
+                        blendi = new HashMap<>();
+                    } else {
+                        blendi.clear();
+                    }
+
+                    for (Map.Entry<Integer, BlendFactors> entry : source.blendi.entrySet()) {
+                        BlendFactors blend = new BlendFactors();
+                        blend.copyFrom(entry.getValue());
+                        blendi.put(entry.getKey(), blend);
+                    }
+                }
+
+                if (source.blendEquationi != null) {
+                    if (blendEquationi == null) {
+                        blendEquationi = new HashMap<>();
+                    } else {
+                        blendEquationi.clear();
+                    }
+
+                    blendEquationi.putAll(source.blendEquationi);
+                }
             }
 
             if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
-                other.matrixMode = matrixMode;
+                matrixMode = source.matrixMode;
             }
 
             if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
-                other.textureTarget = textureTarget;
-                other.textureID = textureID;
+                textureTarget = source.textureTarget;
+                textureID = source.textureID;
             }
+        }
+    }
+
+    public static class BlendFactors {
+        int sfactorRGB = 0;
+        int dfactorRGB = 0;
+        int sfactorAlpha = 0;
+        int dfactorAlpha = 0;
+
+        void copyFrom(BlendFactors source) {
+            sfactorRGB = source.sfactorRGB;
+            dfactorRGB = source.dfactorRGB;
+            sfactorAlpha = source.sfactorAlpha;
+            dfactorAlpha = source.dfactorAlpha;
         }
     }
 }
