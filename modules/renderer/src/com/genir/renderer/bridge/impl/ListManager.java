@@ -8,6 +8,7 @@ import java.util.Map;
 import static com.genir.renderer.Debug.asert;
 
 public class ListManager {
+    private int totalListsAllocated = 0;
     private int mode = 0;
     private int newListID;
     private List<Runnable> newList;
@@ -26,6 +27,14 @@ public class ListManager {
             command.run();
             mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         }
+    }
+
+    public int glGenLists(int range) {
+        // Note:
+        // https://fractalsoftworks.com/forum/index.php?topic=34104.0
+        int idx = totalListsAllocated + 1;
+        totalListsAllocated += range;
+        return idx;
     }
 
     public void glNewList(int list, int mode) {

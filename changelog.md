@@ -1,3 +1,5 @@
+- Fixed visual errors affecting text display and other entities. Reported by Notice of Service Termination, Choptimist, Kujisawa Zimberman and Dwarden.
+
 v0.4.4
 
 - Added support for BoxUtil 1.4.8. Incompatibility reported by several users.

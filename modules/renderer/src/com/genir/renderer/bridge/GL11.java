@@ -17,6 +17,16 @@ public class GL11 {
     /**
      * Lists.
      */
+    public static int glGenLists(int range) { // NoList
+        record GL11glGenLists(int range) implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return listManager.glGenLists(range);
+            }
+        }
+        return exec.get(new GL11glGenLists(range));
+    }
+
     public static void glNewList(int list, int mode) {
         record GL11glNewList(int list, int mode) implements Runnable {
             @Override
@@ -951,16 +961,6 @@ public class GL11 {
             }
         }
         return exec.get(new GL11glGenTextures());
-    }
-
-    public static int glGenLists(int range) { // NoList
-        record GL11glGenLists(int range) implements Callable<Integer> {
-            @Override
-            public Integer call() throws Exception {
-                return org.lwjgl.opengl.GL11.glGenLists(range);
-            }
-        }
-        return exec.get(new GL11glGenLists(range));
     }
 
     public static String glGetString(int name) { // NoList
