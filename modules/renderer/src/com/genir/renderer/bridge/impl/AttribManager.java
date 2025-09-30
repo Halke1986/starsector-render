@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.impl;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL40;
 
 import java.util.HashMap;
@@ -31,10 +30,6 @@ public class AttribManager {
 
     public int getMatrixMode() {
         return expected.matrixMode;
-    }
-
-    public int getArrayBufferBinding() {
-        return expected.arrayBufferBinding;
     }
 
     public ReorderedDrawContext getReorderedDrawContext(int mode) {
@@ -227,12 +222,6 @@ public class AttribManager {
         expected.matrixMode = mode;
     }
 
-    public void glBindBuffer(int target, int buffer) {
-        if (target == GL15.GL_ARRAY_BUFFER) {
-            expected.arrayBufferBinding = buffer;
-        }
-    }
-
     private void applyStencil() {
         if (actual.enableStencilTest != expected.enableStencilTest) {
             actual.enableStencilTest = expected.enableStencilTest;
@@ -344,7 +333,6 @@ public class AttribManager {
         // Only tracking, no application.
         int textureTarget = 0;
         int textureID = 0;
-        int arrayBufferBinding = 0;
 
         // Blend.
         BlendFactors blend = new BlendFactors();
@@ -405,10 +393,6 @@ public class AttribManager {
             if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
                 textureTarget = source.textureTarget;
                 textureID = source.textureID;
-            }
-
-            if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
-                arrayBufferBinding = source.arrayBufferBinding;
             }
         }
     }

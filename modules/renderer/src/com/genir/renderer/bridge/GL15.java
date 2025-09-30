@@ -46,7 +46,6 @@ public class GL15 {
         record glBindBuffer(int target, int buffer) implements Runnable {
             @Override
             public void run() {
-                attribManager.glBindBuffer(target, buffer);
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }
