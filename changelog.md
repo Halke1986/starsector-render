@@ -1,3 +1,5 @@
+- Added support for Farsight Drive. Incompatibility reported by Kujisawa Zimberman.
+
 v0.4.5
 
 - Fixed visual errors affecting text display and other entities. Reported by Notice of Service Termination, Choptimist, Kujisawa Zimberman and Dwarden.

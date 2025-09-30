@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
+    private final List<ClassConstantTransformer> noOpTransformers = List.of();
+
     private final List<ClassConstantTransformer> lwjglTransformers = List.of(
             new ClassConstantTransformer(Arrays.asList(
                     // Replace OpenGL calls.
@@ -28,7 +30,7 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
                     ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/URLClassLoader")
             )),
             new ClassConstantTransformer(List.of(
-                    // Replace OpenGL calls.
+                    // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/DisplayMode transform caused by a false positive match.
                     ClassConstantTransformer.newTransform("com/genir/renderer/bridge/DisplayMode", "org/lwjgl/opengl/DisplayMode")
             ))
     );
@@ -42,7 +44,7 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
     @Override
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
-            if (doNotIntercept(name)) {
+            if (selectTransformer(name) == null) {
                 return super.getParent().loadClass(name);
             }
 
@@ -67,17 +69,20 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
         return classTransformer.findClass(name, transformers);
     }
 
-    private boolean doNotIntercept(String name) {
-        return !name.startsWith("com.fs.") && !name.startsWith("org.lwjgl.util.") && !name.startsWith("com.genir.renderer.");
-    }
-
     private List<ClassConstantTransformer> selectTransformer(String name) {
-        if (name.startsWith("org.lwjgl.util.")) {
+        if (name.startsWith("org.lwjgl.util.glu.")) {
             return lwjglTransformers;
-        } else if (name.startsWith("com.fs.")) {
+        } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformers;
+        } else if (name.startsWith("com.genir.renderer.")) {
+            // Renderer does not need transformation itself,
+            // but it does call transformed Starsector classes.
+            // Loading renderer through the base app class loader
+            // would lead to duplicate Starsector class definition.
+            return noOpTransformers;
         }
 
+        // Do not intercept this class.
         return null;
     }
 
