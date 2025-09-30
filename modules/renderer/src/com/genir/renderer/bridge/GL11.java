@@ -67,7 +67,6 @@ public class GL11 {
                 vertexInterceptor.glBegin(mode);
             }
         }
-
         exec.execute(new glBegin(mode));
     }
 
@@ -147,7 +146,6 @@ public class GL11 {
         }
         exec.execute(new glTexCoord4f(s, t, r, q));
     }
-
 
     public static void glNormal3f(float nx, float ny, float nz) {
         record glNormal3f(float nx, float ny, float nz) implements Runnable, Recordable {

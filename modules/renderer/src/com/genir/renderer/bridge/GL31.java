@@ -1,6 +1,9 @@
 package com.genir.renderer.bridge;
 
 
+import com.genir.renderer.bridge.impl.BufferUtil;
+
+import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.impl.Bridge.attribManager;
@@ -27,6 +30,18 @@ public class GL31 {
             }
         }
         exec.execute(new glDrawElementsInstanced(mode, indices_count, type, indices_buffer_offset, primcount));
+    }
+
+    public static void glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) {
+        record glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) implements Runnable {
+            @Override
+            public void run() {
+                attribManager.applyDrawAttribs();
+                org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices, primcount);
+            }
+        }
+        final IntBuffer snapshot = BufferUtil.snapshot(indices);
+        exec.execute(new glDrawElementsInstanced(mode, snapshot, primcount));
     }
 
     public static void glTexBuffer(int target, int internalformat, int buffer) {

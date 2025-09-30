@@ -25,6 +25,7 @@ public class VertexInterceptor {
     private boolean reorderDraw = false;
 
     // State.
+    private boolean vboBound = false;
     private int mode = 0;
     private float red;
     private float green;
@@ -61,22 +62,35 @@ public class VertexInterceptor {
     }
 
     public void update() {
-        registerDefaultVertexPointer();
-    }
-
-    public void setReorderDraw(boolean reorder) {
-        reorderDraw = reorder;
+        shouldRegisterArrays = true;
     }
 
     public void arraysTouched() {
         shouldRegisterArrays = true;
     }
 
+    public void setReorderDraw(boolean reorder) {
+        reorderDraw = reorder;
+    }
+
     public void glBegin(int mode) {
+        // It's not possible to use legacy glDrawArray when a VBO is bound.
+        // Fallback to glBegin/glEnd rendering.
+        this.vboBound = attribManager.getArrayBufferBinding() != 0;
+        if (vboBound) {
+            GL11.glBegin(mode);
+            return;
+        }
+
         this.mode = mode;
     }
 
     public void glEnd() {
+        if (vboBound) {
+            GL11.glEnd();
+            return;
+        }
+
         final int count = cachedVertices;
 
         if (count == 0) {
@@ -93,6 +107,11 @@ public class VertexInterceptor {
     }
 
     public void glColor4f(float red, float green, float blue, float alpha) {
+        if (vboBound) {
+            GL11.glColor4f(red, green, blue, alpha);
+            return;
+        }
+
         this.red = red;
         this.green = green;
         this.blue = blue;
@@ -100,6 +119,11 @@ public class VertexInterceptor {
     }
 
     public void glTexCoord4f(float s, float t, float r, float q) {
+        if (vboBound) {
+            GL11.glTexCoord4f(s, t, r, q);
+            return;
+        }
+
         texS = s;
         texT = t;
         texR = r;
@@ -107,12 +131,22 @@ public class VertexInterceptor {
     }
 
     public void glNormal3f(float nx, float ny, float nz) {
+        if (vboBound) {
+            GL11.glNormal3f(nx, ny, nz);
+            return;
+        }
+
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
     }
 
     public void glVertex3f(float x, float y, float z) {
+        if (vboBound) {
+            GL11.glVertex3f(x, y, z);
+            return;
+        }
+
         Matrix4f m = transformManager.getCPUModelView();
 
         // Transform vertices;
