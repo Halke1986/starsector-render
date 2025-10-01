@@ -1,4 +1,7 @@
+v0.4.6
+
 - Added support for Farsight Drive. Incompatibility reported by Kujisawa Zimberman.
+- Added support for bootleg CMUtils. Official CMUtils are still incompatible.
 
 v0.4.5
 
