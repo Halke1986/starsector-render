@@ -100,5 +100,4 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
     public Class<?> superDefineClass(String name, byte[] b, int off, int len, ProtectionDomain protectionDomain) {
         return super.defineClass(name, b, off, len, protectionDomain);
     }
-
 }

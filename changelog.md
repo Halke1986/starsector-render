@@ -1,3 +1,5 @@
+- Added support for Rigel Security. Incompatibility reported by Kujisawa Zimberman.
+
 v0.4.6
 
 - Added support for Farsight Drive. Incompatibility reported by Kujisawa Zimberman.

@@ -659,6 +659,16 @@ public class GL11 {
         exec.execute(new glLineWidth(width));
     }
 
+    public static void glPointSize(float size) {
+        record glPointSize(float size) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glPointSize(size);
+            }
+        }
+        exec.execute(new glPointSize(size));
+    }
+
     public static void glColorMaterial(int face, int mode) {
         record glColorMaterial(int face, int mode) implements Runnable, Recordable {
             @Override
