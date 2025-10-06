@@ -3,6 +3,7 @@ package com.genir.renderer.bridge;
 import com.genir.renderer.bridge.impl.Bridge;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.Drawable;
 import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
@@ -323,5 +324,15 @@ public class Display {
             }
         }
         return exec.get(new getY());
+    }
+
+    public static Drawable getDrawable() {
+        record getDrawable() implements Callable<Drawable> {
+            @Override
+            public Drawable call() throws Exception {
+                return org.lwjgl.opengl.Display.getDrawable();
+            }
+        }
+        return exec.get(new getDrawable());
     }
 }

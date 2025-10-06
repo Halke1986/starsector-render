@@ -1,4 +1,5 @@
 - Added support for Rigel Security. Incompatibility reported by Kujisawa Zimberman.
+- Fixed a java.lang.NoSuchMethodError exception when using BoxUtil with OpenCL enabled. Reported by Acid.
 
 v0.4.6
 
