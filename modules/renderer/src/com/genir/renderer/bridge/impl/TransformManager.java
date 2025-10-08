@@ -53,7 +53,7 @@ public class TransformManager {
     }
 
     public void glPushMatrix() {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glPushMatrix();
         }
 
@@ -64,7 +64,7 @@ public class TransformManager {
     }
 
     public void glPopMatrix() {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glPopMatrix();
         }
 
@@ -75,7 +75,7 @@ public class TransformManager {
     }
 
     public void glLoadIdentity() {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glLoadIdentity();
         }
 
@@ -86,7 +86,7 @@ public class TransformManager {
     }
 
     public void glTranslatef(float x, float y, float z) {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glTranslatef(x, y, z);
         }
 
@@ -97,7 +97,7 @@ public class TransformManager {
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glRotatef(angle, x, y, z);
         }
 
@@ -108,7 +108,7 @@ public class TransformManager {
     }
 
     public void glScalef(float x, float y, float z) {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glScalef(x, y, z);
         }
 
@@ -119,7 +119,7 @@ public class TransformManager {
     }
 
     public void glMultMatrix(FloatBuffer m) {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glMultMatrix(m);
         }
 
@@ -130,7 +130,7 @@ public class TransformManager {
     }
 
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        if (attribManager.matrixMode() == GL11.GL_MODELVIEW) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glOrtho(left, right, bottom, top, zNear, zFar);
         }
 
@@ -141,6 +141,6 @@ public class TransformManager {
     }
 
     private boolean shouldDelegate() {
-        return attribManager.matrixMode() != GL11.GL_MODELVIEW || !cpuModelView;
+        return attribManager.getMatrixMode() != GL11.GL_MODELVIEW || !cpuModelView;
     }
 }

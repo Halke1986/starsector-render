@@ -7,16 +7,16 @@ import java.util.concurrent.Callable;
 
 public class ResourceGenerator {
     private final Executor exec;
-    private final Callable<Integer> generate;
+    private final Callable<Integer> generatorFn;
 
     private int requiredThisFrame = 0;
     private int maxRequiredPerFrame = 0;
 
-    private Stack<Integer> stash = new Stack<>();
+    private final Stack<Integer> stash = new Stack<>();
 
     public ResourceGenerator(Callable<Integer> generate, Executor exec) {
         this.exec = exec;
-        this.generate = generate;
+        this.generatorFn = generate;
     }
 
     public int get() { // Main thread
@@ -30,7 +30,7 @@ public class ResourceGenerator {
 
         // If cache is empty, fall back to generating
         // the resource using an actual OpenGL call.
-        return exec.get(() -> generate.call());
+        return exec.get(generatorFn);
     }
 
     synchronized public void update() { // Render thread
@@ -39,7 +39,7 @@ public class ResourceGenerator {
 
         while (stash.size() < maxRequiredPerFrame) {
             try {
-                stash.push(generate.call());
+                stash.push(generatorFn.call());
             } catch (RuntimeException e) {
                 throw e;
             } catch (Throwable t) {

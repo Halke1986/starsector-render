@@ -5,6 +5,12 @@ import static com.genir.renderer.bridge.impl.Bridge.exec;
 
 public class GL33 {
     public static void glVertexAttribDivisor(int index, int divisor) {
-        exec.execute(() -> org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor));
+        record glVertexAttribDivisor(int index, int divisor) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor);
+            }
+        }
+        exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }

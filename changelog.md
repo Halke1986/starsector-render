@@ -1,3 +1,18 @@
+v0.4.7
+
+- Added support for Rigel Security. Incompatibility reported by Kujisawa Zimberman.
+- Fixed a java.lang.NoSuchMethodError exception when using BoxUtil with OpenCL enabled. Reported by Acid.
+
+v0.4.6
+
+- Added support for Farsight Drive. Incompatibility reported by Kujisawa Zimberman.
+- Added support for bootleg CMUtils. Official CMUtils are still incompatible.
+
+v0.4.5
+
+- Fixed visual errors affecting text display and other entities. Reported by Notice of Service Termination, Choptimist, Kujisawa Zimberman and Dwarden.
+- Added Fast Renderer custom icon, designed by Bûğäţţï Êçhëłøñ. 
+
 v0.4.4
 
 - Added support for BoxUtil 1.4.8. Incompatibility reported by several users.

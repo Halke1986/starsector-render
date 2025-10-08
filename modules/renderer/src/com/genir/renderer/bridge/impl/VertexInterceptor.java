@@ -61,15 +61,15 @@ public class VertexInterceptor {
     }
 
     public void update() {
-        registerDefaultVertexPointer();
-    }
-
-    public void setReorderDraw(boolean reorder) {
-        reorderDraw = reorder;
+        shouldRegisterArrays = true;
     }
 
     public void arraysTouched() {
         shouldRegisterArrays = true;
+    }
+
+    public void setReorderDraw(boolean reorder) {
+        reorderDraw = reorder;
     }
 
     public void glBegin(int mode) {

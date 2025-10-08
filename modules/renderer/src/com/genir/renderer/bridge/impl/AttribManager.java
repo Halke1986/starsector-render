@@ -28,7 +28,7 @@ public class AttribManager {
         );
     }
 
-    public int matrixMode() {
+    public int getMatrixMode() {
         return expected.matrixMode;
     }
 
@@ -330,7 +330,7 @@ public class AttribManager {
         boolean enableBlend = false;
         boolean enableLighting = false;
 
-        // Texture. Only tracking, no application.
+        // Only tracking, no application.
         int textureTarget = 0;
         int textureID = 0;
 
