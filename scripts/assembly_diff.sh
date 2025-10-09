@@ -1,1 +1,1 @@
-diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/loading/scripts/ScriptStore.j ./assembly/overrides/starfarer/com/fs/starfarer/loading/scripts/ScriptStore.j
+diff -u -bB ./disassembly/starfarer/common/com/fs/graphics/TextureLoader.j ./assembly/overrides/common/com/fs/graphics/TextureLoader.j

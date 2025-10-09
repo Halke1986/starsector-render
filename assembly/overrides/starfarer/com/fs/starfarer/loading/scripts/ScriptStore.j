@@ -54,9 +54,9 @@ L58:    invokespecial Method java/util/HashMap <init> ()V
 L61:    putstatic Field com/fs/starfarer/loading/scripts/ScriptStore void Ljava/util/Map;
 L64:    aconst_null
 L65:    putstatic Field com/fs/starfarer/loading/scripts/ScriptStore String Ljava/lang/Exception;
-L68:    new com/genir/renderer/overrides/PluginSet
+L68:    new java/util/HashSet
 L71:    dup
-L72:    invokespecial Method com/genir/renderer/overrides/PluginSet <init> ()V
+L72:    invokespecial Method java/util/HashSet <init> ()V
 L75:    putstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'Ó00000' Ljava/util/Set;
 L78:    iconst_0
 L79:    putstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'ô00000' Z
@@ -245,18 +245,22 @@ L73:
 .end method
 
 .method public static Object : (Ljava/lang/String;)V
-    .code stack 1 locals 1
+    .code stack 2 locals 1
 L0:     aload_0
-L1:     invokestatic Method com/genir/renderer/overrides/ScriptStore addPlugin (Ljava/lang/String;)V
+L1:     ifnonnull L5
 L4:     return
-L5:
-        .linenumbertable
-            L0 16
-            L4 17
-        .end linenumbertable
-        .localvariabletable
-            0 is var0 Ljava/lang/String; from L0 to L5
-        .end localvariabletable
+
+        .stack same
+L5:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore do Ljava/util/List;
+L8:     aload_0
+L9:     invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2
+L14:    pop
+L15:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'õ00000' Ljava/util/List;
+L18:    aload_0
+L19:    invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2
+L24:    pop
+L25:    return
+L26:
     .end code
 .end method
 
@@ -708,7 +712,7 @@ L1:
     .exceptions java/lang/Exception
 .end method
 
-.method public static runScriptLoadingThread : ()V
+.method public static runVanillaScriptLoadingThread : ()V
     .exceptions java/lang/Exception
     .code stack 4 locals 0
 L0:     new java/lang/Thread
@@ -752,7 +756,7 @@ L1:
     .exceptions java/lang/Exception
 .end method
 
-.method public static 'joinScriptLoadingThread' : ()V
+.method public static 'joinVanillaScriptLoadingThread' : ()V
     .exceptions java/lang/Exception
     .code stack 1 locals 0
 L0:     iconst_1
@@ -770,7 +774,7 @@ L21:
     .end code
 .end method
 
-.method public static addPlugin : (Ljava/lang/Object;)V
+.method public static storePlugin : (Ljava/lang/Object;)V
     .code stack 2 locals 1
 L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'Õ00000' Lcom/fs/util/container/repo/ObjectRepository;
 L3:     aload_0
@@ -785,6 +789,43 @@ L9:
         .localvariabletable
             0 is plugin Ljava/lang/Object; from L0 to L9
         .end localvariabletable
+    .end code
+.end method
+
+.method public static getScriptList : ()Ljava/util/List;
+    .code stack 1 locals 0
+L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'do' Ljava/util/List;
+L3:     areturn
+L4:
+        .linenumbertable
+            L0 25
+        .end linenumbertable
+    .end code
+    .signature ()Ljava/util/List<Ljava/lang/String;>;
+.end method
+
+.method public static getPluginSet : ()Ljava/util/Set;
+    .code stack 1 locals 0
+L0:     invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'Ò00000' ()Ljava/util/Set;
+L3:     areturn
+L4:
+        .linenumbertable
+            L0 16
+        .end linenumbertable
+    .end code
+    .signature ()Ljava/util/Set<Ljava/lang/String;>;
+.end method
+
+.method public static stopVanillaScriptLoadingThread : ()V
+    .code stack 1 locals 0
+L0:     iconst_1
+L1:     putstatic Field com/fs/starfarer/loading/scripts/ScriptStore OO0000 Z
+L4:     return
+L5:
+        .linenumbertable
+            L0 35
+            L4 36
+        .end linenumbertable
     .end code
 .end method
 
