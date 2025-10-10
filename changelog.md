@@ -1,3 +1,9 @@
+v0.5.0
+
+- Reworked vanilla script loading code. This should improve stability and reduce random crashes during game startup.
+- Optimized game startup time. The game now loads up to 25% faster.
+- Added Fast Rendering version string to the displayed Starsector version.
+
 v0.4.7
 
 - Added support for Rigel Security. Incompatibility reported by Kujisawa Zimberman.
