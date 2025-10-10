@@ -245,22 +245,18 @@ L73:
 .end method
 
 .method public static Object : (Ljava/lang/String;)V
-    .code stack 2 locals 1
+    .code stack 1 locals 1
 L0:     aload_0
-L1:     ifnonnull L5
+L1:     invokestatic Method com/genir/renderer/overrides/ScriptStore addScript (Ljava/lang/String;)V
 L4:     return
-
-        .stack same
-L5:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore do Ljava/util/List;
-L8:     aload_0
-L9:     invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2
-L14:    pop
-L15:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'õ00000' Ljava/util/List;
-L18:    aload_0
-L19:    invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2
-L24:    pop
-L25:    return
-L26:
+L5:
+        .linenumbertable
+            L0 33
+            L4 34
+        .end linenumbertable
+        .localvariabletable
+            0 is className Ljava/lang/String; from L0 to L5
+        .end localvariabletable
     .end code
 .end method
 
@@ -790,18 +786,6 @@ L9:
             0 is plugin Ljava/lang/Object; from L0 to L9
         .end localvariabletable
     .end code
-.end method
-
-.method public static getScriptList : ()Ljava/util/List;
-    .code stack 1 locals 0
-L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'do' Ljava/util/List;
-L3:     areturn
-L4:
-        .linenumbertable
-            L0 25
-        .end linenumbertable
-    .end code
-    .signature ()Ljava/util/List<Ljava/lang/String;>;
 .end method
 
 .method public static getPluginSet : ()Ljava/util/Set;

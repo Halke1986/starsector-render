@@ -24,7 +24,7 @@ public class Executor {
     private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
         t.setDaemon(true);
-        t.setName("Render-Thread-" + threadCounter.getAndIncrement());
+        t.setName("FR-Render-" + threadCounter.getAndIncrement());
 
         return t;
     });
