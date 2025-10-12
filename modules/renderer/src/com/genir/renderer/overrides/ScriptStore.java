@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.Global;
+import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +34,11 @@ public class ScriptStore {
         }
 
         initScriptClassLoader();
-        ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
+
+        // Script already added.
+        if (scripts.contains(className)) {
+            return;
+        }
 
         scripts.add(className);
 
@@ -41,7 +46,8 @@ public class ScriptStore {
             try {
                 // Load classes asynchronously, to optimize away
                 // the slow Janino bytecode compilation process.
-                scriptLoader.loadClass(className);
+                Logger.getLogger(ScriptStore.class).info("Compiling script [" + className + "]");
+                Global.getSettings().getScriptClassLoader().loadClass(className);
             } catch (Throwable ignored) {
                 // It's safe to ignore class loading issues at this stage.
                 // Any exceptions will be encountered again and thrown by
