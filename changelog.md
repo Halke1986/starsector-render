@@ -1,3 +1,5 @@
+- Fixed asynchronous pipeline stall when using Advanced Gunnery Control configuration UI. Reported by niko the cool elongated.
+
 v0.5.0
 
 - Reworked vanilla script loading code. This should improve stability and reduce random crashes during game startup.
