@@ -10,7 +10,7 @@ public class ResourceGenerator {
     private final Callable<Integer> generatorFn;
 
     private int requiredThisFrame = 0;
-    private int maxRequiredPerFrame = 0;
+    private int cacheSize = 0;
 
     private final Stack<Integer> stash = new Stack<>();
 
@@ -34,10 +34,24 @@ public class ResourceGenerator {
     }
 
     synchronized public void update() { // Render thread
-        maxRequiredPerFrame = Math.max(maxRequiredPerFrame, requiredThisFrame);
+        if (cacheSize == 0 && requiredThisFrame == 0) {
+            return;
+        }
+
+        if (cacheSize == 0) {
+            cacheSize = 1;
+        }
+
+        // Increase cache exponentially. Linear increase may lead
+        // to asynchronous pipeline stalls if cache requirements
+        // are rising steadily.
+        while (cacheSize < requiredThisFrame) {
+            cacheSize *= 2;
+        }
+
         requiredThisFrame = 0;
 
-        while (stash.size() < maxRequiredPerFrame) {
+        while (stash.size() < cacheSize) {
             try {
                 stash.push(generatorFn.call());
             } catch (RuntimeException e) {
