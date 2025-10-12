@@ -1,4 +1,5 @@
 - Fixed asynchronous pipeline stall when using Advanced Gunnery Control configuration UI. Reported by niko the cool elongated.
+- Fixed a java.lang.reflect.InvocationTargetException when exporting AotD Seats of Power timeline. Reported by orange.
 
 v0.5.0
 

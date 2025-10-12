@@ -60,6 +60,12 @@ public class ClassTransformer {
         URL url = bridge.superFindResource(binaryName);
         if (url != null) {
             String urlStr = url.toString();
+
+            // Strip the jar file protocol. This is required for
+            // the CodeSource object to have same value as in vanilla.
+            urlStr = urlStr.replaceFirst("jar:", "");
+
+            // Strip class path withing the jar file.
             int i = urlStr.lastIndexOf(binaryName);
             if (i > 0) {
                 try {
