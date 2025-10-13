@@ -45,7 +45,7 @@ public class Utils {
         }
     }
 
-    public static List<Pair<C.Oo, InputStream>> loadInputStreams(C resourceLoader, String var1) throws IOException {
+    public static List<Pair> loadInputStreams(C resourceLoader, String var1) throws IOException {
         try {
             return resourceLoader.loadInputStreamsOptimized(var1);
         } catch (Throwable t) {

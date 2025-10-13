@@ -34,12 +34,12 @@ public class C {
     }
 
     // STUB
-    public List<Pair<Oo, InputStream>> loadInputStreamsOptimized(String var1) throws IOException {
+    public List<Pair> loadInputStreamsOptimized(String var1) throws IOException {
         return null;
     }
 
     // STUB
-    public List<Pair<Oo, InputStream>> loadInputStreamsVanilla(String var1) throws IOException {
+    public List<Pair> loadInputStreamsVanilla(String var1) throws IOException {
         return null;
     }
 
@@ -55,7 +55,7 @@ public class C {
 
     // MODIFIED
     // $FF: renamed from: new (java.lang.String) java.util.List
-    public synchronized List<Pair<Oo, InputStream>> method_24940(String var1) throws IOException {
+    public synchronized List<Pair> method_24940(String var1) throws IOException {
         return Utils.loadInputStreams(this, var1);
     }
 
@@ -63,9 +63,5 @@ public class C {
     // $FF: renamed from: Ó00000 (java.lang.String, boolean) java.io.InputStream
     public synchronized InputStream method_24937(String var1, boolean var2) throws IOException {
         return Utils.loadInputStream(this, var1, var2);
-    }
-
-    // STUB
-    public static class Oo {
     }
 }
