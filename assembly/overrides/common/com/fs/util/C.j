@@ -152,32 +152,20 @@ L6:
 .end method 
 
 .method public synchronized 'Ó00000' : (Ljava/lang/String;Z)Ljava/io/InputStream; 
-    .code stack 3 locals 4
-        .catch java/lang/Throwable from L0 to L6 using L7
+    .code stack 3 locals 3
 L0:     aload_0
 L1:     aload_1
 L2:     iload_2
-L3:     invokevirtual Method com/fs/util/C 'Ó00000_optimized' (Ljava/lang/String;Z)Ljava/io/InputStream;
+L3:     invokestatic Method com/genir/renderer/overrides/Utils loadInputStream (Lcom/fs/util/C;Ljava/lang/String;Z)Ljava/io/InputStream;
 L6:     areturn
-
-        .stack stack_1 Object java/lang/Throwable
-L7:     astore_3
-L8:     aload_0
-L9:     aload_1
-L10:    iload_2
-L11:    invokevirtual Method com/fs/util/C 'Ó00000_vanilla' (Ljava/lang/String;Z)Ljava/io/InputStream;
-L14:    areturn
-L15:
+L7:
         .linenumbertable
-            L0 22
-            L7 23
-            L8 24
+            L0 18
         .end linenumbertable
         .localvariabletable
-            3 is t Ljava/lang/Throwable; from L8 to L15
-            0 is this Lcom/fs/util/C; from L0 to L15
-            1 is var1 Ljava/lang/String; from L0 to L15
-            2 is var2 Z from L0 to L15
+            0 is this Lcom/fs/util/C; from L0 to L7
+            1 is var1 Ljava/lang/String; from L0 to L7
+            2 is var2 Z from L0 to L7
         .end localvariabletable
     .end code
     .exceptions java/io/IOException
@@ -299,29 +287,18 @@ L107:
 .end method
 
 .method public synchronized new : (Ljava/lang/String;)Ljava/util/List;
-    .code stack 2 locals 3
-        .catch java/lang/Throwable from L0 to L5 using L6
+    .code stack 2 locals 2
 L0:     aload_0
 L1:     aload_1
-L2:     invokevirtual Method com/fs/util/C new_optimized (Ljava/lang/String;)Ljava/util/List;
+L2:     invokestatic Method com/genir/renderer/overrides/Utils loadInputStreams (Lcom/fs/util/C;Ljava/lang/String;)Ljava/util/List;
 L5:     areturn
-
-        .stack stack_1 Object java/lang/Throwable
-L6:     astore_2
-L7:     aload_0
-L8:     aload_1
-L9:     invokevirtual Method com/fs/util/C new_vanilla (Ljava/lang/String;)Ljava/util/List;
-L12:    areturn
-L13:
+L6:
         .linenumbertable
             L0 13
-            L6 14
-            L7 15
         .end linenumbertable
         .localvariabletable
-            2 is t Ljava/lang/Throwable; from L7 to L13
-            0 is this Lcom/fs/util/C; from L0 to L13
-            1 is var1 Ljava/lang/String; from L0 to L13
+            0 is this Lcom/fs/util/C; from L0 to L6
+            1 is var1 Ljava/lang/String; from L0 to L6
         .end localvariabletable
     .end code
     .exceptions java/io/IOException
@@ -1317,7 +1294,7 @@ L61:
     .end code
 .end method
 
-.method public 'Ó00000_vanilla' : (Ljava/lang/String;Z)Ljava/io/InputStream;
+.method public loadInputStreamVanilla : (Ljava/lang/String;Z)Ljava/io/InputStream;
     .exceptions java/io/IOException
     .code stack 5 locals 8
 L0:     aload_0
@@ -1463,7 +1440,7 @@ L273:
     .end code
 .end method
 
-.method public 'Ó00000_optimized' : (Ljava/lang/String;Z)Ljava/io/InputStream;
+.method public loadInputStreamOptimized : (Ljava/lang/String;Z)Ljava/io/InputStream;
     .exceptions java/io/IOException
     .code stack 5 locals 8
 L0:     aload_0
@@ -1609,7 +1586,7 @@ L273:
     .end code
 .end method
 
-.method public new_vanilla : (Ljava/lang/String;)Ljava/util/List;
+.method public loadInputStreamsVanilla : (Ljava/lang/String;)Ljava/util/List;
     .exceptions java/io/IOException
     .signature (Ljava/lang/String;)Ljava/util/List<Lcom/fs/util/container/Pair<Lcom/fs/util/C$Oo;Ljava/io/InputStream;>;>;
     .code stack 5 locals 10
@@ -1781,7 +1758,7 @@ L306:
     .end code
 .end method
 
-.method public new_optimized : (Ljava/lang/String;)Ljava/util/List;
+.method public loadInputStreamsOptimized : (Ljava/lang/String;)Ljava/util/List;
     .exceptions java/io/IOException
     .signature (Ljava/lang/String;)Ljava/util/List<Lcom/fs/util/container/Pair<Lcom/fs/util/C$Oo;Ljava/io/InputStream;>;>;
     .code stack 5 locals 10
@@ -2034,6 +2011,70 @@ L157:   areturn
 L158:   aconst_null
 L159:   areturn
 L160:
+    .end code
+.end method
+
+.method public getString0 : ()Ljava/lang/String;
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     getfield Field com/fs/util/C String Ljava/lang/String;
+L4:     areturn
+L5:
+        .linenumbertable
+            L0 18
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lcom/fs/util/C; from L0 to L5
+        .end localvariabletable
+    .end code
+.end method
+
+.method public getBoolean0 : ()Z
+    .code stack 1 locals 1
+L0:     getstatic Field com/fs/util/C 'super' Z
+L3:     ireturn
+L4:
+        .linenumbertable
+            L0 23
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lcom/fs/util/C; from L0 to L4
+        .end localvariabletable
+    .end code
+.end method
+
+.method public setString0 : (Ljava/lang/String;)V
+    .code stack 2 locals 2
+L0:     aload_0
+L1:     aload_1
+L2:     putfield Field com/fs/util/C String Ljava/lang/String;
+L5:     return
+L6:
+        .linenumbertable
+            L0 28
+            L5 29
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lcom/fs/util/C; from L0 to L6
+            1 is value Ljava/lang/String; from L0 to L6
+        .end localvariabletable
+    .end code
+.end method
+
+.method public setBoolean0 : (Z)V
+    .code stack 1 locals 2
+L0:     iload_1
+L1:     putstatic Field com/fs/util/C 'super' Z
+L4:     return
+L5:
+        .linenumbertable
+            L0 33
+            L4 34
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lcom/fs/util/C; from L0 to L5
+            1 is value Z from L0 to L5
+        .end localvariabletable
     .end code
 .end method
 
