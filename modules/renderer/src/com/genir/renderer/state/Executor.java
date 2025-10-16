@@ -20,7 +20,7 @@ public class Executor {
     private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
     private int batchSize = 0;
 
-    private static final AtomicInteger threadCounter = new AtomicInteger(0);
+    private final AtomicInteger threadCounter = new AtomicInteger(0);
     private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
         t.setDaemon(true);
