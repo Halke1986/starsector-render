@@ -6,7 +6,7 @@ import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
-import com.genir.renderer.bridge.impl.AppState;
+import com.genir.renderer.state.AppState;
 
 import java.util.List;
 

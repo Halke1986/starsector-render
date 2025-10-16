@@ -1,13 +1,13 @@
 package com.genir.renderer.bridge;
 
 
-import com.genir.renderer.bridge.impl.BufferUtil;
+import com.genir.renderer.state.BufferUtil;
 
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.impl.AppState.attribManager;
-import static com.genir.renderer.bridge.impl.AppState.exec;
+import static com.genir.renderer.state.AppState.attribManager;
+import static com.genir.renderer.state.AppState.exec;
 
 public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {

@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.impl;
+package com.genir.renderer.state;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;

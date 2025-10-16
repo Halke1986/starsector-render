@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.impl.BufferUtil;
-import com.genir.renderer.bridge.impl.Recordable;
+import com.genir.renderer.state.BufferUtil;
+import com.genir.renderer.state.Recordable;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -11,7 +11,7 @@ import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
-import static com.genir.renderer.bridge.impl.AppState.*;
+import static com.genir.renderer.state.AppState.*;
 
 public class GL11 {
     /**

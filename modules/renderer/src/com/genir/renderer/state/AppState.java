@@ -1,6 +1,6 @@
-package com.genir.renderer.bridge.impl;
+package com.genir.renderer.state;
 
-import com.genir.renderer.bridge.impl.stall.*;
+import com.genir.renderer.state.stall.*;
 
 public class AppState {
     // Server state.

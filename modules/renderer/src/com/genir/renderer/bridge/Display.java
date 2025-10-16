@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.impl.AppState;
+import com.genir.renderer.state.AppState;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static com.genir.renderer.Debug.log;
-import static com.genir.renderer.bridge.impl.AppState.*;
+import static com.genir.renderer.state.AppState.*;
 
 public class Display {
     private static Future<?> prevFrameFinished = null;

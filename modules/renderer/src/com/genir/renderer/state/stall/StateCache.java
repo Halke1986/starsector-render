@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.impl.stall;
+package com.genir.renderer.state.stall;
 
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;

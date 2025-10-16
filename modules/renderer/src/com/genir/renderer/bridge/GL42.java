@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
 
-import static com.genir.renderer.bridge.impl.AppState.exec;
+import static com.genir.renderer.state.AppState.exec;
 
 public class GL42 {
     public static void glMemoryBarrier(int barriers) {

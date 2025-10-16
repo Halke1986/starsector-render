@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.impl.stall;
+package com.genir.renderer.state.stall;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL30;

@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.impl.BufferUtil;
+import com.genir.renderer.state.BufferUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -8,7 +8,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.impl.AppState.*;
+import static com.genir.renderer.state.AppState.*;
 
 public class GL15 {
     public static int glGenBuffers() {

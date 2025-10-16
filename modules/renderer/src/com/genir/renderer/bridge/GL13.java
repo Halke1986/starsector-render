@@ -1,8 +1,8 @@
 package com.genir.renderer.bridge;
 
 
-import static com.genir.renderer.bridge.impl.AppState.attribTracker;
-import static com.genir.renderer.bridge.impl.AppState.exec;
+import static com.genir.renderer.state.AppState.attribTracker;
+import static com.genir.renderer.state.AppState.exec;
 
 public class GL13 {
     public static void glActiveTexture(int mode) {

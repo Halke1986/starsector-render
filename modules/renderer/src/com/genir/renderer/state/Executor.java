@@ -1,6 +1,6 @@
-package com.genir.renderer.bridge.impl;
+package com.genir.renderer.state;
 
-import com.genir.renderer.bridge.impl.stall.StallDetector;
+import com.genir.renderer.state.stall.StallDetector;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
