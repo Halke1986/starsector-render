@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static com.genir.renderer.Debug.log;
-import static com.genir.renderer.state.AppState.*;
+import static com.genir.renderer.state.AppState.state;
 
 public class Display {
     private static Future<?> prevFrameFinished = null;
@@ -22,7 +22,7 @@ public class Display {
                 prevFrameFinished.get();
             }
 
-            stallDetector.update();
+            state.stallDetector.update();
 
             // Swap OpenGL buffers and update the bridge state.
             // Ideally, these would run on the render thread synchronously
@@ -36,7 +36,7 @@ public class Display {
                     org.lwjgl.opengl.Display.update(processMessages);
                 }
             }
-            prevFrameFinished = exec.submit(new update(processMessages));
+            prevFrameFinished = state.exec.submit(new update(processMessages));
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {
@@ -55,7 +55,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getAvailableDisplayModes();
             }
         }
-        return exec.get(new getAvailableDisplayModes());
+        return state.exec.get(new getAvailableDisplayModes());
     }
 
     public static int setIcon(ByteBuffer[] icons) {
@@ -65,7 +65,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.setIcon(icons);
             }
         }
-        return exec.get(new setIcon(icons));
+        return state.exec.get(new setIcon(icons));
     }
 
     public static DisplayMode getDesktopDisplayMode() {
@@ -75,7 +75,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDesktopDisplayMode();
             }
         }
-        return exec.get(new getDesktopDisplayMode());
+        return state.exec.get(new getDesktopDisplayMode());
     }
 
     public static DisplayMode getDisplayMode() {
@@ -85,7 +85,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDisplayMode();
             }
         }
-        return exec.get(new getDisplayMode());
+        return state.exec.get(new getDisplayMode());
     }
 
     public static void setTitle(String newTitle) {
@@ -96,7 +96,7 @@ public class Display {
             }
         }
 
-        exec.wait(new setTitle(newTitle));
+        state.exec.wait(new setTitle(newTitle));
     }
 
     public static void setVSyncEnabled(boolean sync) {
@@ -130,11 +130,11 @@ public class Display {
                 }
             }
         }
-        exec.wait(new setVSyncEnabled(sync));
+        state.exec.wait(new setVSyncEnabled(sync));
     }
 
     public static void create(PixelFormat pixel_format) {
-        attribTracker.clear();
+        state.attribTracker.clear();
         prevFrameFinished = null;
 
         record create(PixelFormat pixel_format) implements Runnable {
@@ -144,7 +144,8 @@ public class Display {
                     org.lwjgl.opengl.Display.create(pixel_format);
 
                     // Clear server attributes when a new display is created.
-                    attribManager.clear();
+                    state.attribManager.clear();
+
                     AppState.update();
                 } catch (RuntimeException e) {
                     throw e;
@@ -153,12 +154,12 @@ public class Display {
                 }
             }
         }
-        exec.wait(new create(pixel_format));
+        state.exec.wait(new create(pixel_format));
     }
 
     public static int getHeight() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayHeight();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayHeight();
         }
 
         record getHeight() implements Callable<Integer> {
@@ -167,12 +168,12 @@ public class Display {
                 return org.lwjgl.opengl.Display.getHeight();
             }
         }
-        return exec.get(new getHeight());
+        return state.exec.get(new getHeight());
     }
 
     public static int getWidth() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayWidth();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayWidth();
         }
 
         record getWidth() implements Callable<Integer> {
@@ -181,12 +182,12 @@ public class Display {
                 return org.lwjgl.opengl.Display.getWidth();
             }
         }
-        return exec.get(new getWidth());
+        return state.exec.get(new getWidth());
     }
 
     public static float getPixelScaleFactor() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayPixelScaleFactor();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayPixelScaleFactor();
         }
 
         record getPixelScaleFactor() implements Callable<Float> {
@@ -195,12 +196,12 @@ public class Display {
                 return org.lwjgl.opengl.Display.getPixelScaleFactor();
             }
         }
-        return exec.get(new getPixelScaleFactor());
+        return state.exec.get(new getPixelScaleFactor());
     }
 
     public static boolean isCloseRequested() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayIsCloseRequested();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayIsCloseRequested();
         }
 
         record isCloseRequested() implements Callable<Boolean> {
@@ -209,12 +210,12 @@ public class Display {
                 return org.lwjgl.opengl.Display.isCloseRequested();
             }
         }
-        return exec.get(new isCloseRequested());
+        return state.exec.get(new isCloseRequested());
     }
 
     public static boolean isActive() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayIsActive();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayIsActive();
         }
 
         record isActive() implements Callable<Boolean> {
@@ -223,7 +224,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.isActive();
             }
         }
-        return exec.get(new isActive());
+        return state.exec.get(new isActive());
     }
 
     public static void destroy() {
@@ -233,12 +234,12 @@ public class Display {
                 org.lwjgl.opengl.Display.destroy();
             }
         }
-        exec.wait(new destroy(), true);
+        state.exec.wait(new destroy(), true);
     }
 
     public static boolean isFullscreen() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayIsFullscreen();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayIsFullscreen();
         }
 
         record isFullscreen() implements Callable<Boolean> {
@@ -247,7 +248,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.isFullscreen();
             }
         }
-        return exec.get(new isFullscreen());
+        return state.exec.get(new isFullscreen());
     }
 
     public static void setFullscreen(boolean fullscreen) {
@@ -261,12 +262,12 @@ public class Display {
                 }
             }
         }
-        exec.wait(new setFullscreen(fullscreen));
+        state.exec.wait(new setFullscreen(fullscreen));
     }
 
     public static boolean isVisible() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayIsVisible();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayIsVisible();
         }
 
         record isVisible() implements Callable<Boolean> {
@@ -275,7 +276,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.isVisible();
             }
         }
-        return exec.get(new isVisible());
+        return state.exec.get(new isVisible());
     }
 
     public static void processMessages() {
@@ -285,7 +286,7 @@ public class Display {
                 org.lwjgl.opengl.Display.processMessages();
             }
         }
-        exec.wait(new processMessages());
+        state.exec.wait(new processMessages());
     }
 
     public static void sync(int fps) {
@@ -295,12 +296,12 @@ public class Display {
                 org.lwjgl.opengl.Display.sync(fps);
             }
         }
-        exec.execute(new sync(fps));
+        state.exec.execute(new sync(fps));
     }
 
     public static int getX() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayX();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayX();
         }
 
         record getX() implements Callable<Integer> {
@@ -309,12 +310,12 @@ public class Display {
                 return org.lwjgl.opengl.Display.getX();
             }
         }
-        return exec.get(new getX());
+        return state.exec.get(new getX());
     }
 
     public static int getY() {
-        if (stateCache.isAvailable()) {
-            return stateCache.getDisplayY();
+        if (state.glStateCache.isAvailable()) {
+            return state.glStateCache.getDisplayY();
         }
 
         record getY() implements Callable<Integer> {
@@ -323,7 +324,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getY();
             }
         }
-        return exec.get(new getY());
+        return state.exec.get(new getY());
     }
 
     public static Drawable getDrawable() {
@@ -333,6 +334,6 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDrawable();
             }
         }
-        return exec.get(new getDrawable());
+        return state.exec.get(new getDrawable());
     }
 }

@@ -6,9 +6,10 @@ import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
 import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.combat.entities.CustomCombatEntity;
-import com.genir.renderer.state.AppState;
 
 import java.util.List;
+
+import static com.genir.renderer.state.AppState.state;
 
 public class LayeredRenderer {
     public static void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
@@ -18,11 +19,11 @@ public class LayeredRenderer {
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (isSwarm(entity)) {
-                AppState.setReorderDraw(true);
+                state.exec.execute(() -> state.vertexInterceptor.setReorderDraw(true));
 
                 entity.render(layer, viewport);
 
-                AppState.setReorderDraw(false);
+                state.exec.execute(() -> state.vertexInterceptor.setReorderDraw(false));
             } else {
                 entity.render(layer, viewport);
             }

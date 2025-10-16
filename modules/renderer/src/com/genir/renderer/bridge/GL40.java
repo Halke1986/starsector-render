@@ -6,8 +6,7 @@ import com.genir.renderer.state.BufferUtil;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.state.AppState.attribManager;
-import static com.genir.renderer.state.AppState.exec;
+import static com.genir.renderer.state.AppState.state;
 
 public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {
@@ -17,7 +16,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineIndex(program, shadertype, name);
             }
         }
-        return exec.get(new glGetSubroutineIndex(program, shadertype, name));
+        return state.exec.get(new glGetSubroutineIndex(program, shadertype, name));
     }
 
     public static int glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) {
@@ -27,7 +26,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineUniformLocation(program, shadertype, name);
             }
         }
-        return exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
+        return state.exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
     }
 
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
@@ -38,7 +37,7 @@ public class GL40 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
-        exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
+        state.exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
 
     public static void glPatchParameteri(int pname, int value) {
@@ -48,27 +47,27 @@ public class GL40 {
                 org.lwjgl.opengl.GL40.glPatchParameteri(pname, value);
             }
         }
-        exec.execute(new glPatchParameteri(pname, value));
+        state.exec.execute(new glPatchParameteri(pname, value));
     }
 
     public static void glBlendEquationi(int buf, int mode) {
         record glBlendEquationi(int buf, int mode) implements Runnable {
             @Override
             public void run() {
-                attribManager.glBlendEquationi(buf, mode);
+                state.attribManager.glBlendEquationi(buf, mode);
             }
         }
-        exec.execute(new glBlendEquationi(buf, mode));
+        state.exec.execute(new glBlendEquationi(buf, mode));
     }
 
     public static void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
         record glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) implements Runnable {
             @Override
             public void run() {
-                attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+                state.attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }
-        exec.execute(new glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
+        state.exec.execute(new glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 
     public static void glBlendFunci(int buf, int src, int dst) {

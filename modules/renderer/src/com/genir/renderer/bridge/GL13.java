@@ -1,8 +1,6 @@
 package com.genir.renderer.bridge;
 
-
-import static com.genir.renderer.state.AppState.attribTracker;
-import static com.genir.renderer.state.AppState.exec;
+import static com.genir.renderer.state.AppState.state;
 
 public class GL13 {
     public static void glActiveTexture(int mode) {
@@ -12,7 +10,7 @@ public class GL13 {
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }
-        attribTracker.glActiveTexture(mode);
-        exec.execute(new glActiveTexture(mode));
+        state.attribTracker.glActiveTexture(mode);
+        state.exec.execute(new glActiveTexture(mode));
     }
 }

@@ -3,41 +3,31 @@ package com.genir.renderer.state;
 import com.genir.renderer.state.stall.*;
 
 public class AppState {
-    // Server state.
-    public static final ListManager listManager = new ListManager();
-    public static final StateCache stateCache = new StateCache();
-    public static final AttribManager attribManager = new AttribManager();
-    public static final TransformManager transformManager = new TransformManager(attribManager);
+    public static final AppState state = new AppState();
 
-    public static final StallDetector stallDetector = new StallDetector(stateCache);
-    public static final Executor exec = new Executor(listManager, stallDetector);
+    // Server state.
+    public final ListManager listManager = new ListManager();
+    public final StateCache glStateCache = new StateCache();
+    public final AttribManager attribManager = new AttribManager();
+    public final TransformManager transformManager = new TransformManager(attribManager);
+
+    public final StallDetector stallDetector = new StallDetector(glStateCache);
+    public final Executor exec = new Executor(listManager, stallDetector);
 
     // Client state.
-    public static final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
-    public static final AttribTracker attribTracker = new AttribTracker();
-    public static final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
-    public static final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
-    public static final ShaderTracker shaderTracker = new ShaderTracker(exec);
-    public static final BufferManager bufferManager = new BufferManager();
+    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
+    public final AttribTracker attribTracker = new AttribTracker();
+    public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
+    public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
+    public final ShaderTracker shaderTracker = new ShaderTracker(exec);
+    public final BufferManager bufferManager = new BufferManager();
 
-    public static final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, transformManager);
-
-    public static void setReorderDraw(boolean reorder) {
-        exec.execute(() -> vertexInterceptor.setReorderDraw(reorder));
-    }
-
-    public static void commitLayer() {
-        exec.execute(() -> vertexInterceptor.commitLayer());
-    }
+    public final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, transformManager);
 
     public static void update() {
-        stateCache.update();
-        vertexInterceptor.update();
-        arrayGenerator.update();
-        bufferGenerator.update();
-    }
-
-    public static void enableStallDetection() {
-        stallDetector.enableDetection();
+        state.glStateCache.update();
+        state.vertexInterceptor.update();
+        state.arrayGenerator.update();
+        state.bufferGenerator.update();
     }
 }

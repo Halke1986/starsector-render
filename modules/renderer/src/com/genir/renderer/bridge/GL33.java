@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
-
-import static com.genir.renderer.state.AppState.exec;
+import static com.genir.renderer.state.AppState.state;
 
 public class GL33 {
     public static void glVertexAttribDivisor(int index, int divisor) {
@@ -11,6 +10,6 @@ public class GL33 {
                 org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor);
             }
         }
-        exec.execute(new glVertexAttribDivisor(index, divisor));
+        state.exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }

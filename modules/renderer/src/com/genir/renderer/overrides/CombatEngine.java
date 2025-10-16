@@ -1,16 +1,15 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.genir.renderer.state.AppState;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.state.AppState.enableStallDetection;
+import static com.genir.renderer.state.AppState.state;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
 
     public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
-        enableStallDetection();
+        state.stallDetector.enableDetection();
 
         CombatEngine.engine = engine;
 
@@ -65,11 +64,11 @@ public class CombatEngine {
     private static void renderLayer(CombatEngineLayers layer) {
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
-        AppState.commitLayer();
+        state.exec.execute(() -> state.vertexInterceptor.commitLayer());
     }
 
     private static void renderLayer(String layer) {
-        AppState.setReorderDraw(true);
+        state.exec.execute(() -> state.vertexInterceptor.setReorderDraw(true));
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -89,7 +88,7 @@ public class CombatEngine {
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
 
-        AppState.setReorderDraw(false);
-        AppState.commitLayer();
+        state.exec.execute(() -> state.vertexInterceptor.setReorderDraw(false));
+        state.exec.execute(() -> state.vertexInterceptor.commitLayer());
     }
 }
