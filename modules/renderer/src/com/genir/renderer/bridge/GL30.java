@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.impl.Bridge.*;
+import static com.genir.renderer.bridge.impl.AppState.*;
 
 public class GL30 {
     public static void glGenerateMipmap(int target) {

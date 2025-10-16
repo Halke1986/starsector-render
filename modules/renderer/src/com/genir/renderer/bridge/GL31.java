@@ -6,8 +6,8 @@ import com.genir.renderer.bridge.impl.BufferUtil;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.impl.Bridge.attribManager;
-import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.AppState.attribManager;
+import static com.genir.renderer.bridge.impl.AppState.exec;
 
 public class GL31 {
     public static void glDrawArraysInstanced(int mode, int first, int count, int primcount) {

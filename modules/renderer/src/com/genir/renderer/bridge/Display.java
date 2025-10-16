@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.impl.Bridge;
+import com.genir.renderer.bridge.impl.AppState;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static com.genir.renderer.Debug.log;
-import static com.genir.renderer.bridge.impl.Bridge.*;
+import static com.genir.renderer.bridge.impl.AppState.*;
 
 public class Display {
     private static Future<?> prevFrameFinished = null;
@@ -32,7 +32,7 @@ public class Display {
             record update(boolean processMessages) implements Runnable {
                 @Override
                 public void run() {
-                    Bridge.update();
+                    AppState.update();
                     org.lwjgl.opengl.Display.update(processMessages);
                 }
             }
@@ -145,7 +145,7 @@ public class Display {
 
                     // Clear server attributes when a new display is created.
                     attribManager.clear();
-                    Bridge.update();
+                    AppState.update();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {

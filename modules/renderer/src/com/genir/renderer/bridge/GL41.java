@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
 
-import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.AppState.exec;
 
 public class GL41 {
     public static void glProgramUniform1i(int program, int location, int v0) {

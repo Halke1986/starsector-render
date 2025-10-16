@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.impl.Bridge.*;
+import static com.genir.renderer.bridge.impl.AppState.*;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {

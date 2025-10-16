@@ -2,7 +2,7 @@ package com.genir.renderer.bridge.impl;
 
 import com.genir.renderer.bridge.impl.stall.*;
 
-public class Bridge {
+public class AppState {
     // Server state.
     public static final ListManager listManager = new ListManager();
     public static final StateCache stateCache = new StateCache();

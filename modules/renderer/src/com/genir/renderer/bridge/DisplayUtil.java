@@ -3,7 +3,7 @@ package com.genir.renderer.bridge;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 
-import static com.genir.renderer.bridge.impl.Bridge.exec;
+import static com.genir.renderer.bridge.impl.AppState.exec;
 
 public class DisplayUtil {
     public static DisplayMode[] getAvailableDisplayModes(int minWidth, int minHeight, int maxWidth, int maxHeight, int minBPP, int maxBPP, int minFreq, int maxFreq) throws LWJGLException {
