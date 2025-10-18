@@ -174,7 +174,7 @@ L120:   iconst_1
 L121:   istore_2 
 L122:   iload_2 
 L123:   ifeq L140 
-L126:   invokestatic Method com/genir/renderer/bridge/Display isCloseRequested ()Z 
+L126:   invokestatic Method org/lwjgl/opengl/Display isCloseRequested ()Z
 L129:   ifeq L140 
 L132:   new com/fs/starfarer/super 
 L135:   dup 
@@ -236,7 +236,7 @@ L214:   istore_3
         .stack same 
 L215:   iload_3 
 L216:   ifeq L254 
-L219:   invokestatic Method com/genir/renderer/bridge/Display isActive ()Z 
+L219:   invokestatic Method org/lwjgl/opengl/Display isActive ()Z
 L222:   ifne L254 
         .catch java/lang/Exception from L225 to L231 using L234 
 L225:   ldc2_w 50L 
@@ -247,7 +247,7 @@ L231:   goto L236
 L234:   astore 4 
 
         .stack same 
-L236:   invokestatic Method com/genir/renderer/bridge/Display processMessages ()V 
+L236:   invokestatic Method org/lwjgl/opengl/Display processMessages ()V
 L239:   ldc +0.01600000075995922f 
 L241:   fconst_0 
 L242:   fconst_0 
@@ -282,7 +282,7 @@ L302:   invokevirtual Method com/fs/starfarer/BaseGameState render (F)V
 L305:   ldc 'useGLFlush' 
 L307:   invokestatic Method com/fs/starfarer/settings/StarfarerSettings class (Ljava/lang/String;)Z 
 L310:   ifeq L316 
-L313:   invokestatic Method com/genir/renderer/bridge/GL11 glFlush ()V 
+L313:   invokestatic Method org/lwjgl/opengl/GL11 glFlush ()V
 
         .stack append Long 
 L316:   invokestatic Method com/fs/starfarer/util/A/A Object ()Lcom/fs/starfarer/util/A/new; 
@@ -380,11 +380,11 @@ L481:   lstore 8
 L483:   ldc_w 'useGLFinish' 
 L486:   invokestatic Method com/fs/starfarer/settings/StarfarerSettings class (Ljava/lang/String;)Z 
 L489:   ifeq L495 
-L492:   invokestatic Method com/genir/renderer/bridge/GL11 glFinish ()V 
+L492:   invokestatic Method org/lwjgl/opengl/GL11 glFinish ()V
 
         .stack append Float Long 
 L495:   iconst_1 
-L496:   invokestatic Method com/genir/renderer/bridge/Display update (Z)V 
+L496:   invokestatic Method org/lwjgl/opengl/Display update (Z)V
 L499:   iload 6 
 L501:   ifeq L510 
 L504:   invokestatic Method com/fs/starfarer/util/return o00000 ()V 
@@ -424,7 +424,7 @@ L558:   fstore 16
 L560:   aload_0 
 L561:   invokevirtual Method com/fs/starfarer/BaseGameState isLauncherMode ()Z 
 L564:   ifeq L591 
-L567:   invokestatic Method com/genir/renderer/bridge/Display getDesktopDisplayMode ()Lorg/lwjgl/opengl/DisplayMode; 
+L567:   invokestatic Method org/lwjgl/opengl/Display getDesktopDisplayMode ()Lorg/lwjgl/opengl/DisplayMode;
 L570:   invokevirtual Method org/lwjgl/opengl/DisplayMode getFrequency ()I 
 L573:   i2f 
 L574:   fstore 17 

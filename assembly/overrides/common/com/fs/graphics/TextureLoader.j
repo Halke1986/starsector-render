@@ -206,7 +206,7 @@ L46:
     .code stack 2 locals 1 
 L0:     aload_0 
 L1:     getfield Field com/fs/graphics/TextureLoader 'Ô00000' Ljava/nio/IntBuffer; 
-L4:     invokestatic Method com/genir/renderer/bridge/GL11 glGenTextures (Ljava/nio/IntBuffer;)V 
+L4:     invokestatic Method org/lwjgl/opengl/GL11 glGenTextures (Ljava/nio/IntBuffer;)V
 L7:     aload_0 
 L8:     getfield Field com/fs/graphics/TextureLoader 'Ô00000' Ljava/nio/IntBuffer; 
 L11:    iconst_0 
@@ -487,11 +487,11 @@ L126:   if_icmpne L147
 L129:   iload_2 
 L130:   sipush 10241 
 L133:   iload 4 
-L135:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L135:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 L138:   iload_2 
 L139:   sipush 10240 
 L142:   iload 5 
-L144:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L144:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 
         .stack append Object java/nio/ByteBuffer 
 L147:   iload_2 
@@ -509,7 +509,7 @@ L166:   iconst_0
 L167:   iload 6 
 L169:   sipush 5121 
 L172:   aload 9 
-L174:   invokestatic Method com/genir/renderer/bridge/GL11 glTexImage2D (IIIIIIIILjava/nio/ByteBuffer;)V 
+L174:   invokestatic Method org/lwjgl/opengl/GL11 glTexImage2D (IIIIIIIILjava/nio/ByteBuffer;)V
 L177:   getstatic Field com/fs/graphics/TextureLoader 'ö00000' J 
 L180:   aload 9 
 L182:   invokevirtual Method java/nio/ByteBuffer capacity ()I 
@@ -668,30 +668,30 @@ L218:   istore 7
 L220:   iload_3 
 L221:   sipush 10241 
 L224:   sipush 9987 
-L227:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L227:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 L230:   iload_3 
 L231:   sipush 10240 
 L234:   iload 6 
-L236:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L236:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 L239:   sipush 3553 
 L242:   ldc_w 33169 
 L245:   iconst_1 
-L246:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L246:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 L249:   goto L278 
 
         .stack same 
 L252:   iload_3 
 L253:   sipush 10241 
 L256:   iload 5 
-L258:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L258:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 L261:   iload_3 
 L262:   sipush 10240 
 L265:   iload 6 
-L267:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L267:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 L270:   iload_3 
 L271:   ldc_w 33169 
 L274:   iconst_0 
-L275:   invokestatic Method com/genir/renderer/bridge/GL11 glTexParameteri (III)V 
+L275:   invokestatic Method org/lwjgl/opengl/GL11 glTexParameteri (III)V
 
         .stack same 
 L278:   iload 7 
@@ -711,7 +711,7 @@ L300:   invokevirtual Method com/fs/graphics/TextureLoader o00000 (I)I
 L303:   iload 8 
 L305:   sipush 5121 
 L308:   aload 9 
-L310:   invokestatic Method com/genir/renderer/bridge/GL11 glTexSubImage2D (IIIIIIIILjava/nio/ByteBuffer;)V 
+L310:   invokestatic Method org/lwjgl/opengl/GL11 glTexSubImage2D (IIIIIIIILjava/nio/ByteBuffer;)V
 L313:   goto L347 
 
         .stack same 
@@ -730,7 +730,7 @@ L336:   iconst_0
 L337:   iload 8 
 L339:   sipush 5121 
 L342:   aload 9 
-L344:   invokestatic Method com/genir/renderer/bridge/GL11 glTexImage2D (IIIIIIIILjava/nio/ByteBuffer;)V 
+L344:   invokestatic Method org/lwjgl/opengl/GL11 glTexImage2D (IIIIIIIILjava/nio/ByteBuffer;)V
 
         .stack same 
 L347:   getstatic Field com/fs/graphics/TextureLoader 'ö00000' J 

@@ -821,7 +821,7 @@ L45:    dup
 L46:    ldc_w 'graphics/cursors/cursor_green.png' 
 L49:    invokespecial Method com/fs/graphics/Sprite <init> (Ljava/lang/String;)V 
 L52:    astore 4 
-L54:    invokestatic Method com/genir/renderer/bridge/Display update ()V 
+L54:    invokestatic Method org/lwjgl/opengl/Display update ()V
 L57:    fconst_1 
 L58:    invokestatic Method com/fs/starfarer/settings/StarfarerSettings 'oØ0000' ()F 
 L61:    fdiv 
@@ -1574,7 +1574,7 @@ L1508:  iconst_1
 L1509:  istore 14 
 L1511:  iload 14 
 L1513:  ifeq L1530 
-L1516:  invokestatic Method com/genir/renderer/bridge/Display isCloseRequested ()Z 
+L1516:  invokestatic Method org/lwjgl/opengl/Display isCloseRequested ()Z
 L1519:  ifeq L1530 
 L1522:  new com/fs/starfarer/super 
 L1525:  dup 
@@ -1600,7 +1600,7 @@ L1564:  istore 15
         .stack append Integer 
 L1566:  iload 15 
 L1568:  ifeq L1607 
-L1571:  invokestatic Method com/genir/renderer/bridge/Display isActive ()Z 
+L1571:  invokestatic Method org/lwjgl/opengl/Display isActive ()Z
 L1574:  ifne L1607 
         .catch java/lang/Exception from L1577 to L1583 using L1586 
 L1577:  ldc2_w 50L 
@@ -1611,7 +1611,7 @@ L1583:  goto L1588
 L1586:  astore 16 
 
         .stack same 
-L1588:  invokestatic Method com/genir/renderer/bridge/Display processMessages ()V 
+L1588:  invokestatic Method org/lwjgl/opengl/Display processMessages ()V
 L1591:  ldc_w +0.01600000075995922f 
 L1594:  fconst_0 
 L1595:  fconst_0 
@@ -4976,7 +4976,7 @@ L8076:  lstore 41
 L8078:  ldc_w 'useGLFlush' 
 L8081:  invokestatic Method com/fs/starfarer/settings/StarfarerSettings class (Ljava/lang/String;)Z 
 L8084:  ifeq L8090 
-L8087:  invokestatic Method com/genir/renderer/bridge/GL11 glFlush ()V 
+L8087:  invokestatic Method org/lwjgl/opengl/GL11 glFlush ()V
 
         .stack full 
             locals Object com/fs/starfarer/combat/CombatState Integer Float Float Object com/fs/graphics/Sprite Float Object com/fs/graphics/util/A Integer Integer Integer Integer Integer Object com/fs/graphics/Sprite Object com/fs/starfarer/api/combat/BattleCreationContext Integer Integer Long Float Float Float Float Object org/lwjgl/util/vector/Vector2f Integer Object com/fs/starfarer/api/combat/ViewportAPI Object com/fs/starfarer/combat/new/OoOO$o Float Float Object org/lwjgl/util/vector/Vector2f Object com/fs/starfarer/combat/E/B Object com/fs/starfarer/combat/entities/Ship Object com/fs/starfarer/combat/entities/Ship Object com/fs/starfarer/combat/entities/Ship Float Object java/util/List Float Object com/fs/starfarer/util/A/new Integer Float Float Float Long 
@@ -4985,11 +4985,11 @@ L8087:  invokestatic Method com/genir/renderer/bridge/GL11 glFlush ()V
 L8090:  ldc_w 'useGLFinish' 
 L8093:  invokestatic Method com/fs/starfarer/settings/StarfarerSettings class (Ljava/lang/String;)Z 
 L8096:  ifeq L8102 
-L8099:  invokestatic Method com/genir/renderer/bridge/GL11 glFinish ()V 
+L8099:  invokestatic Method org/lwjgl/opengl/GL11 glFinish ()V
 
         .stack same 
 L8102:  iconst_1 
-L8103:  invokestatic Method com/genir/renderer/bridge/Display update (Z)V
+L8103:  invokestatic Method org/lwjgl/opengl/Display update (Z)V
 L8106:  invokestatic Method com/fs/graphics/util/B 'Ô00000' ()J 
 L8109:  lstore 43 
 L8111:  lload 43 
@@ -8722,7 +8722,7 @@ L46:    istore 8
 L48:    iload 8 
 L50:    invokestatic Method com/fs/starfarer/settings/StarfarerSettings 'OÓ0000' ()Z 
 L53:    ifeq L66 
-L56:    invokestatic Method com/genir/renderer/bridge/Display isFullscreen ()Z 
+L56:    invokestatic Method org/lwjgl/opengl/Display isFullscreen ()Z
 L59:    ifne L66 
 L62:    iconst_0 
 L63:    goto L67 
@@ -8790,9 +8790,9 @@ L132:   iconst_0
 L133:   istore 12 
 L135:   invokestatic Method org/lwjgl/input/Mouse isInsideWindow ()Z 
 L138:   ifeq L203 
-L141:   invokestatic Method com/genir/renderer/bridge/Display isActive ()Z 
+L141:   invokestatic Method org/lwjgl/opengl/Display isActive ()Z
 L144:   ifeq L203 
-L147:   invokestatic Method com/genir/renderer/bridge/Display isVisible ()Z 
+L147:   invokestatic Method org/lwjgl/opengl/Display isVisible ()Z
 L150:   ifeq L203 
 L153:   invokestatic Method com/fs/starfarer/util/A/A 'Ò00000' ()Lcom/fs/starfarer/util/A/C; 
 L156:   astore 13 
@@ -8825,9 +8825,9 @@ L200:   goto L331
         .stack append Integer 
 L203:   iload 8 
 L205:   ifeq L331 
-L208:   invokestatic Method com/genir/renderer/bridge/Display isActive ()Z 
+L208:   invokestatic Method org/lwjgl/opengl/Display isActive ()Z
 L211:   ifeq L331 
-L214:   invokestatic Method com/genir/renderer/bridge/Display isVisible ()Z 
+L214:   invokestatic Method org/lwjgl/opengl/Display isVisible ()Z
 L217:   ifeq L331 
 L220:   aload_0 
 L221:   getfield Field com/fs/starfarer/combat/CombatState lastMouseDX F 
