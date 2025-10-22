@@ -12,28 +12,11 @@ public class ClientAttribTracker {
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
 
-    public boolean getEnableVertexArray() {
-        return expected.enableVertexArray;
-    }
-
-    public boolean getEnableTexCoordArray() {
-        return expected.enableTexCoordArray;
-    }
-
-    public boolean getEnableColorArray() {
-        return expected.enableColorArray;
-    }
-
-    public ArrayPointer getVertexPointer() {
-        return expected.vertexPointer;
-    }
-
-    public ArrayPointer getTexCoordPointer() {
-        return expected.texCoordPointer;
-    }
-
-    public ArrayPointer getColorPointer() {
-        return expected.colorPointer;
+    public ArrayPointersSnapshot makeArrayPointersSnapshot() {
+        return new ArrayPointersSnapshot(
+                expected.enableVertexArray ? expected.vertexPointer.getSnapshot() : null,
+                expected.enableTexCoordArray ? expected.texCoordPointer.getSnapshot() : null,
+                expected.enableColorArray ? expected.colorPointer.getSnapshot() : null);
     }
 
     public void glEnableClientState(int cap) {
@@ -143,6 +126,9 @@ public class ClientAttribTracker {
                 other.colorPointer = colorPointer;
             }
         }
+    }
+
+    public record ArrayPointersSnapshot(ArraySnapshot vertex, ArraySnapshot texCoord, ArraySnapshot color) {
     }
 }
 

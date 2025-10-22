@@ -5,16 +5,18 @@ import com.genir.renderer.state.stall.*;
 public class AppState {
     public static final AppState state = new AppState();
 
-    // Server state.
+    // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();
     public final StateCache glStateCache = new StateCache();
     public final AttribManager attribManager = new AttribManager();
     public final TransformManager transformManager = new TransformManager(attribManager);
+    public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, transformManager);
 
+    // Infrastructure.
     public final StallDetector stallDetector = new StallDetector(glStateCache);
     public final Executor exec = new Executor(listManager, stallDetector);
 
-    // Client state.
+    // Client state. Runs on main thread.
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
     public final AttribTracker attribTracker = new AttribTracker();
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
@@ -22,7 +24,6 @@ public class AppState {
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
 
-    public final VertexInterceptor vertexInterceptor = new VertexInterceptor(clientAttribTracker, attribManager, transformManager);
 
     public static void update() {
         state.glStateCache.update();

@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.state.BufferUtil;
+import com.genir.renderer.state.ClientAttribTracker;
 import com.genir.renderer.state.Recordable;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
@@ -297,25 +298,30 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        record glDrawArrays(Runnable recordedGlDrawArrays) implements Runnable, Recordable {
+        record glDrawArrays(int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements Runnable, Recordable {
             @Override
             public void run() {
-                recordedGlDrawArrays.run();
+                Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
+                state.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
         }
 
-        Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
-        Runnable glDrawArraysWithContext = state.vertexInterceptor.glDrawArraysWithContext(glDrawArrays);
-        state.exec.execute(new glDrawArrays(glDrawArraysWithContext));
+        final ClientAttribTracker.ArrayPointersSnapshot snapshot = state.clientAttribTracker.makeArrayPointersSnapshot();
+        state.exec.execute(new glDrawArrays(mode, first, count, snapshot));
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        final IntBuffer snapshot = BufferUtil.snapshot(indices);
+        record glDrawElements(int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
+                state.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+            }
+        }
 
-        Runnable glDrawElements = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, snapshot);
-        Runnable glDrawArraysWithContext = state.vertexInterceptor.glDrawArraysWithContext(glDrawElements);
-
-        state.exec.execute(glDrawArraysWithContext);
+        final IntBuffer indicesSnapshot = BufferUtil.snapshot(indices);
+        final ClientAttribTracker.ArrayPointersSnapshot snapshot = state.clientAttribTracker.makeArrayPointersSnapshot();
+        state.exec.execute(new glDrawElements(mode, indicesSnapshot, snapshot));
     }
 
     public static void glDrawElements(int mode, int indices_count, int type, long indices_buffer_offset) {
