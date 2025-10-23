@@ -15,6 +15,7 @@ public class AppState {
     // Infrastructure.
     public final StallDetector stallDetector = new StallDetector(glStateCache);
     public final Executor exec = new Executor(listManager, stallDetector);
+    public final Profiler profiler = new Profiler();
 
     // Client state. Runs on main thread.
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
@@ -30,5 +31,6 @@ public class AppState {
         state.vertexInterceptor.update();
         state.arrayGenerator.update();
         state.bufferGenerator.update();
+        state.profiler.update();
     }
 }

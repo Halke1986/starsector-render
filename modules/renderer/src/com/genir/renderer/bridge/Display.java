@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.state.AppState;
+import com.genir.renderer.state.Profiler;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -23,6 +24,8 @@ public class Display {
             }
 
             state.stallDetector.update();
+
+            Profiler.UpdateMark.mark();
 
             // Swap OpenGL buffers and update the bridge state.
             // Ideally, these would run on the render thread synchronously
