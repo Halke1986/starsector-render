@@ -40,7 +40,7 @@ public class Profiler {
             String fileName = "profile-" + unixTimestamp + ".jfr";
             rec.setDestination(Path.of(fileName));
 
-            configureAcquisition(rec);
+            configureAcquisition();
             rec.start();
         } catch (Throwable t) {
             throw new RuntimeException(t);
@@ -59,7 +59,7 @@ public class Profiler {
         }
     }
 
-    private void configureAcquisition(Recording rec) {
+    private void configureAcquisition() {
         rec.setToDisk(true);
 
         // Start from a clean slate: disable everything first
@@ -68,6 +68,7 @@ public class Profiler {
         }
 
         rec.enable("app.UpdateMark");
+        rec.enable("app.FrameMark");
 
         rec.enable("jdk.ExecutionSample").withPeriod(Duration.ofMillis(2)).withStackTrace(); // CPU Time.
         rec.enable("jdk.NativeMethodSample").withPeriod(Duration.ofMillis(2)).withStackTrace();
@@ -121,6 +122,39 @@ public class Profiler {
             e.commit();
 
             prevMark = thisFrame;
+        }
+    }
+
+    @Name("app.FrameMark")
+    public static class FrameMark extends Event {
+        private static long frameStart = 0;
+        private static long swapStart = 0;
+        private static long syncStart = 0;
+
+        public long frame;
+        public long sim__;
+        public long swap_;
+        public long sync_;
+
+        public static void beginFrame() {
+            long nextFrameStart = System.nanoTime();
+
+            var e = new FrameMark();
+            e.sim__ = swapStart - frameStart;
+            e.swap_ = syncStart - swapStart;
+            e.sync_ = nextFrameStart - syncStart;
+            e.frame = e.sim__ + e.swap_ + e.sync_;
+            e.commit();
+
+            frameStart = nextFrameStart;
+        }
+
+        public static void beginSwap() {
+            swapStart = System.nanoTime();
+        }
+
+        public static void beginSync() {
+            syncStart = System.nanoTime();
         }
     }
 }

@@ -384,7 +384,7 @@ L492:   invokestatic Method org/lwjgl/opengl/GL11 glFinish ()V
 
         .stack append Float Long 
 L495:   iconst_1 
-L496:   invokestatic Method org/lwjgl/opengl/Display update (Z)V
+L496:   invokestatic Method com/genir/renderer/overrides/Sync syncAndUpdate (Z)V
 L499:   iload 6 
 L501:   ifeq L510 
 L504:   invokestatic Method com/fs/starfarer/util/return o00000 ()V 
@@ -467,7 +467,7 @@ L634:   f2i
 L635:   istore 19 
 L637:   iload 19 
 L639:   i2l 
-L640:   invokestatic Method com/genir/renderer/overrides/Sync sync (J)V
+L640:   invokestatic Method com/genir/renderer/overrides/Sync sleep (J)V
 L643:   fload 16 
 L645:   fload 18 
 L647:   fadd 

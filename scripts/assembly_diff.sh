@@ -1,1 +1,2 @@
-diff -u -bB ./disassembly/starfarer/common/com/fs/graphics/TextureLoader.j ./assembly/overrides/common/com/fs/graphics/TextureLoader.j
+#diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/combat/CombatState.j ./assembly/overrides/starfarer/com/fs/starfarer/combat/CombatState.j
+diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/BaseGameState.j ./assembly/overrides/starfarer/com/fs/starfarer/BaseGameState.j

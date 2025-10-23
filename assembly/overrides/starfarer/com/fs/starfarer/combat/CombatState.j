@@ -4989,7 +4989,7 @@ L8099:  invokestatic Method org/lwjgl/opengl/GL11 glFinish ()V
 
         .stack same 
 L8102:  iconst_1 
-L8103:  invokestatic Method org/lwjgl/opengl/Display update (Z)V
+L8103:  invokestatic Method com/genir/renderer/overrides/Sync syncAndUpdate (Z)V
 L8106:  invokestatic Method com/fs/graphics/util/B 'Ô00000' ()J 
 L8109:  lstore 43 
 L8111:  lload 43 
@@ -5087,10 +5087,10 @@ L8274:  invokestatic Method com/fs/profiler/Profiler o00000 (Ljava/lang/String;)
 
         .stack same 
 L8277:  iload 47 
-L8279:  pop
+L8279:  ifle L8303
 L8282:  iload 47 
 L8284:  i2l 
-L8285:  invokestatic Method com/genir/renderer/overrides/Sync sync (J)V
+L8285:  invokestatic Method com/genir/renderer/overrides/Sync sleep (J)V
 L8288:  goto L8303 
 
         .stack full 
