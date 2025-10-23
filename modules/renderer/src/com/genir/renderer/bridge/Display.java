@@ -39,6 +39,7 @@ public class Display {
                     org.lwjgl.opengl.Display.update(processMessages);
                 }
             }
+
             prevFrameFinished = state.exec.submit(new update(processMessages));
         } catch (RuntimeException e) {
             throw e;

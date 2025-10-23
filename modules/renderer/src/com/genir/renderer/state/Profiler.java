@@ -31,51 +31,17 @@ public class Profiler {
 
     private void startProfiler() {
         try {
+            Logger.getLogger(Profiler.class).info("Started profiling");
+
             Configuration cfg = Configuration.getConfiguration("profile");
             rec = new Recording(cfg);
 
-            rec.setToDisk(true);
+            long unixTimestamp = System.currentTimeMillis() / 1000L;
+            String fileName = "profile-" + unixTimestamp + ".jfr";
+            rec.setDestination(Path.of(fileName));
 
-            // Start from a clean slate: disable everything first
-            for (EventType t : FlightRecorder.getFlightRecorder().getEventTypes()) {
-                rec.disable(t.getName());
-            }
-
-            rec.enable("app.UpdateMark");
-
-            rec.enable("jdk.ExecutionSample").withPeriod(Duration.ofMillis(2)).withStackTrace(); // CPU Time.
-            rec.enable("jdk.NativeMethodSample").withPeriod(Duration.ofMillis(2)).withStackTrace();
-
-            rec.enable("jdk.JavaMonitorEnter").withThreshold(Duration.ofMillis(1)).withStackTrace();
-            rec.enable("jdk.JavaMonitorWait").withThreshold(Duration.ofMillis(1)).withStackTrace();
-
-            rec.enable("jdk.ThreadPark").withThreshold(Duration.ofMillis(1)).withStackTrace();
-            rec.enable("jdk.ThreadSleep").withThreshold(Duration.ofMillis(1)).withStackTrace();
-
-            rec.enable("jdk.FileRead").withThreshold(Duration.ofMillis(1)).withStackTrace();
-            rec.enable("jdk.FileWrite").withThreshold(Duration.ofMillis(1)).withStackTrace();
-            rec.enable("jdk.SocketRead").withThreshold(Duration.ofMillis(1)).withStackTrace();
-            rec.enable("jdk.SocketWrite").withThreshold(Duration.ofMillis(1)).withStackTrace();
-
-            rec.enable("jdk.GCPhasePause");
-            rec.enable("jdk.GCHeapSummary");
-
-            rec.enable("jdk.Compilation");
-            rec.enable("jdk.CodeCacheFull");
-            rec.enable("jdk.Deoptimization");
-
-            rec.enable("jdk.ClassLoad").withStackTrace();
-            rec.enable("jdk.ClassDefine").withStackTrace();
-
-            rec.enable("jdk.SafepointBegin");
-            rec.enable("jdk.SafepointEnd");
-            rec.enable("jdk.SafepointStateSynchronization");
-
-            rec.enable("jdk.ExceptionThrow");
-
+            configureAcquisition(rec);
             rec.start();
-
-            Logger.getLogger(Profiler.class).info("Started profiling");
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -83,14 +49,55 @@ public class Profiler {
 
     private void stopProfiler() {
         try {
-            long unixTimestamp = System.currentTimeMillis() / 1000L;
-            String fileName = "profile-" + unixTimestamp + ".jfr";
-            rec.dump(Path.of(fileName));
+            String fileName = rec.getDestination().toString();
+            Logger.getLogger(Profiler.class).info("Finished profiling. Writing results to: " + fileName);
 
-            Logger.getLogger(Profiler.class).info("Finished profiling. Results written to: " + fileName);
+            rec.stop();
+            rec = null;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    private void configureAcquisition(Recording rec) {
+        rec.setToDisk(true);
+
+        // Start from a clean slate: disable everything first
+        for (EventType t : FlightRecorder.getFlightRecorder().getEventTypes()) {
+            rec.disable(t.getName());
+        }
+
+        rec.enable("app.UpdateMark");
+
+        rec.enable("jdk.ExecutionSample").withPeriod(Duration.ofMillis(2)).withStackTrace(); // CPU Time.
+        rec.enable("jdk.NativeMethodSample").withPeriod(Duration.ofMillis(2)).withStackTrace();
+
+        rec.enable("jdk.JavaMonitorEnter").withThreshold(Duration.ofMillis(1)).withStackTrace();
+        rec.enable("jdk.JavaMonitorWait").withThreshold(Duration.ofMillis(1)).withStackTrace();
+
+        rec.enable("jdk.ThreadPark").withThreshold(Duration.ofMillis(1)).withStackTrace();
+        rec.enable("jdk.ThreadSleep").withThreshold(Duration.ofMillis(1)).withStackTrace();
+
+        rec.enable("jdk.FileRead").withThreshold(Duration.ofMillis(1)).withStackTrace();
+        rec.enable("jdk.FileWrite").withThreshold(Duration.ofMillis(1)).withStackTrace();
+        rec.enable("jdk.SocketRead").withThreshold(Duration.ofMillis(1)).withStackTrace();
+        rec.enable("jdk.SocketWrite").withThreshold(Duration.ofMillis(1)).withStackTrace();
+
+        rec.enable("jdk.GCPhasePause");
+        rec.enable("jdk.GCHeapSummary");
+
+        rec.enable("jdk.Compilation");
+        rec.enable("jdk.CodeCacheFull");
+        rec.enable("jdk.Deoptimization");
+
+        rec.enable("jdk.ClassLoad").withStackTrace();
+        rec.enable("jdk.ClassDefine").withStackTrace();
+
+        rec.enable("jdk.SafepointBegin");
+        rec.enable("jdk.SafepointEnd");
+        rec.enable("jdk.SafepointStateSynchronization");
+
+        rec.enable("jdk.ExceptionThrow");
     }
 
     private boolean isKeyPressed() {
