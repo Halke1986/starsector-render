@@ -13,13 +13,12 @@ public class Sync {
 
     public static void syncAndUpdate(boolean processMessages) {
         Profiler.FrameMark.beginSwap();
-        Display.waitForPrevFrame();
+        Display.update(processMessages);
 
         Profiler.FrameMark.beginSync();
         sync(0);
 
         Profiler.FrameMark.beginFrame();
-        Display.dispatchUpdate(processMessages);
     }
 
     /**

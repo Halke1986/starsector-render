@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.state.AppState;
-import com.genir.renderer.state.Profiler;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -17,20 +16,30 @@ import static com.genir.renderer.state.AppState.state;
 public class Display {
     private static Future<?> prevFrameFinished = null;
 
-    public static void update() {
-        update(true);
-    }
-
     public static void update(boolean processMessages) {
-        waitForPrevFrame();
-        dispatchUpdate(processMessages);
-    }
-
-    public static void waitForPrevFrame() {
         try {
+            state.stallDetector.update();
+
+            // Swap OpenGL buffers and update the bridge state.
+            // Ideally, these would run on the render thread synchronously
+            // to avoid concurrency issues. However, profiling showed a ~5%
+            // performance penalty from lock contention when blocking.
+            // To avoid this, the update is executed asynchronously.
+            record update(boolean processMessages) implements Runnable {
+                @Override
+                public void run() {
+                    AppState.update();
+                    org.lwjgl.opengl.Display.update(processMessages);
+                }
+            }
+
+            Future<?> thisFrameFinished = state.exec.submit(new update(processMessages));
+
             if (prevFrameFinished != null) {
                 prevFrameFinished.get();
             }
+
+            prevFrameFinished = thisFrameFinished;
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {
@@ -38,25 +47,8 @@ public class Display {
         }
     }
 
-    public static void dispatchUpdate(boolean processMessages) {
-        state.stallDetector.update();
-
-//        Profiler.UpdateMark.mark();
-
-        // Swap OpenGL buffers and update the bridge state.
-        // Ideally, these would run on the render thread synchronously
-        // to avoid concurrency issues. However, profiling showed a ~5%
-        // performance penalty from lock contention when blocking.
-        // To avoid this, the update is executed asynchronously.
-        record update(boolean processMessages) implements Runnable {
-            @Override
-            public void run() {
-                AppState.update();
-                org.lwjgl.opengl.Display.update(processMessages);
-            }
-        }
-
-        prevFrameFinished = state.exec.submit(new update(processMessages));
+    public static void update() {
+        update(true);
     }
 
     public static DisplayMode[] getAvailableDisplayModes() {
