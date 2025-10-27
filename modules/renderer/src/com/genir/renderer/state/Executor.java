@@ -59,10 +59,13 @@ public class Executor {
         stallDetector.detectStall();
         flushCommands();
 
+        long start = System.nanoTime();
         try {
             execActual.submit(() -> executeCommand(command, cleanup)).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            Profiler.FrameMark.markStall(start);
         }
     }
 
@@ -82,17 +85,20 @@ public class Executor {
         stallDetector.detectStall();
         flushCommands();
 
+        long start = System.nanoTime();
         try {
             return execActual.submit(() -> {
-                long start = System.nanoTime();
+                long taskStart = System.nanoTime();
                 try {
                     return task.call();
                 } finally {
-                    Profiler.FrameMark.markRenderWork(start);
+                    Profiler.FrameMark.markRenderWork(taskStart);
                 }
             }).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            Profiler.FrameMark.markStall(start);
         }
     }
 

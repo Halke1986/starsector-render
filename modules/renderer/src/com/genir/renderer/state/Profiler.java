@@ -131,11 +131,13 @@ public class Profiler {
         private static long swapStart = 0;
         private static long syncStart = 0;
         private static long renderSum = 0;
+        private static long stallSum = 0;
 
         public long frame; // Total frame duration.
         public long sim__; // Game engine update.
         public long swap_; // Wait for render thread.
         public long sync_; // Idle while waiting for next frame.
+        public long stall;
         public long rendr; // Rendering thread work time.
 
         public static void beginFrame() {
@@ -148,6 +150,7 @@ public class Profiler {
             e.swap_ = syncStart - swapStart;
             e.sync_ = nextFrameStart - syncStart;
             e.frame = e.sim__ + e.swap_ + e.sync_;
+            e.stall = stallSum;
 
             // Rendering thread.
             e.rendr = renderSum;
@@ -155,6 +158,7 @@ public class Profiler {
             e.commit();
 
             renderSum = 0;
+            stallSum = 0;
             frameStart = nextFrameStart;
         }
 
@@ -168,6 +172,10 @@ public class Profiler {
 
         public static void markRenderWork(long start) {
             renderSum += System.nanoTime() - start;
+        }
+
+        public static void markStall(long start) {
+            stallSum += System.nanoTime() - start;
         }
     }
 }
