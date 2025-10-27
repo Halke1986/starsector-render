@@ -21,7 +21,7 @@ public class Executor {
     private int batchSize = 0;
 
     private final AtomicInteger threadCounter = new AtomicInteger(0);
-    private final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
+    private final ExecutorService execActual = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
         t.setDaemon(true);
         t.setName("FR-Render-" + threadCounter.getAndIncrement());
@@ -35,6 +35,8 @@ public class Executor {
     }
 
     public void execute(Runnable command) {
+        rethrowExecutionException();
+
         commandBatch[batchSize] = command;
         batchSize++;
 
@@ -52,21 +54,24 @@ public class Executor {
     }
 
     public void wait(Runnable command, boolean cleanup) {
+        rethrowExecutionException();
+
         stallDetector.detectStall();
         flushCommands();
 
         try {
-            exec.submit(() -> tryRun(command, cleanup)).get();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+            execActual.submit(() -> executeCommand(command, cleanup)).get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     public Future<?> submit(Runnable command) {
+        rethrowExecutionException();
+
         flushCommands();
-        return exec.submit(() -> tryRun(command, false));
+
+        return execActual.submit(() -> executeCommand(command, false));
     }
 
     /**
@@ -78,11 +83,16 @@ public class Executor {
         flushCommands();
 
         try {
-            return exec.submit(task).get();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+            return execActual.submit(() -> {
+                long start = System.nanoTime();
+                try {
+                    return task.call();
+                } finally {
+                    Profiler.FrameMark.markRenderWork(start);
+                }
+            }).get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -93,62 +103,59 @@ public class Executor {
         commandBatch = new Runnable[BATCH_CAPACITY];
         batchSize = 0;
 
-        exec.execute(() -> tryRun(currentBatch, count));
+        execActual.execute(() -> executeCommands(currentBatch, count, false));
+    }
 
+    private void executeCommand(Runnable command, boolean cleanup) {
+        executeCommands(new Runnable[]{command}, 1, cleanup);
+    }
+
+    private void executeCommands(Runnable[] commands, int count, boolean cleanup) {
+        long start = System.nanoTime();
+        try {
+            // Rendering thread has already thrown an exception.
+            // Skip further commands, except get and cleanup,
+            // to avoid a potential hard crash without logging.
+            if (exceptionCaptured && !cleanup) {
+                return;
+            }
+
+            // Run all scheduled commands.
+            for (int i = 0; i < count; i++) {
+                Runnable command = commands[i];
+
+                // Record the command instead of running it immediately.
+                if (command instanceof Recordable && listManager.isRecording()) {
+                    listManager.record(command);
+                    continue;
+                }
+
+                command.run();
+            }
+
+        } catch (RuntimeException e) {
+            setExecutionException(e);
+        } catch (Throwable t) {
+            setExecutionException(new RuntimeException(t));
+        } finally {
+            Profiler.FrameMark.markRenderWork(start);
+        }
+    }
+
+    private void setExecutionException(RuntimeException e) {
+        if (!exceptionCaptured) {
+            exceptionCaptured = true;
+            exception.set(e);
+        }
+    }
+
+    private void rethrowExecutionException() {
         // If the rendering thread throws an exception, crash the application.
         // This ensures a clear log message. Rethrow the exception only once,
         // to not interrupt main thread cleanup triggered by the first rethrow.
         RuntimeException e = exception.getAndSet(null);
         if (e != null) {
             throw e;
-        }
-    }
-
-    private void tryRun(Runnable[] commands, int count) {
-        // Rendering thread has already thrown an exception.
-        // Skip further commands, except get and cleanup,
-        // to avoid a potential hard crash without logging.
-        if (exceptionCaptured) {
-            return;
-        }
-
-        for (int i = 0; i < count; i++) {
-            Runnable command = commands[i];
-            if (command instanceof Recordable && listManager.isRecording()) {
-                listManager.record(command);
-                continue;
-            }
-
-            try {
-                command.run();
-            } catch (RuntimeException e) {
-                setException(e);
-                return;
-            } catch (Throwable t) {
-                setException(new RuntimeException(t));
-                return;
-            }
-        }
-    }
-
-    private void tryRun(Runnable command, boolean cleanup) {
-        if (exceptionCaptured && !cleanup) {
-            return;
-        }
-
-        try {
-            command.run();
-        } catch (RuntimeException e) {
-            setException(e);
-        } catch (Throwable t) {
-            setException(new RuntimeException(t));
-        }
-    }
-
-    private void setException(RuntimeException e) {
-        if (!exceptionCaptured) {
-            exceptionCaptured = true;
-            exception.set(e);
         }
     }
 }
