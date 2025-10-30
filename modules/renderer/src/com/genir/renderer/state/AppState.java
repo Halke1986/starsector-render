@@ -5,6 +5,8 @@ import com.genir.renderer.state.stall.*;
 public class AppState {
     public static final AppState state = new AppState();
 
+    public boolean gameInitialized = false;
+
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();
     public final StateCache glStateCache = new StateCache();
@@ -24,13 +26,4 @@ public class AppState {
     public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
-
-
-    public static void update() {
-        state.glStateCache.update();
-        state.vertexInterceptor.update();
-        state.arrayGenerator.update();
-        state.bufferGenerator.update();
-        state.profiler.update();
-    }
 }

@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.state.AppState;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -16,6 +15,14 @@ import static com.genir.renderer.state.AppState.state;
 public class Display {
     private static Future<?> prevFrameFinished = null;
 
+    private static void updateAppState() {
+        state.glStateCache.update();
+        state.vertexInterceptor.update();
+        state.arrayGenerator.update();
+        state.bufferGenerator.update();
+        state.profiler.update();
+    }
+
     public static void update(boolean processMessages) {
         try {
             state.stallDetector.update();
@@ -28,7 +35,7 @@ public class Display {
             record update(boolean processMessages) implements Runnable {
                 @Override
                 public void run() {
-                    AppState.update();
+                    updateAppState();
                     org.lwjgl.opengl.Display.update(processMessages);
                 }
             }
@@ -149,7 +156,7 @@ public class Display {
                     // Clear server attributes when a new display is created.
                     state.attribManager.clear();
 
-                    AppState.update();
+                    updateAppState();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {

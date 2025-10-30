@@ -12,9 +12,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.genir.renderer.state.AppState.state;
+
 public class Utils {
     private static final Map<String, Set<Path>> directories = new HashMap<>();
 
+    // High throughput replacement for File.exists.
     public static boolean exists(File file) {
         if (file == null) {
             return false;
@@ -46,14 +49,27 @@ public class Utils {
     }
 
     public static List<Pair> loadInputStreams(C resourceLoader, String var1) throws IOException {
+        // Default to vanilla File.exists after the game initializes.
+        // The vanilla check is low throughput but guarantees no false positives.
+        // NOTE: The optimized File.exists may report a false positive if a mod
+        // deletes a file during game initialization.
+        if (state.gameInitialized) {
+            return resourceLoader.loadInputStreamsVanilla(var1);
+        }
+
         try {
             return resourceLoader.loadInputStreamsOptimized(var1);
         } catch (Throwable t) {
+            // Fall back to vanilla File.exists to avoid false negatives.
             return resourceLoader.loadInputStreamsVanilla(var1);
         }
     }
 
     public static InputStream loadInputStream(C resourceLoader, String var1, boolean var2) throws IOException {
+        if (state.gameInitialized) {
+            return resourceLoader.loadInputStreamVanilla(var1, var2);
+        }
+
         // Resource loader call modifies the object state.
         String string0cache = resourceLoader.getString0();
         boolean boolean0cache = resourceLoader.getBoolean0();
@@ -66,6 +82,7 @@ public class Utils {
             resourceLoader.setString0(string0cache);
             resourceLoader.setBoolean0(boolean0cache);
 
+            // Fall back to vanilla File.exists to avoid false negatives.
             return resourceLoader.loadInputStreamVanilla(var1, var2);
         }
     }
