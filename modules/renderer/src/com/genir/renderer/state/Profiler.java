@@ -132,12 +132,18 @@ public class Profiler {
         private static long syncStart = 0;
         private static long renderSum = 0;
         private static long stallSum = 0;
+        private static long campaignAdvance = 0;
+        private static long campaignRender = 0;
 
         public long frame; // Total frame duration.
         public long sim__; // Game engine update.
         public long swap_; // Wait for render thread.
         public long sync_; // Idle while waiting for next frame.
         public long stall;
+
+        public long cadv_;
+        public long crend;
+
         public long rendr; // Rendering thread work time.
 
         public static void beginFrame() {
@@ -152,6 +158,9 @@ public class Profiler {
             e.frame = e.sim__ + e.swap_ + e.sync_;
             e.stall = stallSum;
 
+            e.cadv_ = campaignAdvance;
+            e.crend = campaignRender;
+
             // Rendering thread.
             e.rendr = renderSum;
 
@@ -159,6 +168,9 @@ public class Profiler {
 
             renderSum = 0;
             stallSum = 0;
+            campaignAdvance = 0;
+            campaignRender = 0;
+
             frameStart = nextFrameStart;
         }
 
@@ -176,6 +188,14 @@ public class Profiler {
 
         public static void markStall(long start) {
             stallSum += System.nanoTime() - start;
+        }
+
+        public static void markCampaignAdvance(long start) {
+            campaignAdvance += System.nanoTime() - start;
+        }
+
+        public static void markCampaignRender(long start) {
+            campaignRender += System.nanoTime() - start;
         }
     }
 }
