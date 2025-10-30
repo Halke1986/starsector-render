@@ -7,8 +7,7 @@
 -XX:+UseFastUnorderedTimeStamps
 -XX:+DisableExplicitGC
 -XX:+AlwaysPreTouch
--XX:+UseShenandoahGC
--XX:ShenandoahGCMode=iu
+-XX:+UseZGC
 -XX:-DontCompileHugeMethods
 -XX:-AlignVector
 -XX:MaxGCPauseMillis=10
