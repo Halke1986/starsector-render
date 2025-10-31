@@ -168,73 +168,23 @@ public class Display {
     }
 
     public static int getHeight() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayHeight();
-        }
-
-        record getHeight() implements Callable<Integer> {
-            @Override
-            public Integer call() throws Exception {
-                return org.lwjgl.opengl.Display.getHeight();
-            }
-        }
-        return state.exec.get(new getHeight());
+        return state.glStateCache.getDisplayHeight();
     }
 
     public static int getWidth() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayWidth();
-        }
-
-        record getWidth() implements Callable<Integer> {
-            @Override
-            public Integer call() throws Exception {
-                return org.lwjgl.opengl.Display.getWidth();
-            }
-        }
-        return state.exec.get(new getWidth());
+        return state.glStateCache.getDisplayWidth();
     }
 
     public static float getPixelScaleFactor() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayPixelScaleFactor();
-        }
-
-        record getPixelScaleFactor() implements Callable<Float> {
-            @Override
-            public Float call() throws Exception {
-                return org.lwjgl.opengl.Display.getPixelScaleFactor();
-            }
-        }
-        return state.exec.get(new getPixelScaleFactor());
+        return state.glStateCache.getDisplayPixelScaleFactor();
     }
 
     public static boolean isCloseRequested() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayIsCloseRequested();
-        }
-
-        record isCloseRequested() implements Callable<Boolean> {
-            @Override
-            public Boolean call() throws Exception {
-                return org.lwjgl.opengl.Display.isCloseRequested();
-            }
-        }
-        return state.exec.get(new isCloseRequested());
+        return state.glStateCache.getDisplayIsCloseRequested();
     }
 
     public static boolean isActive() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayIsActive();
-        }
-
-        record isActive() implements Callable<Boolean> {
-            @Override
-            public Boolean call() throws Exception {
-                return org.lwjgl.opengl.Display.isActive();
-            }
-        }
-        return state.exec.get(new isActive());
+        return state.glStateCache.getDisplayIsActive();
     }
 
     public static void destroy() {
@@ -248,17 +198,7 @@ public class Display {
     }
 
     public static boolean isFullscreen() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayIsFullscreen();
-        }
-
-        record isFullscreen() implements Callable<Boolean> {
-            @Override
-            public Boolean call() throws Exception {
-                return org.lwjgl.opengl.Display.isFullscreen();
-            }
-        }
-        return state.exec.get(new isFullscreen());
+        return state.glStateCache.getDisplayIsFullscreen();
     }
 
     public static void setFullscreen(boolean fullscreen) {
@@ -276,23 +216,14 @@ public class Display {
     }
 
     public static boolean isVisible() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayIsVisible();
-        }
-
-        record isVisible() implements Callable<Boolean> {
-            @Override
-            public Boolean call() throws Exception {
-                return org.lwjgl.opengl.Display.isVisible();
-            }
-        }
-        return state.exec.get(new isVisible());
+        return state.glStateCache.getDisplayIsVisible();
     }
 
     public static void processMessages() {
         record processMessages() implements Runnable {
             @Override
             public void run() {
+                updateAppState();
                 org.lwjgl.opengl.Display.processMessages();
             }
         }
@@ -310,31 +241,11 @@ public class Display {
     }
 
     public static int getX() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayX();
-        }
-
-        record getX() implements Callable<Integer> {
-            @Override
-            public Integer call() throws Exception {
-                return org.lwjgl.opengl.Display.getX();
-            }
-        }
-        return state.exec.get(new getX());
+        return state.glStateCache.getDisplayX();
     }
 
     public static int getY() {
-        if (state.glStateCache.isAvailable()) {
-            return state.glStateCache.getDisplayY();
-        }
-
-        record getY() implements Callable<Integer> {
-            @Override
-            public Integer call() throws Exception {
-                return org.lwjgl.opengl.Display.getY();
-            }
-        }
-        return state.exec.get(new getY());
+        return state.glStateCache.getDisplayY();
     }
 
     public static Drawable getDrawable() {

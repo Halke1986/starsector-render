@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StateCache {
-    private boolean initialized = false;
-
     private float displayPixelScaleFactor;
     private boolean displayIsActive;
     private boolean displayIsVisible;
@@ -20,17 +18,9 @@ public class StateCache {
     private int displayHeight;
     private int displayX;
     private int displayY;
-
-    private final Map<Integer, Integer> otherIntegers = new HashMap<>();
-
     private String glStringExtensions;
     private ContextCapabilities contextCapabilities;
-
-    synchronized public boolean isAvailable() {
-        // Inactive displays use stale cache, causing a black screen on reactivation.
-        // Starsector never updates the display while inactive.
-        return initialized && displayIsActive;
-    }
+    private final Map<Integer, Integer> otherIntegers = new HashMap<>();
 
     synchronized public float getDisplayPixelScaleFactor() {
         return displayPixelScaleFactor;
@@ -106,7 +96,5 @@ public class StateCache {
             Integer key = entry.getKey();
             otherIntegers.put(key, GL11.glGetInteger(key));
         }
-
-        initialized = true;
     }
 }

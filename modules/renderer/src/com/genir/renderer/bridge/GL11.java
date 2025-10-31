@@ -925,12 +925,7 @@ public class GL11 {
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
             case ATIMeminfo.GL_TEXTURE_FREE_MEMORY_ATI:
-                if (state.glStateCache.isAvailable()) {
-                    Integer value = state.glStateCache.getOtherInteger(pname);
-                    if (value != null) {
-                        return value;
-                    }
-                }
+                return state.glStateCache.getOtherInteger(pname);
         }
 
         record glGetInteger(int pname) implements Callable<Integer> {
@@ -980,7 +975,7 @@ public class GL11 {
     public static String glGetString(int name) { // NoList
         String result;
 
-        if (state.glStateCache.isAvailable() && name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
+        if (name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
             result = state.glStateCache.getGlStringExtensions();
         } else {
             record glGetString(int name) implements Callable<String> {

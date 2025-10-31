@@ -9,15 +9,15 @@ public class AppState {
 
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();
-    public final StateCache glStateCache = new StateCache();
     public final AttribManager attribManager = new AttribManager();
     public final TransformManager transformManager = new TransformManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, transformManager);
 
-    // Infrastructure.
-    public final StallDetector stallDetector = new StallDetector(glStateCache);
+    // Infrastructure. Spans main and rendering threads.
+    public final StallDetector stallDetector = new StallDetector();
     public final Executor exec = new Executor(listManager, stallDetector);
     public final Profiler profiler = new Profiler();
+    public final StateCache glStateCache = new StateCache();
 
     // Client state. Runs on main thread.
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
