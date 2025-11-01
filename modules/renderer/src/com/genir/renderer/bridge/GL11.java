@@ -925,7 +925,10 @@ public class GL11 {
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
             case ATIMeminfo.GL_TEXTURE_FREE_MEMORY_ATI:
-                return state.glStateCache.getOtherInteger(pname);
+                Integer cached = state.glStateCache.getOtherInteger(pname);
+                if (cached != null) {
+                    return cached;
+                }
         }
 
         record glGetInteger(int pname) implements Callable<Integer> {

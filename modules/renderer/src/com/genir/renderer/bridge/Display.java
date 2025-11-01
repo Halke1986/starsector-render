@@ -35,8 +35,8 @@ public class Display {
             record update(boolean processMessages) implements Runnable {
                 @Override
                 public void run() {
-                    updateAppState();
                     org.lwjgl.opengl.Display.update(processMessages);
+                    updateAppState();
                 }
             }
 
@@ -207,6 +207,7 @@ public class Display {
             public void run() {
                 try {
                     org.lwjgl.opengl.Display.setFullscreen(fullscreen);
+                    updateAppState();
                 } catch (LWJGLException e) {
                     throw new RuntimeException(e);
                 }
@@ -223,8 +224,8 @@ public class Display {
         record processMessages() implements Runnable {
             @Override
             public void run() {
-                updateAppState();
                 org.lwjgl.opengl.Display.processMessages();
+                updateAppState();
             }
         }
         state.exec.wait(new processMessages());

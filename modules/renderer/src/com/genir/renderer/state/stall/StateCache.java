@@ -66,6 +66,8 @@ public class StateCache {
         return contextCapabilities;
     }
 
+    // NOTE: getOtherInteger will return null when
+    // asked for a given pname for the first time.
     synchronized public Integer getOtherInteger(int pname) {
         Integer value = otherIntegers.get(pname);
 
