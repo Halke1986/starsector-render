@@ -16,6 +16,10 @@ public class Display {
     private static Future<?> prevFrameFinished = null;
 
     private static void updateAppState() {
+        if (!org.lwjgl.opengl.Display.isCreated()) {
+            return;
+        }
+
         state.glStateCache.update();
         state.vertexInterceptor.update();
         state.arrayGenerator.update();
