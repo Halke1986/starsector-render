@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ScriptStore is responsible for pre-loading scripts and plugins.
@@ -19,6 +20,7 @@ public class ScriptStore {
     private static boolean loaderInitialized = false;
     private static final Set<String> scripts = new HashSet<>();
 
+    private static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
     private static final AtomicInteger threadCounter = new AtomicInteger(0);
     private static final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
         Thread t = new Thread(runnable);
@@ -29,6 +31,12 @@ public class ScriptStore {
     });
 
     public static void addScript(String className) {
+        // Rethrow exception captured in script loading thread.
+        RuntimeException e = exception.getAndSet(null);
+        if (e != null) {
+            throw e;
+        }
+
         if (className == null) {
             return;
         }
@@ -48,10 +56,8 @@ public class ScriptStore {
                 // the slow Janino bytecode compilation process.
                 Logger.getLogger(ScriptStore.class).info("Compiling script [" + className + "]");
                 Global.getSettings().getScriptClassLoader().loadClass(className);
-            } catch (Throwable ignored) {
-                // It's safe to ignore class loading issues at this stage.
-                // Any exceptions will be encountered again and thrown by
-                // the main thread in joinScriptLoadingThread.
+            } catch (Throwable t) {
+                exception.set(new RuntimeException(t));
             }
         });
     }
