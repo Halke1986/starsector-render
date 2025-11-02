@@ -1,3 +1,5 @@
+- Fixed a race condition in vanilla loading code causing random ClassNotFoundExceptions.
+
 v0.5.1
 
 - Fixed asynchronous pipeline stall when using Advanced Gunnery Control configuration UI. Reported by niko the cool elongated.
