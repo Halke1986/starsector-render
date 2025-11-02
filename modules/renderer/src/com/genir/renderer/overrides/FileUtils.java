@@ -14,7 +14,7 @@ import java.util.*;
 
 import static com.genir.renderer.state.AppState.state;
 
-public class Utils {
+public class FileUtils {
     private static final Map<String, Set<Path>> directories = new HashMap<>();
 
     // High throughput replacement for File.exists.

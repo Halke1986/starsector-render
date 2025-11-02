@@ -156,7 +156,7 @@ L6:
 L0:     aload_0
 L1:     aload_1
 L2:     iload_2
-L3:     invokestatic Method com/genir/renderer/overrides/Utils loadInputStream (Lcom/fs/util/C;Ljava/lang/String;Z)Ljava/io/InputStream;
+L3:     invokestatic Method com/genir/renderer/overrides/FileUtils loadInputStream (Lcom/fs/util/C;Ljava/lang/String;Z)Ljava/io/InputStream;
 L6:     areturn
 L7:
         .linenumbertable
@@ -290,7 +290,7 @@ L107:
     .code stack 2 locals 2
 L0:     aload_0
 L1:     aload_1
-L2:     invokestatic Method com/genir/renderer/overrides/Utils loadInputStreams (Lcom/fs/util/C;Ljava/lang/String;)Ljava/util/List;
+L2:     invokestatic Method com/genir/renderer/overrides/FileUtils loadInputStreams (Lcom/fs/util/C;Ljava/lang/String;)Ljava/util/List;
 L5:     areturn
 L6:
         .linenumbertable
@@ -1954,7 +1954,7 @@ L44:    aload_1
 L45:    invokespecial Method java/io/File <init> (Ljava/lang/String;)V
 L48:    astore 4
 L50:    aload 4
-L52:    invokestatic Method com/genir/renderer/overrides/Utils exists (Ljava/io/File;)Z
+L52:    invokestatic Method com/genir/renderer/overrides/FileUtils exists (Ljava/io/File;)Z
 L55:    ifeq L158
 L58:    new java/io/BufferedInputStream
 L61:    dup
@@ -1996,7 +1996,7 @@ L125:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/Strin
 L128:   invokespecial Method java/io/File <init> (Ljava/lang/String;)V
 L131:   astore 4
 L133:   aload 4
-L135:   invokestatic Method com/genir/renderer/overrides/Utils exists (Ljava/io/File;)Z
+L135:   invokestatic Method com/genir/renderer/overrides/FileUtils exists (Ljava/io/File;)Z
 L138:   ifeq L158
 L141:   new java/io/BufferedInputStream
 L144:   dup

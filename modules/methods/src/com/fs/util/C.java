@@ -1,7 +1,7 @@
 package com.fs.util;
 
 import com.fs.starfarer.api.util.Pair;
-import com.genir.renderer.overrides.Utils;
+import com.genir.renderer.overrides.FileUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,12 +56,12 @@ public class C {
     // MODIFIED
     // $FF: renamed from: new (java.lang.String) java.util.List
     public synchronized List<Pair> method_24940(String var1) throws IOException {
-        return Utils.loadInputStreams(this, var1);
+        return FileUtils.loadInputStreams(this, var1);
     }
 
     // MODIFIED
     // $FF: renamed from: Ó00000 (java.lang.String, boolean) java.io.InputStream
     public synchronized InputStream method_24937(String var1, boolean var2) throws IOException {
-        return Utils.loadInputStream(this, var1, var2);
+        return FileUtils.loadInputStream(this, var1, var2);
     }
 }
