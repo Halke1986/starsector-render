@@ -31,8 +31,8 @@
 --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
 --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED
 --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
--Xmx4g
--Xms4g
+-Xmx20g
+-Xms20g
 -Xss16m
 -Dcom.fs.starfarer.settings.paths.saves=../saves
 -Dcom.fs.starfarer.settings.paths.screenshots=../screenshots
