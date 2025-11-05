@@ -18,6 +18,7 @@ public class FileUtils {
         return fileRepo.exists(file);
     }
 
+    // Deallocate the path cache when it's no longer needed.
     public static void closeFileRepository() {
         fileRepo = null;
     }

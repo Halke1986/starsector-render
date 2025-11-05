@@ -18,6 +18,9 @@ public class FileRepository {
     private final String pwd = System.getProperty("user.dir");
 
     public FileRepository() {
+        // Initialize the FileRepository in a separate thread.
+        // That way the lengthy initialization will not cause
+        // annoying pause when running Starsector launcher.
         exec.execute(() -> {
             String modDir = System.getProperty("com.fs.starfarer.settings.paths.mods");
 
@@ -36,6 +39,8 @@ public class FileRepository {
         });
     }
 
+    // Check if the file is located anywhere in
+    // Starsector directory structure.
     public boolean exists(File file) {
         if (file == null) {
             return false;
@@ -46,11 +51,15 @@ public class FileRepository {
             return file.exists();
         }
 
+        // Strip starsector-core path prefix,
+        // in case the file path is absolute.
         String path = file.getPath();
         if (path.startsWith(pwd)) {
             path = path.substring(pwd.length());
         }
 
+        // Finish stripping starsector-core path
+        // prefix on Windows.
         if (path.startsWith("\\")) {
             path = path.substring("\\".length());
         }

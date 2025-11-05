@@ -1,4 +1,5 @@
 - Fixed a race condition in vanilla loading code causing random ClassNotFoundExceptions.
+- Optimized game startup time. The game now loads faster and uses less memory.
 
 v0.5.1
 
