@@ -11,8 +11,11 @@ public class CombatEngine {
     public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
         // Assume first run of Combat Engine render loop happens
         // immediately after the game finished initializing.
-        state.gameInitialized = true;
-        state.stallDetector.enableDetection();
+        if (!state.gameInitialized) {
+            state.gameInitialized = true;
+            state.stallDetector.enableDetection();
+            FileUtils.closeFileRepository();
+        }
 
         CombatEngine.engine = engine;
 

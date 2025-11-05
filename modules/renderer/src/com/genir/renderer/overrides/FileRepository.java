@@ -1,24 +1,39 @@
 package com.genir.renderer.overrides;
 
+import com.genir.renderer.async.ExecutorFactory;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FileRepository {
-    private final Set<String> files = new HashSet<>();
+    private static final ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Path-Loader");
+    private final AtomicReference<Set<String>> filesReference = new AtomicReference<>(null);
+    private final String pwd = System.getProperty("user.dir");
 
     public FileRepository() {
-        String pwd = System.getProperty("user.dir");
-        String modDir = System.getProperty("com.fs.starfarer.settings.paths.mods");
+        exec.execute(() -> {
+            String modDir = System.getProperty("com.fs.starfarer.settings.paths.mods");
 
-        Path core = Path.of(pwd).normalize();
-        Path mods = Path.of(pwd, modDir).normalize();
+            Path core = Path.of("");
+            Path mods = Path.of(modDir);
 
-        enumerate(core);
-        enumerate(mods);
+            Set<String> fileCollector = new HashSet<>();
+
+            enumeratePath(core, fileCollector);
+            enumeratePath(mods, fileCollector);
+
+            filesReference.set(fileCollector);
+
+            Logger.getLogger(FileRepository.class).info("Enumerated " + fileCollector.size() + " files");
+            exec.shutdown();
+        });
     }
 
     public boolean exists(File file) {
@@ -26,19 +41,30 @@ public class FileRepository {
             return false;
         }
 
-        Path relativePath = Path.of(file.getPath());
-        Path path = relativePath.toAbsolutePath().normalize();
+        Set<String> files = filesReference.get();
+        if (files == null) {
+            return file.exists();
+        }
 
-        return files.contains(path.toString());
+        String path = file.getPath();
+        if (path.startsWith(pwd)) {
+            path = path.substring(pwd.length());
+        }
+
+        if (path.startsWith("\\")) {
+            path = path.substring("\\".length());
+        }
+
+        return files.contains(path);
     }
 
-    private void enumerate(Path dir) {
+    private void enumeratePath(Path dir, Set<String> fileCollector) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path path : stream) {
                 if (path.toFile().isDirectory()) {
-                    enumerate(path);
+                    enumeratePath(path, fileCollector);
                 } else {
-                    files.add(path.normalize().toString());
+                    fileCollector.add(path.toString());
                 }
             }
         } catch (Exception e) {

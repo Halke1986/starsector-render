@@ -1,12 +1,11 @@
 package com.genir.renderer.state;
 
+import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.state.stall.StallDetector;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Executor {
@@ -20,14 +19,7 @@ public class Executor {
     private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
     private int batchSize = 0;
 
-    private final AtomicInteger threadCounter = new AtomicInteger(0);
-    private final ExecutorService execActual = Executors.newSingleThreadExecutor(runnable -> {
-        Thread t = new Thread(runnable);
-        t.setDaemon(true);
-        t.setName("FR-Render-" + threadCounter.getAndIncrement());
-
-        return t;
-    });
+    private static final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
     public Executor(ListManager listManager, StallDetector stallDetector) {
         this.listManager = listManager;

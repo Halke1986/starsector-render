@@ -1,13 +1,12 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.Global;
+import com.genir.renderer.async.ExecutorFactory;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -21,14 +20,7 @@ public class ScriptStore {
     private static final Set<String> scripts = new HashSet<>();
 
     private static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-    private static final AtomicInteger threadCounter = new AtomicInteger(0);
-    private static final ExecutorService exec = Executors.newSingleThreadExecutor(runnable -> {
-        Thread t = new Thread(runnable);
-        t.setDaemon(true);
-        t.setName("FR-Script-Loader-" + threadCounter.getAndIncrement());
-
-        return t;
-    });
+    private static final ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Script-Loader");
 
     public static void addScript(String className) {
         // Rethrow exception captured in script loading thread.

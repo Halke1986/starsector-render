@@ -11,41 +11,15 @@ import java.util.List;
 import static com.genir.renderer.state.AppState.state;
 
 public class FileUtils {
-    //    private static final Map<String, Set<Path>> directories = new HashMap<>();
-    private static final FileRepository fileRepo = new FileRepository();
+    private static FileRepository fileRepo = new FileRepository();
 
     // High throughput replacement for File.exists.
     public static boolean exists(File file) {
         return fileRepo.exists(file);
+    }
 
-//        try {
-//            Path path = Paths.get(file.getPath());
-//            Path directory = path.getParent();
-//
-//            Set<Path> files = directories.get(directory.toString());
-//            if (files == null) {
-//                files = new HashSet<>();
-//
-//                try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-//                    for (Path entry : stream) {
-//                        files.add(entry);
-//                    }
-//                } catch (Throwable ignored) {
-//                    // Not a valid directory.
-//                }
-//
-//                directories.put(directory.toString(), files);
-//            }
-//
-//            if (fileRepo.exists(file) != files.contains(path)) {
-//
-//                var x = 0;
-//            }
-//
-//            return files.contains(path);
-//        } catch (Throwable t) {
-//            return false;
-//        }
+    public static void closeFileRepository() {
+        fileRepo = null;
     }
 
     public static List<Pair> loadInputStreams(C resourceLoader, String var1) throws IOException {
