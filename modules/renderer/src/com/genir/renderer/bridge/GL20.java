@@ -396,4 +396,24 @@ public class GL20 {
         }
         state.exec.execute(new glDrawBuffers(buffer));
     }
+
+    public static int glGetAttribLocation(int program, CharSequence name) {
+        record glGetAttribLocation(int program, CharSequence name) implements Callable<Integer> {
+            @Override
+            public Integer call() throws Exception {
+                return org.lwjgl.opengl.GL20.glGetAttribLocation(program, name);
+            }
+        }
+        return state.exec.get(new glGetAttribLocation(program, name));
+    }
+
+    public static boolean glIsProgram(int program) {
+        record glIsProgram(int program) implements Callable<Boolean> {
+            @Override
+            public Boolean call() throws Exception {
+                return org.lwjgl.opengl.GL20.glIsProgram(program);
+            }
+        }
+        return state.exec.get(new glIsProgram(program));
+    }
 }
