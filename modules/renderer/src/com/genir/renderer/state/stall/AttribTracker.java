@@ -1,7 +1,5 @@
 package com.genir.renderer.state.stall;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
 import java.util.Stack;
@@ -15,8 +13,8 @@ import java.util.Stack;
  * through AttribTracker.
  */
 public class AttribTracker {
-    private final Snapshot expected = new Snapshot();
-    private final Stack<Snapshot> expectedStack = new Stack<>();
+    private final AttribState expected = new AttribState();
+    private final Stack<AttribState> expectedStack = new Stack<>();
 
     // Values not being a part of attributes stack.
     private int framebufferBinding = 0;
@@ -51,7 +49,7 @@ public class AttribTracker {
     }
 
     public void clear() {
-        Snapshot cleanContext = new Snapshot();
+        AttribState cleanContext = new AttribState();
         cleanContext.attribMask = -1;
 
         cleanContext.save(expected);
@@ -65,7 +63,7 @@ public class AttribTracker {
         expected.attribMask = mask;
 
         // Save expected state.
-        Snapshot savedExpected = new Snapshot();
+        AttribState savedExpected = new AttribState();
         expected.save(savedExpected);
         expectedStack.push(savedExpected);
     }
@@ -76,7 +74,7 @@ public class AttribTracker {
             return;
         }
 
-        Snapshot savedExpected = expectedStack.pop();
+        AttribState savedExpected = expectedStack.pop();
         savedExpected.save(expected);
     }
 
@@ -107,37 +105,6 @@ public class AttribTracker {
     public void glBindBuffer(int target, int buffer) {
         if (target == GL15.GL_ARRAY_BUFFER) {
             expected.arrayBufferBinding = buffer;
-        }
-    }
-
-    public static class Snapshot {
-        int attribMask = 0;
-
-        int textureID = 0;
-        int activeTexture = GL13.GL_TEXTURE0;
-        int matrixMode = GL11.GL_MODELVIEW;
-        int arrayBufferBinding = 0;
-        float lineWidth = 1;
-
-        void save(Snapshot other) {
-            other.attribMask = attribMask;
-
-            if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
-                other.textureID = textureID;
-                other.activeTexture = activeTexture;
-            }
-
-            if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
-                other.matrixMode = matrixMode;
-            }
-
-            if ((attribMask & GL11.GL_LINE_BIT) != 0) {
-                other.lineWidth = lineWidth;
-            }
-
-            if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
-                other.arrayBufferBinding = arrayBufferBinding;
-            }
         }
     }
 }
