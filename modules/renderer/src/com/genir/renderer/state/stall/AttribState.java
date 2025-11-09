@@ -2,20 +2,75 @@ package com.genir.renderer.state.stall;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
 
 public class AttribState {
     // GL_TEXTURE_BIT
-    int textureID = 0;
-    int activeTexture = GL13.GL_TEXTURE0;
+    private int textureID = 0;
+    private int activeTexture = GL13.GL_TEXTURE0;
 
     // GL_TRANSFORM_BIT
-    int matrixMode = GL11.GL_MODELVIEW;
+    private int matrixMode = GL11.GL_MODELVIEW;
 
     // GL_LINE_BIT
-    float lineWidth = 1;
+    private float lineWidth = 1;
 
     // GL_CLIENT_VERTEX_ARRAY_BIT
-    int arrayBufferBinding = 0;
+    private int arrayBufferBinding = 0;
+
+    //
+    // Getters
+    //
+
+    public int getTextureBindingID() {
+        return textureID;
+    }
+
+    public int getActiveTexture() {
+        return activeTexture;
+    }
+
+    public int getMatrixMode() {
+        return matrixMode;
+    }
+
+    public float getLineWidth() {
+        return lineWidth;
+    }
+
+    public int getArrayBufferBinding() {
+        return arrayBufferBinding;
+    }
+
+    //
+    // Setters
+    //
+
+    public void glBindTexture(int target, int texture) {
+        textureID = texture;
+    }
+
+    public void glActiveTexture(int mode) {
+        activeTexture = mode;
+    }
+
+    public void glMatrixMode(int mode) {
+        matrixMode = mode;
+    }
+
+    public void glLineWidth(float width) {
+        lineWidth = width;
+    }
+
+    public void glBindBuffer(int target, int buffer) {
+        if (target == GL15.GL_ARRAY_BUFFER) {
+            arrayBufferBinding = buffer;
+        }
+    }
+
+    //
+    // Overwrite
+    //
 
     public void overwriteWith(AttribState source, int attribMask) {
         if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {

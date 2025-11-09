@@ -909,7 +909,7 @@ public class GL11 {
     public static int glGetInteger(int pname) { // NoList
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-                return state.attribTracker.getTextureBinding();
+                return state.attribTracker.getTextureBindingID();
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
                 return state.attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:

@@ -1,7 +1,5 @@
 package com.genir.renderer.state.stall;
 
-import org.lwjgl.opengl.GL15;
-
 import java.util.Stack;
 
 /**
@@ -20,20 +18,24 @@ public class AttribTracker {
     private int framebufferBinding = 0;
     private int vertexArrayBinding = 0;
 
-    public int getTextureBinding() {
-        return expected.textureID;
+    public int getTextureBindingID() {
+        return expected.getTextureBindingID();
     }
 
     public int getActiveTexture() {
-        return expected.activeTexture;
+        return expected.getActiveTexture();
     }
 
     public int getMatrixMode() {
-        return expected.matrixMode;
+        return expected.getMatrixMode();
     }
 
     public float getLineWidth() {
-        return expected.lineWidth;
+        return expected.getLineWidth();
+    }
+
+    public int getArrayBufferBinding() {
+        return expected.getArrayBufferBinding();
     }
 
     public int getFramebufferBinding() {
@@ -42,10 +44,6 @@ public class AttribTracker {
 
     public int getVertexArrayBinding() {
         return vertexArrayBinding;
-    }
-
-    public int getArrayBufferBinding() {
-        return expected.arrayBufferBinding;
     }
 
     public void clear() {
@@ -74,19 +72,23 @@ public class AttribTracker {
     }
 
     public void glBindTexture(int target, int texture) {
-        expected.textureID = texture;
+        expected.glBindTexture(target, texture);
     }
 
     public void glActiveTexture(int mode) {
-        expected.activeTexture = mode;
+        expected.glActiveTexture(mode);
     }
 
     public void glMatrixMode(int mode) {
-        expected.matrixMode = mode;
+        expected.glMatrixMode(mode);
     }
 
     public void glLineWidth(float width) {
-        expected.lineWidth = width;
+        expected.glLineWidth(width);
+    }
+
+    public void glBindBuffer(int target, int buffer) {
+        expected.glBindBuffer(target, buffer);
     }
 
     public void glBindFramebuffer(int target, int framebuffer) {
@@ -95,11 +97,5 @@ public class AttribTracker {
 
     public void glBindVertexArray(int array) {
         vertexArrayBinding = array;
-    }
-
-    public void glBindBuffer(int target, int buffer) {
-        if (target == GL15.GL_ARRAY_BUFFER) {
-            expected.arrayBufferBinding = buffer;
-        }
     }
 }
