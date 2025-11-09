@@ -1,10 +1,10 @@
 package com.genir.renderer.state;
 
+import com.genir.renderer.state.stall.AttribState;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL40;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -13,11 +13,11 @@ import java.util.Stack;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
-    private final Snapshot expected = new Snapshot();
-    private final Snapshot actual = new Snapshot();
+    private AttribState expected = new AttribState();
+    private AttribState actual = new AttribState();
 
-    private final Stack<Snapshot> expectedStack = new Stack<>();
-    private final Stack<Snapshot> actualStack = new Stack<>();
+    private Stack<AttribState.Snapshot> expectedStack = new Stack<>();
+    private Stack<AttribState.Snapshot> actualStack = new Stack<>();
 
     public boolean interceptEnable(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
@@ -128,37 +128,31 @@ public class AttribManager {
     }
 
     public void clear() {
-        Snapshot emptyContext = new Snapshot();
-        emptyContext.attribMask = -1;
+        expected = new AttribState();
+        actual = new AttribState();
 
-        actual.copyFrom(emptyContext);
-        expected.copyFrom(emptyContext);
-
-        expectedStack.clear();
-        actualStack.clear();
+        expectedStack = new Stack<>();
+        actualStack = new Stack<>();
     }
 
     public void glEnable(int cap) {
-        setState(cap, true);
+        expected.glEnable(cap);
     }
 
     public void glDisable(int cap) {
-        setState(cap, false);
+        expected.glDisable(cap);
     }
 
     public void glPushAttrib(int mask) {
-        expected.attribMask = mask;
-        actual.attribMask = mask;
-
         // Save expected state.
-        Snapshot savedExpected = new Snapshot();
-        savedExpected.copyFrom(expected);
-        expectedStack.push(savedExpected);
+        AttribState expectedSnapshot = new AttribState();
+        expectedSnapshot.overwriteWith(expected, mask);
+        expectedStack.push(new AttribState.Snapshot(expectedSnapshot, mask));
 
         // Save actual state.
-        Snapshot savedActual = new Snapshot();
-        savedActual.copyFrom(actual);
-        actualStack.push(savedActual);
+        AttribState actualSnapshot = new AttribState();
+        actualSnapshot.overwriteWith(actual, mask);
+        actualStack.push(new AttribState.Snapshot(actualSnapshot, mask));
     }
 
     public void glPopAttrib() {
@@ -167,59 +161,37 @@ public class AttribManager {
             return;
         }
 
-        Snapshot savedExpected = expectedStack.pop();
-        Snapshot savedActual = actualStack.pop();
+        // Load expected state.
+        AttribState.Snapshot expectedSnapshot = expectedStack.pop();
+        expected.overwriteWith(expectedSnapshot.state(), expectedSnapshot.attribMask());
 
-        expected.copyFrom(savedExpected);
-        actual.copyFrom(savedActual);
+        // Load actual state.
+        AttribState.Snapshot actualSnapshot = actualStack.pop();
+        actual.overwriteWith(actualSnapshot.state(), actualSnapshot.attribMask());
     }
 
     public void glBindTexture(int target, int texture) {
-        expected.textureTarget = target;
-        expected.textureID = texture;
+        expected.glBindTexture(target, texture);
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        expected.blend.sfactorRGB = sfactorRGB;
-        expected.blend.dfactorRGB = dfactorRGB;
-        expected.blend.sfactorAlpha = sfactorAlpha;
-        expected.blend.dfactorAlpha = dfactorAlpha;
-
-        // glBlendFuncSeparate overwrites buffer-specific glBlendFuncSeparatei values.
-        expected.blendi = null;
+        expected.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
     }
 
     public void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
-        if (expected.blendi == null) {
-            expected.blendi = new HashMap<>();
-        }
-
-        BlendFactors blend = new BlendFactors();
-        blend.sfactorRGB = srcRGB;
-        blend.dfactorRGB = dstRGB;
-        blend.sfactorAlpha = srcAlpha;
-        blend.dfactorAlpha = dstAlpha;
-
-        expected.blendi.put(buf, blend);
+        expected.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
     }
 
     public void glBlendEquation(int mode) {
-        expected.blendEquation = mode;
-
-        // glBlendEquation overwrites buffer-specific glBlendEquationi values.
-        expected.blendEquationi = null;
+        expected.glBlendEquation(mode);
     }
 
     public void glBlendEquationi(int buf, int mode) {
-        if (expected.blendEquationi == null) {
-            expected.blendEquationi = new HashMap<>();
-        }
-
-        expected.blendEquationi.put(buf, mode);
+        expected.glBlendEquationi(buf, mode);
     }
 
     public void glMatrixMode(int mode) {
-        expected.matrixMode = mode;
+        expected.glMatrixMode(mode);
     }
 
     private void applyStencil() {
@@ -272,8 +244,8 @@ public class AttribManager {
             // the actual state is performed for simplicity and because the
             // buffer-specific settings are not in the hot path.
             if (expected.blendi != null) {
-                for (Map.Entry<Integer, BlendFactors> entry : expected.blendi.entrySet()) {
-                    BlendFactors blend = entry.getValue();
+                for (Map.Entry<Integer, AttribState.BlendFactors> entry : expected.blendi.entrySet()) {
+                    AttribState.BlendFactors blend = entry.getValue();
                     GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
                 }
             }
@@ -298,116 +270,6 @@ public class AttribManager {
             GL11.glEnable(cap);
         } else {
             GL11.glDisable(cap);
-        }
-    }
-
-    private void setState(int cap, boolean value) {
-        switch (cap) {
-            case GL11.GL_STENCIL_TEST:
-                expected.enableStencilTest = value;
-                break;
-            case GL11.GL_ALPHA_TEST:
-                expected.enableAlphaTest = value;
-                break;
-            case GL11.GL_TEXTURE_2D:
-                expected.enableTexture2D = value;
-                break;
-            case GL11.GL_BLEND:
-                expected.enableBlend = value;
-                break;
-            case GL11.GL_LIGHTING:
-                expected.enableLighting = value;
-                break;
-        }
-    }
-
-    public static class Snapshot {
-        int attribMask = 0;
-
-        boolean enableStencilTest = false;
-        boolean enableAlphaTest = false;
-        boolean enableTexture2D = false;
-        boolean enableBlend = false;
-        boolean enableLighting = false;
-
-        // Only tracking, no application.
-        int textureTarget = 0;
-        int textureID = 0;
-
-        // Blend.
-        BlendFactors blend = new BlendFactors();
-        int blendEquation = GL14.GL_FUNC_ADD;
-        Map<Integer, BlendFactors> blendi = null;
-        Map<Integer, Integer> blendEquationi = null;
-
-        int matrixMode = GL11.GL_MODELVIEW;
-
-        void copyFrom(Snapshot source) {
-            attribMask = source.attribMask;
-
-            if ((attribMask & GL11.GL_ENABLE_BIT) != 0) {
-                enableStencilTest = source.enableStencilTest;
-                enableAlphaTest = source.enableAlphaTest;
-                enableTexture2D = source.enableTexture2D;
-                enableBlend = source.enableBlend;
-                enableLighting = source.enableLighting;
-            }
-
-            if ((attribMask & GL11.GL_STENCIL_BUFFER_BIT) != 0) {
-                enableStencilTest = source.enableStencilTest;
-            }
-
-            if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
-                blend.copyFrom(source.blend);
-                blendEquation = source.blendEquation;
-
-                if (source.blendi != null) {
-                    if (blendi == null) {
-                        blendi = new HashMap<>();
-                    } else {
-                        blendi.clear();
-                    }
-
-                    for (Map.Entry<Integer, BlendFactors> entry : source.blendi.entrySet()) {
-                        BlendFactors blend = new BlendFactors();
-                        blend.copyFrom(entry.getValue());
-                        blendi.put(entry.getKey(), blend);
-                    }
-                }
-
-                if (source.blendEquationi != null) {
-                    if (blendEquationi == null) {
-                        blendEquationi = new HashMap<>();
-                    } else {
-                        blendEquationi.clear();
-                    }
-
-                    blendEquationi.putAll(source.blendEquationi);
-                }
-            }
-
-            if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
-                matrixMode = source.matrixMode;
-            }
-
-            if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
-                textureTarget = source.textureTarget;
-                textureID = source.textureID;
-            }
-        }
-    }
-
-    public static class BlendFactors {
-        int sfactorRGB = 0;
-        int dfactorRGB = 0;
-        int sfactorAlpha = 0;
-        int dfactorAlpha = 0;
-
-        void copyFrom(BlendFactors source) {
-            sfactorRGB = source.sfactorRGB;
-            dfactorRGB = source.dfactorRGB;
-            sfactorAlpha = source.sfactorAlpha;
-            dfactorAlpha = source.dfactorAlpha;
         }
     }
 }

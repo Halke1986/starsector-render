@@ -11,31 +11,31 @@ import java.util.Stack;
  * through AttribTracker.
  */
 public class AttribTracker {
-    private final AttribState state = new AttribState();
-    private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
+    private AttribState state = new AttribState();
+    private Stack<AttribState.Snapshot> expectedStack = new Stack<>();
 
     // Values not being a part of attributes stack.
     private int framebufferBinding = 0;
     private int vertexArrayBinding = 0;
 
     public int getTextureBindingID() {
-        return state.getTextureBindingID();
+        return state.textureID;
     }
 
     public int getActiveTexture() {
-        return state.getActiveTexture();
+        return state.activeTexture;
     }
 
     public int getMatrixMode() {
-        return state.getMatrixMode();
+        return state.matrixMode;
     }
 
     public float getLineWidth() {
-        return state.getLineWidth();
+        return state.lineWidth;
     }
 
     public int getArrayBufferBinding() {
-        return state.getArrayBufferBinding();
+        return state.arrayBufferBinding;
     }
 
     public int getFramebufferBinding() {
@@ -47,8 +47,8 @@ public class AttribTracker {
     }
 
     public void clear() {
-        state.overwriteWith(new AttribState(), -1);
-        expectedStack.clear();
+        state = new AttribState();
+        expectedStack = new Stack<>();
 
         framebufferBinding = 0;
         vertexArrayBinding = 0;
