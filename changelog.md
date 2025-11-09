@@ -1,3 +1,5 @@
+v0.5.2
+
 - Fixed a race condition in vanilla code that could cause ClassNotFoundException at game startup.
 - Optimized game startup time. The game now loads faster and uses less memory.
 - Added profiler.
