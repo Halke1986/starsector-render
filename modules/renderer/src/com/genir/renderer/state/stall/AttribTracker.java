@@ -11,7 +11,7 @@ import java.util.Stack;
  * through AttribTracker.
  */
 public class AttribTracker {
-    private final AttribState expected = new AttribState();
+    private final AttribState state = new AttribState();
     private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
 
     // Values not being a part of attributes stack.
@@ -19,23 +19,23 @@ public class AttribTracker {
     private int vertexArrayBinding = 0;
 
     public int getTextureBindingID() {
-        return expected.getTextureBindingID();
+        return state.getTextureBindingID();
     }
 
     public int getActiveTexture() {
-        return expected.getActiveTexture();
+        return state.getActiveTexture();
     }
 
     public int getMatrixMode() {
-        return expected.getMatrixMode();
+        return state.getMatrixMode();
     }
 
     public float getLineWidth() {
-        return expected.getLineWidth();
+        return state.getLineWidth();
     }
 
     public int getArrayBufferBinding() {
-        return expected.getArrayBufferBinding();
+        return state.getArrayBufferBinding();
     }
 
     public int getFramebufferBinding() {
@@ -47,7 +47,7 @@ public class AttribTracker {
     }
 
     public void clear() {
-        expected.overwriteWith(new AttribState(), -1);
+        state.overwriteWith(new AttribState(), -1);
         expectedStack.clear();
 
         framebufferBinding = 0;
@@ -57,7 +57,7 @@ public class AttribTracker {
     public void glPushAttrib(int mask) {
         // Save expected state.
         AttribState stateSnapshot = new AttribState();
-        stateSnapshot.overwriteWith(expected, mask);
+        stateSnapshot.overwriteWith(state, mask);
         expectedStack.push(new AttribState.Snapshot(stateSnapshot, mask));
     }
 
@@ -68,27 +68,27 @@ public class AttribTracker {
         }
 
         AttribState.Snapshot snapshot = expectedStack.pop();
-        expected.overwriteWith(snapshot.state(), snapshot.attribMask());
+        state.overwriteWith(snapshot.state(), snapshot.attribMask());
     }
 
     public void glBindTexture(int target, int texture) {
-        expected.glBindTexture(target, texture);
+        state.glBindTexture(target, texture);
     }
 
     public void glActiveTexture(int mode) {
-        expected.glActiveTexture(mode);
+        state.glActiveTexture(mode);
     }
 
     public void glMatrixMode(int mode) {
-        expected.glMatrixMode(mode);
+        state.glMatrixMode(mode);
     }
 
     public void glLineWidth(float width) {
-        expected.glLineWidth(width);
+        state.glLineWidth(width);
     }
 
     public void glBindBuffer(int target, int buffer) {
-        expected.glBindBuffer(target, buffer);
+        state.glBindBuffer(target, buffer);
     }
 
     public void glBindFramebuffer(int target, int framebuffer) {
