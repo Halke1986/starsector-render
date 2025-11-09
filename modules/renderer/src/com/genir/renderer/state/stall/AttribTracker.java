@@ -14,7 +14,7 @@ import java.util.Stack;
  */
 public class AttribTracker {
     private final AttribState expected = new AttribState();
-    private final Stack<AttribState> expectedStack = new Stack<>();
+    private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
 
     // Values not being a part of attributes stack.
     private int framebufferBinding = 0;
@@ -49,23 +49,18 @@ public class AttribTracker {
     }
 
     public void clear() {
-        AttribState cleanContext = new AttribState();
-        cleanContext.attribMask = -1;
-
-        expected.overwriteWith(cleanContext);
-
+        expected.overwriteWith(new AttribState(), -1);
         expectedStack.clear();
 
         framebufferBinding = 0;
+        vertexArrayBinding = 0;
     }
 
     public void glPushAttrib(int mask) {
-        expected.attribMask = mask;
-
         // Save expected state.
-        AttribState savedExpected = new AttribState();
-        savedExpected.overwriteWith(expected);
-        expectedStack.push(savedExpected);
+        AttribState stateSnapshot = new AttribState();
+        stateSnapshot.overwriteWith(expected, mask);
+        expectedStack.push(new AttribState.Snapshot(stateSnapshot, mask));
     }
 
     public void glPopAttrib() {
@@ -74,8 +69,8 @@ public class AttribTracker {
             return;
         }
 
-        AttribState savedExpected = expectedStack.pop();
-        expected.overwriteWith(savedExpected);
+        AttribState.Snapshot snapshot = expectedStack.pop();
+        expected.overwriteWith(snapshot.state(), snapshot.attribMask());
     }
 
     public void glBindTexture(int target, int texture) {
