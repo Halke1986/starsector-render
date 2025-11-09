@@ -445,6 +445,8 @@ public class GL11 {
                 }
             }
         }
+
+        state.attribTracker.glEnable(cap);
         state.exec.execute(new glEnable(cap));
     }
 
@@ -459,6 +461,8 @@ public class GL11 {
                 }
             }
         }
+
+        state.attribTracker.glDisable(cap);
         state.exec.execute(new glDisable(cap));
     }
 
@@ -1069,5 +1073,28 @@ public class GL11 {
             }
         }
         state.exec.wait(new glGetTexImage(target, level, format, type, pixels));
+    }
+
+    public static boolean glIsEnabled(int pname) { // NoList
+        switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_STENCIL_TEST:
+                return state.attribTracker.getEnableStencilTest();
+            case org.lwjgl.opengl.GL11.GL_ALPHA_TEST:
+                return state.attribTracker.getEnableAlphaTest();
+            case org.lwjgl.opengl.GL11.GL_TEXTURE_2D:
+                return state.attribTracker.getEnableTexture2D();
+            case org.lwjgl.opengl.GL11.GL_BLEND:
+                return state.attribTracker.getEnableBlend();
+            case org.lwjgl.opengl.GL11.GL_LIGHTING:
+                return state.attribTracker.getEnableLighting();
+        }
+
+        record glIsEnabled(int pname) implements Callable<Boolean> {
+            @Override
+            public Boolean call() throws Exception {
+                return org.lwjgl.opengl.GL11.glIsEnabled(pname);
+            }
+        }
+        return state.exec.get(new glIsEnabled(pname));
     }
 }

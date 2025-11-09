@@ -2,6 +2,7 @@
 - Optimized game startup time. The game now loads faster and uses less memory.
 - Added profiler.
 - Added support for Moci Ship Pack. Incompatibility reported by memebfgpgn.
+- Added support for ruddygreat widely stolen PonderableOrb class. Orbs are now 100% more ponderable. Incompatibility reported by Chikanuk.
 
 v0.5.1
 

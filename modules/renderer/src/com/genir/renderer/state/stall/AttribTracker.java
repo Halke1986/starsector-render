@@ -18,6 +18,26 @@ public class AttribTracker {
     private int framebufferBinding = 0;
     private int vertexArrayBinding = 0;
 
+    public boolean getEnableStencilTest() {
+        return state.enableStencilTest;
+    }
+
+    public boolean getEnableAlphaTest() {
+        return state.enableAlphaTest;
+    }
+
+    public boolean getEnableTexture2D() {
+        return state.enableTexture2D;
+    }
+
+    public boolean getEnableBlend() {
+        return state.enableBlend;
+    }
+
+    public boolean getEnableLighting() {
+        return state.enableLighting;
+    }
+
     public int getTextureBindingID() {
         return state.textureID;
     }
@@ -69,6 +89,14 @@ public class AttribTracker {
 
         AttribState.Snapshot snapshot = expectedStack.pop();
         state.overwriteWith(snapshot.state(), snapshot.attribMask());
+    }
+
+    public void glEnable(int cap) {
+        state.glEnable(cap);
+    }
+
+    public void glDisable(int cap) {
+        state.glDisable(cap);
     }
 
     public void glBindTexture(int target, int texture) {

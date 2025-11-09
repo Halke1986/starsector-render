@@ -10,11 +10,11 @@ import java.util.Map;
 
 public class AttribState {
     // GL_ENABLE_BIT
-    public boolean enableStencilTest = false;
-    public boolean enableAlphaTest = false;
-    public boolean enableTexture2D = false;
-    public boolean enableBlend = false;
-    public boolean enableLighting = false;
+    public boolean enableStencilTest = false; // GL11.GL_STENCIL_TEST
+    public boolean enableAlphaTest = false;   // GL11.GL_ALPHA_TEST
+    public boolean enableTexture2D = false;   // GL11.GL_TEXTURE_2D
+    public boolean enableBlend = false;       // GL11.GL_BLEND
+    public boolean enableLighting = false;    // GL11.GL_LIGHTING
 
     // GL_TEXTURE_BIT
     public int textureTarget = 0;
