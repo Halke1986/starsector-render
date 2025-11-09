@@ -52,7 +52,7 @@ public class AttribTracker {
         AttribState cleanContext = new AttribState();
         cleanContext.attribMask = -1;
 
-        cleanContext.save(expected);
+        expected.overwriteWith(cleanContext);
 
         expectedStack.clear();
 
@@ -64,7 +64,7 @@ public class AttribTracker {
 
         // Save expected state.
         AttribState savedExpected = new AttribState();
-        expected.save(savedExpected);
+        savedExpected.overwriteWith(expected);
         expectedStack.push(savedExpected);
     }
 
@@ -75,7 +75,7 @@ public class AttribTracker {
         }
 
         AttribState savedExpected = expectedStack.pop();
-        savedExpected.save(expected);
+        expected.overwriteWith(savedExpected);
     }
 
     public void glBindTexture(int target, int texture) {

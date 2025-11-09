@@ -12,24 +12,24 @@ public class AttribState {
     int arrayBufferBinding = 0;
     float lineWidth = 1;
 
-    void save(AttribState other) {
-        other.attribMask = attribMask;
+    void overwriteWith(AttribState source) {
+        attribMask = source.attribMask;
 
         if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
-            other.textureID = textureID;
-            other.activeTexture = activeTexture;
+            textureID = source.textureID;
+            activeTexture = source.activeTexture;
         }
 
         if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
-            other.matrixMode = matrixMode;
+            matrixMode = source.matrixMode;
         }
 
         if ((attribMask & GL11.GL_LINE_BIT) != 0) {
-            other.lineWidth = lineWidth;
+            lineWidth = source.lineWidth;
         }
 
         if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
-            other.arrayBufferBinding = arrayBufferBinding;
+            arrayBufferBinding = source.arrayBufferBinding;
         }
     }
 }
