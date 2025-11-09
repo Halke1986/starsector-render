@@ -1,3 +1,5 @@
+- Fixed a Ship hull spec not found crash that occurred when loading Machina Void Shipyards Armaa Expansion Patch. Reported by nghi.casual.
+
 v0.5.2
 
 - Fixed a race condition in vanilla code that could cause ClassNotFoundException at game startup.

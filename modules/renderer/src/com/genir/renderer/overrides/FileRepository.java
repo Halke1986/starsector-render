@@ -64,7 +64,9 @@ public class FileRepository {
             path = path.substring("\\".length());
         }
 
-        return files.contains(path);
+        // Lowercase file path, to avoid case sensitivity
+        // issues. Not sure if this works on Linux or MacOS.
+        return files.contains(path.toLowerCase());
     }
 
     private void enumeratePath(Path dir, Set<String> fileCollector) {
@@ -73,7 +75,7 @@ public class FileRepository {
                 if (path.toFile().isDirectory()) {
                     enumeratePath(path, fileCollector);
                 } else {
-                    fileCollector.add(path.toString());
+                    fileCollector.add(path.toString().toLowerCase());
                 }
             }
         } catch (Exception e) {
