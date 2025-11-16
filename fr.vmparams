@@ -16,68 +16,25 @@
 # GC
 -XX:+DisableExplicitGC
 -XX:+UseShenandoahGC
-#-XX:ShenandoahGCMode=iu
-#-XX:ShenandoahGCHeuristics=compact
-#-XX:ShenandoahAllocationThreshold=85
-#-XX:ShenandoahGuaranteedGCInterval=0
 -XX:MaxGCPauseMillis=10
 
 # Runtime Optimization
 -XX:-DontCompileHugeMethods
-#-XX:+AlwaysCompileLoopMethods
-#-XX:Tier0Delay=1
-#-XX:TieredOldPercentage=10000
-#-XX:Tier0ProfilingStartPercentage=2000
-#-XX:IncreaseFirstTierCompileThresholdAt=99
-#-XX:InterpreterProfilePercentage=99
-#-XX:PerMethodRecompilationCutoff=100000
-#-XX:ProfileMaturityPercentage=100
-#-XX:-UseDynamicNumberOfCompilerThreads
-#-XX:CompilerDirectivesFile=./compiler_directives.txt
 
 # Misc
 -XX:+UseFastStosb
 -XX:TrimNativeHeapInterval=60000
--XX:UseAVX=3
--XX:AVX3Threshold=0
 -XX:+UseXmmI2D
 -XX:+UseXmmI2F
 -XX:+AlwaysPreTouch
 -XX:+ZeroTLAB
--XX:+AlwaysAtomicAccesses
 -XX:+UseStringDeduplication
 -XX:+EnableVectorAggressiveReboxing
 -XX:+EnableVectorReboxing
 -XX:+EnableVectorSupport
 -XX:+UseVectorCmov
 -XX:+UseVectorStubs
--XX:ReferencesPerThread=0
--XX:NmethodSweepActivity=1
 -XX:ThreadPriorityPolicy=1
-
-# JVM Default
-#-XX:+TieredCompilation
-#-XX:-UseCondCardMark
-#-XX:TieredStopAtLevel=4
-#-XX:UseSSE=4
-#-XX:+UseSSE42Intrinsics
-#-XX:+UseCompressedOops
-#-XX:+UseCompressedClassPointers
-#-XX:+UseFMA
-#-XX:+UseBMI1Instructions
-#-XX:+UseBMI2Instructions
-#-XX:+UseCLMUL
-#-XX:+UseFastUnorderedTimeStamps
-#-XX:+UseUnalignedLoadStores
-#-XX:+UseXMMForArrayCopy
-#-XX:+UseXMMForObjInit
-#-XX:+ParallelRefProcEnabled
-#-XX:+SegmentedCodeCache
-#-XX:+UseFPUForSpilling
-#-XX:-AlignVector
-#-XX:-EnableThreadSMRStatistics
-#-XX:+UseUnalignedAccesses
-#-XX:ReservedCodeCacheSize=256m
 
 -Xlog:async
 

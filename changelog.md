@@ -1,3 +1,5 @@
+- Removed unnecessary JVM arguments. This should result in minor performance and stability improvements.
+
 v0.5.3
 
 - Fixed a Ship hull spec not found crash that occurred when loading Machina Void Shipyards Armaa Expansion Patch. Reported by nghi.casual.
