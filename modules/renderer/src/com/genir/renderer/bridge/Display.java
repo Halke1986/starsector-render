@@ -22,6 +22,7 @@ public class Display {
 
         state.glStateCache.update();
         state.vertexInterceptor.update();
+        state.texGenerator.update();
         state.arrayGenerator.update();
         state.bufferGenerator.update();
         state.profiler.update();

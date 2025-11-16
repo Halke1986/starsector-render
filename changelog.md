@@ -1,4 +1,5 @@
 - Removed unnecessary JVM arguments. This should result in minor performance and stability improvements.
+- Fixed asynchronous pipeline stall that could occur when defining new OpenGL textures every frame. Reported by rolfosian.
 
 v0.5.3
 

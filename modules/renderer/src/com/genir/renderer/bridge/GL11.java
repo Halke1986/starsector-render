@@ -970,13 +970,7 @@ public class GL11 {
     }
 
     public static int glGenTextures() { // NoList
-        record glGenTextures() implements Callable<Integer> {
-            @Override
-            public Integer call() throws Exception {
-                return org.lwjgl.opengl.GL11.glGenTextures();
-            }
-        }
-        return state.exec.get(new glGenTextures());
+            return state.texGenerator.get();
     }
 
     public static String glGetString(int name) { // NoList
