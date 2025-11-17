@@ -42,12 +42,12 @@ public class FileRepository {
     // ---------------------------------------------------------------------------------
 
     // $FF: renamed from: o00000 (java.lang.String) java.awt.image.BufferedImage
-    private static BufferedImage loadImageStub(String var0) throws IOException {
+    static BufferedImage loadImageStub(String var0) throws IOException { // private
         return null;
     }
 
     // $FF: renamed from: Ô00000 (java.lang.String) byte[]
-    private static byte[] loadSoundStub(String var0) throws IOException {
+    static byte[] loadSoundStub(String var0) throws IOException { // private
         return null;
     }
 
