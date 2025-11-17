@@ -45,7 +45,11 @@ L21:
 .end method 
 
 .method public queueResource : (Lcom/fs/starfarer/loading/ResourceLoaderState$o;Ljava/lang/String;I)V 
-    .code stack 6 locals 4 
+    .code stack 6 locals 4
+        aload_1
+        invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState$o name ()Ljava/lang/String;
+        aload_2
+        invokestatic Method com/genir/renderer/overrides/ResourceLoadingState loadResource (Ljava/lang/String;Ljava/lang/String;)V
 L0:     aload_2 
 L1:     ifnull L13 
 L4:     ldc '' 
