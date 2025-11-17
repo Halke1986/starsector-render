@@ -12,12 +12,12 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FileRepository {
-    private static final ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Path-Loader");
+public class PathCache {
+    private final ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Path-Loader");
     private final AtomicReference<Set<String>> filesReference = new AtomicReference<>(null);
     private final String pwd = System.getProperty("user.dir");
 
-    public FileRepository() {
+    public PathCache() {
         // Initialize the FileRepository in a separate thread.
         // That way the lengthy initialization will not cause
         // annoying pause when running Starsector launcher.
@@ -34,7 +34,7 @@ public class FileRepository {
 
             filesReference.set(fileCollector);
 
-            Logger.getLogger(FileRepository.class).info("Enumerated " + fileCollector.size() + " files");
+            Logger.getLogger(PathCache.class).info("Enumerated " + fileCollector.size() + " files");
             exec.shutdown();
         });
     }

@@ -11,16 +11,16 @@ import java.util.List;
 import static com.genir.renderer.state.AppState.state;
 
 public class FileUtils {
-    private static FileRepository fileRepo = new FileRepository();
+    private static PathCache pathCache = new PathCache();
 
     // High throughput replacement for File.exists.
     public static boolean exists(File file) {
-        return fileRepo.exists(file);
+        return pathCache.exists(file);
     }
 
     // Deallocate the path cache when it's no longer needed.
     public static void closeFileRepository() {
-        fileRepo = null;
+        pathCache = null;
     }
 
     public static List<Pair> loadInputStreams(C resourceLoader, String var1) throws IOException {
