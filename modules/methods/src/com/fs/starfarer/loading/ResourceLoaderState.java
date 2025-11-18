@@ -9,7 +9,7 @@ import static com.genir.renderer.overrides.ScriptStore.runScriptLoadingThread;
 
 public class ResourceLoaderState {
     public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {
-        com.genir.renderer.overrides.ResourceLoadingState.loadResource(flags.name(), path);
+        com.genir.renderer.overrides.ResourceLoaderState.loadResource(flags.name(), path);
     }
 
     public void init(Map var1) throws Exception {

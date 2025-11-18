@@ -1,6 +1,11 @@
 package com.genir.renderer.overrides;
 
-public class ResourceLoadingState {
+import com.fs.starfarer.loading.SpecStore;
+import org.json.JSONException;
+
+import java.io.IOException;
+
+public class ResourceLoaderState {
     public static void loadResource(String type, String path) {
         switch (type) {
             case "TEXTURE":
@@ -11,5 +16,9 @@ public class ResourceLoadingState {
             case "SOUND":
                 FileRepository.queueSound(path);
         }
+    }
+
+    public static void initSpecStore(com.fs.starfarer.loading.ResourceLoaderState state) throws JSONException, IOException {
+        SpecStore.init(state);
     }
 }

@@ -49,7 +49,7 @@ L21:
         aload_1
         invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState$o name ()Ljava/lang/String;
         aload_2
-        invokestatic Method com/genir/renderer/overrides/ResourceLoadingState loadResource (Ljava/lang/String;Ljava/lang/String;)V
+        invokestatic Method com/genir/renderer/overrides/ResourceLoaderState loadResource (Ljava/lang/String;Ljava/lang/String;)V
 L0:     aload_2 
 L1:     ifnull L13 
 L4:     ldc '' 
@@ -903,7 +903,7 @@ L1713:  i2f
 L1714:  fdiv 
 L1715:  invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState renderProgress (F)V 
 L1718:  aload_0 
-L1719:  invokestatic Method com/fs/starfarer/loading/SpecStore 'ÓO0000' (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
+L1719:  invokestatic Method com/genir/renderer/overrides/ResourceLoaderState initSpecStore (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
 L1722:  aload_0 
 L1723:  fconst_2 
 L1724:  aload_0 
