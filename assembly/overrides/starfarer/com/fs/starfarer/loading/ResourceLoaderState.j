@@ -965,7 +965,7 @@ L1835:  iload_3
 L1836:  ifeq L1847 
 L1839:  aload 4 
 L1841:  getfield Field com/fs/starfarer/loading/ResourceLoaderState$Oo o00000 Ljava/lang/String; 
-L1844:  invokestatic Method com/fs/graphics/L Object (Ljava/lang/String;)V 
+L1844:  invokestatic Method com/genir/renderer/overrides/extensions/Noop noop (Ljava/lang/String;)V
 
         .stack full 
             locals Object com/fs/starfarer/loading/ResourceLoaderState Object java/util/Map Object java/util/List Integer Top Object java/util/Iterator 

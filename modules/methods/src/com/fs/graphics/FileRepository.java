@@ -13,16 +13,6 @@ public class FileRepository {
         com.genir.renderer.overrides.FileRepository.queueImage(var0);
     }
 
-    // $FF: renamed from: Object (java.lang.String) void
-    public static void queueSound(String var0) {
-        com.genir.renderer.overrides.FileRepository.queueSound(var0);
-    }
-
-    // $FF: renamed from: Ò00000 (java.lang.String) byte[]
-    public static byte[] getSound(String var0) {
-        return com.genir.renderer.overrides.FileRepository.getSound(var0);
-    }
-
     // $FF: renamed from: Õ00000 (java.lang.String) java.awt.image.BufferedImage
     public static BufferedImage getImage(String var0) {
         return com.genir.renderer.overrides.FileRepository.getImage(var0);

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/modules/callees/callees.iml" filepath="$PROJECT_DIR$/modules/callees/callees.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/jfr/jfr.iml" filepath="$PROJECT_DIR$/modules/jfr/jfr.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/methods/methods.iml" filepath="$PROJECT_DIR$/modules/methods/methods.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/renderer/renderer.iml" filepath="$PROJECT_DIR$/modules/renderer/renderer.iml" />

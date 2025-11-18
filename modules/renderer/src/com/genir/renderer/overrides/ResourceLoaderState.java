@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.loading.SpecStore;
+import com.genir.renderer.overrides.extensions.SoundLoader;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class ResourceLoaderState {
                 FileRepository.queueImage(path);
                 break;
             case "SOUND":
-                FileRepository.queueSound(path);
+                SoundLoader.queueSound(path);
         }
     }
 
