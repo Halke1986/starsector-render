@@ -56,9 +56,7 @@ public class FileRepository {
 
     private static byte[] loadSound(String path) {
         try {
-            byte[] bytes = com.fs.graphics.FileRepository.loadSound(path);
-//            logger.info("Loaded file [" + path + "]");
-            return bytes;
+            return com.fs.graphics.FileRepository.loadSound(path);
         } catch (Exception e) {
             logger.error("Error while loading file [" + path + "]: " + e.getMessage());
             return null;
@@ -67,9 +65,7 @@ public class FileRepository {
 
     private static BufferedImage loadImage(String path) {
         try {
-            BufferedImage bytes = com.fs.graphics.FileRepository.loadImage(path);
-//            logger.info("Loaded file [" + path + "]");
-            return bytes;
+            return com.fs.graphics.FileRepository.loadImage(path);
         } catch (Exception e) {
             logger.error("Error while loading file [" + path + "]: " + e.getMessage());
             return null;
