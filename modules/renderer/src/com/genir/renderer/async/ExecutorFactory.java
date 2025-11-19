@@ -11,7 +11,13 @@ public class ExecutorFactory {
         return Executors.newSingleThreadExecutor(runnable -> {
             Thread t = new Thread(runnable);
             t.setDaemon(true);
-            t.setName(name + "-" + threadCounter.getAndIncrement());
+
+            int num = threadCounter.getAndIncrement();
+            if (num == 0) {
+                t.setName(name);
+            } else {
+                t.setName(name + "-" + threadCounter.getAndIncrement());
+            }
 
             return t;
         });
