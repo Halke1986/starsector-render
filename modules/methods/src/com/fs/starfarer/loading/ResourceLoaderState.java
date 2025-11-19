@@ -1,6 +1,7 @@
 package com.fs.starfarer.loading;
 
 import com.fs.starfarer.api.combat.ShipwideAIFlags;
+import com.genir.renderer.overrides.loading.ResourceLoader;
 
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import static com.genir.renderer.overrides.loading.ScriptLoader.runScriptLoading
 
 public class ResourceLoaderState {
     public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {
-        com.genir.renderer.overrides.ResourceLoaderState.loadResource(flags.name(), path);
+        ResourceLoader.loadResource(flags.name(), path);
     }
 
     public void init(Map var1) throws Exception {

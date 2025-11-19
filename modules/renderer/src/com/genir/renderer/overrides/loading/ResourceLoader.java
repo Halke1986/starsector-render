@@ -1,12 +1,10 @@
-package com.genir.renderer.overrides;
+package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.loading.SpecStore;
 import com.genir.renderer.Noop;
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.overrides.loading.ImageLoader;
-import com.genir.renderer.overrides.loading.SoundLoader;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -15,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ResourceLoaderState {
+public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> executorQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger waitGroup = new AtomicInteger(0);
 

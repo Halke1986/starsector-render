@@ -2,7 +2,6 @@ package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureRepository;
-import com.genir.renderer.overrides.ResourceLoaderState;
 import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
@@ -20,8 +19,8 @@ public class ImageLoader {
         if (path != null && !knownImages.contains(path)) {
             knownImages.add(path);
 
-            ResourceLoaderState.waitGroup.incrementAndGet();
-            ResourceLoaderState.executorQueue.add(() -> loadImage(type, path));
+            ResourceLoader.waitGroup.incrementAndGet();
+            ResourceLoader.executorQueue.add(() -> loadImage(type, path));
         }
     }
 
