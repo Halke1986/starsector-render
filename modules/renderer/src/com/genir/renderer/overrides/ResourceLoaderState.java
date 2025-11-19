@@ -23,7 +23,7 @@ public class ResourceLoaderState {
             case "TEXTURE":
             case "TEXTURE_OPTIONAL":
             case "TEXTURE_ALPHA_ADDER":
-                ImageLoader.queueImage(path);
+                ImageLoader.queueImage(type, path);
                 break;
             case "SOUND":
                 SoundLoader.queueSound(path);
