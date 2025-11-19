@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
@@ -60,7 +61,24 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 r.run();
             } while (waitGroup.decrementAndGet() > 0);
 
+            ExecutorService scriptExec = ScriptLoader.getExecutor();
+            ExecutorService soundExec = SoundLoader.getExecutor();
+
+            scriptExec.shutdown();
+            soundExec.shutdown();
+
+            awaitTermination(scriptExec);
+            awaitTermination(soundExec);
+
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void awaitTermination(ExecutorService exec) {
+        try {
+            exec.awaitTermination(30, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

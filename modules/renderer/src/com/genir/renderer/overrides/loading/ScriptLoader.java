@@ -54,6 +54,10 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         });
     }
 
+    public static ExecutorService getExecutor() {
+        return exec;
+    }
+
     public static void runScriptLoadingThread() {
         initScriptClassLoader();
     }

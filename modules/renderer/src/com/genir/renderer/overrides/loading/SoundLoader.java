@@ -33,4 +33,8 @@ public class SoundLoader {
             Logger.getLogger(SoundLoader.class).error("Error while loading file [" + path + "]: " + e.getMessage());
         }
     }
+
+    public static ExecutorService getExecutor() {
+        return exec;
+    }
 }
