@@ -904,6 +904,7 @@ L1714:  fdiv
 L1715:  invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState renderProgress (F)V 
 L1718:  aload_0 
 L1719:  invokestatic Method com/genir/renderer/overrides/ResourceLoaderState initSpecStore (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
+        goto L2482
 L1722:  aload_0 
 L1723:  fconst_2 
 L1724:  aload_0 
@@ -1320,7 +1321,7 @@ L2579:
     .end code 
 .end method 
 
-.method private queueShipAndWeaponSprites : ()V 
+.method public queueShipAndWeaponSprites : ()V
     .code stack 5 locals 10 
 L0:     new java/util/ArrayList 
 L3:     dup 

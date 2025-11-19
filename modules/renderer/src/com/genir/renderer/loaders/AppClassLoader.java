@@ -8,13 +8,7 @@ import java.util.List;
 
 public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
     private final List<ClassConstantTransformer> deobfTransformers = List.of(
-            new ClassConstantTransformer(Arrays.asList(
-                    // Replace OpenGL calls.
-                    ClassConstantTransformer.newTransform("com/fs/graphics/FileRepository", "com/fs/graphics/L"),
-
-                    ClassConstantTransformer.newTransform("FileRepository_loadImage", "o00000"),
-                    ClassConstantTransformer.newTransform("FileRepository_loadSound", "Ô00000")
-            ))
+            new ClassConstantTransformer(Deobf.transforms)
     );
 
     private final List<ClassConstantTransformer> lwjglTransformers = List.of(

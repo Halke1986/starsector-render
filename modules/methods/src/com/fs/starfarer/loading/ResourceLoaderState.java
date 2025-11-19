@@ -16,4 +16,7 @@ public class ResourceLoaderState {
         runScriptLoadingThread();
         joinScriptLoadingThread();
     }
+
+    public void queueShipAndWeaponSprites() {
+    }
 }

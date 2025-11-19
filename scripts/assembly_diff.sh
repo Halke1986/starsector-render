@@ -1,2 +1,3 @@
 #diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/combat/CombatState.j ./assembly/overrides/starfarer/com/fs/starfarer/combat/CombatState.j
-diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/BaseGameState.j ./assembly/overrides/starfarer/com/fs/starfarer/BaseGameState.j
+#diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/BaseGameState.j ./assembly/overrides/starfarer/com/fs/starfarer/BaseGameState.j
+diff -u -bB ./disassembly/starfarer/starfarer/com/fs/starfarer/loading/ResourceLoaderState.j ./assembly/overrides/starfarer/com/fs/starfarer/loading/ResourceLoaderState.j
