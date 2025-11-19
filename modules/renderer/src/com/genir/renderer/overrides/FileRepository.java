@@ -36,7 +36,7 @@ public class FileRepository {
 
     private static BufferedImage loadImage(String path) {
         try {
-            return com.fs.graphics.FileRepository.loadImage(path);
+            return com.fs.graphics.FileRepository.FileRepository_loadImage(path);
         } catch (Exception e) {
             logger.error("Error while loading file [" + path + "]: " + e.getMessage());
             return null;

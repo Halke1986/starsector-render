@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides.extensions;
 
+import com.fs.graphics.FileRepository;
 import com.genir.renderer.async.ExecutorFactory;
 import org.apache.log4j.Logger;
 import sound.Sound;
@@ -23,7 +24,7 @@ public class SoundLoader {
 
     private static void loadSound(String path) {
         try {
-            byte[] bytes = com.fs.graphics.FileRepository.loadSound(path);
+            byte[] bytes = FileRepository.FileRepository_loadSound(path);
             ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
             String extension = path.substring(path.lastIndexOf(".") + 1);
 

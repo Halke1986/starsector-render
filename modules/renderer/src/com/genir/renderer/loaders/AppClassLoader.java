@@ -7,7 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
-    private final List<ClassConstantTransformer> noOpTransformers = List.of();
+    private final List<ClassConstantTransformer> deobfTransformers = List.of(
+            new ClassConstantTransformer(Arrays.asList(
+                    // Replace OpenGL calls.
+                    ClassConstantTransformer.newTransform("com/fs/graphics/FileRepository", "com/fs/graphics/L"),
+
+                    ClassConstantTransformer.newTransform("FileRepository_loadImage", "o00000"),
+                    ClassConstantTransformer.newTransform("FileRepository_loadSound", "Ô00000")
+            ))
+    );
 
     private final List<ClassConstantTransformer> lwjglTransformers = List.of(
             new ClassConstantTransformer(Arrays.asList(
@@ -75,11 +83,7 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
         } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformers;
         } else if (name.startsWith("com.genir.renderer.")) {
-            // Renderer does not need transformation itself,
-            // but it does call transformed Starsector classes.
-            // Loading renderer through the base app class loader
-            // would lead to duplicate Starsector class definition.
-            return noOpTransformers;
+            return deobfTransformers;
         }
 
         // Do not intercept this class.
