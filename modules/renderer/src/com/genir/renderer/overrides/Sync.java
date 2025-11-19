@@ -33,7 +33,7 @@ public class Sync {
      * the FPS matches (or divides evenly into) the monitor refresh rate.
      */
     public static void sync(long ignored) {
-        long fps = (long) StarfarerSettings.getFPS();
+        long fps = (long) StarfarerSettings.StarfarerSettings_getFloatValue("fps");
         long frameNS = 1_000_000_000 / fps;
 
         long deadline = prevUpdateTimestamp + frameNS;

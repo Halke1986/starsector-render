@@ -19,6 +19,7 @@ public class Deobf {
             newTransform("FileRepository_loadSound", "Ô00000"),
             newTransform("TextureRepository_defineTexture", "super"),
             newTransform("TextureRepository_setImageTransformer", "super"),
-            newTransform("FontRepository_defineFont", "super")
+            newTransform("FontRepository_defineFont", "super"),
+            newTransform("StarfarerSettings_getFloatValue", "ö00000")
     );
 }

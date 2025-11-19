@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.graphics.font.FontRepository;
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.loading.SpecStore;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.overrides.extensions.ImageLoader;
@@ -26,7 +27,9 @@ public class ResourceLoaderState {
                 ImageLoader.queueImage(type, path);
                 break;
             case "SOUND":
-                SoundLoader.queueSound(path);
+                if (Global.getSettings().isSoundEnabled()) {
+                    SoundLoader.queueSound(path);
+                }
                 break;
             case "FONT":
                 try {
