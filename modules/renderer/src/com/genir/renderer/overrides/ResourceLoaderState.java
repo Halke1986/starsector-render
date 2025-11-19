@@ -3,9 +3,9 @@ package com.genir.renderer.overrides;
 import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.loading.SpecStore;
+import com.genir.renderer.Noop;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.overrides.extensions.ImageLoader;
-import com.genir.renderer.overrides.extensions.Noop;
 import com.genir.renderer.overrides.extensions.SoundLoader;
 import org.json.JSONException;
 
