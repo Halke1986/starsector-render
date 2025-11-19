@@ -247,7 +247,7 @@ L73:
 .method public static Object : (Ljava/lang/String;)V
     .code stack 1 locals 1
 L0:     aload_0
-L1:     invokestatic Method com/genir/renderer/overrides/ScriptStore addScript (Ljava/lang/String;)V
+L1:     invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader addScript (Ljava/lang/String;)V
 L4:     return
 L5:
         .linenumbertable

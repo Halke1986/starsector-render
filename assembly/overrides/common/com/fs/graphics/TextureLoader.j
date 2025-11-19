@@ -1868,7 +1868,7 @@ L83:
     .exceptions java/io/IOException 
     .code stack 4 locals 3 
 L0:     aload_1 
-L1:     invokestatic Method com/genir/renderer/overrides/extensions/ImageLoader getImage (Ljava/lang/String;)Ljava/awt/image/BufferedImage;
+L1:     invokestatic Method com/genir/renderer/overrides/loading/ImageLoader getImage (Ljava/lang/String;)Ljava/awt/image/BufferedImage;
 L4:     astore_2 
 L5:     aload_2 
 L6:     ifnull L11 

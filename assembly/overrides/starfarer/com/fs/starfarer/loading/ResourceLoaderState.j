@@ -889,7 +889,7 @@ L1681:  iload_3
 L1682:  aload_2 
 L1683:  invokeinterface InterfaceMethod java/util/List size ()I 1 
 L1688:  if_icmplt L1658 
-L1691:  invokestatic Method com/genir/renderer/overrides/ScriptStore runScriptLoadingThread ()V
+L1691:  invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader runScriptLoadingThread ()V
 L1694:  invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'ö00000' ()V 
 L1697:  invokestatic Method com/fs/starfarer/loading/ShipNameStore o00000 ()V 
 L1700:  invokestatic Method com/fs/starfarer/loading/StarfarerStrings 'super' ()V 
@@ -1281,7 +1281,7 @@ L2469:  aload 12
 L2471:  invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1 
 L2476:  ifne L2443 
 L2479:  invokestatic Method com/fs/graphics/L 'Ò00000' ()V 
-L2482:  invokestatic Method com/genir/renderer/overrides/ScriptStore joinScriptLoadingThread ()V
+L2482:  invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader joinScriptLoadingThread ()V
 L2485:  invokestatic Method com/fs/starfarer/api/impl/campaign/procgen/MarkovNames loadIfNeeded ()V 
 L2488:  invokestatic Method com/fs/starfarer/launcher/ModManager getInstance ()Lcom/fs/starfarer/launcher/ModManager; 
 L2491:  invokevirtual Method com/fs/starfarer/launcher/ModManager getEnabledModPlugins ()Ljava/util/List; 

@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides;
+package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
 import com.genir.renderer.async.ExecutorFactory;
@@ -10,12 +10,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ScriptStore is responsible for pre-loading scripts and plugins.
+ * ScriptLoader is responsible for pre-loading scripts and plugins.
  * Vanilla implementation suffers from race conditions that can cause
  * instability and random visual glitches. Fast Rendering replaces
  * ScriptStore with a simplified implementation to avoid these issues.
  */
-public class ScriptStore {
+public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     private static boolean loaderInitialized = false;
     private static final Set<String> scripts = new HashSet<>();
 
@@ -46,7 +46,7 @@ public class ScriptStore {
             try {
                 // Load classes asynchronously, to optimize away
                 // the slow Janino bytecode compilation process.
-                Logger.getLogger(ScriptStore.class).info("Compiling script [" + className + "]");
+                Logger.getLogger(ScriptLoader.class).info("Compiling script [" + className + "]");
                 Global.getSettings().getScriptClassLoader().loadClass(className);
             } catch (Throwable t) {
                 exception.set(new RuntimeException(t));

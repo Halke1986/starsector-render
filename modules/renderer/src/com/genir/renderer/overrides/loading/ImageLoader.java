@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.extensions;
+package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureRepository;

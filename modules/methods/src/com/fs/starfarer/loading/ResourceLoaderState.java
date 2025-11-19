@@ -4,8 +4,8 @@ import com.fs.starfarer.api.combat.ShipwideAIFlags;
 
 import java.util.Map;
 
-import static com.genir.renderer.overrides.ScriptStore.joinScriptLoadingThread;
-import static com.genir.renderer.overrides.ScriptStore.runScriptLoadingThread;
+import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
+import static com.genir.renderer.overrides.loading.ScriptLoader.runScriptLoadingThread;
 
 public class ResourceLoaderState {
     public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {

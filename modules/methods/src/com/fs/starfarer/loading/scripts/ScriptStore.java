@@ -30,7 +30,7 @@ public class ScriptStore {
     // Modified METHOD
     // $FF: renamed from: Object (java.lang.String) void
     public static void addScript(String className) {
-        com.genir.renderer.overrides.ScriptStore.addScript(className);
+        com.genir.renderer.overrides.loading.ScriptLoader.addScript(className);
     }
 
     // RENAMED METHOD
