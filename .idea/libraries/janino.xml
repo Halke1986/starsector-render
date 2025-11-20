@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="janino">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../starsector-core/janino.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

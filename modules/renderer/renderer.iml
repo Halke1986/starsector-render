@@ -22,5 +22,6 @@
     <orderEntry type="library" name="starfarer.api" level="project" />
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="module" module-name="callees" />
+    <orderEntry type="library" name="janino" level="project" />
   </component>
 </module>

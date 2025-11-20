@@ -2,11 +2,12 @@ package com.genir.renderer.loaders;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.List;
 
-public class URLClassLoader extends java.net.URLClassLoader implements ClassLoaderBridge {
+public class ScriptClassLoader extends URLClassLoader implements ClassLoaderBridge {
     private final List<ClassConstantTransformer> transformers = List.of(new ClassConstantTransformer(Arrays.asList(
             // Replace OpenGL calls.
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
@@ -26,16 +27,16 @@ public class URLClassLoader extends java.net.URLClassLoader implements ClassLoad
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
 
             // Replace URLClassLoader with this implementation, to support mods that use custom class loaders to bypass reflection ban.
-            ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/URLClassLoader")
+            ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/ScriptClassLoader")
     )));
 
     private final ClassTransformer classTransformer = new ClassTransformer(this);
 
-    public URLClassLoader(URL[] urls, ClassLoader parent) {
+    public ScriptClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 
-    public URLClassLoader(URL[] urls) {
+    public ScriptClassLoader(URL[] urls) {
         super(urls);
     }
 

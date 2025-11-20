@@ -13,6 +13,7 @@ public class Deobf {
             newTransform("com/fs/graphics/ImageTransformer", "com/fs/graphics/I"),
             newTransform("com/fs/graphics/AlphaAdder", "com/fs/graphics/do"),
             newTransform("com/fs/graphics/font/FontRepository", "com/fs/graphics/A/D"),
+            newTransform("com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
 
             // Methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -20,6 +21,13 @@ public class Deobf {
             newTransform("TextureRepository_defineTexture", "super"),
             newTransform("TextureRepository_setImageTransformer", "super"),
             newTransform("FontRepository_defineFont", "super"),
-            newTransform("StarfarerSettings_getFloatValue", "ö00000")
+            newTransform("StarfarerSettings_getFloatValue", "ö00000"),
+            newTransform("ScriptStore_getSecureClassLoader", "Object"),
+            newTransform("ScriptStore_getScriptList", "Õ00000"),
+            newTransform("ScriptStore_getPluginSet", "Ò00000"),
+            newTransform("ScriptStore_initJavaSourceClassLoader", "o00000"),
+
+            // Fields
+            newTransform("ScriptStore_objectRepository", "Õ00000")
     );
 }

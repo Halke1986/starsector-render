@@ -1,10 +1,17 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.loading.scripts.ScriptStore;
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.loaders.ScriptClassLoader;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,7 +27,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     private static final Set<String> scripts = new HashSet<>();
 
     private static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-    private static final ExecutorService exec = ExecutorFactory.newMultiThreadedExecutor(2, "FR-Script-Loader");
+    private static final ExecutorService exec = ExecutorFactory.newMultiThreadedExecutor(1, "FR-Script-Loader");
 
     public static void addScript(String className) {
         // Rethrow exception captured in script loading thread.
@@ -65,7 +72,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     public static void joinScriptLoadingThread() {
         exec.shutdown();
 
-        Set<String> plugins = com.fs.starfarer.loading.scripts.ScriptStore.getPluginSet();
+        Set<String> plugins = ScriptStore.ScriptStore_getPluginSet();
         scripts.addAll(plugins);
 
         ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
@@ -87,7 +94,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
                 // Plugins, as opposed to plain scripts, are stored.
                 if (plugins.contains(className)) {
-                    com.fs.starfarer.loading.scripts.ScriptStore.storePlugin(script);
+                    ScriptStore.ScriptStore_objectRepository.add(script);
                 }
             } catch (Throwable ignored) {
             }
@@ -101,16 +108,26 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
         loaderInitialized = true;
 
-        try {
-            // Run the vanilla script loading thread and join immediately.
-            // This is required, because the thread code initializes the script class loader.
-            // Additionally, waiting for the thread to join eliminates the risk of race conditions
-            // caused by using not yet initialized class loader.
-            com.fs.starfarer.loading.scripts.ScriptStore.stopVanillaScriptLoadingThread();
-            com.fs.starfarer.loading.scripts.ScriptStore.runVanillaScriptLoadingThread();
-            com.fs.starfarer.loading.scripts.ScriptStore.joinVanillaScriptLoadingThread();
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+        // Initialize ClassLoader for loading scripts compiled to jar files.
+        List<String> scripts = ScriptStore.ScriptStore_getScriptList();
+        List<URL> urls = new ArrayList<>();
+        Logger logger = Logger.getLogger(ScriptLoader.class);
+
+        if (scripts != null) {
+            for (String scriptPath : scripts) {
+                try {
+                    File scriptFile = new File(scriptPath);
+                    urls.add(scriptFile.toURI().toURL());
+
+                    logger.info("Getting ready to load jar file [" + scriptPath + "]");
+                } catch (MalformedURLException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
         }
+
+        ClassLoader secureLoader = ScriptStore.ScriptStore_getSecureClassLoader();
+        ClassLoader scriptLoader = new ScriptClassLoader(urls.toArray(new URL[0]), secureLoader);
+        ScriptStore.ScriptStore_initJavaSourceClassLoader(scriptLoader);
     }
 }
