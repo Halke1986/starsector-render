@@ -20,7 +20,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     private static final Set<String> scripts = new HashSet<>();
 
     private static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-    private static final ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Script-Loader");
+    private static final ExecutorService exec = ExecutorFactory.newMultiThreadedExecutor(2, "FR-Script-Loader");
 
     public static void addScript(String className) {
         // Rethrow exception captured in script loading thread.

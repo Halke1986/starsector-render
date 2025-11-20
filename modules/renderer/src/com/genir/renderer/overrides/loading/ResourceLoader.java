@@ -42,7 +42,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
     public static void initSpecStore(com.fs.starfarer.loading.ResourceLoaderState state) throws JSONException, IOException {
         try {
-            ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Spec-Loader");
+            ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Resource-Loader");
 
             waitGroup.incrementAndGet();
             exec.execute(() -> {
