@@ -2,11 +2,14 @@ package com.genir.renderer.state;
 
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.state.stall.StallDetector;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static java.lang.Math.min;
 
 public class Executor {
     private final ListManager listManager;
@@ -26,8 +29,9 @@ public class Executor {
         this.stallDetector = stallDetector;
     }
 
-    public void execute(Runnable command) {
+    synchronized public void execute(Runnable command) {
         rethrowExecutionException();
+        commandIntegrityCheck(command);
 
         commandBatch[batchSize] = command;
         batchSize++;
@@ -45,8 +49,9 @@ public class Executor {
         wait(command, false);
     }
 
-    public void wait(Runnable command, boolean cleanup) {
+    synchronized public void wait(Runnable command, boolean cleanup) {
         rethrowExecutionException();
+        commandIntegrityCheck(command);
 
         stallDetector.detectStall();
         flushCommands();
@@ -61,8 +66,9 @@ public class Executor {
         }
     }
 
-    public Future<?> submit(Runnable command) {
+    synchronized public Future<?> submit(Runnable command) {
         rethrowExecutionException();
+        commandIntegrityCheck(command);
 
         flushCommands();
 
@@ -73,7 +79,7 @@ public class Executor {
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
-    public <T> T get(Callable<T> task) {
+    synchronized public <T> T get(Callable<T> task) {
         stallDetector.detectStall();
         flushCommands();
 
@@ -95,6 +101,12 @@ public class Executor {
     }
 
     private void flushCommands() {
+        if (batchSize == 0) {
+            return;
+        }
+
+        batchIntegrityCheck(commandBatch, batchSize);
+
         final Runnable[] currentBatch = commandBatch;
         final int count = batchSize;
 
@@ -111,6 +123,8 @@ public class Executor {
     private void executeCommands(Runnable[] commands, int count, boolean cleanup) {
         long start = System.nanoTime();
         try {
+            batchIntegrityCheck(commands, count);
+
             // Rendering thread has already thrown an exception.
             // Skip further commands, except get and cleanup,
             // to avoid a potential hard crash without logging.
@@ -155,5 +169,54 @@ public class Executor {
         if (e != null) {
             throw e;
         }
+    }
+
+    private void commandIntegrityCheck(Object command) {
+        if (!(command instanceof Runnable)) {
+            Logger logger = Logger.getLogger(Executor.class);
+            logger.info("command " + command);
+
+            throw new AssertionError("executor commandIntegrityCheck");
+        }
+    }
+
+    private void batchIntegrityCheck(Runnable[] commands, int count) {
+        boolean correct = true;
+
+        if (count < 0 || count > commands.length) {
+            correct = false;
+        }
+
+        if (commands.length != 1 && commands.length != BATCH_CAPACITY) {
+            correct = false;
+        }
+
+        int actualCount = min(count, commands.length);
+
+        for (int i = 0; i < actualCount; i++) {
+            if (!(commands[i] instanceof Runnable)) {
+                correct = false;
+            }
+        }
+
+        for (int i = actualCount; i < commands.length; i++) {
+            if (commands[i] != null) {
+                correct = false;
+            }
+        }
+
+        if (correct) {
+            return;
+        }
+
+        Logger logger = Logger.getLogger(Executor.class);
+
+        logger.info("count: " + count);
+        logger.info("length: " + commands.length);
+        for (int i = 0; i < commands.length; i++) {
+            logger.info("command " + i + ": " + commands[i]);
+        }
+
+        throw new AssertionError("executor batchIntegrityCheck");
     }
 }
