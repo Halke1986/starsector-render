@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
 
@@ -33,6 +32,8 @@ public class ImageLoader {
 
     private static void loadImage(String type, String path) {
         try {
+            logger.info("Loading image [" + path + "]");
+
             final BufferedImage image = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
 
             mainThreadWaitGroup.incrementAndGet();
@@ -48,14 +49,14 @@ public class ImageLoader {
                         TextureRepository.TextureRepository_defineTexture(path, path);
                     }
                 } catch (Throwable t) {
-                    logger.error("Error while loading file [" + path + "]: " + t.getMessage());
+                    logger.error("Error while loading image [" + path + "]: " + t.getMessage());
                 } finally {
                     imageCache = null;
                     mainThreadWaitGroup.decrementAndGet();
                 }
             });
         } catch (Exception e) {
-            logger.error("Error while loading file [" + path + "]: " + e.getMessage());
+            logger.error("Error while loading image [" + path + "]: " + e.getMessage());
         } finally {
             mainThreadWaitGroup.decrementAndGet();
         }

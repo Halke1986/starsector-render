@@ -27,7 +27,7 @@ public class SoundLoader {
 
             new Sound(path, extension, stream);
         } catch (Exception e) {
-            Logger.getLogger(SoundLoader.class).error("Error while loading file [" + path + "]: " + e.getMessage());
+            Logger.getLogger(SoundLoader.class).error("Error while loading sound [" + path + "]: " + e.getMessage());
         }
     }
 }
