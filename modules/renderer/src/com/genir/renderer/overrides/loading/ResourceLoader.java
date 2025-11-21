@@ -3,11 +3,12 @@ package com.genir.renderer.overrides.loading;
 import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
-import com.fs.starfarer.api.loading.MissileSpecAPI;
-import com.fs.starfarer.api.loading.ProjectileSpecAPI;
+import com.fs.starfarer.api.loading.*;
 import com.fs.starfarer.loading.SpecStore;
+import com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.async.ExecutorFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -22,10 +23,14 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
 
-    public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(4, "FR-Resource-Loader-Worker");
+    public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(6, "FR-Resource-Loader-Worker");
     public static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
 
     public static void loadResource(String type, String path) {
+        if (path == null) {
+            return;
+        }
+
         switch (type) {
             case "TEXTURE":
             case "TEXTURE_OPTIONAL":
@@ -54,12 +59,14 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             mainThreadWaitGroup.incrementAndGet();
             exec.execute(() -> {
                 try {
+                    Logger.getLogger(ResourceLoader.class).info("RESOURCE LOADING STARTED");
                     SpecStore.init(state);
                     state.queueShipAndWeaponSprites();
                 } catch (IOException | JSONException e) {
                     throw new RuntimeException(e);
                 } finally {
                     mainThreadWaitGroup.decrementAndGet();
+                    Logger.getLogger(ResourceLoader.class).info("RESOURCE LOADING COMPLETED");
                 }
             });
             exec.shutdown();
@@ -90,6 +97,37 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             exec.awaitTermination(30, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void queueWeaponSprite(WeaponSpecAPI weaponSpec) {
+        loadResource("TEXTURE", weaponSpec.getHardpointSpriteName());
+        loadResource("TEXTURE", weaponSpec.getTurretSpriteName());
+        loadResource("TEXTURE", weaponSpec.getHardpointUnderSpriteName());
+        loadResource("TEXTURE", weaponSpec.getTurretUnderSpriteName());
+
+        if (weaponSpec instanceof BeamWeaponSpecAPI beamWeaponSpec) {
+            loadResource("TEXTURE", beamWeaponSpec.getHardpointGlowSpriteName());
+            loadResource("TEXTURE", beamWeaponSpec.getTurretGlowSpriteName());
+
+            queueWeaponAnimation(weaponSpec);
+        } else if (weaponSpec instanceof ProjectileWeaponSpecAPI projectileWeaponSpec) {
+            loadResource("TEXTURE", projectileWeaponSpec.getHardpointGlowSpriteName());
+            loadResource("TEXTURE", projectileWeaponSpec.getTurretGlowSpriteName());
+            loadResource("TEXTURE", projectileWeaponSpec.getHardpointGunSpriteName());
+            loadResource("TEXTURE", projectileWeaponSpec.getTurretGunSpriteName());
+
+            queueWeaponAnimation(weaponSpec);
+        }
+    }
+
+    private static void queueWeaponAnimation(WeaponSpecAPI weaponSpec) {
+        String turretTex = weaponSpec.getTurretSpriteName().replaceAll("00\\.png", "");
+        String hardpointText = weaponSpec.getHardpointSpriteName().replaceAll("00\\.png", "");
+
+        for (int i = 1; i < ((BaseWeaponSpec) weaponSpec).getNumFrames(); ++i) {
+            loadResource("TEXTURE", String.format("%s%02d.png", turretTex, i));
+            loadResource("TEXTURE", String.format("%s%02d.png", hardpointText, i));
         }
     }
 

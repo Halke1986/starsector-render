@@ -44,7 +44,10 @@ L17:
 .end method 
 
 .method public static 'super' : (Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;)V 
-    .code stack 7 locals 2 
+    .code stack 7 locals 2
+        aload_1
+        checkcast com/fs/starfarer/api/loading/WeaponSpecAPI
+        invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader queueWeaponSprite (Lcom/fs/starfarer/api/loading/WeaponSpecAPI;)V
 L0:     getstatic Field com/fs/starfarer/loading/Q new Ljava/util/Map; 
 L3:     aload_0 
 L4:     invokeinterface InterfaceMethod java/util/Map containsKey (Ljava/lang/Object;)Z 2 
