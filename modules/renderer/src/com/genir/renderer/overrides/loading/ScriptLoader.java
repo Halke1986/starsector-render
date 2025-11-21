@@ -2,7 +2,6 @@ package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.loading.scripts.ScriptStore;
-import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.loaders.MultiThreadedJavaSourceClassLoader;
 import com.genir.renderer.loaders.ScriptClassLoader;
 import org.apache.log4j.Logger;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -28,7 +26,6 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     private static final Set<String> scripts = new HashSet<>();
 
     private static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-    private static final ExecutorService exec = ExecutorFactory.newMultiThreadedExecutor(2, "FR-Script-Loader");
 
     public static void addScript(String className) {
         // Rethrow exception captured in script loading thread.
@@ -50,7 +47,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
         scripts.add(className);
 
-        exec.execute(() -> {
+        ResourceLoader.workers.execute(() -> {
             try {
                 // Load classes asynchronously, to optimize away
                 // the slow Janino bytecode compilation process.
@@ -62,17 +59,11 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         });
     }
 
-    public static ExecutorService getExecutor() {
-        return exec;
-    }
-
     public static void runScriptLoadingThread() {
         initScriptClassLoader();
     }
 
     public static void joinScriptLoadingThread() {
-        exec.shutdown();
-
         Set<String> plugins = ScriptStore.ScriptStore_getPluginSet();
         scripts.addAll(plugins);
 

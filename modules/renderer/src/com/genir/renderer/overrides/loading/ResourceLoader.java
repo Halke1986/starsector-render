@@ -18,6 +18,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> executorQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger waitGroup = new AtomicInteger(0);
 
+    public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(4, "FR-Resource-Loader-Worker");
+
     public static void loadResource(String type, String path) {
         switch (type) {
             case "TEXTURE":
@@ -61,15 +63,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 r.run();
             } while (waitGroup.decrementAndGet() > 0);
 
-            ExecutorService scriptExec = ScriptLoader.getExecutor();
-            ExecutorService soundExec = SoundLoader.getExecutor();
-
-            scriptExec.shutdown();
-            soundExec.shutdown();
-
-            awaitTermination(scriptExec);
-            awaitTermination(soundExec);
-
+            workers.shutdown();
+            awaitTermination(workers);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
