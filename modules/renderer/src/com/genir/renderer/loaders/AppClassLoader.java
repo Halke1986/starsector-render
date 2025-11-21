@@ -29,7 +29,7 @@ public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
                     ClassConstantTransformer.newTransform("org/lwjgl/util/Display", "com/genir/renderer/bridge/DisplayUtil"),
 
                     // Replace class loader for loading scripts.
-                    ClassConstantTransformer.newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/URLClassLoader")
+                    ClassConstantTransformer.newTransform("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
             )),
             new ClassConstantTransformer(List.of(
                     // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/DisplayMode transform caused by a false positive match.

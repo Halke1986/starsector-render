@@ -2,7 +2,7 @@
 .class public super com/fs/starfarer/loading/scripts/ScriptStore 
 .super java/lang/Object 
 .field private static 'Ö00000' Lorg/apache/log4j/Logger; 
-.field private static volatile 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader; 
+.field public static volatile 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader;
 .field private static volatile if Lcom/fs/starfarer/loading/scripts/B; 
 .field public static volatile 'Õ00000' Lcom/fs/util/container/repo/ObjectRepository;
 .field private static do Ljava/util/List; .fieldattributes 
@@ -207,7 +207,7 @@ L13:    aload_1
 L14:    ifnonnull L37 
 L17:    aload_0 
 L18:    iconst_1 
-L19:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader; 
+L19:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader;
 L22:    invokestatic Method java/lang/Class forName (Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class; 
 L25:    astore_1 
 L26:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore void Ljava/util/Map; 
@@ -244,25 +244,21 @@ L73:
     .end code 
 .end method 
 
-.method public static Object : (Ljava/lang/String;)V 
-    .code stack 2 locals 1 
-L0:     aload_0 
-L1:     ifnonnull L5 
-L4:     return 
-
-        .stack same 
-L5:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore do Ljava/util/List; 
-L8:     aload_0 
-L9:     invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2 
-L14:    pop 
-L15:    getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'õ00000' Ljava/util/List; 
-L18:    aload_0 
-L19:    invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2 
-L24:    pop 
-L25:    return 
-L26:    
-    .end code 
-.end method 
+.method public static Object : (Ljava/lang/String;)V
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader addScript (Ljava/lang/String;)V
+L4:     return
+L5:
+        .linenumbertable
+            L0 33
+            L4 34
+        .end linenumbertable
+        .localvariabletable
+            0 is className Ljava/lang/String; from L0 to L5
+        .end localvariabletable
+    .end code
+.end method
 
 .method public static return : ()Z 
     .code stack 1 locals 0 
@@ -272,7 +268,7 @@ L4:
     .end code 
 .end method 
 
-.method public static o00000 : (Ljava/lang/ClassLoader;)V
+.method private static o00000 : (Ljava/lang/ClassLoader;)V
     .code stack 8 locals 1 
 L0:     ldc 'enableScriptCaching' 
 L2:     invokestatic Method com/fs/starfarer/settings/StarfarerSettings class (Ljava/lang/String;)Z 
@@ -718,9 +714,9 @@ L24:
     .end code 
 .end method 
 
-.method public static 'Ø00000' : ()Lorg/codehaus/janino/JavaSourceClassLoader; 
+.method public static 'Ø00000' : ()Lorg/codehaus/janino/JavaSourceClassLoader;
     .code stack 1 locals 0 
-L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader; 
+L0:     getstatic Field com/fs/starfarer/loading/scripts/ScriptStore 'ø00000' Lorg/codehaus/janino/JavaSourceClassLoader;
 L3:     areturn 
 L4:     
     .end code 

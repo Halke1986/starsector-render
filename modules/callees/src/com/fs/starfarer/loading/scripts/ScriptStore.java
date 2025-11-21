@@ -9,6 +9,9 @@ public class ScriptStore {
     // $FF: renamed from: Õ00000 com.fs.util.container.repo.ObjectRepository
     public static volatile ObjectRepository ScriptStore_objectRepository;
 
+    // $FF: renamed from: ø00000 org.codehaus.janino.JavaSourceClassLoader
+    public static volatile ClassLoader ScriptStore_javaSourceClassLoader;
+
     // $FF: renamed from: Õ00000 () java.util.List
     public static List<String> ScriptStore_getScriptList() {
         return null;
@@ -22,9 +25,5 @@ public class ScriptStore {
     // $FF: renamed from: Object () com.fs.starfarer.loading.scripts.B
     public static SecureClassLoader ScriptStore_getSecureClassLoader() {
         return null;
-    }
-
-    // $FF: renamed from: o00000 (java.lang.ClassLoader) void
-    public static void ScriptStore_initJavaSourceClassLoader(ClassLoader parent) {
     }
 }
