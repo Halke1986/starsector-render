@@ -15,6 +15,8 @@ public class Deobf {
             newTransform("com/fs/graphics/font/FontRepository", "com/fs/graphics/A/D"),
             newTransform("com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
             newTransform("com/fs/starfarer/loading/JavaSourceFinder", "com/fs/starfarer/loading/Objectsuper"),
+            newTransform("com/fs/starfarer/loading/specs/ShipHullSpec", "com/fs/starfarer/loading/specs/g"),
+            newTransform("com/fs/starfarer/loading/specs/SpriteSpec", "com/fs/starfarer/loading/specs/Q"),
 
             // Methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -26,6 +28,7 @@ public class Deobf {
             newTransform("ScriptStore_getSecureClassLoader", "Object"),
             newTransform("ScriptStore_getScriptList", "Õ00000"),
             newTransform("ScriptStore_getPluginSet", "Ò00000"),
+            newTransform("SpriteSpec_getTextureName", "Ó00000"),
 
             // Fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

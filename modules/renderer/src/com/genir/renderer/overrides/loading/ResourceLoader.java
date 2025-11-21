@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.loading;
 import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.loading.SpecStore;
+import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.async.ExecutorFactory;
 import org.json.JSONException;
 
@@ -87,5 +88,10 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void queueShipSprite(ShipHullSpec hullSpec) {
+        String texture = hullSpec.getSpriteSpec().SpriteSpec_getTextureName();
+        loadResource("TEXTURE", texture);
     }
 }
