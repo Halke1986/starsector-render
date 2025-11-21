@@ -43,8 +43,11 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
         JavaSourceCompiler compiler = compilers.computeIfAbsent(Thread.currentThread(), k -> new JavaSourceCompiler(new RecursiveClassLoader(this)));
 
         Map<String, byte[]> bytecodes = compiler.generateBytecodes(name);
-        byte[] bytecode = bytecodes.get(name);
+        if (bytecodes == null) {
+            throw new ClassNotFoundException();
+        }
 
+        byte[] bytecode = bytecodes.get(name);
         return defineClass(name, bytecode, 0, bytecode.length);
     }
 
