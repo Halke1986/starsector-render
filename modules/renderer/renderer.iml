@@ -21,5 +21,6 @@
     <orderEntry type="module" module-name="methods" />
     <orderEntry type="library" name="starfarer.api" level="project" />
     <orderEntry type="library" name="commons-compiler" level="project" />
+    <orderEntry type="library" name="janino" level="project" />
   </component>
 </module>
