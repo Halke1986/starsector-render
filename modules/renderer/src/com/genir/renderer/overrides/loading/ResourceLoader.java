@@ -2,6 +2,9 @@ package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.ShipHullSpecAPI;
+import com.fs.starfarer.api.loading.MissileSpecAPI;
+import com.fs.starfarer.api.loading.ProjectileSpecAPI;
 import com.fs.starfarer.loading.SpecStore;
 import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.async.ExecutorFactory;
@@ -90,8 +93,19 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         }
     }
 
+    public static void queueProjectileSprite(Object abstractProjectileSpec) {
+        if (abstractProjectileSpec instanceof MissileSpecAPI missileSpec) {
+            loadResource("TEXTURE", missileSpec.getHullSpec().getSpriteName());
+            loadResource("TEXTURE", missileSpec.getGlowSpriteName());
+        } else if (abstractProjectileSpec instanceof ProjectileSpecAPI projectileSpec) {
+            loadResource("TEXTURE", projectileSpec.getBulletSpriteName());
+            loadResource("TEXTURE", projectileSpec.getFringeTex());
+            loadResource("TEXTURE", projectileSpec.getCoreTex());
+        }
+    }
+
     public static void queueShipSprite(ShipHullSpec hullSpec) {
-        String texture = hullSpec.getSpriteSpec().SpriteSpec_getTextureName();
+        String texture = ((ShipHullSpecAPI) hullSpec).getSpriteName();
         loadResource("TEXTURE", texture);
     }
 }

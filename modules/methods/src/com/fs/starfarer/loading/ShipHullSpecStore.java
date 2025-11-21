@@ -11,7 +11,7 @@ public class ShipHullSpecStore {
     private static Map<String, ShipHullSpec> map;
 
     // $FF: renamed from: super (java.lang.String, com.fs.starfarer.loading.specs.g) void
-    public static void method_19205(String var0, ShipHullSpec var1) {
+    public static void addShipHullSpec(String var0, ShipHullSpec var1) {
         ResourceLoader.queueShipSprite(var1);
 
         if (map.containsKey(var0)) {
