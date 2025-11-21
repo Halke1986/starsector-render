@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ScriptLoader is responsible for pre-loading scripts and plugins.
@@ -25,15 +24,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     private static boolean loaderInitialized = false;
     private static final Set<String> scripts = new HashSet<>();
 
-    private static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-
     public static void addScript(String className) {
-        // Rethrow exception captured in script loading thread.
-        RuntimeException e = exception.getAndSet(null);
-        if (e != null) {
-            throw e;
-        }
-
         if (className == null) {
             return;
         }
@@ -54,7 +45,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
                 Logger.getLogger(ScriptLoader.class).info("Compiling script [" + className + "]");
                 Global.getSettings().getScriptClassLoader().loadClass(className);
             } catch (Throwable t) {
-                exception.set(new RuntimeException(t));
+                ResourceLoader.exception.set(new RuntimeException(t));
             }
         });
     }

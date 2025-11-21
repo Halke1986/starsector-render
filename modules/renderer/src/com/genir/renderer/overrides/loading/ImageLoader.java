@@ -16,11 +16,10 @@ public class ImageLoader {
     private static final Logger logger = Logger.getLogger(ImageLoader.class);
 
     public static void queueImage(String type, String path) {
-        if (path != null && !knownImages.contains(path)) {
+        if (path != null && !path.isEmpty() && !knownImages.contains(path)) {
             knownImages.add(path);
 
-            ResourceLoader.waitGroup.incrementAndGet();
-            ResourceLoader.executorQueue.add(() -> loadImage(type, path));
+            ResourceLoader.workers.execute(() -> loadImage(type, path));
         }
     }
 
@@ -30,17 +29,26 @@ public class ImageLoader {
 
     private static void loadImage(String type, String path) {
         try {
-            imageCache = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
+            final BufferedImage image = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
 
-            if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
-                TextureRepository.TextureRepository_setImageTransformer(new AlphaAdder());
-                TextureRepository.TextureRepository_defineTexture(path, path);
-                TextureRepository.TextureRepository_setImageTransformer(null);
-            } else {
-                TextureRepository.TextureRepository_defineTexture(path, path);
-            }
+            ResourceLoader.waitGroup.incrementAndGet();
+            ResourceLoader.mainThreadQueue.add(() -> {
+                try {
+                    imageCache = image;
 
-            imageCache = null;
+                    if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
+                        TextureRepository.TextureRepository_setImageTransformer(new AlphaAdder());
+                        TextureRepository.TextureRepository_defineTexture(path, path);
+                        TextureRepository.TextureRepository_setImageTransformer(null);
+                    } else {
+                        TextureRepository.TextureRepository_defineTexture(path, path);
+                    }
+                } catch (Throwable t) {
+                    logger.error("Error while loading file [" + path + "]: " + t.getMessage());
+                } finally {
+                    imageCache = null;
+                }
+            });
         } catch (Exception e) {
             logger.error("Error while loading file [" + path + "]: " + e.getMessage());
         }

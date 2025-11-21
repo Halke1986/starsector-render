@@ -13,12 +13,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
-    public static final BlockingQueue<Runnable> executorQueue = new LinkedBlockingQueue<>();
+    public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger waitGroup = new AtomicInteger(0);
 
-    public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(4, "FR-Resource-Loader-Worker");
+    public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(6, "FR-Resource-Loader-Worker");
+    public static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
 
     public static void loadResource(String type, String path) {
         switch (type) {
@@ -54,17 +56,25 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 } catch (IOException | JSONException e) {
                     throw new RuntimeException(e);
                 } finally {
-                    executorQueue.add(Noop::noop);
+                    mainThreadQueue.add(Noop::noop);
                 }
             });
+            exec.shutdown();
 
             do {
-                Runnable r = executorQueue.take();
+                // Rethrow exception captured in a worker thread.
+                RuntimeException e = exception.getAndSet(null);
+                if (e != null) {
+                    throw e;
+                }
+
+                Runnable r = mainThreadQueue.take();
                 r.run();
             } while (waitGroup.decrementAndGet() > 0);
 
             workers.shutdown();
             awaitTermination(workers);
+            awaitTermination(exec);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
