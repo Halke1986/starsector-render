@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
+import com.fs.graphics.Sprite;
 import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
@@ -8,10 +9,10 @@ import com.fs.starfarer.loading.SpecStore;
 import com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.async.ExecutorFactory;
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,6 +26,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
     public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(6, "FR-Resource-Loader-Worker");
     public static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
+
+    private static final Bar barAnimation = new Bar();
 
     public static void loadResource(String type, String path) {
         if (path == null) {
@@ -59,14 +62,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             mainThreadWaitGroup.incrementAndGet();
             exec.execute(() -> {
                 try {
-                    Logger.getLogger(ResourceLoader.class).info("RESOURCE LOADING STARTED");
                     SpecStore.init(state);
                     state.queueShipAndWeaponSprites();
                 } catch (IOException | JSONException e) {
                     throw new RuntimeException(e);
                 } finally {
                     mainThreadWaitGroup.decrementAndGet();
-                    Logger.getLogger(ResourceLoader.class).info("RESOURCE LOADING COMPLETED");
                 }
             });
             exec.shutdown();
@@ -81,6 +82,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 Runnable r = mainThreadQueue.poll(10, TimeUnit.MILLISECONDS);
                 if (r != null) {
                     r.run();
+                    state.renderProgress(0);
                 }
             } while (mainThreadWaitGroup.get() > 0);
 
@@ -145,5 +147,40 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static void queueShipSprite(ShipHullSpec hullSpec) {
         String texture = ((ShipHullSpecAPI) hullSpec).getSpriteName();
         loadResource("TEXTURE", texture);
+    }
+
+    public static void animateBar(Sprite bar) {
+        barAnimation.animate(bar);
+    }
+
+    private static class Bar {
+        private final boolean[] barSegments = new boolean[200];
+        private final Random rand = new Random();
+
+        public void animate(Sprite bar) {
+            float screenWidth = Global.getSettings().getScreenWidth();
+            float screenHeight = Global.getSettings().getScreenHeight();
+
+            float barWidth = bar.getWidth();
+            float barHeight = bar.getHeight();
+
+            float x = (screenWidth - barWidth) / 2;
+            float y = (screenHeight - barHeight) / 2;
+
+            int segments = barSegments.length;
+
+            int flipIdx = Math.abs(rand.nextInt()) % segments;
+            barSegments[flipIdx] = !barSegments[flipIdx];
+
+            for (int i = 0; i < segments; i++) {
+                if (barSegments[i]) {
+                    bar.renderRegion(
+                            x, y,
+                            (float) i / (float) segments, 0,
+                            1f / (float) segments, 1
+                    );
+                }
+            }
+        }
     }
 }

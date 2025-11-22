@@ -13,7 +13,7 @@
 .field private static final SHIMMER Ljava/lang/String; = 'graphics/fx/shimmer.png' 
 .field private barBg Lcom/fs/graphics/Sprite; 
 .field private title Lcom/fs/graphics/Sprite; 
-.field private bar Lcom/fs/graphics/Sprite; 
+.field private bar Lcom/fs/graphics/Sprite;
 .field private shimmer Lcom/fs/graphics/Sprite; 
 .field private static volatile synthetic $SWITCH_TABLE$com$fs$starfarer$loading$ResourceLoaderState$Type [I 
 
@@ -1810,7 +1810,7 @@ L72:
     .end code 
 .end method 
 
-.method private renderProgress : (F)V 
+.method public renderProgress : (F)V
     .code stack 7 locals 5 
 L0:     ldc_w +48.0f 
 L3:     fstore_2 
@@ -1859,7 +1859,10 @@ L72:    fconst_0
 L73:    fconst_0 
 L74:    fload_1 
 L75:    fconst_1 
-L76:    invokevirtual Method com/fs/graphics/Sprite renderRegionAtCenter (FFFFFF)V 
+L76:    invokevirtual Method com/fs/graphics/Sprite renderRegionAtCenter (FFFFFF)V
+        aload_0
+        getfield Field com/fs/starfarer/loading/ResourceLoaderState bar Lcom/fs/graphics/Sprite;
+        invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader animateBar (Lcom/fs/graphics/Sprite;)V
 L79:    invokestatic Method com/fs/graphics/util/B 'Õ00000' ()V 
 L82:    invokestatic Method org/lwjgl/opengl/Display update ()V 
 L85:    return 
