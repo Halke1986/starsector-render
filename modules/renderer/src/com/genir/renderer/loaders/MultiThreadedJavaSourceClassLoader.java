@@ -5,13 +5,14 @@ import org.codehaus.janino.JavaSourceClassLoader;
 import org.codehaus.janino.util.resource.ResourceFinder;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * MultiThreadedJavaSourceClassLoader is a parallel capable wrapper around Janino ClassLoader.
  */
 public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
-    private final Map<Thread, JavaSourceCompiler> compilers = new ConcurrentHashMap<>();
+    private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
+        return new JavaSourceCompiler(new RecursiveClassLoader(this));
+    });
 
     static {
         // Marks this class loader type as parallel-capable
@@ -24,13 +25,8 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        // Allocate a separate Janino instance for each thread.
-        JavaSourceCompiler compiler = compilers.computeIfAbsent(Thread.currentThread(), k -> {
-            return new JavaSourceCompiler(new RecursiveClassLoader(this));
-        });
-
         // Use Janino to compile the Java source, but not to define the class.
-        Map<String, byte[]> bytecodes = compiler.generateBytecodes(name);
+        Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);
         if (bytecodes == null) {
             throw new ClassNotFoundException();
         }
@@ -43,7 +39,7 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
 
     // A wrapper around Janino ClassLoader that makes bytecode generation accessible.
     private static class JavaSourceCompiler extends JavaSourceClassLoader {
-        RecursiveClassLoader parent;
+        final RecursiveClassLoader parent;
 
         JavaSourceCompiler(RecursiveClassLoader parent) {
             super(parent, parent.resourceFinder, "UTF-8");
@@ -66,8 +62,9 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
     // A wrapper around Janino parent ClassLoader. The wrapper ensures recursive code compilation called
     // by Janino is intercepted and correctly handled by MultiThreadedJavaSourceClassLoader.
     private static class RecursiveClassLoader extends ClassLoader {
+        final ResourceFinder resourceFinder = new JavaSourceFinder();
+
         String currentlyLoading = null;
-        ResourceFinder resourceFinder = new JavaSourceFinder();
 
         RecursiveClassLoader(ClassLoader parent) {
             super(parent);
@@ -104,6 +101,7 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
             // The class is not part of starsector-core or compiled jars.
             // It's either Janino code or a missing class. Delegate to script
             // loader, potentially triggering a recursive Janino compilation.
+            // TODO: this path is not tested.
             return scriptLoader.loadClass(name);
         }
     }
