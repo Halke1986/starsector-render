@@ -5,7 +5,6 @@ import com.fs.graphics.TextureRepository;
 import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,11 +50,14 @@ public class ImageLoader {
         }
     }
 
-    private static void loadImage(String type, String path) throws IOException {
+    private static void loadImage(String type, String path) {
         try {
             logger.info("Loading image [" + path + "]");
 
             final BufferedImage image = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
+            if (image == null) {
+                throw new NullPointerException();
+            }
 
             mainThreadWaitGroup.incrementAndGet();
             ResourceLoader.mainThreadQueue.add(() -> {
@@ -67,15 +69,12 @@ public class ImageLoader {
                     mainThreadWaitGroup.decrementAndGet();
                 }
             });
-        } catch (IOException e) {
-            // Do not lose exception type. IOException is handled explicitly by vanilla.
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Error while loading image [" + path + "]", e);
+            throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
         }
     }
 
-    private static void defineTexture(String type, String path, BufferedImage image) throws IOException {
+    private static void defineTexture(String type, String path, BufferedImage image) {
         try {
             imageCache = image;
 
@@ -86,11 +85,8 @@ public class ImageLoader {
             } else {
                 TextureRepository.TextureRepository_defineTexture(path, path);
             }
-        } catch (IOException e) {
-            // Do not lose exception type. IOException is handled explicitly by vanilla.
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Error while loading image [" + path + "]", e);
+            throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
         } finally {
             imageCache = null;
         }
