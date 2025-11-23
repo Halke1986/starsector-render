@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
+
 public class SoundLoader {
     private static final Set<String> knownSounds = new HashSet<>();
 
@@ -31,6 +33,10 @@ public class SoundLoader {
             String extension = path.substring(path.lastIndexOf(".") + 1);
 
             new Sound(path, extension, stream);
+
+            // Submit empty job to main thread to progress the loading bar.
+            mainThreadWaitGroup.incrementAndGet();
+            ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
         } catch (Exception e) {
             // Vanilla throws a RuntimeException when sound fails to load.
             throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load", e);

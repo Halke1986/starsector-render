@@ -20,11 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
+    private static final int WORKER_THREADS = 4;
+
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            6, "FR-Resource-Loader-Worker", new ExceptionHandler());
+            WORKER_THREADS, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 
@@ -177,14 +179,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         private final Random rand = new Random();
 
         public void animate(Sprite bar) {
-            float screenWidth = Global.getSettings().getScreenWidth();
-            float screenHeight = Global.getSettings().getScreenHeight();
-
-            float barWidth = bar.getWidth();
-            float barHeight = bar.getHeight();
-
-            float x = (screenWidth - barWidth) / 2;
-            float y = (screenHeight - barHeight) / 2;
+            float x = Global.getSettings().getScreenWidth() / 2;
+            float y = Global.getSettings().getScreenHeight() / 2;
 
             int segments = barSegments.length;
 
@@ -193,7 +189,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
             for (int i = 0; i < segments; i++) {
                 if (barSegments[i]) {
-                    bar.renderRegion(
+                    bar.renderRegionAtCenter(
                             x, y,
                             (float) i / (float) segments, 0,
                             1f / (float) segments, 1

@@ -1,5 +1,5 @@
--Xmx4g
--Xms4g
+-Xmx12g
+-Xms12g
 -Xss16m
 
 # General config
