@@ -24,6 +24,8 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
     private static boolean loaderInitialized = false;
     private static final Set<String> scripts = new HashSet<>();
 
+    private static final Logger logger = Logger.getLogger(ScriptLoader.class);
+
     public static void addScript(String className) {
         if (className == null) {
             return;
@@ -44,8 +46,9 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
                 // the slow Janino bytecode compilation process.
                 Logger.getLogger(ScriptLoader.class).info("Compiling script [" + className + "]");
                 Global.getSettings().getScriptClassLoader().loadClass(className);
-            } catch (Throwable t) {
-                ResourceLoader.exception.set(new RuntimeException(t));
+            } catch (Exception e) {
+                // Vanilla throws a RuntimeException when a class fails to load.
+                throw new RuntimeException("Error while loading script [" + className + "]", e);
             }
         });
     }
@@ -65,21 +68,24 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
             try {
                 scriptClass = scriptLoader.loadClass(className);
-            } catch (Throwable t) {
-                throw new RuntimeException("Problem loading class [" + className + "]", t);
-            }
 
-            try {
-                // Initialize scripts on the main thread. In vanilla, the constructor is called
-                // on the script loading thread, which can cause race conditions when scripts
-                // invoke API methods from within their constructors.
-                Object script = scriptClass.newInstance();
+                try {
+                    // Initialize scripts on the main thread. In vanilla, the constructor is called
+                    // on the script loading thread, which can cause race conditions when scripts
+                    // invoke API methods from within their constructors.
+                    Object script = scriptClass.newInstance();
 
-                // Plugins, as opposed to plain scripts, are stored.
-                if (plugins.contains(className)) {
-                    ScriptStore.ScriptStore_objectRepository.add(script);
+                    // Plugins, as opposed to plain scripts, are stored.
+                    if (plugins.contains(className)) {
+                        ScriptStore.ScriptStore_objectRepository.add(script);
+                    }
+                } catch (Exception e) {
+                    // Vanilla ignores exception while initializing plugins.
+                    logger.error("Error while initializing plugin [" + className + "]: " + e.getMessage());
                 }
-            } catch (Throwable ignored) {
+            } catch (Exception e) {
+                // This exception should have already occurred when loading the class for the first time.
+                throw new RuntimeException("Error while loading script [" + className + "]", e);
             }
         }
     }
@@ -94,7 +100,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         // Initialize ClassLoader for loading scripts compiled to jar files.
         List<String> scripts = ScriptStore.ScriptStore_getScriptList();
         List<URL> urls = new ArrayList<>();
-        Logger logger = Logger.getLogger(ScriptLoader.class);
+
 
         if (scripts != null) {
             for (String scriptPath : scripts) {

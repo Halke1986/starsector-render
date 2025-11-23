@@ -5,10 +5,12 @@ import com.fs.graphics.TextureRepository;
 import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.genir.renderer.overrides.loading.ResourceLoader.asyncException;
 import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
 
 public class ImageLoader {
@@ -16,6 +18,10 @@ public class ImageLoader {
     private static BufferedImage imageCache = null;
 
     private static final Logger logger = Logger.getLogger(ImageLoader.class);
+
+    public static BufferedImage getImage(String path) {
+        return imageCache;
+    }
 
     public static void queueImage(String type, String path) {
         if (path != null && !path.isEmpty() && !knownImages.contains(path)) {
@@ -26,10 +32,6 @@ public class ImageLoader {
         }
     }
 
-    public static BufferedImage getImage(String path) {
-        return imageCache;
-    }
-
     private static void loadImage(String type, String path) {
         try {
             logger.info("Loading image [" + path + "]");
@@ -37,27 +39,35 @@ public class ImageLoader {
             final BufferedImage image = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
 
             mainThreadWaitGroup.incrementAndGet();
-            ResourceLoader.mainThreadQueue.add(() -> {
-                try {
-                    imageCache = image;
-
-                    if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
-                        TextureRepository.TextureRepository_setImageTransformer(new AlphaAdder());
-                        TextureRepository.TextureRepository_defineTexture(path, path);
-                        TextureRepository.TextureRepository_setImageTransformer(null);
-                    } else {
-                        TextureRepository.TextureRepository_defineTexture(path, path);
-                    }
-                } catch (Throwable t) {
-                    logger.error("Error while loading image [" + path + "]: " + t.getMessage());
-                } finally {
-                    imageCache = null;
-                    mainThreadWaitGroup.decrementAndGet();
-                }
-            });
+            ResourceLoader.mainThreadQueue.add(() -> defineTexture(type, path, image));
+        } catch (IOException e) {
+            // Do not lose exception type. IOException is handled explicitly by vanilla.
+            asyncException.compareAndSet(null, e);
         } catch (Exception e) {
-            logger.error("Error while loading image [" + path + "]: " + e.getMessage());
+            throw new RuntimeException("Error while loading image [" + path + "]", e);
         } finally {
+            mainThreadWaitGroup.decrementAndGet();
+        }
+    }
+
+    private static void defineTexture(String type, String path, BufferedImage image) {
+        try {
+            imageCache = image;
+
+            if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
+                TextureRepository.TextureRepository_setImageTransformer(new AlphaAdder());
+                TextureRepository.TextureRepository_defineTexture(path, path);
+                TextureRepository.TextureRepository_setImageTransformer(null);
+            } else {
+                TextureRepository.TextureRepository_defineTexture(path, path);
+            }
+        } catch (IOException e) {
+            // Do not lose exception type. IOException is handled explicitly by vanilla.
+            asyncException.compareAndSet(null, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while loading image [" + path + "]", e);
+        } finally {
+            imageCache = null;
             mainThreadWaitGroup.decrementAndGet();
         }
     }

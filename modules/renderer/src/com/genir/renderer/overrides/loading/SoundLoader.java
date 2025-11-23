@@ -1,7 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.FileRepository;
-import org.apache.log4j.Logger;
 import sound.Sound;
 
 import java.io.ByteArrayInputStream;
@@ -27,7 +26,8 @@ public class SoundLoader {
 
             new Sound(path, extension, stream);
         } catch (Exception e) {
-            Logger.getLogger(SoundLoader.class).error("Error while loading sound [" + path + "]: " + e.getMessage());
+            // Vanilla throws a RuntimeException when sound fails to load.
+            throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load", e);
         }
     }
 }

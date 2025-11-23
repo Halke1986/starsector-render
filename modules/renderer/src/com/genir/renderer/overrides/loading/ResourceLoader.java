@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
-
-    public static final ExecutorService workers = ExecutorFactory.newMultiThreadedExecutor(6, "FR-Resource-Loader-Worker");
-    public static final AtomicReference<RuntimeException> exception = new AtomicReference<>();
+    public static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+    public static final ExecutorService workers = ExecutorFactory.newExecutor(
+            6, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 
@@ -55,43 +55,48 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         }
     }
 
-    public static void initSpecStore(com.fs.starfarer.loading.ResourceLoaderState state) throws JSONException, IOException {
-        try {
-            ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Resource-Loader");
+    public static void initSpecStore(com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
+        ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
 
-            mainThreadWaitGroup.incrementAndGet();
-            exec.execute(() -> {
-                try {
-                    SpecStore.init(state);
-                    state.queueShipAndWeaponSprites();
-                } catch (IOException | JSONException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    mainThreadWaitGroup.decrementAndGet();
-                }
-            });
-            exec.shutdown();
+        mainThreadWaitGroup.incrementAndGet();
+        exec.execute(() -> {
+            try {
+                SpecStore.init(state);
+                state.queueShipAndWeaponSprites();
+            } catch (IOException | JSONException e) {
+                // Do not lose exception type. IOException and
+                // JSONException are handled explicitly by vanilla.
+                asyncException.compareAndSet(null, e);
+            } finally {
+                mainThreadWaitGroup.decrementAndGet();
+                exec.shutdown();
+            }
+        });
 
-            do {
-                // Rethrow exception captured in a worker thread.
-                RuntimeException e = exception.getAndSet(null);
-                if (e != null) {
-                    throw e;
-                }
-
+        // Run commands on main thread, as it was an Executor.
+        do {
+            try {
                 Runnable r = mainThreadQueue.poll(10, TimeUnit.MILLISECONDS);
                 if (r != null) {
                     r.run();
                     state.renderProgress(0);
                 }
-            } while (mainThreadWaitGroup.get() > 0);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } while (mainThreadWaitGroup.get() > 0 && asyncException.get() == null);
 
-            workers.shutdown();
-            awaitTermination(workers);
-            awaitTermination(exec);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        // Rethrow exception captured in a worker thread.
+        Throwable t = asyncException.get();
+        if (t instanceof Exception e) {
+            throw e;
+        } else if (t != null) {
+            throw new RuntimeException(t);
         }
+
+        workers.shutdown();
+        awaitTermination(workers);
+        awaitTermination(exec);
     }
 
     private static void awaitTermination(ExecutorService exec) {
@@ -151,6 +156,15 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
     public static void animateBar(Sprite bar) {
         barAnimation.animate(bar);
+    }
+
+    private static class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            if (e != null) {
+                asyncException.compareAndSet(null, e);
+            }
+        }
     }
 
     private static class Bar {
