@@ -6,14 +6,14 @@ import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
 
 public class ImageLoader {
-    private static final Set<String> knownImages = new HashSet<>();
+    private static final Set<String> knownImages = ConcurrentHashMap.newKeySet();
     private static BufferedImage imageCache = null;
 
     private static final Logger logger = Logger.getLogger(ImageLoader.class);
@@ -23,6 +23,14 @@ public class ImageLoader {
     }
 
     public static void queueImage(String type, String path) {
+        queueImage(type, path, false);
+    }
+
+    public static void queueImageOptional(String type, String path) {
+        queueImage(type, path, true);
+    }
+
+    private static void queueImage(String type, String path, boolean optional) {
         if (path != null && !path.isEmpty() && !knownImages.contains(path)) {
             knownImages.add(path);
 
@@ -31,7 +39,11 @@ public class ImageLoader {
                 try {
                     loadImage(type, path);
                 } catch (Throwable e) {
-                    ResourceLoader.setException(e);
+                    if (optional) {
+                        knownImages.remove(path);
+                    } else {
+                        ResourceLoader.setException(e);
+                    }
                 } finally {
                     mainThreadWaitGroup.decrementAndGet();
                 }
