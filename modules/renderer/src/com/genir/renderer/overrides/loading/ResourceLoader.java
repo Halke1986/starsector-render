@@ -9,7 +9,6 @@ import com.fs.starfarer.loading.SpecStore;
 import com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.async.ExecutorFactory;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Random;
@@ -23,37 +22,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
-    public static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+    private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
             6, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
-
-    public static void loadResource(String type, String path) {
-        if (path == null) {
-            return;
-        }
-
-        switch (type) {
-            case "TEXTURE":
-            case "TEXTURE_OPTIONAL":
-            case "TEXTURE_ALPHA_ADDER":
-                ImageLoader.queueImage(type, path);
-                break;
-            case "SOUND":
-                if (Global.getSettings().isSoundEnabled()) {
-                    SoundLoader.queueSound(path);
-                }
-                break;
-            case "FONT":
-                try {
-                    FontRepository.FontRepository_defineFont(path, path);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-        }
-    }
 
     public static void initSpecStore(com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
@@ -63,10 +36,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             try {
                 SpecStore.init(state);
                 state.queueShipAndWeaponSprites();
-            } catch (IOException | JSONException e) {
-                // Do not lose exception type. IOException and
-                // JSONException are handled explicitly by vanilla.
-                asyncException.compareAndSet(null, e);
+            } catch (Throwable e) {
+                setException(e);
             } finally {
                 mainThreadWaitGroup.decrementAndGet();
                 exec.shutdown();
@@ -97,6 +68,32 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         workers.shutdown();
         awaitTermination(workers);
         awaitTermination(exec);
+    }
+
+    public static void loadResource(String type, String path) {
+        if (path == null) {
+            return;
+        }
+
+        switch (type) {
+            case "TEXTURE":
+            case "TEXTURE_OPTIONAL":
+            case "TEXTURE_ALPHA_ADDER":
+                ImageLoader.queueImage(type, path);
+                break;
+            case "SOUND":
+                if (Global.getSettings().isSoundEnabled()) {
+                    SoundLoader.queueSound(path);
+                }
+                break;
+            case "FONT":
+                try {
+                    FontRepository.FontRepository_defineFont(path, path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+        }
     }
 
     private static void awaitTermination(ExecutorService exec) {
@@ -158,12 +155,16 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         barAnimation.animate(bar);
     }
 
+    public static void setException(Throwable e) {
+        if (e != null) {
+            asyncException.compareAndSet(null, e);
+        }
+    }
+
     private static class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            if (e != null) {
-                asyncException.compareAndSet(null, e);
-            }
+            setException(e);
         }
     }
 

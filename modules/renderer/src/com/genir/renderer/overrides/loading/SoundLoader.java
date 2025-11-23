@@ -14,7 +14,13 @@ public class SoundLoader {
         if (path != null && !knownSounds.contains(path)) {
             knownSounds.add(path);
 
-            ResourceLoader.workers.submit(() -> loadSound(path));
+            ResourceLoader.workers.execute(() -> {
+                try {
+                    loadSound(path);
+                } catch (Throwable e) {
+                    ResourceLoader.setException(e);
+                }
+            });
         }
     }
 

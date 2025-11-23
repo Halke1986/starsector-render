@@ -42,15 +42,24 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
         ResourceLoader.workers.execute(() -> {
             try {
-                // Load classes asynchronously, to optimize away
-                // the slow Janino bytecode compilation process.
-                Logger.getLogger(ScriptLoader.class).info("Compiling script [" + className + "]");
-                Global.getSettings().getScriptClassLoader().loadClass(className);
-            } catch (Exception e) {
-                // Vanilla throws a RuntimeException when a class fails to load.
-                throw new RuntimeException("Error while loading script [" + className + "]", e);
+                loadClass(className);
+            } catch (Throwable e) {
+                ResourceLoader.setException(e);
             }
         });
+    }
+
+    private static void loadClass(String className) {
+        try {
+            Logger.getLogger(ScriptLoader.class).info("Compiling script [" + className + "]");
+
+            // Load classes asynchronously, to optimize away
+            // the slow Janino bytecode compilation process.
+            Global.getSettings().getScriptClassLoader().loadClass(className);
+        } catch (Exception e) {
+            // Vanilla throws a RuntimeException when a class fails to load.
+            throw new RuntimeException("Error while loading script [" + className + "]", e);
+        }
     }
 
     public static void runScriptLoadingThread() {

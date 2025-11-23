@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.genir.renderer.overrides.loading.ResourceLoader.asyncException;
 import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
 
 public class ImageLoader {
@@ -28,29 +27,43 @@ public class ImageLoader {
             knownImages.add(path);
 
             mainThreadWaitGroup.incrementAndGet();
-            ResourceLoader.workers.execute(() -> loadImage(type, path));
+            ResourceLoader.workers.execute(() -> {
+                try {
+                    loadImage(type, path);
+                } catch (Throwable e) {
+                    ResourceLoader.setException(e);
+                } finally {
+                    mainThreadWaitGroup.decrementAndGet();
+                }
+            });
         }
     }
 
-    private static void loadImage(String type, String path) {
+    private static void loadImage(String type, String path) throws IOException {
         try {
             logger.info("Loading image [" + path + "]");
 
             final BufferedImage image = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
 
             mainThreadWaitGroup.incrementAndGet();
-            ResourceLoader.mainThreadQueue.add(() -> defineTexture(type, path, image));
+            ResourceLoader.mainThreadQueue.add(() -> {
+                try {
+                    defineTexture(type, path, image);
+                } catch (Throwable e) {
+                    ResourceLoader.setException(e);
+                } finally {
+                    mainThreadWaitGroup.decrementAndGet();
+                }
+            });
         } catch (IOException e) {
             // Do not lose exception type. IOException is handled explicitly by vanilla.
-            asyncException.compareAndSet(null, e);
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error while loading image [" + path + "]", e);
-        } finally {
-            mainThreadWaitGroup.decrementAndGet();
         }
     }
 
-    private static void defineTexture(String type, String path, BufferedImage image) {
+    private static void defineTexture(String type, String path, BufferedImage image) throws IOException {
         try {
             imageCache = image;
 
@@ -63,12 +76,11 @@ public class ImageLoader {
             }
         } catch (IOException e) {
             // Do not lose exception type. IOException is handled explicitly by vanilla.
-            asyncException.compareAndSet(null, e);
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error while loading image [" + path + "]", e);
         } finally {
             imageCache = null;
-            mainThreadWaitGroup.decrementAndGet();
         }
     }
 }
