@@ -26,7 +26,7 @@ public class Executor {
         this.stallDetector = stallDetector;
     }
 
-    public void execute(Runnable command) {
+    synchronized public void execute(Runnable command) {
         rethrowExecutionException();
 
         commandBatch[batchSize] = command;
@@ -45,7 +45,7 @@ public class Executor {
         wait(command, false);
     }
 
-    public void wait(Runnable command, boolean cleanup) {
+    synchronized public void wait(Runnable command, boolean cleanup) {
         rethrowExecutionException();
 
         stallDetector.detectStall();
@@ -61,7 +61,7 @@ public class Executor {
         }
     }
 
-    public Future<?> submit(Runnable command) {
+    synchronized public Future<?> submit(Runnable command) {
         rethrowExecutionException();
 
         flushCommands();
@@ -73,7 +73,7 @@ public class Executor {
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
-    public <T> T get(Callable<T> task) {
+    synchronized public <T> T get(Callable<T> task) {
         stallDetector.detectStall();
         flushCommands();
 
@@ -95,6 +95,10 @@ public class Executor {
     }
 
     private void flushCommands() {
+        if (batchSize == 0) {
+            return;
+        }
+
         final Runnable[] currentBatch = commandBatch;
         final int count = batchSize;
 
