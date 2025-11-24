@@ -1,5 +1,7 @@
-- Removed unnecessary JVM arguments. This should result in minor performance and stability improvements.
+- Removed unnecessary JVM arguments. This should result in performance and stability improvements.
 - Fixed asynchronous pipeline stall that could occur when defining new OpenGL textures every frame. Reported by rolfosian.
+- Optimized game startup time.
+- Osiris Alliance, Diamond Legacy and other mods that call OpenGL from Janino-compiled Java source are now supported. 
 
 v0.5.3
 
