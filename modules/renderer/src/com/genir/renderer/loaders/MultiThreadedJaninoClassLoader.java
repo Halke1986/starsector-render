@@ -4,12 +4,15 @@ import com.fs.starfarer.loading.JavaSourceFinder;
 import org.codehaus.janino.JavaSourceClassLoader;
 import org.codehaus.janino.util.resource.ResourceFinder;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
- * MultiThreadedJavaSourceClassLoader is a parallel capable wrapper around Janino ClassLoader.
+ * MultiThreadedJaninoClassLoader is a parallel capable wrapper around Janino ClassLoader.
  */
-public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
+public class MultiThreadedJaninoClassLoader extends ClassLoader {
     private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
         return new JavaSourceCompiler(new RecursiveClassLoader(this));
     });
@@ -19,22 +22,52 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
 
-    public MultiThreadedJavaSourceClassLoader(ClassLoader parent) {
+    public MultiThreadedJaninoClassLoader(ClassLoader parent) {
         super(parent);
     }
 
     @Override
+    public InputStream getResourceAsStream(String binaryName) {
+        InputStream resource = super.getParent().getResourceAsStream(binaryName);
+        if (resource != null) {
+            return resource;
+        }
+
+        try {
+            String name = binaryName.replace(".class", "").replace('/', '.');
+
+            // Use Janino to compile the Java source, but not to define the class.
+            Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);
+            if (bytecodes == null) {
+                return null;
+            }
+
+            byte[] bytecode = bytecodes.get(name);
+            if (bytecode == null) {
+                return null;
+            }
+
+            return new ByteArrayInputStream(bytecode);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        // Use Janino to compile the Java source, but not to define the class.
-        Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);
-        if (bytecodes == null) {
+        InputStream resource = getResourceAsStream(name);
+        if (resource == null) {
             throw new ClassNotFoundException();
         }
 
-        // All compiled classes are defined by MultiThreadedJavaSourceClassLoader,
-        // not the individual Janino instances.
-        byte[] bytecode = bytecodes.get(name);
-        return defineClass(name, bytecode, 0, bytecode.length);
+        try {
+            // All compiled classes are defined by MultiThreadedJaninoClassLoader,
+            // not the individual Janino instances.
+            byte[] bytecode = resource.readAllBytes();
+            return defineClass(name, bytecode, 0, bytecode.length);
+        } catch (IOException e) {
+            throw new ClassNotFoundException();
+        }
     }
 
     // A wrapper around Janino ClassLoader that makes bytecode generation accessible.
@@ -60,7 +93,7 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
     }
 
     // A wrapper around Janino parent ClassLoader. The wrapper ensures recursive code compilation called
-    // by Janino is intercepted and correctly handled by MultiThreadedJavaSourceClassLoader.
+    // by Janino is intercepted and correctly handled by MultiThreadedJaninoClassLoader.
     private static class RecursiveClassLoader extends ClassLoader {
         final ResourceFinder resourceFinder = new JavaSourceFinder();
 
@@ -74,7 +107,7 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
         public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
             // When generating bytecode, Janino will first try to load the class
             // through the parent ClassLoader. Since parent is the same
-            // MultiThreadedJavaSourceClassLoader that triggered the bytecode
+            // MultiThreadedJaninoClassLoader that triggered the bytecode
             // generation, it is necessary to break the recursion.
             if (name != null && name.equals(currentlyLoading)) {
                 throw new ClassNotFoundException();
@@ -101,7 +134,6 @@ public class MultiThreadedJavaSourceClassLoader extends ClassLoader {
             // The class is not part of starsector-core or compiled jars.
             // It's either Janino code or a missing class. Delegate to script
             // loader, potentially triggering a recursive Janino compilation.
-            // TODO: this path is not tested.
             return scriptLoader.loadClass(name);
         }
     }

@@ -2,7 +2,7 @@ package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.loading.scripts.ScriptStore;
-import com.genir.renderer.loaders.MultiThreadedJavaSourceClassLoader;
+import com.genir.renderer.loaders.SourceClassLoader;
 import com.genir.renderer.loaders.ScriptClassLoader;
 import org.apache.log4j.Logger;
 
@@ -126,7 +126,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
         ClassLoader secureLoader = ScriptStore.ScriptStore_getSecureClassLoader();
         ClassLoader jarLoader = new ScriptClassLoader(urls.toArray(new URL[0]), secureLoader);
-        ClassLoader sourceLoader = new MultiThreadedJavaSourceClassLoader(jarLoader);
+        ClassLoader sourceLoader = new SourceClassLoader(jarLoader);
 
         ScriptStore.ScriptStore_javaSourceClassLoader = sourceLoader;
     }
