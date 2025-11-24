@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.ProtectionDomain;
 
-public interface ClassLoaderBridge {
+public interface ClassTransformerClient {
     InputStream superGetResourceAsStream(String name);
 
     URL superFindResource(String name);

@@ -7,7 +7,7 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.List;
 
-public class ScriptClassLoader extends URLClassLoader implements ClassLoaderBridge {
+public class ScriptClassLoader extends URLClassLoader implements ClassTransformerClient {
     private final List<ClassConstantTransformer> transformers = List.of(new ClassConstantTransformer(Arrays.asList(
             // Replace OpenGL calls.
             ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),

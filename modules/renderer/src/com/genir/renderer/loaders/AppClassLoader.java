@@ -6,7 +6,7 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.List;
 
-public class AppClassLoader extends ClassLoader implements ClassLoaderBridge {
+public class AppClassLoader extends ClassLoader implements ClassTransformerClient {
     private final List<ClassConstantTransformer> deobfTransformers = List.of(
             new ClassConstantTransformer(Deobf.transforms)
     );

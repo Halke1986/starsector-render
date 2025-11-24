@@ -11,14 +11,14 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 public class ClassTransformer {
-    private final ClassLoaderBridge bridge;
+    private final ClassTransformerClient client;
 
-    public ClassTransformer(ClassLoaderBridge bridge) {
-        this.bridge = bridge;
+    public ClassTransformer(ClassTransformerClient client) {
+        this.client = client;
     }
 
     public InputStream getResourceAsStream(String name, List<ClassConstantTransformer> transformers) {
-        InputStream classStream = bridge.superGetResourceAsStream(name);
+        InputStream classStream = client.superGetResourceAsStream(name);
         if (classStream == null) {
             return null;
         }
@@ -43,7 +43,7 @@ public class ClassTransformer {
         String binaryName = name.replace('.', '/') + ".class";
 
         // Get class resource stream.
-        InputStream classStream = bridge.superGetResourceAsStream(binaryName);
+        InputStream classStream = client.superGetResourceAsStream(binaryName);
         if (classStream == null) {
             throw new ClassNotFoundException(name);
         }
@@ -57,7 +57,7 @@ public class ClassTransformer {
         }
 
         // Read class code source.
-        URL url = bridge.superFindResource(binaryName);
+        URL url = client.superFindResource(binaryName);
         if (url != null) {
             String urlStr = url.toString();
 
@@ -77,11 +77,11 @@ public class ClassTransformer {
         }
 
         CodeSource source = new CodeSource(url, (CodeSigner[]) null);
-        ProtectionDomain pd = new ProtectionDomain(source, null, (ClassLoader) bridge, null);
+        ProtectionDomain pd = new ProtectionDomain(source, null, (ClassLoader) client, null);
 
         // Define transformed class.
         byte[] transformedBytes = applyTransformers(originalBytes, transformers);
-        return bridge.superDefineClass(name, transformedBytes, 0, transformedBytes.length, pd);
+        return client.superDefineClass(name, transformedBytes, 0, transformedBytes.length, pd);
     }
 
     private byte[] applyTransformers(byte[] inputBytes, List<ClassConstantTransformer> transformers) {
