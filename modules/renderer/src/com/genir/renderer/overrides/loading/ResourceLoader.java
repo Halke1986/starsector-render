@@ -53,11 +53,11 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         // Run commands on main thread, as it was an Executor.
         do {
             try {
-                Runnable r = mainThreadQueue.poll(10, TimeUnit.MILLISECONDS);
+                Runnable r = mainThreadQueue.poll(333, TimeUnit.MILLISECONDS);
                 if (r != null) {
                     r.run();
-                    state.renderProgress(0);
                 }
+                state.renderProgress(0);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -74,6 +74,13 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         workers.shutdown();
         awaitTermination(workers);
         awaitTermination(exec);
+
+        // Fill the progress bar.
+        barAnimation.forwardOnly = true;
+        while (barAnimation.barIsNotFull()) {
+            state.renderProgress(0);
+            Thread.sleep(10);
+        }
     }
 
     public static void loadResource(String type, String path) {
@@ -178,24 +185,61 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         private final boolean[] barSegments = new boolean[200];
         private final Random rand = new Random();
 
-        public void animate(Sprite bar) {
+        boolean forwardOnly = false;
+
+        void animate(Sprite bar) {
             float x = Global.getSettings().getScreenWidth() / 2;
             float y = Global.getSettings().getScreenHeight() / 2;
 
             int segments = barSegments.length;
 
             int flipIdx = Math.abs(rand.nextInt()) % segments;
-            barSegments[flipIdx] = !barSegments[flipIdx];
-
-            for (int i = 0; i < segments; i++) {
-                if (barSegments[i]) {
-                    bar.renderRegionAtCenter(
-                            x, y,
-                            (float) i / (float) segments, 0,
-                            1f / (float) segments, 1
-                    );
+            if (forwardOnly && barIsNotFull()) {
+                while (barSegments[flipIdx]) {
+                    flipIdx = Math.abs(rand.nextInt()) % segments;
                 }
             }
+
+            barSegments[flipIdx] = !barSegments[flipIdx];
+
+            int start = 0;
+            int length = 0;
+
+            for (int i = 0; i < segments; i++) {
+                if (!barSegments[i]) {
+                    renderBar(x, y, length, start, segments, bar);
+
+                    start = 0;
+                    length = 0;
+                } else {
+                    if (start == 0) {
+                        start = i;
+                    }
+                    length++;
+                }
+            }
+
+            renderBar(x, y, length, start, segments, bar);
+        }
+
+        private void renderBar(float x, float y, int length, int start, int segments, Sprite bar) {
+            if (length > 0) {
+                bar.renderRegionAtCenter(
+                        x, y,
+                        (float) start / (float) segments, 0,
+                        (float) length / (float) segments, 1
+                );
+            }
+        }
+
+        boolean barIsNotFull() {
+            for (boolean barSegment : barSegments) {
+                if (!barSegment) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
