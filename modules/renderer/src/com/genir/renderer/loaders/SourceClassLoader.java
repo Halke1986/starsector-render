@@ -17,8 +17,8 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader implements
     }
 
     @Override
-    public InputStream getResourceAsStream(String binaryName) {
-        return classTransformer.getResourceAsStream(binaryName, transformers);
+    public InputStream getResourceAsStream(String internalName) {
+        return classTransformer.getResourceAsStream(internalName, transformers);
     }
 
     @Override
@@ -27,13 +27,13 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader implements
     }
 
     @Override
-    public InputStream superGetResourceAsStream(String name) {
-        return super.getResourceAsStream(name);
+    public InputStream superGetResourceAsStream(String internalName) {
+        return super.getResourceAsStream(internalName);
     }
 
     @Override
-    public URL superFindResource(String name) {
-        return super.findResource(name);
+    public URL superFindResource(String internalName) {
+        return super.findResource(internalName);
     }
 
     @Override

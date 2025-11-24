@@ -17,14 +17,14 @@ public class ClassTransformer {
         this.client = client;
     }
 
-    public InputStream getResourceAsStream(String name, List<ClassConstantTransformer> transformers) {
-        InputStream classStream = client.superGetResourceAsStream(name);
+    public InputStream getResourceAsStream(String internalName, List<ClassConstantTransformer> transformers) {
+        InputStream classStream = client.superGetResourceAsStream(internalName);
         if (classStream == null) {
             return null;
         }
 
         // Do not transform files other than Java class.
-        if (!name.endsWith(".class")) {
+        if (!internalName.endsWith(".class")) {
             return classStream;
         }
 
@@ -35,15 +35,15 @@ public class ClassTransformer {
 
             return new ByteArrayInputStream(transformedBytes);
         } catch (IOException e) {
-            throw new RuntimeException(name, e);
+            throw new RuntimeException(internalName, e);
         }
     }
 
     public Class<?> findClass(String name, List<ClassConstantTransformer> transformers) throws ClassNotFoundException {
-        String binaryName = name.replace('.', '/') + ".class";
+        String internalName = name.replace('.', '/') + ".class";
 
         // Get class resource stream.
-        InputStream classStream = client.superGetResourceAsStream(binaryName);
+        InputStream classStream = client.superGetResourceAsStream(internalName);
         if (classStream == null) {
             throw new ClassNotFoundException(name);
         }
@@ -57,7 +57,7 @@ public class ClassTransformer {
         }
 
         // Read class code source.
-        URL url = client.superFindResource(binaryName);
+        URL url = client.superFindResource(internalName);
         if (url != null) {
             String urlStr = url.toString();
 
@@ -66,7 +66,7 @@ public class ClassTransformer {
             urlStr = urlStr.replaceFirst("jar:", "");
 
             // Strip class path withing the jar file.
-            int i = urlStr.lastIndexOf(binaryName);
+            int i = urlStr.lastIndexOf(internalName);
             if (i > 0) {
                 try {
                     url = new URL(urlStr.substring(0, i));

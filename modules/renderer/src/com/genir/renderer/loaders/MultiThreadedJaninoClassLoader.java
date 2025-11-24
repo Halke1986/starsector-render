@@ -27,14 +27,14 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
     }
 
     @Override
-    public InputStream getResourceAsStream(String binaryName) {
-        InputStream resource = super.getParent().getResourceAsStream(binaryName);
+    public InputStream getResourceAsStream(String internalName) {
+        InputStream resource = super.getParent().getResourceAsStream(internalName);
         if (resource != null) {
             return resource;
         }
 
         try {
-            String name = binaryName.replace(".class", "").replace('/', '.');
+            String name = internalName.replace(".class", "").replace('/', '.');
 
             // Use Janino to compile the Java source, but not to define the class.
             Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);

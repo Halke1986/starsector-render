@@ -32,13 +32,13 @@ public class ScriptClassLoader extends URLClassLoader implements ClassTransforme
     }
 
     @Override
-    public InputStream superGetResourceAsStream(String name) {
-        return super.getResourceAsStream(name);
+    public InputStream superGetResourceAsStream(String internalName) {
+        return super.getResourceAsStream(internalName);
     }
 
     @Override
-    public URL superFindResource(String name) {
-        return super.findResource(name);
+    public URL superFindResource(String internalName) {
+        return super.findResource(internalName);
     }
 
     @Override
