@@ -1,3 +1,5 @@
+v0.6.0
+
 - Removed unnecessary JVM arguments. This should result in performance and stability improvements.
 - Fixed asynchronous pipeline stall that could occur when defining new OpenGL textures every frame. Reported by rolfosian.
 - Optimized game startup time.
