@@ -6,7 +6,6 @@ public class AppState {
     public static final AppState state = new AppState();
 
     public boolean gameInitialized = false;
-    public Thread mainThread = null;
 
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();

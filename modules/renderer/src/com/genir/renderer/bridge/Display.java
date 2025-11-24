@@ -152,10 +152,6 @@ public class Display {
         state.attribTracker.clear();
         prevFrameFinished = null;
 
-        // Assume the thread issuing OpenGL context
-        // creation in the main application thread.
-        state.mainThread = Thread.currentThread();
-
         record create(PixelFormat pixel_format) implements Runnable {
             @Override
             public void run() {
