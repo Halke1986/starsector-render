@@ -11,27 +11,20 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 public class ClassTransformer {
-    private final ClassTransformerClient client;
-
-    public ClassTransformer(ClassTransformerClient client) {
-        this.client = client;
-    }
-
-    public InputStream getResourceAsStream(String internalName, List<ClassConstantTransformer> transformers) {
-        InputStream classStream = client.superGetResourceAsStream(internalName);
-        if (classStream == null) {
+    public static InputStream transformStream(String internalName, InputStream stream, List<ClassConstantTransformer> transformers) {
+        if (stream == null) {
             return null;
         }
 
         // Do not transform files other than Java class.
         if (!internalName.endsWith(".class")) {
-            return classStream;
+            return stream;
         }
 
         // Transform the class.
         try {
-            byte[] originalBytes = classStream.readAllBytes();
-            byte[] transformedBytes = applyTransformers(originalBytes, transformers);
+            byte[] originalBytes = stream.readAllBytes();
+            byte[] transformedBytes = transformBytes(originalBytes, transformers);
 
             return new ByteArrayInputStream(transformedBytes);
         } catch (IOException e) {
@@ -39,25 +32,21 @@ public class ClassTransformer {
         }
     }
 
-    public Class<?> findClass(String name, List<ClassConstantTransformer> transformers) throws ClassNotFoundException {
-        String internalName = name.replace('.', '/') + ".class";
-
-        // Get class resource stream.
-        InputStream classStream = client.superGetResourceAsStream(internalName);
-        if (classStream == null) {
-            throw new ClassNotFoundException(name);
+    private static byte[] transformBytes(byte[] inputBytes, List<ClassConstantTransformer> transformers) {
+        if (transformers == null) {
+            return inputBytes;
         }
 
-        // Read class bytes.
-        byte[] originalBytes;
-        try {
-            originalBytes = classStream.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(name, e);
+        byte[] outputBytes = inputBytes;
+        for (ClassConstantTransformer t : transformers) {
+            outputBytes = t.apply(outputBytes);
         }
 
+        return outputBytes;
+    }
+
+    public static ProtectionDomain getResourceProtectionDomain(String internalName, URL url, ClassLoader loader) {
         // Read class code source.
-        URL url = client.superFindResource(internalName);
         if (url != null) {
             String urlStr = url.toString();
 
@@ -77,23 +66,18 @@ public class ClassTransformer {
         }
 
         CodeSource source = new CodeSource(url, (CodeSigner[]) null);
-        ProtectionDomain pd = new ProtectionDomain(source, null, (ClassLoader) client, null);
-
-        // Define transformed class.
-        byte[] transformedBytes = applyTransformers(originalBytes, transformers);
-        return client.superDefineClass(name, transformedBytes, 0, transformedBytes.length, pd);
+        return new ProtectionDomain(source, null, loader, null);
     }
 
-    private byte[] applyTransformers(byte[] inputBytes, List<ClassConstantTransformer> transformers) {
-        if (transformers == null) {
-            return inputBytes;
+    public static byte[] getBytecode(String name, InputStream classStream) throws ClassNotFoundException {
+        if (classStream == null) {
+            throw new ClassNotFoundException(name);
         }
 
-        byte[] outputBytes = inputBytes;
-        for (ClassConstantTransformer t : transformers) {
-            outputBytes = t.apply(outputBytes);
+        try {
+            return classStream.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return outputBytes;
     }
 }

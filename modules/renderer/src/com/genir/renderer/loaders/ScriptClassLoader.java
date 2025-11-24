@@ -6,12 +6,10 @@ import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.List;
 
-public class ScriptClassLoader extends URLClassLoader implements ClassTransformerClient {
+public class ScriptClassLoader extends URLClassLoader {
     private final List<ClassConstantTransformer> transformers = List.of(
             new ClassConstantTransformer(ScriptTransformers.transforms)
     );
-
-    private final ClassTransformer classTransformer = new ClassTransformer(this);
 
     public ScriptClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
@@ -22,27 +20,25 @@ public class ScriptClassLoader extends URLClassLoader implements ClassTransforme
     }
 
     @Override
-    public InputStream getResourceAsStream(String name) {
-        return classTransformer.getResourceAsStream(name, transformers);
+    public InputStream getResourceAsStream(String internalName) {
+        // Do not transform parent classes.
+        InputStream stream = getParent().getResourceAsStream(internalName);
+        if (stream != null) {
+            return stream;
+        }
+
+        return ClassTransformer.transformStream(
+                internalName,
+                super.getResourceAsStream(internalName),
+                transformers
+        );
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        return classTransformer.findClass(name, transformers);
-    }
-
-    @Override
-    public InputStream superGetResourceAsStream(String internalName) {
-        return super.getResourceAsStream(internalName);
-    }
-
-    @Override
-    public URL superFindResource(String internalName) {
-        return super.findResource(internalName);
-    }
-
-    @Override
-    public Class<?> superDefineClass(String name, byte[] b, int off, int len, ProtectionDomain protectionDomain) {
-        return super.defineClass(name, b, off, len, protectionDomain);
+        String internalName = name.replace('.', '/') + ".class";
+        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceAsStream(internalName));
+        ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
+        return super.defineClass(name, bytecode, 0, bytecode.length, pd);
     }
 }

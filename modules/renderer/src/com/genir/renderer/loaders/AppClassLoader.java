@@ -1,12 +1,11 @@
 package com.genir.renderer.loaders;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.List;
 
-public class AppClassLoader extends ClassLoader implements ClassTransformerClient {
+public class AppClassLoader extends ClassLoader {
     private final List<ClassConstantTransformer> deobfTransformers = List.of(
             new ClassConstantTransformer(DeobfTransformers.transforms)
     );
@@ -37,8 +36,6 @@ public class AppClassLoader extends ClassLoader implements ClassTransformerClien
             ))
     );
 
-    private final ClassTransformer classTransformer = new ClassTransformer(this);
-
     public AppClassLoader(ClassLoader parent) {
         super(parent);
     }
@@ -47,7 +44,7 @@ public class AppClassLoader extends ClassLoader implements ClassTransformerClien
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
             if (selectTransformer(name) == null) {
-                return super.getParent().loadClass(name);
+                return getParent().loadClass(name);
             }
 
             Class<?> loaded = findLoadedClass(name);
@@ -60,18 +57,24 @@ public class AppClassLoader extends ClassLoader implements ClassTransformerClien
     }
 
     @Override
-    public InputStream getResourceAsStream(String name) {
-        List<ClassConstantTransformer> transformers = selectTransformer(name);
-        return classTransformer.getResourceAsStream(name, transformers);
+    public InputStream getResourceAsStream(String internalName) {
+        return ClassTransformer.transformStream(
+                internalName,
+                super.getResourceAsStream(internalName),
+                selectTransformer(internalName)
+        );
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        List<ClassConstantTransformer> transformers = selectTransformer(name);
-        return classTransformer.findClass(name, transformers);
+        String internalName = name.replace('.', '/') + ".class";
+        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceAsStream(internalName));
+        ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
+        return super.defineClass(name, bytecode, 0, bytecode.length, pd);
     }
 
     private List<ClassConstantTransformer> selectTransformer(String name) {
+        name = name.replace('/', '.');
         if (name.startsWith("org.lwjgl.util.glu.")) {
             return lwjglTransformers;
         } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
@@ -82,20 +85,5 @@ public class AppClassLoader extends ClassLoader implements ClassTransformerClien
 
         // Do not intercept this class.
         return null;
-    }
-
-    @Override
-    public InputStream superGetResourceAsStream(String internalName) {
-        return super.getResourceAsStream(internalName);
-    }
-
-    @Override
-    public URL superFindResource(String internalName) {
-        return super.findResource(internalName);
-    }
-
-    @Override
-    public Class<?> superDefineClass(String name, byte[] b, int off, int len, ProtectionDomain protectionDomain) {
-        return super.defineClass(name, b, off, len, protectionDomain);
     }
 }
