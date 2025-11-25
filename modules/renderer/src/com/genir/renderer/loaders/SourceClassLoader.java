@@ -9,6 +9,11 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
             new ClassConstantTransformer(ScriptTransformers.transforms)
     );
 
+    static {
+        // Marks this class loader type as parallel-capable
+        registerAsParallelCapable();
+    }
+
     public SourceClassLoader(ClassLoader parent) {
         super(parent);
     }
