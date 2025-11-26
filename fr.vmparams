@@ -24,7 +24,6 @@
 
 # Misc
 -XX:+UseFastStosb
--XX:TrimNativeHeapInterval=60000
 -XX:+UseXmmI2D
 -XX:+UseXmmI2F
 -XX:+AlwaysPreTouch

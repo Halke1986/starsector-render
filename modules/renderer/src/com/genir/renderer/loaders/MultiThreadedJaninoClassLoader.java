@@ -28,29 +28,33 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
 
     @Override
     public InputStream getResourceAsStream(String internalName) {
-        InputStream resource = super.getParent().getResourceAsStream(internalName);
+        InputStream resource = getParent().getResourceAsStream(internalName);
         if (resource != null) {
             return resource;
         }
 
         try {
-            String name = internalName.replace(".class", "").replace('/', '.');
-
-            // Use Janino to compile the Java source, but not to define the class.
-            Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);
-            if (bytecodes == null) {
-                return null;
-            }
-
-            byte[] bytecode = bytecodes.get(name);
-            if (bytecode == null) {
-                return null;
-            }
-
-            return new ByteArrayInputStream(bytecode);
+            return getTransformedResource(internalName);
         } catch (ClassNotFoundException e) {
             return null;
         }
+    }
+
+    protected InputStream getTransformedResource(String internalName) throws ClassNotFoundException {
+        String name = internalName.replace(".class", "").replace('/', '.');
+
+        // Use Janino to compile the Java source, but not to define the class.
+        Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);
+        if (bytecodes == null) {
+            return null;
+        }
+
+        byte[] bytecode = bytecodes.get(name);
+        if (bytecode == null) {
+            return null;
+        }
+
+        return new ByteArrayInputStream(bytecode);
     }
 
     @Override
