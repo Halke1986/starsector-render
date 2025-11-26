@@ -34,13 +34,13 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
         }
 
         try {
-            return getTransformedResource(internalName);
+            return getResourceLocal(internalName);
         } catch (ClassNotFoundException e) {
             return null;
         }
     }
 
-    protected InputStream getTransformedResource(String internalName) throws ClassNotFoundException {
+    protected InputStream getResourceLocal(String internalName) throws ClassNotFoundException {
         String name = internalName.replace(".class", "").replace('/', '.');
 
         // Use Janino to compile the Java source, but not to define the class.

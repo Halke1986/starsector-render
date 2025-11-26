@@ -27,10 +27,10 @@ public class ScriptClassLoader extends URLClassLoader {
             return stream;
         }
 
-        return getTransformedResource(internalName);
+        return getResourceLocal(internalName);
     }
 
-    private InputStream getTransformedResource(String internalName) {
+    private InputStream getResourceLocal(String internalName) {
         return ClassTransformer.transformStream(
                 internalName,
                 super.getResourceAsStream(internalName),
@@ -41,7 +41,7 @@ public class ScriptClassLoader extends URLClassLoader {
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         String internalName = name.replace('.', '/') + ".class";
-        byte[] bytecode = ClassTransformer.getBytecode(name, getTransformedResource(internalName));
+        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceLocal(internalName));
         ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
         return super.defineClass(name, bytecode, 0, bytecode.length, pd);
     }
