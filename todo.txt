@@ -6,3 +6,17 @@ https://discord.com/channels/187635036525166592/1402763865913036831/144325661226
 
 Slubernoob async stall
 https://discord.com/channels/187635036525166592/1402763865913036831/1442981061209489419
+
+sidro Azur Lane ClassCastException
+https://discord.com/channels/908453691747606529/908453692271886418/1441809467678396458
+
+Loiosh and Jeobob73 ClassNotFoundException
+https://discord.com/channels/187635036525166592/512356777451323393/1442017288608813197
+https://discord.com/channels/187635036525166592/512356777451323393/1442170051804528661
+
+niko broken threat missile texture
+
+broken url in URL class loader
+getTex stall during game load
+
+forum post, unable to save game

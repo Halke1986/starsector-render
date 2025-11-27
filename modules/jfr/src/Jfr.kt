@@ -9,8 +9,8 @@ import kotlin.io.path.deleteIfExists
 
 fun main() {
     // --- Hardcoded inputs (adjust as needed) ---
-    val inputJfr = Path.of("profiles/profile-1761770349.jfr")
-    val outputJfr = Path.of("profiles/filtered-1761770349.jfr")
+    val inputJfr = Path.of("profiles/profile-1764161112.jfr")
+    val outputJfr = Path.of("profiles/filtered-1764161112.jfr")
 
     outputJfr.deleteIfExists()
 
@@ -27,12 +27,12 @@ fun main() {
 }
 
 fun filter(e: RecordedEvent): Boolean {
-    return filterThread(e) && filterTime(e)
+    return filterThread(e) //&& filterTime(e)
 }
 
 fun filterThread(e: RecordedEvent): Boolean {
     // Sampled thread.
-    val selectedThreads: List<String> = listOf("FR-Render-0", "Thread-3")
+    val selectedThreads: List<String> = listOf("FR-Render", "Thread-4")
     if (e.hasField("sampledThread")) {
         val sampledThread: RecordedThread? = e.getValue("sampledThread") as? RecordedThread
 
