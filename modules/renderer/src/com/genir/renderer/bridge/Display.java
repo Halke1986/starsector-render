@@ -150,6 +150,10 @@ public class Display {
 
     public static void create(PixelFormat pixel_format) {
         state.attribTracker.clear();
+        state.arrayGenerator.clear();
+        state.bufferGenerator.clear();
+        state.texGenerator.clear();
+
         prevFrameFinished = null;
 
         record create(PixelFormat pixel_format) implements Runnable {
