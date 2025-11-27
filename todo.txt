@@ -13,7 +13,6 @@ https://discord.com/channels/187635036525166592/512356777451323393/1442170051804
 
 niko broken threat missile texture
 
-broken url in URL class loader
 getTex stall during game load
 
 forum post, unable to save game

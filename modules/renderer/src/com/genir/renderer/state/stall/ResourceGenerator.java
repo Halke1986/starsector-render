@@ -3,6 +3,7 @@ package com.genir.renderer.state.stall;
 
 import com.genir.renderer.state.Executor;
 
+import java.nio.IntBuffer;
 import java.util.Stack;
 import java.util.concurrent.Callable;
 
@@ -32,6 +33,16 @@ public class ResourceGenerator {
         // If cache is empty, fall back to generating
         // the resource using an actual OpenGL call.
         return exec.get(generatorFn);
+    }
+
+    public void get(IntBuffer buffer) {
+        int startPosition = buffer.position();
+        while (buffer.hasRemaining()) {
+            buffer.put(get());
+        }
+
+        // OpenGL calls do not modify the buffer position.
+        buffer.position(startPosition);
     }
 
     synchronized public void update() { // Render thread

@@ -960,17 +960,11 @@ public class GL11 {
     }
 
     public static void glGenTextures(IntBuffer textures) { // NoList
-        record glGenTextures(IntBuffer textures) implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.GL11.glGenTextures(textures);
-            }
-        }
-        state.exec.wait(new glGenTextures(textures));
+        state.texGenerator.get(textures);
     }
 
     public static int glGenTextures() { // NoList
-            return state.texGenerator.get();
+        return state.texGenerator.get();
     }
 
     public static String glGetString(int name) { // NoList
