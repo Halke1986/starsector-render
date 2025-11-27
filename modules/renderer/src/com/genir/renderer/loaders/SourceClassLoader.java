@@ -5,14 +5,14 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
-    private final List<ClassConstantTransformer> transformers = List.of(
-            new ClassConstantTransformer(ScriptTransformations.transformations)
-    );
-
     static {
         // Marks this class loader type as parallel-capable
         registerAsParallelCapable();
     }
+
+    private final List<ClassConstantTransformer> transformers = List.of(
+            new ClassConstantTransformer(ScriptTransformations.transformations)
+    );
 
     public SourceClassLoader(ClassLoader parent) {
         super(parent);

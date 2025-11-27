@@ -19,10 +19,63 @@ public class ClassConstantTransformer {
     private static final Class<? extends List<?>> STATIC_ARRAY_LIST_TYPE =
             (Class<? extends List<?>>) Arrays.asList(true, false).getClass();
 
+    private static final int CONSTANT_Utf8 = 1;
+    private static final int CONSTANT_Integer = 3;
+    private static final int CONSTANT_Float = 4;
+    private static final int CONSTANT_Long = 5;
+    private static final int CONSTANT_Double = 6;
+    private static final int CONSTANT_Class = 7;
+    private static final int CONSTANT_String = 8;
+    private static final int CONSTANT_Fieldref = 9;
+    private static final int CONSTANT_Methodref = 10;
+    private static final int CONSTANT_InterfaceMethodref = 11;
+    private static final int CONSTANT_NameAndType = 12;
+    private static final int CONSTANT_MethodHandle = 15;
+    private static final int CONSTANT_MethodType = 16;
+    private static final int CONSTANT_Dynamic = 17;
+    private static final int CONSTANT_InvokeDynamic = 18;
+    private static final int CONSTANT_Module = 19;
+    private static final int CONSTANT_Package = 20;
+
     private final List<Transform> transforms;
 
     public ClassConstantTransformer(List<Transform> transforms) {
         this.transforms = transforms.getClass() == STATIC_ARRAY_LIST_TYPE ? transforms : new ArrayList<>(transforms);
+    }
+
+    public static Transform newTransform(String from, String to) {
+        return new Transform(from, to);
+    }
+
+    private static int readUnsignedShort(byte[] buf, int offset) {
+        return ((buf[offset] & 0xFF) << 8) | (buf[offset + 1] & 0xFF);
+    }
+
+    private static int indexOf(byte[] src, byte[] tgt, int fromIndex, int toIndex) {
+        int srcCount = Math.min(src.length, toIndex);
+        int tgtCount = tgt.length;
+        byte first = tgt[0];
+        int max = (srcCount - tgtCount);
+        for (int i = fromIndex; i <= max; i++) {
+            // Look for first byte.
+            if (src[i] != first) {
+                while (++i <= max && src[i] != first) /*continue*/ ;
+            }
+            // Found first byte, now look at the rest of the sequence
+            if (i <= max) {
+                int j = i + 1;
+                int end = j + tgtCount - 1;
+                for (int k = 1;
+                     j < end && src[j] == tgt[k];
+                     j++, k++) /*continue*/
+                    ;
+                if (j == end) {
+                    // Found whole sequence.
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     public byte[] apply(byte[] data) {
@@ -97,12 +150,7 @@ public class ClassConstantTransformer {
         }
     }
 
-    public static Transform newTransform(String from, String to) {
-        return new Transform(from, to);
-    }
-
     public static class Transform {
-
         final String from;
 
         final byte[] fromBytes;
@@ -139,53 +187,4 @@ public class ClassConstantTransformer {
             return Objects.hash(from, to);
         }
     }
-
-    private static int readUnsignedShort(byte[] buf, int offset) {
-        return ((buf[offset] & 0xFF) << 8) | (buf[offset + 1] & 0xFF);
-    }
-
-    private static int indexOf(byte[] src, byte[] tgt, int fromIndex, int toIndex) {
-        int srcCount = Math.min(src.length, toIndex);
-        int tgtCount = tgt.length;
-        byte first = tgt[0];
-        int max = (srcCount - tgtCount);
-        for (int i = fromIndex; i <= max; i++) {
-            // Look for first byte.
-            if (src[i] != first) {
-                while (++i <= max && src[i] != first) /*continue*/ ;
-            }
-            // Found first byte, now look at the rest of the sequence
-            if (i <= max) {
-                int j = i + 1;
-                int end = j + tgtCount - 1;
-                for (int k = 1;
-                     j < end && src[j] == tgt[k];
-                     j++, k++) /*continue*/
-                    ;
-                if (j == end) {
-                    // Found whole sequence.
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
-    private static final int CONSTANT_Utf8 = 1;
-    private static final int CONSTANT_Integer = 3;
-    private static final int CONSTANT_Float = 4;
-    private static final int CONSTANT_Long = 5;
-    private static final int CONSTANT_Double = 6;
-    private static final int CONSTANT_Class = 7;
-    private static final int CONSTANT_String = 8;
-    private static final int CONSTANT_Fieldref = 9;
-    private static final int CONSTANT_Methodref = 10;
-    private static final int CONSTANT_InterfaceMethodref = 11;
-    private static final int CONSTANT_NameAndType = 12;
-    private static final int CONSTANT_MethodHandle = 15;
-    private static final int CONSTANT_MethodType = 16;
-    private static final int CONSTANT_Dynamic = 17;
-    private static final int CONSTANT_InvokeDynamic = 18;
-    private static final int CONSTANT_Module = 19;
-    private static final int CONSTANT_Package = 20;
 }

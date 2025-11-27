@@ -13,14 +13,14 @@ import java.util.Map;
  * MultiThreadedJaninoClassLoader is a parallel capable wrapper around Janino ClassLoader.
  */
 public class MultiThreadedJaninoClassLoader extends ClassLoader {
-    private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
-        return new JavaSourceCompiler(new RecursiveClassLoader(this));
-    });
-
     static {
         // Marks this class loader type as parallel-capable
         registerAsParallelCapable();
     }
+
+    private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
+        return new JavaSourceCompiler(new RecursiveClassLoader(this));
+    });
 
     public MultiThreadedJaninoClassLoader(ClassLoader parent) {
         super(parent);
