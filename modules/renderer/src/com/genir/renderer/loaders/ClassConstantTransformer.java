@@ -8,7 +8,6 @@ package com.genir.renderer.loaders;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,19 +137,6 @@ public class ClassConstantTransformer {
         @Override
         public int hashCode() {
             return Objects.hash(from, to);
-        }
-    }
-
-    public static byte[] readClassBuffer(ClassLoader cl, String className) throws IOException {
-        try (InputStream in = cl.getResourceAsStream(className.replace('.', '/').concat(".class"));
-             ByteArrayOutputStream out = new ByteArrayOutputStream(Objects.requireNonNull(in).available() > 0 ?
-                     in.available() : 16384)) {
-            byte[] buf = new byte[8192];
-            int len;
-            while (((len = in.read(buf)) != -1)) {
-                out.write(buf, 0, len);
-            }
-            return out.toByteArray();
         }
     }
 

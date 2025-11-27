@@ -5,8 +5,8 @@ import java.util.List;
 
 import static com.genir.renderer.loaders.ClassConstantTransformer.newTransform;
 
-public class ScriptTransformers {
-    public static List<ClassConstantTransformer.Transform> transforms = Arrays.asList(
+public class ScriptTransformations {
+    public static List<ClassConstantTransformer.Transform> transformations = Arrays.asList(
             // Replace OpenGL calls.
             newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
             newTransform("org/lwjgl/opengl/GL13", "com/genir/renderer/bridge/GL13"),

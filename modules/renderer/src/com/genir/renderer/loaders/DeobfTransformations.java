@@ -5,8 +5,8 @@ import java.util.List;
 
 import static com.genir.renderer.loaders.ClassConstantTransformer.newTransform;
 
-public class DeobfTransformers {
-    public static List<ClassConstantTransformer.Transform> transforms = Arrays.asList(
+public class DeobfTransformations {
+    public static List<ClassConstantTransformer.Transform> transformations = Arrays.asList(
             // Classes
             newTransform("com/fs/graphics/FileRepository", "com/fs/graphics/L"),
             newTransform("com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),

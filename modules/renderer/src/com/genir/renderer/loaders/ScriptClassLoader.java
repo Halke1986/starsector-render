@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ScriptClassLoader extends URLClassLoader {
     private final List<ClassConstantTransformer> transformers = List.of(
-            new ClassConstantTransformer(ScriptTransformers.transforms)
+            new ClassConstantTransformer(ScriptTransformations.transformations)
     );
 
     public ScriptClassLoader(URL[] urls, ClassLoader parent) {

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
     private final List<ClassConstantTransformer> transformers = List.of(
-            new ClassConstantTransformer(ScriptTransformers.transforms)
+            new ClassConstantTransformer(ScriptTransformations.transformations)
     );
 
     static {

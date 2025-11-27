@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AppClassLoader extends ClassLoader {
     private final List<ClassConstantTransformer> deobfTransformers = List.of(
-            new ClassConstantTransformer(DeobfTransformers.transforms)
+            new ClassConstantTransformer(DeobfTransformations.transformations)
     );
 
     private final List<ClassConstantTransformer> lwjglTransformers = List.of(
