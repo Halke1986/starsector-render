@@ -1,3 +1,5 @@
+- Fixed asynchronous pipeline stall when calling Crabshack radiance plugin. Reported by Slubernoob.
+
 v0.6.0
 
 - Removed unnecessary JVM arguments. This should result in performance and stability improvements.
