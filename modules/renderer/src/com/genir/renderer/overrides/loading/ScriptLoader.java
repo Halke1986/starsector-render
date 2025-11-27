@@ -115,7 +115,10 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
             for (String scriptPath : scripts) {
                 try {
                     File scriptFile = new File(scriptPath);
-                    urls.add(scriptFile.toURI().toURL());
+
+                    // Vanilla uses URL.toURL() rather than URI.toURL(). The two produce
+                    // different string representations, so FR follows the same approach.
+                    urls.add(scriptFile.toURL());
 
                     logger.info("Getting ready to load jar file [" + scriptPath + "]");
                 } catch (MalformedURLException e) {
