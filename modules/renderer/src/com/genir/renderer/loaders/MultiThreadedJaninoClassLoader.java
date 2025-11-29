@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * MultiThreadedJaninoClassLoader is a parallel capable wrapper around Janino ClassLoader.
@@ -17,6 +18,8 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
         // Marks this class loader type as parallel-capable
         registerAsParallelCapable();
     }
+
+    private final Map<String, byte[]> bytecodeCache = new ConcurrentHashMap<>();
 
     private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
         return new JavaSourceCompiler(new RecursiveClassLoader(this));
@@ -43,11 +46,18 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
     protected InputStream getResourceLocal(String internalName) throws ClassNotFoundException {
         String name = internalName.replace(".class", "").replace('/', '.');
 
+        byte[] cachedBytecode = bytecodeCache.get(name);
+        if (cachedBytecode != null) {
+            return new ByteArrayInputStream(cachedBytecode);
+        }
+
         // Use Janino to compile the Java source, but not to define the class.
         Map<String, byte[]> bytecodes = compilers.get().generateBytecodes(name);
         if (bytecodes == null) {
             return null;
         }
+
+        bytecodeCache.putAll(bytecodes);
 
         byte[] bytecode = bytecodes.get(name);
         if (bytecode == null) {

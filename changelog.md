@@ -1,4 +1,5 @@
 - Fixed asynchronous pipeline stall when calling Crabshack radiance plugin. Reported by Slubernoob.
+- Fixed an issue where some missions would not load correctly. Reported by Crablobab.
 
 v0.6.0
 
