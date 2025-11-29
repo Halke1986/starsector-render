@@ -1,10 +1,10 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.loading.scripts.ScriptStore;
-import com.genir.renderer.loaders.SourceClassLoader;
 import com.genir.renderer.loaders.ScriptClassLoader;
+import com.genir.renderer.loaders.SourceClassLoader;
 import org.apache.log4j.Logger;
+import proxy.com.fs.starfarer.loading.scripts.ScriptStore;
 
 import java.io.File;
 import java.net.MalformedURLException;

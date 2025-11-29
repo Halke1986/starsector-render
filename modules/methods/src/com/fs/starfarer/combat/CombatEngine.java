@@ -1,11 +1,12 @@
 package com.fs.starfarer.combat;
 
 import com.fs.graphics.LayeredRenderer;
-import com.fs.graphics.particle.DynamicParticleGroup;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.renderers.FloatingTextManager;
-import com.fs.starfarer.renderers.damage.DebrisParticleSystem;
-import com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
+import proxy.com.fs.graphics.particle.DynamicParticleGroup;
+import proxy.com.fs.starfarer.combat.CombatViewport;
+import proxy.com.fs.starfarer.renderers.damage.DebrisParticleSystem;
+import proxy.com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
 
 public class CombatEngine {
     // $FF: renamed from: OÔ0000 com.fs.graphics.particle.DynamicParticleGroup

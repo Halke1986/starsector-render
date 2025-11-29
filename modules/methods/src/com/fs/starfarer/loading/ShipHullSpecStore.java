@@ -1,7 +1,7 @@
 package com.fs.starfarer.loading;
 
-import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.overrides.loading.ResourceLoader;
+import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
 import java.util.Map;
 

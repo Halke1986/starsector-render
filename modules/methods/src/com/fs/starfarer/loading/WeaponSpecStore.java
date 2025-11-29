@@ -1,7 +1,7 @@
 package com.fs.starfarer.loading;
 
 import com.fs.starfarer.api.loading.WeaponSpecAPI;
-import com.fs.starfarer.loading.specs.BaseWeaponSpec;
+import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
 
 import static com.genir.renderer.overrides.loading.ResourceLoader.queueProjectileSprite;
 import static com.genir.renderer.overrides.loading.ResourceLoader.queueWeaponSprite;

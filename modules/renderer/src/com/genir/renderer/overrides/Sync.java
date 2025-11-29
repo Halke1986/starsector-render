@@ -1,9 +1,9 @@
 package com.genir.renderer.overrides;
 
 
-import com.fs.starfarer.settings.StarfarerSettings;
 import com.genir.renderer.bridge.Display;
 import com.genir.renderer.state.Profiler;
+import proxy.com.fs.starfarer.settings.StarfarerSettings;
 
 public class Sync {
     static long prevUpdateTimestamp = 0;

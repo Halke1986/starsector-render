@@ -1,7 +1,8 @@
 package com.fs.graphics;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.fs.starfarer.combat.CombatViewport;
+import proxy.com.fs.graphics.LayeredRenderable;
+import proxy.com.fs.starfarer.combat.CombatViewport;
 
 import java.util.Arrays;
 import java.util.EnumSet;

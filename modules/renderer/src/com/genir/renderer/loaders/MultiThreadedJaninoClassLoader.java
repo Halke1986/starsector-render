@@ -1,8 +1,8 @@
 package com.genir.renderer.loaders;
 
-import com.fs.starfarer.loading.JavaSourceFinder;
 import org.codehaus.janino.JavaSourceClassLoader;
 import org.codehaus.janino.util.resource.ResourceFinder;
+import proxy.com.fs.starfarer.loading.JavaSourceFinder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.graphics.FileRepository;
-import sound.Sound;
+import proxy.com.fs.graphics.FileRepository;
+import proxy.sound.Sound;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;

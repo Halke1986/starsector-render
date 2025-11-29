@@ -1,8 +1,8 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.graphics.AlphaAdder;
-import com.fs.graphics.TextureRepository;
 import org.apache.log4j.Logger;
+import proxy.com.fs.graphics.AlphaAdder;
+import proxy.com.fs.graphics.TextureRepository;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
@@ -54,7 +54,7 @@ public class ImageLoader {
         try {
             logger.info("Loading image [" + path + "]");
 
-            final BufferedImage image = com.fs.graphics.FileRepository.FileRepository_loadImage(path);
+            final BufferedImage image = proxy.com.fs.graphics.FileRepository.FileRepository_loadImage(path);
             if (image == null) {
                 throw new NullPointerException();
             }

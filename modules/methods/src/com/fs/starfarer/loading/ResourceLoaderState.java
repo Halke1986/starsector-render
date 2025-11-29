@@ -1,8 +1,8 @@
 package com.fs.starfarer.loading;
 
-import com.fs.graphics.Sprite;
 import com.fs.starfarer.api.combat.ShipwideAIFlags;
 import com.genir.renderer.overrides.loading.ResourceLoader;
+import proxy.com.fs.graphics.Sprite;
 
 import java.util.Map;
 

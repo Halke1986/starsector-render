@@ -1,14 +1,14 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.graphics.Sprite;
-import com.fs.graphics.font.FontRepository;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
 import com.fs.starfarer.loading.SpecStore;
-import com.fs.starfarer.loading.specs.BaseWeaponSpec;
-import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.genir.renderer.async.ExecutorFactory;
+import proxy.com.fs.graphics.Sprite;
+import proxy.com.fs.graphics.font.FontRepository;
+import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
+import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
 import java.io.IOException;
 import java.util.Random;
