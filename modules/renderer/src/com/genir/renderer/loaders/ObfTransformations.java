@@ -5,7 +5,7 @@ import java.util.List;
 
 import static com.genir.renderer.loaders.ClassConstantTransformer.newTransform;
 
-public class DeobfTransformations {
+public class ObfTransformations {
     public static List<ClassConstantTransformer.Transform> transformations = Arrays.asList(
             // Classes
             newTransform("proxy/com/fs/graphics/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
@@ -29,6 +29,7 @@ public class DeobfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
             newTransform("proxy/com/fs/starfarer/loading/JavaSourceFinder", "com/fs/starfarer/loading/Objectsuper"),
             newTransform("proxy/com/fs/starfarer/loading/specs/ShipHullSpec", "com/fs/starfarer/loading/specs/g"),
+            newTransform("proxy/com/fs/starfarer/campaign/rules/Expression", "com/fs/starfarer/campaign/rules/oOOO"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -43,6 +44,8 @@ public class DeobfTransformations {
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
-            newTransform("ScriptStore_javaSourceClassLoader", "ø00000")
+            newTransform("ScriptStore_javaSourceClassLoader", "ø00000"),
+            newTransform("Expression_rulesPackages", "ö00000"),
+            newTransform("Expression_commandClasses", "float")
     );
 }

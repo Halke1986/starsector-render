@@ -39,7 +39,7 @@ public class ClassTransformer {
 
         byte[] outputBytes = inputBytes;
         for (ClassConstantTransformer t : transformers) {
-            outputBytes = t.apply(outputBytes);
+            outputBytes = t.apply(t.apply(outputBytes));
         }
 
         return outputBytes;

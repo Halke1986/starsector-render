@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AppClassLoader extends ClassLoader {
-    private final List<ClassConstantTransformer> deobfTransformers = List.of(
-            new ClassConstantTransformer(DeobfTransformations.transformations)
+    private final List<ClassConstantTransformer> obfTransformers = List.of(
+            new ClassConstantTransformer(ObfTransformations.transformations)
     );
 
     private final List<ClassConstantTransformer> lwjglTransformers = List.of(
@@ -33,7 +33,9 @@ public class AppClassLoader extends ClassLoader {
             new ClassConstantTransformer(List.of(
                     // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/DisplayMode transform caused by a false positive match.
                     ClassConstantTransformer.newTransform("com/genir/renderer/bridge/DisplayMode", "org/lwjgl/opengl/DisplayMode")
-            ))
+            )),
+            // Obfuscate assembled overrides.
+            new ClassConstantTransformer(ObfTransformations.transformations)
     );
 
     public AppClassLoader(ClassLoader parent) {
@@ -80,7 +82,7 @@ public class AppClassLoader extends ClassLoader {
         } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformers;
         } else if (name.startsWith("com.genir.renderer.")) {
-            return deobfTransformers;
+            return obfTransformers;
         }
 
         // Do not intercept this class.

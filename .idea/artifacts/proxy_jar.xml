@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="proxy:jar">
+    <output-path>$PROJECT_DIR$/jars/compile</output-path>
+    <root id="archive" name="proxy.jar">
+      <element id="module-output" name="proxy" />
+    </root>
+  </artifact>
+</component>
