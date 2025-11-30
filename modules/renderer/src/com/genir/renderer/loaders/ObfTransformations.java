@@ -16,9 +16,10 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/scripts/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
             newTransform("proxy/com/fs/starfarer/loading/specs/BaseWeaponSpec", "com/fs/starfarer/loading/specs/BaseWeaponSpec"),
             newTransform("proxy/com/fs/starfarer/renderers/damage/DebrisParticleSystem", "com/fs/starfarer/renderers/damage/DebrisParticleSystem"),
-            newTransform("proxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem", "roxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem"),
+            newTransform("proxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem", "com/fs/starfarer/renderers/damage/ExplosionParticleSystem"),
             newTransform("proxy/com/fs/starfarer/settings/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
             newTransform("proxy/com/fs/util/container/repo/ObjectRepository", "com/fs/util/container/repo/ObjectRepository"),
+            newTransform("proxy/sound/Sound", "sound/Sound"),
 
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),

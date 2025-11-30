@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.Global;
+import com.genir.renderer.overrides.loading.ResourceLoader;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ public class Expression {
             return commandClasses.get(command);
         }
 
+        ClassLoader loader = Global.getSettings().getScriptClassLoader().getParent();
+
         StringBuilder searchedPackages = new StringBuilder();
         for (String pkg : rulesPackages) {
             searchedPackages.append(pkg).append("\n");
@@ -18,7 +21,15 @@ public class Expression {
             String name = pkg + "." + command;
 
             try {
-                Class.forName(name, false, Global.getSettings().getScriptClassLoader().getParent()).newInstance();
+                Class<?> c = loader.loadClass(name);
+                if (ResourceLoader.loadingCompleted) {
+                    c.newInstance();
+                } else {
+                    // Postpone modded constructor call until
+                    // multithreaded resource loading is complete.
+                    // Otherwise, the call may cause race conditions.
+                    ResourceLoader.commandsToInitialize.add(c);
+                }
             } catch (Exception var6) {
                 continue;
             }

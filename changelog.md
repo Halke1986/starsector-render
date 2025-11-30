@@ -1,5 +1,6 @@
 - Fixed asynchronous pipeline stall when calling Crabshack radiance plugin. Reported by Slubernoob.
 - Fixed an issue where some missions would not load correctly. Reported by Crablobab.
+- Fixed a race condition where the game would crash randomly during initialization and report a missing resource. Reported by several users. 
 
 v0.6.0
 
