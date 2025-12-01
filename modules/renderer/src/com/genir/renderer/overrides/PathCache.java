@@ -8,6 +8,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,7 +67,7 @@ public class PathCache {
 
         // Lowercase file path, to avoid case sensitivity
         // issues. Not sure if this works on Linux or MacOS.
-        return files.contains(path.toLowerCase());
+        return files.contains(path.toLowerCase(Locale.ROOT));
     }
 
     private void enumeratePath(Path dir, Set<String> fileCollector) {
@@ -75,7 +76,7 @@ public class PathCache {
                 if (path.toFile().isDirectory()) {
                     enumeratePath(path, fileCollector);
                 } else {
-                    fileCollector.add(path.toString().toLowerCase());
+                    fileCollector.add(path.toString().toLowerCase(Locale.ROOT));
                 }
             }
         } catch (Exception e) {

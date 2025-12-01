@@ -1,3 +1,5 @@
+- Fixed an issue where certain modded resources failed to load when the game was running on systems using the Turkish locale (and possibly other locales). Reported by Star☆Child.
+
 v0.6.1
 
 - Fixed asynchronous pipeline stall when calling Crabshack radiance plugin. Reported by Slubernoob.
