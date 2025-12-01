@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides;
 
-
 import com.genir.renderer.bridge.Display;
 import com.genir.renderer.state.Profiler;
 import proxy.com.fs.starfarer.settings.StarfarerSettings;
