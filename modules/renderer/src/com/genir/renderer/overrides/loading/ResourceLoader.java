@@ -3,10 +3,11 @@ package com.genir.renderer.overrides.loading;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
-import com.fs.starfarer.loading.SpecStore;
 import com.genir.renderer.async.ExecutorFactory;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
+import proxy.com.fs.starfarer.campaign.rules.Rules;
+import proxy.com.fs.starfarer.loading.SpecStore;
 import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
@@ -35,13 +36,14 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static boolean loadingCompleted = false;
     public static List<Class<?>> commandsToInitialize = new ArrayList<>();
 
-    public static void initSpecStore(com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
+    public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
 
         mainThreadWaitGroup.incrementAndGet();
         exec.execute(() -> {
             try {
-                SpecStore.init(state);
+                SpecStore.SpecStore_init(state);
+                Rules.Rules_loadRules(state);
 
                 // Most sprites were already optionally queued in
                 // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
