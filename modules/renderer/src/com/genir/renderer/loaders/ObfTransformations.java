@@ -20,6 +20,8 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/settings/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
             newTransform("proxy/com/fs/util/container/repo/ObjectRepository", "com/fs/util/container/repo/ObjectRepository"),
             newTransform("proxy/sound/Sound", "sound/Sound"),
+            newTransform("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
+            newTransform("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
 
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -42,6 +44,7 @@ public class ObfTransformations {
             newTransform("ScriptStore_getSecureClassLoader", "Object"),
             newTransform("ScriptStore_getScriptList", "Õ00000"),
             newTransform("ScriptStore_getPluginSet", "Ò00000"),
+            newTransform("SpecStore_init", "ÓO0000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

@@ -21,9 +21,6 @@ public class ResourceLoaderState {
         joinScriptLoadingThread();
     }
 
-    public void queueShipAndWeaponSprites() {
-    }
-
     public void renderProgress(float var1) {
 //        float var2 = 48.0F;
 //        class_1757.method_17854();
