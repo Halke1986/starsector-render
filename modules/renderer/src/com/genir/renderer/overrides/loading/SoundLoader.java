@@ -16,7 +16,7 @@ public class SoundLoader {
         if (path != null && !knownSounds.contains(path)) {
             knownSounds.add(path);
 
-            ResourceLoader.workers.execute(() -> {
+            ResourceLoader.soundWorker.execute(() -> {
                 try {
                     loadSound(path);
                 } catch (Throwable e) {

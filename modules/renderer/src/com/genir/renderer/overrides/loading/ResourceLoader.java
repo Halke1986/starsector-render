@@ -12,8 +12,6 @@ import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -28,13 +26,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+    public static final ExecutorService soundWorker = ExecutorFactory.newExecutor(
+            1, "FR-Sound-Loader", new ExceptionHandler());
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
             WORKER_THREADS, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
-
-    public static boolean loadingCompleted = false;
-    public static List<Class<?>> commandsToInitialize = new ArrayList<>();
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
@@ -79,15 +76,10 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         }
 
         workers.shutdown();
+        soundWorker.shutdown();
         awaitTermination(workers);
+        awaitTermination(soundWorker);
         awaitTermination(exec);
-
-        // Initialize command classes.
-        loadingCompleted = true;
-        for (Class<?> commandClass : commandsToInitialize) {
-            commandClass.newInstance();
-        }
-        commandsToInitialize.clear();
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;

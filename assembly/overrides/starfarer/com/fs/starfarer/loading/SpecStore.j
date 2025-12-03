@@ -125,7 +125,9 @@ L58:    invokestatic Method com/fs/starfarer/loading/SpecStore new (Lcom/fs/star
 L61:    aload_0 
 L62:    invokestatic Method com/fs/starfarer/loading/SpecStore class (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
 L65:    aload_0 
-L66:    invokestatic Method com/fs/starfarer/loading/SpecStore null (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
+L66:    invokestatic Method com/fs/starfarer/loading/SpecStore null (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
+        aload_0
+        invokestatic Method com/fs/starfarer/loading/SpecStore 'ÖO0000' (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
 L69:    invokestatic Method com/fs/starfarer/loading/WeaponSpecLoader o00000 ()V 
 L72:    invokestatic Method com/fs/starfarer/loading/WeaponSpecLoader 'Ò00000' ()V 
 L75:    invokestatic Method com/fs/starfarer/loading/WeaponSpreadsheetLoader 'Ò00000' ()V 
@@ -152,9 +154,7 @@ L120:   invokestatic Method com/fs/starfarer/loading/specs/oo0o 'ÔÓ0000' ()V
         .stack chop 1 
 L123:   invokestatic Method com/fs/starfarer/loading/SpecStore oO0000 ()V 
 L126:   aload_0 
-L127:   invokestatic Method com/fs/starfarer/loading/SpecStore oO0000 (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
-L130:   aload_0 
-L131:   invokestatic Method com/fs/starfarer/loading/SpecStore 'ÖO0000' (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
+L127:   invokestatic Method com/fs/starfarer/loading/SpecStore oO0000 (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
 L134:   invokestatic Method com/fs/starfarer/loading/SpecStore 'Ó00000' ()V 
 L137:   invokestatic Method com/fs/starfarer/loading/PersonNameStore o00000 ()V 
 L140:   aload_0 
