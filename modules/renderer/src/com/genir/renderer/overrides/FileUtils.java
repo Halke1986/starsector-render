@@ -36,7 +36,9 @@ public class FileUtils {
         }
     }
 
-    public static synchronized InputStream loadInputStream(C resourceLoader, String var1, boolean var2) throws IOException {
+    public static InputStream loadInputStream(C resourceLoader, String var1, boolean var2) throws IOException {
+        // String and boolean state are used only by mods,
+        // after the multithreaded part of game loading.
         final String string0state = resourceLoader.getString0();
         final boolean boolean0state = resourceLoader.getBoolean0();
 
