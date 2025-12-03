@@ -32,7 +32,6 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
             newTransform("proxy/com/fs/starfarer/loading/JavaSourceFinder", "com/fs/starfarer/loading/Objectsuper"),
             newTransform("proxy/com/fs/starfarer/loading/specs/ShipHullSpec", "com/fs/starfarer/loading/specs/g"),
-            newTransform("proxy/com/fs/starfarer/campaign/rules/Expression", "com/fs/starfarer/campaign/rules/oOOO"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -48,8 +47,6 @@ public class ObfTransformations {
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
-            newTransform("ScriptStore_javaSourceClassLoader", "ø00000"),
-            newTransform("Expression_rulesPackages", "ö00000"),
-            newTransform("Expression_commandClasses", "float")
+            newTransform("ScriptStore_javaSourceClassLoader", "ø00000")
     );
 }

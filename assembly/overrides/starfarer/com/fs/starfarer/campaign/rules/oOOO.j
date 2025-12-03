@@ -81,21 +81,106 @@ L89:
 .end method 
 
 .method public static getCommandClass : (Ljava/lang/String;)Ljava/lang/String; 
-    .code stack 3 locals 1
-L0:     aload_0
-L1:     getstatic Field proxy/com/fs/starfarer/campaign/rules/Expression Expression_commandClasses Ljava/util/Map;
-L4:     getstatic Field proxy/com/fs/starfarer/campaign/rules/Expression Expression_rulesPackages Ljava/util/List;
-L7:     invokestatic Method com/genir/renderer/overrides/Expression getCommandClass (Ljava/lang/String;Ljava/util/Map;Ljava/util/List;)Ljava/lang/String;
-L10:    areturn
-L11:
-        .linenumbertable
-            L0 16
-        .end linenumbertable
-        .localvariabletable
-            0 is command Ljava/lang/String; from L0 to L11
-        .end localvariabletable
-    .end code
-.end method
+    .code stack 5 locals 6 
+L0:     getstatic Field com/fs/starfarer/campaign/rules/oOOO float Ljava/util/Map; 
+L3:     aload_0 
+L4:     invokeinterface InterfaceMethod java/util/Map containsKey (Ljava/lang/Object;)Z 2 
+L9:     ifeq L25 
+L12:    getstatic Field com/fs/starfarer/campaign/rules/oOOO float Ljava/util/Map; 
+L15:    aload_0 
+L16:    invokeinterface InterfaceMethod java/util/Map get (Ljava/lang/Object;)Ljava/lang/Object; 2 
+L21:    checkcast java/lang/String 
+L24:    areturn 
+
+        .stack same 
+L25:    ldc '' 
+L27:    astore_1 
+L28:    getstatic Field com/fs/starfarer/campaign/rules/oOOO 'ö00000' Ljava/util/List; 
+L31:    invokeinterface InterfaceMethod java/util/List iterator ()Ljava/util/Iterator; 1 
+L36:    astore_3 
+L37:    goto L138 
+
+        .stack full 
+            locals Object java/lang/String Object java/lang/String Top Object java/util/Iterator 
+            stack 
+        .end stack 
+L40:    aload_3 
+L41:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1 
+L46:    checkcast java/lang/String 
+L49:    astore_2 
+L50:    new java/lang/StringBuilder 
+L53:    dup 
+L54:    aload_1 
+L55:    invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String; 
+L58:    invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V 
+L61:    aload_2 
+L62:    invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L65:    ldc '\n' 
+L67:    invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L70:    invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String; 
+L73:    astore_1 
+L74:    new java/lang/StringBuilder 
+L77:    dup 
+L78:    aload_2 
+L79:    invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String; 
+L82:    invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V 
+L85:    ldc '.' 
+L87:    invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L90:    aload_0 
+L91:    invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L94:    invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String; 
+L97:    astore 4 
+        .catch java/lang/Exception from L99 to L115 using L118 
+L99:    aload 4 
+L101:   iconst_0 
+L102:   invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'Ø00000' ()Lorg/codehaus/janino/JavaSourceClassLoader; 
+L105:   invokevirtual Method org/codehaus/janino/JavaSourceClassLoader getParent ()Ljava/lang/ClassLoader; 
+L108:   invokestatic Method java/lang/Class forName (Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class; 
+
+L114:   pop 
+L115:   goto L123 
+
+        .stack full 
+            locals Object java/lang/String Object java/lang/String Object java/lang/String Object java/util/Iterator Object java/lang/String 
+            stack Object java/lang/Exception 
+        .end stack 
+L118:   astore 5 
+L120:   goto L138 
+
+        .stack same 
+L123:   getstatic Field com/fs/starfarer/campaign/rules/oOOO float Ljava/util/Map; 
+L126:   aload_0 
+L127:   aload 4 
+L129:   invokeinterface InterfaceMethod java/util/Map put (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; 3 
+L134:   pop 
+L135:   aload 4 
+L137:   areturn 
+
+        .stack full 
+            locals Object java/lang/String Object java/lang/String Top Object java/util/Iterator 
+            stack 
+        .end stack 
+L138:   aload_3 
+L139:   invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1 
+L144:   ifne L40 
+L147:   new java/lang/RuntimeException 
+L150:   dup 
+L151:   new java/lang/StringBuilder 
+L154:   dup 
+L155:   ldc 'Command [' 
+L157:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V 
+L160:   aload_0 
+L161:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L164:   ldc '] not found in packages:\n' 
+L166:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L169:   aload_1 
+L170:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder; 
+L173:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String; 
+L176:   invokespecial Method java/lang/RuntimeException <init> (Ljava/lang/String;)V 
+L179:   athrow 
+L180:   
+    .end code 
+.end method 
 
 .method public getOperatorEnum : ()Lcom/fs/starfarer/campaign/rules/OoOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO; 
     .code stack 1 locals 1 
