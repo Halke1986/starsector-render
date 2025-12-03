@@ -25,6 +25,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+    public static final ExecutorService soundWorker = ExecutorFactory.newExecutor(
+            1, "FR-Sound-Loader", new ExceptionHandler());
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
             WORKER_THREADS, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
@@ -72,7 +74,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         }
 
         workers.shutdown();
+        soundWorker.shutdown();
         awaitTermination(workers);
+        awaitTermination(soundWorker);
         awaitTermination(exec);
 
         // Fill the progress bar.
