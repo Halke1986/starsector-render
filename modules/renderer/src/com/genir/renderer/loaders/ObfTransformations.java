@@ -32,6 +32,9 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
             newTransform("proxy/com/fs/starfarer/loading/JavaSourceFinder", "com/fs/starfarer/loading/Objectsuper"),
             newTransform("proxy/com/fs/starfarer/loading/specs/ShipHullSpec", "com/fs/starfarer/loading/specs/g"),
+            newTransform("proxy/com/fs/util/ResourceLoader$ResourceLocationType", "com/fs/util/C$o"),
+            newTransform("proxy/com/fs/util/ResourceLoader$ResourceLocation", "com/fs/util/C$Oo"),
+            newTransform("proxy/com/fs/util/ResourceLoader", "com/fs/util/C"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -44,6 +47,13 @@ public class ObfTransformations {
             newTransform("ScriptStore_getScriptList", "Õ00000"),
             newTransform("ScriptStore_getPluginSet", "Ò00000"),
             newTransform("SpecStore_init", "ÓO0000"),
+            newTransform("ResourceLocation_type", "super"),
+            newTransform("ResourceLocation_path", "Ó00000"),
+            newTransform("ResourceLoader_locationFilter", "String"),
+            newTransform("ResourceLoader_withoutMods", "super"),
+            newTransform("ResourceLoader_getInstance", "Ó00000"),
+            newTransform("ResourceLoader_getResourceList", "Ô00000"),
+            newTransform("ResourceLocation_isMod", "String"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

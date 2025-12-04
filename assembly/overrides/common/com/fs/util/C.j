@@ -5,7 +5,7 @@
 .field private 'Ò00000' Ljava/util/List; .fieldattributes 
     .signature Ljava/util/List<Lcom/fs/util/C$Oo;>; 
 .end fieldattributes 
-.field private String Ljava/lang/String; 
+.field public String Ljava/lang/String;
 .field public static 'super' Z 
 .field private static volatile synthetic 'Õ00000' [I 
 
