@@ -26,17 +26,9 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
             return stream;
         }
 
-        try {
-            return getResourceLocal(internalName);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    protected InputStream getResourceLocal(String internalName) throws ClassNotFoundException {
         return ClassTransformer.transformStream(
                 internalName,
-                super.getResourceLocal(internalName),
+                super.getResourceAsStream(internalName),
                 transformers
         );
     }
@@ -44,7 +36,7 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         String internalName = name.replace('.', '/') + ".class";
-        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceLocal(internalName));
+        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceAsStream(internalName));
         ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
         return super.defineClass(name, bytecode, 0, bytecode.length, pd);
     }
