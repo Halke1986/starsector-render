@@ -20,15 +20,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
-    private static final int WORKER_THREADS = 4;
-
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
-    public static final ExecutorService soundWorker = ExecutorFactory.newExecutor(
-            1, "FR-Sound-Loader", new ExceptionHandler());
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            WORKER_THREADS, "FR-Resource-Loader-Worker", new ExceptionHandler());
+            3, "FR-Resource-Loader-Worker", new ExceptionHandler());
+
+    // Sound loading uses a dedicated worker pool because the decoder contains a large synchronized section,
+    // making it effectively single-threaded. Running sound decoding on the common worker pool would stall it.
+    // NOTE: SpecStore.SpecStore_init call order is modified in assembly so that sound loading runs earlier.
+    // This gives the non-parallelizable sound loading more time to complete, reducing the chance of the main
+    // thread waiting.
+    public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
+            2, "FR-Sound-Loader", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 
@@ -74,9 +78,10 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         }
 
         workers.shutdown();
-        soundWorker.shutdown();
+        soundWorkers.shutdown();
+
         awaitTermination(workers);
-        awaitTermination(soundWorker);
+        awaitTermination(soundWorkers);
         awaitTermination(exec);
 
         // Fill the progress bar.
