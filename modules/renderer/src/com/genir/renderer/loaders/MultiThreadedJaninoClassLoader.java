@@ -36,7 +36,7 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
         try {
             return new ByteArrayInputStream(compilers.get().getBytecode(name));
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -75,8 +75,11 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
             }
 
             Map<String, byte[]> bytecodes = generateBytecodes(name);
-            bytecodeCache.putAll(bytecodes);
+            if (bytecodes == null) {
+                throw new ClassNotFoundException(name);
+            }
 
+            bytecodeCache.putAll(bytecodes);
             return bytecodes.get(name);
         }
     }
