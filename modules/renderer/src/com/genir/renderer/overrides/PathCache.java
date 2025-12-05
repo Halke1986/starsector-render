@@ -52,9 +52,12 @@ public class PathCache {
             return file.exists();
         }
 
+        return files.contains(normalizePath(file.getPath()));
+    }
+
+    private String normalizePath(String path) {
         // Strip starsector-core path prefix,
         // in case the file path is absolute.
-        String path = file.getPath();
         if (path.startsWith(pwd)) {
             path = path.substring(pwd.length());
         }
@@ -67,7 +70,7 @@ public class PathCache {
 
         // Lowercase file path, to avoid case sensitivity
         // issues. Not sure if this works on Linux or MacOS.
-        return files.contains(path.toLowerCase(Locale.ROOT));
+        return path.toLowerCase(Locale.ROOT);
     }
 
     private void enumeratePath(Path dir, Set<String> fileCollector) {
@@ -76,7 +79,7 @@ public class PathCache {
                 if (path.toFile().isDirectory()) {
                     enumeratePath(path, fileCollector);
                 } else {
-                    fileCollector.add(path.toString().toLowerCase(Locale.ROOT));
+                    fileCollector.add(normalizePath(path.toString()));
                 }
             }
         } catch (Exception e) {
