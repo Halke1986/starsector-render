@@ -1,15 +1,15 @@
 package com.genir.renderer.overrides;
 
-import com.fs.starfarer.api.util.Pair;
-import com.fs.util.C;
 import proxy.com.fs.util.ResourceLoader;
+import proxy.com.fs.util.container.Pair;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.genir.renderer.state.AppState.state;
 
-public class FileUtils {
+public class FileUtils { // com.fs.util.C
     private static PathCache pathCache = new PathCache();
 
     // High throughput replacement for File.exists.
@@ -26,22 +26,11 @@ public class FileUtils {
         pathCache = null;
     }
 
-    public static List<Pair> loadInputStreams(C resourceLoader, String var1) throws IOException {
-        if (state.gameInitialized) {
-            return resourceLoader.loadInputStreamsVanilla(var1);
-        }
-
-        try {
-            return resourceLoader.loadInputStreamsOptimized(var1);
-        } catch (Throwable t) {
-            // Fall back to vanilla File.exists to avoid false negatives.
-            return resourceLoader.loadInputStreamsVanilla(var1);
-        }
-    }
-
-    public static synchronized InputStream loadInputStream(C resourceLoader, String path, boolean searchMods) throws IOException {
+    public static InputStream loadInputStream(String path, boolean searchMods) throws IOException {
         ResourceLoader loaderInstance = ResourceLoader.ResourceLoader_getInstance();
 
+        // String and boolean state are used only by mods,
+        // after the multithreaded part of game loading.
         String locationFilter = loaderInstance.ResourceLoader_locationFilter;
         boolean skipMods = !searchMods || ResourceLoader.ResourceLoader_withoutMods;
         List<ResourceLoader.ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
@@ -53,18 +42,27 @@ public class FileUtils {
             // deletes a file during game initialization.
             boolean tryFastExists = !state.gameInitialized;
 
-            return findResource(path, locationFilter, skipMods, locations, tryFastExists);
+            return findResources(path, locationFilter, skipMods, locations, true, tryFastExists).get(0).two;
         } finally {
             loaderInstance.ResourceLoader_locationFilter = null;
             ResourceLoader.ResourceLoader_withoutMods = false;
         }
     }
 
-    public static InputStream findResource(
+    public static List<Pair<ResourceLoader.ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
+        ResourceLoader loaderInstance = ResourceLoader.ResourceLoader_getInstance();
+        List<ResourceLoader.ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
+        boolean tryFastExists = !state.gameInitialized;
+
+        return findResources(path, null, false, locations, false, tryFastExists);
+    }
+
+    public static List<Pair<ResourceLoader.ResourceLocation, InputStream>> findResources(
             String path,
             String locationFilter,
             boolean skipMods,
             List<ResourceLoader.ResourceLocation> locations,
+            boolean findFirst,
             boolean tryFastExists
     ) throws IOException {
         // Filter locations.
@@ -80,22 +78,19 @@ public class FileUtils {
             }).toList();
         }
 
-        // Find resource.
+        List<Pair<ResourceLoader.ResourceLocation, InputStream>> resources;
+
         if (tryFastExists) {
-            for (ResourceLoader.ResourceLocation location : locations) {
-                InputStream resourceStream = openResource(path, location, true);
-                if (resourceStream != null) {
-                    return resourceStream;
-                }
+            resources = findResourcesInLocations(path, locations, findFirst, true);
+            if (!resources.isEmpty()) {
+                return resources;
             }
         }
 
         // Fallback to slow resource check to avoid false negatives.
-        for (ResourceLoader.ResourceLocation location : locations) {
-            InputStream resourceStream = openResource(path, location, false);
-            if (resourceStream != null) {
-                return resourceStream;
-            }
+        resources = findResourcesInLocations(path, locations, findFirst, false);
+        if (!resources.isEmpty()) {
+            return resources;
         }
 
         // Build error message.
@@ -114,6 +109,28 @@ public class FileUtils {
         }
 
         throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
+    }
+
+    public static List<Pair<ResourceLoader.ResourceLocation, InputStream>> findResourcesInLocations(
+            String path,
+            List<ResourceLoader.ResourceLocation> locations,
+            boolean findFirst,
+            boolean useFastExists
+    ) throws IOException {
+        List<Pair<ResourceLoader.ResourceLocation, InputStream>> resources = new ArrayList<>();
+
+        for (ResourceLoader.ResourceLocation location : locations) {
+            InputStream resourceStream = openResource(path, location, useFastExists);
+            if (resourceStream != null) {
+                resources.add(new Pair<>(location, resourceStream));
+
+                if (findFirst) {
+                    return resources;
+                }
+            }
+        }
+
+        return resources;
     }
 
     public static InputStream openResource(String path, ResourceLoader.ResourceLocation location, boolean fastExists) throws FileNotFoundException {

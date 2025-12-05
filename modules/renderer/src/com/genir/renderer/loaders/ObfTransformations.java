@@ -22,6 +22,7 @@ public class ObfTransformations {
             newTransform("proxy/sound/Sound", "sound/Sound"),
             newTransform("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             newTransform("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
+            newTransform("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
 
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -54,6 +55,8 @@ public class ObfTransformations {
             newTransform("ResourceLoader_getInstance", "Ó00000"),
             newTransform("ResourceLoader_getResourceList", "Ô00000"),
             newTransform("ResourceLocation_isMod", "String"),
+            newTransform("FileUtils_loadInputStreams", "new"),
+            newTransform("FileUtils_loadInputStream", "Ó00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
