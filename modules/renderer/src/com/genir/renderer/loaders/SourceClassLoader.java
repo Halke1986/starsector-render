@@ -1,7 +1,5 @@
 package com.genir.renderer.loaders;
 
-import java.io.InputStream;
-import java.security.ProtectionDomain;
 import java.util.List;
 
 public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
@@ -19,25 +17,8 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
     }
 
     @Override
-    public InputStream getResourceAsStream(String internalName) {
-        // Do not transform parent classes.
-        InputStream stream = getParent().getResourceAsStream(internalName);
-        if (stream != null) {
-            return stream;
-        }
-
-        return ClassTransformer.transformStream(
-                internalName,
-                super.getResourceAsStream(internalName),
-                transformers
-        );
-    }
-
-    @Override
-    public Class<?> findClass(String name) throws ClassNotFoundException {
-        String internalName = name.replace('.', '/') + ".class";
-        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceAsStream(internalName));
-        ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
-        return super.defineClass(name, bytecode, 0, bytecode.length, pd);
+    public byte[] findBytecode(String internalName) throws ClassNotFoundException {
+        byte[] originalBytes = super.findBytecode(internalName);
+        return ClassTransformer.transformBytes(internalName, originalBytes, transformers);
     }
 }

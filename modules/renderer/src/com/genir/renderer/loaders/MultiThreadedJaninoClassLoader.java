@@ -4,7 +4,6 @@ import org.codehaus.janino.JavaSourceClassLoader;
 import proxy.com.fs.starfarer.loading.JavaSourceFinder;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,35 +27,30 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
 
     @Override
     public InputStream getResourceAsStream(String internalName) {
-        String name = internalName.replace('/', '.');
-        name = name.endsWith(".class")
-                ? name.substring(0, name.length() - 6)
-                : name;
+        InputStream stream = getParent().getResourceAsStream(internalName);
+        if (stream != null) {
+            return stream;
+        }
 
+        // Return local transformed class.
         try {
-            return new ByteArrayInputStream(compilers.get().getBytecode(name));
+            return new ByteArrayInputStream(findBytecode(internalName));
         } catch (ClassNotFoundException e) {
             return null;
         }
     }
 
+    // Return local class bytecode.
+    public byte[] findBytecode(String internalName) throws ClassNotFoundException {
+        return compilers.get().getBytecode(ClassName.binary(internalName));
+    }
+
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        String internalName = name.replace('.', '/') + ".class";
-
-        InputStream resource = getResourceAsStream(internalName);
-        if (resource == null) {
-            throw new ClassNotFoundException();
-        }
-
-        try {
-            // All compiled classes are defined by MultiThreadedJaninoClassLoader,
-            // not the individual Janino instances.
-            byte[] bytecode = resource.readAllBytes();
-            return defineClass(name, bytecode, 0, bytecode.length);
-        } catch (IOException e) {
-            throw new ClassNotFoundException();
-        }
+        // All compiled classes are defined by MultiThreadedJaninoClassLoader,
+        // not the individual Janino instances.
+        byte[] bytecode = findBytecode(ClassName.internal(name));
+        return defineClass(name, bytecode, 0, bytecode.length);
     }
 
     // A wrapper around Janino ClassLoader that makes bytecode generation accessible.

@@ -1,6 +1,5 @@
 package com.genir.renderer.loaders;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -11,28 +10,12 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 public class ClassTransformer {
-    public static InputStream transformStream(String internalName, InputStream stream, List<ClassConstantTransformer> transformers) {
-        if (stream == null) {
-            return null;
-        }
-
+    public static byte[] transformBytes(String internalName, byte[] inputBytes, List<ClassConstantTransformer> transformers) {
         // Do not transform files other than Java class.
         if (!internalName.endsWith(".class")) {
-            return stream;
+            return inputBytes;
         }
 
-        // Transform the class.
-        try {
-            byte[] originalBytes = stream.readAllBytes();
-            byte[] transformedBytes = transformBytes(originalBytes, transformers);
-
-            return new ByteArrayInputStream(transformedBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(internalName, e);
-        }
-    }
-
-    private static byte[] transformBytes(byte[] inputBytes, List<ClassConstantTransformer> transformers) {
         if (transformers == null) {
             return inputBytes;
         }

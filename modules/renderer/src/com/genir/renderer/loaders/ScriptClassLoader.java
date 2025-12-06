@@ -1,5 +1,7 @@
 package com.genir.renderer.loaders;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,21 +29,33 @@ public class ScriptClassLoader extends URLClassLoader {
             return stream;
         }
 
-        return getResourceLocal(internalName);
+        // Return local transformed class.
+        try {
+            return new ByteArrayInputStream(findBytecode(internalName));
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
-    private InputStream getResourceLocal(String internalName) {
-        return ClassTransformer.transformStream(
-                internalName,
-                super.getResourceAsStream(internalName),
-                transformers
-        );
+    // Return local transformed class bytecode.
+    public byte[] findBytecode(String internalName) throws ClassNotFoundException {
+        InputStream stream = super.getResourceAsStream(internalName);
+        if (stream == null) {
+            throw new ClassNotFoundException(ClassName.binary(internalName));
+        }
+
+        try {
+            byte[] originalBytes = stream.readAllBytes();
+            return ClassTransformer.transformBytes(internalName, originalBytes, transformers);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        String internalName = name.replace('.', '/') + ".class";
-        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceLocal(internalName));
+        String internalName = ClassName.internal(name);
+        byte[] bytecode = findBytecode(internalName);
         ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
         return super.defineClass(name, bytecode, 0, bytecode.length, pd);
     }

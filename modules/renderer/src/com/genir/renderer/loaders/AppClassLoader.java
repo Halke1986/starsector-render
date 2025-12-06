@@ -1,5 +1,7 @@
 package com.genir.renderer.loaders;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
@@ -45,6 +47,8 @@ public class AppClassLoader extends ClassLoader {
     @Override
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
+            // Class does not require transformation
+            // and should be loaded by the parent.
             if (selectTransformer(name) == null) {
                 return getParent().loadClass(name);
             }
@@ -60,23 +64,50 @@ public class AppClassLoader extends ClassLoader {
 
     @Override
     public InputStream getResourceAsStream(String internalName) {
-        return ClassTransformer.transformStream(
-                internalName,
-                super.getResourceAsStream(internalName),
-                selectTransformer(internalName)
-        );
+        // Class does not require transformation
+        // and should be loaded by the parent.
+        if (selectTransformer(internalName) == null) {
+            return getParent().getResourceAsStream(internalName);
+        }
+
+        // Return local transformed class.
+        try {
+            return new ByteArrayInputStream(findBytecode(internalName));
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    // Return local transformed class bytecode.
+    public byte[] findBytecode(String internalName) throws ClassNotFoundException {
+        // Requested class is non-local and should have been loaded by the parent.
+        if (selectTransformer(internalName) == null) {
+            throw new ClassNotFoundException(ClassName.binary(internalName));
+        }
+
+        InputStream stream = super.getResourceAsStream(internalName);
+        if (stream == null) {
+            throw new ClassNotFoundException(ClassName.binary(internalName));
+        }
+
+        try {
+            byte[] originalBytes = stream.readAllBytes();
+            return ClassTransformer.transformBytes(internalName, originalBytes, selectTransformer(internalName));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        String internalName = name.replace('.', '/') + ".class";
-        byte[] bytecode = ClassTransformer.getBytecode(name, getResourceAsStream(internalName));
+        String internalName = ClassName.internal(name);
+        byte[] bytecode = findBytecode(internalName);
         ProtectionDomain pd = ClassTransformer.getResourceProtectionDomain(internalName, super.findResource(internalName), this);
         return super.defineClass(name, bytecode, 0, bytecode.length, pd);
     }
 
-    private List<ClassConstantTransformer> selectTransformer(String name) {
-        name = name.replace('/', '.');
+    private List<ClassConstantTransformer> selectTransformer(String binaryOrInternalName) {
+        String name = ClassName.binary(binaryOrInternalName);
         if (name.startsWith("org.lwjgl.util.glu.")) {
             return lwjglTransformers;
         } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
