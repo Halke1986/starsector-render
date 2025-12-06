@@ -12,5 +12,6 @@
     <orderEntry type="library" name="starfarer.api" level="project" />
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="module" module-name="proxy" />
+    <orderEntry type="library" name="xstream-1.4.10" level="project" />
   </component>
 </module>
