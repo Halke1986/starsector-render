@@ -37,10 +37,10 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     private static final Bar barAnimation = new Bar();
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
-        ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
+        ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
 
         mainThreadWaitGroup.incrementAndGet();
-        exec.execute(() -> {
+        mainThreadExec.execute(() -> {
             try {
                 SpecStore.SpecStore_init(state);
 
@@ -52,7 +52,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 setException(e);
             } finally {
                 mainThreadWaitGroup.decrementAndGet();
-                exec.shutdown();
             }
         });
 
@@ -71,18 +70,30 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         // Rethrow exception captured in a worker thread.
         Throwable t = asyncException.get();
-        if (t instanceof Exception e) {
-            throw e;
-        } else if (t != null) {
-            throw new RuntimeException(t);
+        if (t != null) {
+            // Interrupt workers.
+            mainThreadExec.shutdownNow();
+            workers.shutdownNow();
+            soundWorkers.shutdownNow();
+
+            awaitTermination(mainThreadExec);
+            awaitTermination(workers);
+            awaitTermination(soundWorkers);
+
+            if (t instanceof Exception e) {
+                throw e;
+            } else {
+                throw new RuntimeException(t);
+            }
         }
 
+        mainThreadExec.shutdown();
         workers.shutdown();
         soundWorkers.shutdown();
 
+        awaitTermination(mainThreadExec);
         awaitTermination(workers);
         awaitTermination(soundWorkers);
-        awaitTermination(exec);
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;
