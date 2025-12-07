@@ -8,16 +8,35 @@ import static com.genir.renderer.state.AppState.state;
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
 
+    private static void unlockParticleLimit() {
+        int limit = Integer.MAX_VALUE;
+
+        engine.getGlowyContrailParticles().setLimit(limit);
+        engine.getSmokyContrailParticles().setLimit(limit);
+        engine.getSmoothParticles().setLimit(limit);
+        engine.getNebulaParticles().setLimit(limit);
+        engine.getNebulaSmoothParticles().setLimit(limit);
+        engine.getSwirlyNebulaParticles().setLimit(limit);
+        engine.getExplosionParticles().setLimit(limit);
+        engine.getSmokeParticles().setLimit(limit);
+        engine.getNebulaSmokeParticles().setLimit(limit);
+        engine.getHitParticlesGroup().setLimit(limit);
+        engine.getNegativeParticles().setLimit(limit);
+        engine.getNegativeNebulaParticles().setLimit(limit);
+        engine.getNegativeSwirlyNebulaParticles().setLimit(limit);
+    }
+
     public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
+        CombatEngine.engine = engine;
+
         // Assume first run of Combat Engine render loop happens
         // immediately after the game finished initializing.
         if (!state.gameInitialized) {
             state.gameInitialized = true;
             state.stallDetector.enableDetection();
             FileUtils.closeFileRepository();
+            unlockParticleLimit();
         }
-
-        CombatEngine.engine = engine;
 
         if (engine.isDestroyed()) {
             return;

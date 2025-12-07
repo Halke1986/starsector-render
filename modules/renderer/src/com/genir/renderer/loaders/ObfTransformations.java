@@ -36,6 +36,7 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/util/ResourceLoader$ResourceLocationType", "com/fs/util/C$o"),
             newTransform("proxy/com/fs/util/ResourceLoader$ResourceLocation", "com/fs/util/C$Oo"),
             newTransform("proxy/com/fs/util/ResourceLoader", "com/fs/util/C"),
+            newTransform("proxy/com/fs/starfarer/renderers/FloatingTextManager", "com/fs/starfarer/renderers/Q"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -57,6 +58,7 @@ public class ObfTransformations {
             newTransform("ResourceLocation_isMod", "String"),
             newTransform("FileUtils_loadInputStreams", "new"),
             newTransform("FileUtils_loadInputStream", "Ó00000"),
+            newTransform("FloatingTextManager_render", "super"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

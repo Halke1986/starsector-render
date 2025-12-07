@@ -2,9 +2,9 @@ package com.fs.starfarer.combat;
 
 import com.fs.graphics.LayeredRenderer;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
-import com.fs.starfarer.renderers.FloatingTextManager;
 import proxy.com.fs.graphics.particle.DynamicParticleGroup;
 import proxy.com.fs.starfarer.combat.CombatViewport;
+import proxy.com.fs.starfarer.renderers.FloatingTextManager;
 import proxy.com.fs.starfarer.renderers.damage.DebrisParticleSystem;
 import proxy.com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
 
@@ -91,7 +91,7 @@ public class CombatEngine {
 
     // ADDED METHOD
     public void renderFloatingTextManager() {
-        this.getFloatingTextManager().render(1.0F);
+        this.getFloatingTextManager().FloatingTextManager_render(1.0F);
     }
 
     // REPLACED METHOD
