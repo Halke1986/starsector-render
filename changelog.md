@@ -1,3 +1,5 @@
+v0.6.2
+
 - Fixed an issue where certain modded resources failed to load when the game was running on systems using the Turkish locale (and possibly other locales). Reported by Star☆Child.
 - Fixed a visual error where Kinetic Fragment glow animation was replaced by a white square. Reported by niko the cool elongated, Slubernoob, Vanshilar and others.
 
