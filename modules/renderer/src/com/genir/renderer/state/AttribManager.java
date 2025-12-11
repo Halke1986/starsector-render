@@ -52,7 +52,7 @@ public class AttribManager {
 
     public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
         if (actual.enableAlphaTest) {
-            actual.enableBlend = false;
+            actual.enableAlphaTest = false;
             execGlEnableDisable(GL11.GL_ALPHA_TEST, false);
         }
 
@@ -172,6 +172,9 @@ public class AttribManager {
 
     public void glBindTexture(int target, int texture) {
         expected.glBindTexture(target, texture);
+
+        // Texture binding is not overriden, just tracked.
+        actual.glBindTexture(target, texture);
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
