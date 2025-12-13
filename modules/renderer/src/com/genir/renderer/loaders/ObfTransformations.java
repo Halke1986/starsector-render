@@ -37,6 +37,7 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/util/ResourceLoader$ResourceLocation", "com/fs/util/C$Oo"),
             newTransform("proxy/com/fs/util/ResourceLoader", "com/fs/util/C"),
             newTransform("proxy/com/fs/starfarer/renderers/FloatingTextManager", "com/fs/starfarer/renderers/Q"),
+            newTransform("proxy/com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -59,6 +60,9 @@ public class ObfTransformations {
             newTransform("FileUtils_loadInputStreams", "new"),
             newTransform("FileUtils_loadInputStream", "Ó00000"),
             newTransform("FloatingTextManager_render", "super"),
+            newTransform("ProgressBar_setDescription", "Ò00000"),
+            newTransform("ProgressBar_render", "o00000"),
+            newTransform("ProgressBar_renderWithDescription", "o00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

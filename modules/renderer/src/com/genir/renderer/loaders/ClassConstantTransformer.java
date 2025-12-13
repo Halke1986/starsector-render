@@ -9,10 +9,7 @@ package com.genir.renderer.loaders;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ClassConstantTransformer {
     @SuppressWarnings("unchecked")
@@ -40,7 +37,7 @@ public class ClassConstantTransformer {
     private final List<Transform> transforms;
 
     public ClassConstantTransformer(List<Transform> transforms) {
-        this.transforms = transforms.getClass() == STATIC_ARRAY_LIST_TYPE ? transforms : new ArrayList<>(transforms);
+        this.transforms = sortTransforms(transforms.getClass() == STATIC_ARRAY_LIST_TYPE ? transforms : new ArrayList<>(transforms));
     }
 
     public static Transform newTransform(String from, String to) {
@@ -148,6 +145,16 @@ public class ClassConstantTransformer {
         } catch (IOException e) {
             throw new AssertionError("unreachable", e);
         }
+    }
+
+    /**
+     * Sorts the transforms from the longest to shortest 'from' string.
+     * This prevents transformation shadowing, e.g., where "package/ShipCommand"
+     * is matched by the shorter "package/Ship" transform.
+     */
+    private List<Transform> sortTransforms(List<Transform> transforms) {
+        transforms.sort(Comparator.comparingInt(t -> -t.from.length()));
+        return transforms;
     }
 
     public static class Transform {
