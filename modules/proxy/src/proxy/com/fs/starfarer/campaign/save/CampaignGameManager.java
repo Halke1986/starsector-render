@@ -4,7 +4,7 @@ import proxy.com.fs.starfarer.campaign.CampaignEngine;
 
 public class CampaignGameManager {
     // $FF: renamed from: o00000 (com.fs.starfarer.campaign.CampaignEngine.o, long, boolean) java.lang.String
-    public static String CampaignGameManager_saveGame_vanilla(CampaignEngine.CampaignUI var0, long var1, boolean var3) {
+    public static String CampaignGameManager_vanilla_saveGame(CampaignEngine.CampaignUI var0, long var1, boolean var3) {
         return com.genir.renderer.overrides.CampaignGameManager.saveGame(var0, var1, var3);
     }
 

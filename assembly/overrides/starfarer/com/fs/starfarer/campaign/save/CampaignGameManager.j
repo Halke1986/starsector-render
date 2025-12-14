@@ -126,7 +126,7 @@ L7:
     .end code
 .end method
 
-.method public static CampaignGameManager_saveGame_vanilla : (Lcom/fs/starfarer/campaign/save/return;Lcom/fs/starfarer/campaign/CampaignState;)Ljava/lang/String;
+.method public static o00000 : (Lcom/fs/starfarer/campaign/save/return;Lcom/fs/starfarer/campaign/CampaignState;)Ljava/lang/String;
     .code stack 6 locals 20 
 L0:     invokestatic Method com/fs/starfarer/D/return 'ô00000' ()V 
 L3:     iconst_1 
@@ -1174,7 +1174,7 @@ L7:
     .end code 
 .end method 
 
-.method public static o00000 : (Lcom/fs/starfarer/campaign/CampaignEngine$o;JZ)Ljava/lang/String; 
+.method public static CampaignGameManager_vanilla_saveGame : (Lcom/fs/starfarer/campaign/CampaignEngine$o;JZ)Ljava/lang/String;
     .code stack 8 locals 30 
 L0:     iconst_0 
 L1:     invokestatic Method java/lang/Boolean valueOf (Z)Ljava/lang/Boolean; 

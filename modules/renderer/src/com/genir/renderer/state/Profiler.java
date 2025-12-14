@@ -23,13 +23,13 @@ public class Profiler {
         }
 
         if (rec == null) {
-            startProfiler();
+            startProfiler("");
         } else {
             stopProfiler();
         }
     }
 
-    private void startProfiler() {
+    public String startProfiler(String profileDir) {
         try {
             Logger.getLogger(Profiler.class).info("Started profiling");
 
@@ -37,17 +37,19 @@ public class Profiler {
             rec = new Recording(cfg);
 
             long unixTimestamp = System.currentTimeMillis() / 1000L;
-            String fileName = "profile-" + unixTimestamp + ".jfr";
+            String fileName = profileDir + "/profile-" + unixTimestamp + ".jfr";
             rec.setDestination(Path.of(fileName));
 
             configureAcquisition();
             rec.start();
+
+            return fileName;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
-    private void stopProfiler() {
+    public void stopProfiler() {
         try {
             String fileName = rec.getDestination().toString();
             Logger.getLogger(Profiler.class).info("Finished profiling. Writing results to: " + fileName);
@@ -108,21 +110,6 @@ public class Profiler {
         boolean backslash = Keyboard.isKeyDown(KEY_BACKSLASH);
 
         return ctrl && alt && backslash;
-    }
-
-    @Name("app.UpdateMark")
-    public static class UpdateMark extends Event {
-        private static long prevMark = 0;
-        public long dtNs;
-
-        public static void mark() {
-            var e = new UpdateMark();
-            long thisFrame = System.nanoTime();
-            e.dtNs = thisFrame - prevMark;
-            e.commit();
-
-            prevMark = thisFrame;
-        }
     }
 
     @Name("app.FrameMark")
