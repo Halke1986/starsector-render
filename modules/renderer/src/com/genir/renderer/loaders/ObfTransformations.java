@@ -66,7 +66,6 @@ public class ObfTransformations {
             newTransform("ProgressBar_setDescription", "Ò00000"),
             newTransform("ProgressBar_render", "o00000"),
             newTransform("ProgressBar_renderWithDescription", "o00000"),
-            newTransform("ProgressBar_renderWithDescription", "o00000"),
             newTransform("CampaignGameManager_saveGame", "o00000"),
 
             // Obfuscated fields
