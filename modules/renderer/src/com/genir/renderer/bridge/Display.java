@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.state.Profiler;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -42,6 +43,8 @@ public class Display {
                 public void run() {
                     org.lwjgl.opengl.Display.update(processMessages);
                     updateAppState();
+
+                    Profiler.UpdateMark.mark();
                 }
             }
 

@@ -1,8 +1,11 @@
 package com.genir.renderer.overrides;
 
+import com.genir.renderer.async.ExecutorFactory;
 import proxy.com.fs.starfarer.campaign.CampaignEngine;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.genir.renderer.state.AppState.state;
 
@@ -12,12 +15,31 @@ public class CampaignGameManager {
         String profileDir = "profiles-" + unixTimestamp;
         new File(profileDir).mkdirs();
 
-        state.profiler.startProfiler(profileDir);
+        ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-profiler");
+
+        exec.execute(() -> {
+            while (true) {
+                state.profiler.startProfiler(profileDir);
+
+                try {
+                    Thread.sleep(10 * 1000);
+                } catch (InterruptedException e) {
+                    state.profiler.stopProfiler();
+                    return;
+                }
+
+                state.profiler.stopProfiler();
+            }
+        });
 
         try {
             return proxy.com.fs.starfarer.campaign.save.CampaignGameManager.CampaignGameManager_vanilla_saveGame(var0, var1, var3);
         } finally {
-            state.profiler.stopProfiler();
+            exec.shutdownNow();
+            try {
+                exec.awaitTermination(30, TimeUnit.MINUTES);
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 }

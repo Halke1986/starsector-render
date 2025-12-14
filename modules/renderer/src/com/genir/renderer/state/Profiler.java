@@ -112,6 +112,21 @@ public class Profiler {
         return ctrl && alt && backslash;
     }
 
+    @Name("app.UpdateMark")
+    public static class UpdateMark extends Event {
+        private static long prevMark = 0;
+        public long dtNs;
+
+        public static void mark() {
+            var e = new UpdateMark();
+            long thisFrame = System.nanoTime();
+            e.dtNs = thisFrame - prevMark;
+            e.commit();
+
+            prevMark = thisFrame;
+        }
+    }
+
     @Name("app.FrameMark")
     public static class FrameMark extends Event {
         private static long frameStart = 0;
