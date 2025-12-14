@@ -23,6 +23,9 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             newTransform("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             newTransform("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
+            newTransform("proxy/com/fs/starfarer/campaign/save/CampaignGameManager", "com/fs/starfarer/campaign/save/CampaignGameManager"),
+            newTransform("proxy/com/fs/starfarer/campaign/CampaignEngine", "com/fs/starfarer/campaign/CampaignEngine"),
+            newTransform("proxy/com/fs/starfarer/campaign/CampaignEngine$CampaignUI", "com/fs/starfarer/campaign/CampaignEngine$o"),
 
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -63,6 +66,8 @@ public class ObfTransformations {
             newTransform("ProgressBar_setDescription", "Ò00000"),
             newTransform("ProgressBar_render", "o00000"),
             newTransform("ProgressBar_renderWithDescription", "o00000"),
+            newTransform("ProgressBar_renderWithDescription", "o00000"),
+            newTransform("CampaignGameManager_saveGame", "o00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
