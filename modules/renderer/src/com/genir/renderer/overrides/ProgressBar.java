@@ -29,15 +29,21 @@ public class ProgressBar {
         drawBackground();
     }
 
+    public static void clear() {
+        // Zero the texture, so that the texture ID doesn't
+        // get erroneously deleted in a new context.
+        texID = 0;
+    }
+
     private static void storeBackground() {
         w = Display.getWidth();
         h = Display.getHeight();
 
-        ByteBuffer pixels = BufferUtils.createByteBuffer(w * h * 4);
-
-        com.genir.renderer.bridge.GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
+        final ByteBuffer pixels = BufferUtils.createByteBuffer(w * h * 4);
+        final int readBufferState = com.genir.renderer.bridge.GL11.glGetInteger(GL11.GL_READ_BUFFER);
         com.genir.renderer.bridge.GL11.glReadBuffer(GL11.GL_FRONT);
         com.genir.renderer.bridge.GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+        com.genir.renderer.bridge.GL11.glReadBuffer(readBufferState);
 
         texID = com.genir.renderer.bridge.GL11.glGenTextures();
         com.genir.renderer.bridge.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
@@ -47,7 +53,6 @@ public class ProgressBar {
         com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
         com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
-        com.genir.renderer.bridge.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         com.genir.renderer.bridge.GL11.glTexImage2D(
                 GL11.GL_TEXTURE_2D,
                 0,
@@ -59,17 +64,18 @@ public class ProgressBar {
                 GL11.GL_UNSIGNED_BYTE,
                 pixels
         );
-
-        com.genir.renderer.bridge.GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 
     private static void drawBackground() {
         com.genir.renderer.bridge.GL11.glViewport(0, 0, w, h);
+
         com.genir.renderer.bridge.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        com.genir.renderer.bridge.GL11.glPushMatrix();
         com.genir.renderer.bridge.GL11.glLoadIdentity();
         com.genir.renderer.bridge.GL11.glOrtho(0, w, 0, h, -1, 1);
 
         com.genir.renderer.bridge.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        com.genir.renderer.bridge.GL11.glPushMatrix();
         com.genir.renderer.bridge.GL11.glLoadIdentity();
 
         com.genir.renderer.bridge.GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -85,5 +91,11 @@ public class ProgressBar {
         com.genir.renderer.bridge.GL11.glTexCoord2f(0f, 1f);
         com.genir.renderer.bridge.GL11.glVertex2f(0f, h);
         com.genir.renderer.bridge.GL11.glEnd();
+
+        com.genir.renderer.bridge.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        com.genir.renderer.bridge.GL11.glPopMatrix();
+
+        com.genir.renderer.bridge.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        com.genir.renderer.bridge.GL11.glPopMatrix();
     }
 }

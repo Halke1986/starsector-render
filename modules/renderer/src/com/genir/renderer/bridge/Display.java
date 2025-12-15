@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.state.Profiler;
+import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -156,6 +157,7 @@ public class Display {
         state.arrayGenerator.clear();
         state.bufferGenerator.clear();
         state.texGenerator.clear();
+        ProgressBar.clear();
 
         prevFrameFinished = null;
 
