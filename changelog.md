@@ -1,4 +1,5 @@
 - Fixed all cases of background flicker when the progress bar is displayed.
+- Fixed a ClassNotFoundException crash when interacting with the Emergent Threats Circumfix station. Reported by AudioMat.
 
 v0.6.2
 

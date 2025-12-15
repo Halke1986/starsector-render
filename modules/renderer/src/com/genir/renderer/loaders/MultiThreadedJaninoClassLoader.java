@@ -5,8 +5,8 @@ import proxy.com.fs.starfarer.loading.JavaSourceFinder;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * MultiThreadedJaninoClassLoader is a parallel capable wrapper around Janino ClassLoader.
@@ -17,8 +17,10 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
 
+    private final Map<String, byte[]> bytecodeCache = new ConcurrentHashMap<>();
+
     private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
-        return new JavaSourceCompiler(getParent());
+        return new JavaSourceCompiler(getParent(), bytecodeCache);
     });
 
     public MultiThreadedJaninoClassLoader(ClassLoader parent) {
@@ -55,11 +57,13 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
 
     // A wrapper around Janino ClassLoader that makes bytecode generation accessible.
     private static class JavaSourceCompiler extends JavaSourceClassLoader {
-        private final Map<String, byte[]> bytecodeCache = new HashMap<>();
+        private final Map<String, byte[]> bytecodeCache;
 
-        JavaSourceCompiler(ClassLoader parent) {
+        JavaSourceCompiler(ClassLoader parent, Map<String, byte[]> bytecodeCache) {
             super(parent, new JavaSourceFinder(), "UTF-8");
             super.setDebuggingInfo(true, true, true);
+
+            this.bytecodeCache = bytecodeCache;
         }
 
         protected byte[] getBytecode(String name) throws ClassNotFoundException {
