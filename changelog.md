@@ -1,4 +1,6 @@
-- Fixed all cases of background flicker when the progress bar is displayed.
+v0.6.3
+
+- Fixed all cases of background flicker when saving and loading the game.
 - Fixed a ClassNotFoundException crash when interacting with the Emergent Threats Circumfix station. Reported by AudioMat.
 
 v0.6.2
