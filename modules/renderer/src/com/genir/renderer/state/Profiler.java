@@ -23,13 +23,13 @@ public class Profiler {
         }
 
         if (rec == null) {
-            startProfiler();
+            startProfiler("");
         } else {
             stopProfiler();
         }
     }
 
-    private void startProfiler() {
+    public void startProfiler(String profilePrefix) {
         try {
             Logger.getLogger(Profiler.class).info("Started profiling");
 
@@ -37,7 +37,7 @@ public class Profiler {
             rec = new Recording(cfg);
 
             long unixTimestamp = System.currentTimeMillis() / 1000L;
-            String fileName = "profile-" + unixTimestamp + ".jfr";
+            String fileName = profilePrefix + "profile-" + unixTimestamp + ".jfr";
             rec.setDestination(Path.of(fileName));
 
             configureAcquisition();
@@ -47,7 +47,7 @@ public class Profiler {
         }
     }
 
-    private void stopProfiler() {
+    public void stopProfiler() {
         try {
             String fileName = rec.getDestination().toString();
             Logger.getLogger(Profiler.class).info("Finished profiling. Writing results to: " + fileName);
