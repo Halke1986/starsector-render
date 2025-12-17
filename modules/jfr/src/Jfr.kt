@@ -3,14 +3,13 @@ import jdk.jfr.consumer.RecordedThread
 import jdk.jfr.consumer.RecordingFile
 import java.io.IOException
 import java.nio.file.Path
-import java.time.Duration
 import java.time.Instant
 import kotlin.io.path.deleteIfExists
 
 fun main() {
     // --- Hardcoded inputs (adjust as needed) ---
-    val inputJfr = Path.of("profiles/profile-1764161112.jfr")
-    val outputJfr = Path.of("profiles/filtered-1764161112.jfr")
+    val inputJfr = Path.of("profiles/profile-1765994848.jfr")
+    val outputJfr = Path.of("profiles/filtered-1765994848.jfr")
 
     outputJfr.deleteIfExists()
 
@@ -27,12 +26,12 @@ fun main() {
 }
 
 fun filter(e: RecordedEvent): Boolean {
-    return filterThread(e) //&& filterTime(e)
+    return filterThread(e) && filterTime(e)
 }
 
 fun filterThread(e: RecordedEvent): Boolean {
     // Sampled thread.
-    val selectedThreads: List<String> = listOf("FR-Render", "Thread-4")
+    val selectedThreads: List<String> = listOf("Thread-4")
     if (e.hasField("sampledThread")) {
         val sampledThread: RecordedThread? = e.getValue("sampledThread") as? RecordedThread
 
@@ -50,9 +49,8 @@ fun filterThread(e: RecordedEvent): Boolean {
 }
 
 fun filterTime(e: RecordedEvent): Boolean {
-    val profStart: Instant = Instant.parse("2025-10-29T20:00:00Z");
-    val from: Instant = profStart.plus(Duration.parse("PT39M54.216S"));
-    val to: Instant = profStart.plus(Duration.parse("PT39M54.538S"));
+    val from: Instant = Instant.parse("2025-12-17T18:08:00.720Z");
+    val to: Instant = Instant.parse("2025-12-17T18:08:53.521Z");
 
     val x = e.startTime
     return (x.isAfter(from) || x.equals(from)) && (x.isBefore(to) || x.equals(to))

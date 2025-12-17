@@ -98,6 +98,11 @@ public class Profiler {
         rec.enable("jdk.SafepointEnd");
         rec.enable("jdk.SafepointStateSynchronization");
 
+//        rec.enable("jdk.ThreadDump").withPeriod(Duration.ofMillis(100));
+//        rec.enable("jdk.CPULoad").withPeriod(Duration.ofSeconds(1));
+//        rec.enable("jdk.ThreadCPULoad").withPeriod(Duration.ofSeconds(1));
+//        rec.enable("jdk.ThreadContextSwitchRate").withPeriod(Duration.ofSeconds(1));
+
         rec.enable("jdk.ExceptionThrow");
     }
 
