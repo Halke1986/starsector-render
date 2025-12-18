@@ -19,7 +19,7 @@ public class CampaignGameManager {
 
         exec.execute(() -> {
             while (true) {
-                state.profiler.startProfiler(profileDir);
+                state.profiler.startProfiler(profileDir + "/");
 
                 try {
                     Thread.sleep(10 * 1000);

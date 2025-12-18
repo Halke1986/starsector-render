@@ -29,7 +29,7 @@ public class Profiler {
         }
     }
 
-    public String startProfiler(String profileDir) {
+    public void startProfiler(String profilePrefix) {
         try {
             Logger.getLogger(Profiler.class).info("Started profiling");
 
@@ -37,13 +37,11 @@ public class Profiler {
             rec = new Recording(cfg);
 
             long unixTimestamp = System.currentTimeMillis() / 1000L;
-            String fileName = profileDir + "/profile-" + unixTimestamp + ".jfr";
+            String fileName = profilePrefix + "profile-" + unixTimestamp + ".jfr";
             rec.setDestination(Path.of(fileName));
 
             configureAcquisition();
             rec.start();
-
-            return fileName;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -99,6 +97,11 @@ public class Profiler {
         rec.enable("jdk.SafepointBegin");
         rec.enable("jdk.SafepointEnd");
         rec.enable("jdk.SafepointStateSynchronization");
+
+        rec.enable("jdk.ThreadDump").withPeriod(Duration.ofMillis(100));
+        rec.enable("jdk.CPULoad").withPeriod(Duration.ofSeconds(1));
+        rec.enable("jdk.ThreadCPULoad").withPeriod(Duration.ofSeconds(1));
+        rec.enable("jdk.ThreadContextSwitchRate").withPeriod(Duration.ofSeconds(1));
 
         rec.enable("jdk.ExceptionThrow");
     }
