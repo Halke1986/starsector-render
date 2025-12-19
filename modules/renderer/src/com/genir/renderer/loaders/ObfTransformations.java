@@ -27,7 +27,6 @@ public class ObfTransformations {
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
             newTransform("proxy/com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),
-            newTransform("proxy/com/fs/graphics/ImageTransformer", "com/fs/graphics/I"),
             newTransform("proxy/com/fs/graphics/AlphaAdder", "com/fs/graphics/do"),
             newTransform("proxy/com/fs/graphics/font/FontRepository", "com/fs/graphics/A/D"),
             newTransform("proxy/com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
@@ -38,12 +37,13 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/util/ResourceLoader", "com/fs/util/C"),
             newTransform("proxy/com/fs/starfarer/renderers/FloatingTextManager", "com/fs/starfarer/renderers/Q"),
             newTransform("proxy/com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
+            newTransform("proxy/com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
+            newTransform("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
             newTransform("FileRepository_loadSound", "Ô00000"),
-            newTransform("TextureRepository_defineTexture", "super"),
-            newTransform("TextureRepository_setImageTransformer", "super"),
+            newTransform("TextureRepository_addTexture", "super"),
             newTransform("FontRepository_defineFont", "super"),
             newTransform("StarfarerSettings_getFloatValue", "ö00000"),
             newTransform("ScriptStore_getSecureClassLoader", "Object"),
@@ -63,6 +63,16 @@ public class ObfTransformations {
             newTransform("ProgressBar_setDescription", "Ò00000"),
             newTransform("ProgressBar_render", "o00000"),
             newTransform("ProgressBar_renderWithDescription", "o00000"),
+            newTransform("TextureHandler_getTextureID", "ö00000"),
+            newTransform("TextureHandler_setPath", "o00000"),
+            newTransform("TextureHandler_setHeight", "Ô00000"),
+            newTransform("TextureHandler_setWidth", "Object"),
+            newTransform("TextureHandler_setImageHeight", "o00000"),
+            newTransform("TextureHandler_setImageWidth", "Ò00000"),
+            newTransform("TextureHandler_serColor1", "o00000"),
+            newTransform("TextureHandler_serColor0", "Object"),
+            newTransform("TextureHandler_serColor2", "Ò00000"),
+            newTransform("TextureTransformer_apply", "o00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

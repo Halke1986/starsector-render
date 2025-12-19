@@ -1,7 +1,9 @@
 package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.TextureLoader;
 import org.apache.log4j.Logger;
 import proxy.com.fs.graphics.AlphaAdder;
+import proxy.com.fs.graphics.TextureHandler;
 import proxy.com.fs.graphics.TextureRepository;
 
 import java.awt.image.BufferedImage;
@@ -13,13 +15,7 @@ import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWait
 
 public class ImageLoader {
     private static final Set<String> knownImages = ConcurrentHashMap.newKeySet();
-    private static BufferedImage imageCache = null;
-
     private static final Logger logger = Logger.getLogger(ImageLoader.class);
-
-    public static BufferedImage getImage(String path) {
-        return imageCache;
-    }
 
     public static void queueImage(String type, String path) {
         queueImage(type, path, false);
@@ -54,15 +50,21 @@ public class ImageLoader {
         try {
             logger.info("Loading image [" + path + "]");
 
-            final BufferedImage image = proxy.com.fs.graphics.FileRepository.FileRepository_loadImage(path);
+            BufferedImage image = proxy.com.fs.graphics.FileRepository.FileRepository_loadImage(path);
             if (image == null) {
                 throw new NullPointerException();
             }
 
+            if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
+                image = new AlphaAdder().TextureTransformer_apply(image);
+            }
+
+            TextureLoader.TextureData texData = TextureLoader.analyzeImage(image);
+
             mainThreadWaitGroup.incrementAndGet();
             ResourceLoader.mainThreadQueue.add(() -> {
                 try {
-                    defineTexture(type, path, image);
+                    defineTexture(path, path, texData);
                 } catch (Throwable e) {
                     ResourceLoader.setException(e);
                 } finally {
@@ -74,21 +76,12 @@ public class ImageLoader {
         }
     }
 
-    private static void defineTexture(String type, String path, BufferedImage image) {
+    private static void defineTexture(String name, String path, TextureLoader.TextureData texData) {
         try {
-            imageCache = image;
-
-            if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
-                TextureRepository.TextureRepository_setImageTransformer(new AlphaAdder());
-                TextureRepository.TextureRepository_defineTexture(path, path);
-                TextureRepository.TextureRepository_setImageTransformer(null);
-            } else {
-                TextureRepository.TextureRepository_defineTexture(path, path);
-            }
+            TextureHandler tex = TextureLoader.commitTexture(path, texData);
+            TextureRepository.TextureRepository_addTexture(name, tex);
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
-        } finally {
-            imageCache = null;
         }
     }
 }
