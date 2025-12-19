@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.Display;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.starfarer.loading.SpecStore;
@@ -12,10 +13,7 @@ import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,6 +53,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             }
         });
 
+        Future<?> updateCompleted = Display.submitUpdate(true);
+
         // Run commands on main thread, as it was an Executor.
         do {
             try {
@@ -62,7 +62,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 if (r != null) {
                     r.run();
                 }
-                state.renderProgress(0);
+
+                if (updateCompleted.isDone()) {
+                    state.renderProgress(0);
+                    updateCompleted = Display.submitUpdate(true);
+                }
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -99,6 +104,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         barAnimation.forwardOnly = true;
         while (barAnimation.barIsNotFull()) {
             state.renderProgress(0);
+            Display.update();
             Thread.sleep(10);
         }
     }

@@ -1864,8 +1864,7 @@ L76:    invokevirtual Method com/fs/graphics/Sprite renderRegionAtCenter (FFFFFF
         getfield Field com/fs/starfarer/loading/ResourceLoaderState bar Lcom/fs/graphics/Sprite;
         invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader animateBar (Lcom/fs/graphics/Sprite;)V
 L79:    invokestatic Method com/fs/graphics/util/B 'Õ00000' ()V 
-L82:    invokestatic Method org/lwjgl/opengl/Display update ()V 
-L85:    return 
+L85:    return
 L86:    
     .end code 
 .end method 

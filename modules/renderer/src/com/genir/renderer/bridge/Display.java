@@ -8,6 +8,7 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.genir.renderer.Debug.log;
@@ -29,35 +30,37 @@ public class Display {
         state.profiler.update();
     }
 
-    public static void update(boolean processMessages) {
-        try {
-            state.stallDetector.update();
+    public static Future<?> submitUpdate(boolean processMessages) {
+        state.stallDetector.update();
 
-            // Swap OpenGL buffers and update the bridge state.
-            // Ideally, these would run on the render thread synchronously
-            // to avoid concurrency issues. However, profiling showed a ~5%
-            // performance penalty from lock contention when blocking.
-            // To avoid this, the update is executed asynchronously.
-            record update(boolean processMessages) implements Runnable {
-                @Override
-                public void run() {
-                    org.lwjgl.opengl.Display.update(processMessages);
-                    updateAppState();
-                }
+        // Swap OpenGL buffers and update the bridge state.
+        // Ideally, these would run on the render thread synchronously
+        // to avoid concurrency issues. However, profiling showed a ~5%
+        // performance penalty from lock contention when blocking.
+        // To avoid this, the update is executed asynchronously.
+        record update(boolean processMessages) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.Display.update(processMessages);
+                updateAppState();
             }
-
-            Future<?> thisFrameFinished = state.exec.submit(new update(processMessages));
-
-            if (prevFrameFinished != null) {
-                prevFrameFinished.get();
-            }
-
-            prevFrameFinished = thisFrameFinished;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
         }
+
+        return state.exec.submit(new update(processMessages));
+    }
+
+    public static void update(boolean processMessages) {
+        Future<?> thisFrameFinished = submitUpdate(processMessages);
+
+        if (prevFrameFinished != null) {
+            try {
+                prevFrameFinished.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        prevFrameFinished = thisFrameFinished;
     }
 
     public static void update() {
