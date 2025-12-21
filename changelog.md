@@ -1,3 +1,5 @@
+- Optimized game startup time.
+
 v0.6.3
 
 - Fixed all cases of background flicker when saving and loading the game.
