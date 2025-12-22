@@ -1,4 +1,4 @@
-package com.genir.renderer;
+package com.genir.renderer.debug;
 
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;

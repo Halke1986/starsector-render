@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static com.genir.renderer.Debug.log;
+import static com.genir.renderer.debug.Debug.log;
 import static com.genir.renderer.state.AppState.state;
 
 public class Display {

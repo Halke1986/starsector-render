@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11;
 import java.nio.Buffer;
 import java.util.Stack;
 
-import static com.genir.renderer.Debug.asert;
+import static com.genir.renderer.debug.Debug.asert;
 
 public class ClientAttribTracker {
     public final Snapshot expected = new Snapshot();
