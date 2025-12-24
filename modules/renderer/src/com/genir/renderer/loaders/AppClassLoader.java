@@ -20,6 +20,19 @@ public class AppClassLoader extends ClassLoader {
             ))
     );
 
+    private final List<ClassConstantTransformer> xstreamTransformers = List.of(
+            new ClassConstantTransformer(List.of(
+                    // Use memory-optimized Path implementation
+                    ClassConstantTransformer.newTransform("com/thoughtworks/xstream/io/path/Path", "com/genir/renderer/overrides/xstream/Path")
+            )),
+            new ClassConstantTransformer(Arrays.asList(
+                    // Fix transforms caused by a false positive match.
+                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTracker", "com/thoughtworks/xstream/io/path/PathTracker"),
+                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTrackingReader", "com/thoughtworks/xstream/io/path/PathTrackingReader"),
+                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTrackingWriter", "com/thoughtworks/xstream/io/path/PathTrackingWriter")
+            ))
+    );
+
     private final List<ClassConstantTransformer> starfarerTransformers = List.of(
             new ClassConstantTransformer(Arrays.asList(
                     // Replace OpenGL calls.
@@ -110,6 +123,8 @@ public class AppClassLoader extends ClassLoader {
         String name = ClassName.binary(binaryOrInternalName);
         if (name.startsWith("org.lwjgl.util.glu.")) {
             return lwjglTransformers;
+        } else if (name.startsWith("com.thoughtworks.xstream.")) {
+            return xstreamTransformers;
         } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformers;
         } else if (name.startsWith("com.genir.renderer.")) {
