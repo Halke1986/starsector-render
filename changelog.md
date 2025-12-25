@@ -1,4 +1,5 @@
 - Optimized game startup time.
+- Fixed occasional freezes and crashes during game saving. Many thanks to Hyperkayak for help with debugging the issue!
 
 v0.6.3
 
