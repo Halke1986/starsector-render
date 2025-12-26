@@ -101,7 +101,7 @@ public class Path {
         int result = 543645643;
         String[] chunks = node.getChunks();
         for (int i = 0; i < chunks.length; i++) {
-            result = 29 * result + new Integer(chunks[i]).hashCode();
+            result = 29 * result + chunks[i].hashCode();
         }
         return result;
     }
