@@ -44,4 +44,8 @@ public class TextureHandler {
     // $FF: renamed from: Ò00000 (java.awt.Color) void
     public void TextureHandler_serColor2(Color var1) {
     }
+
+    // $FF: renamed from: Ò00000 (java.lang.String) void
+    public void TextureHandler_setStringID(String var1) {
+    }
 }

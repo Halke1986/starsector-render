@@ -1,6 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
-import com.genir.renderer.overrides.TextureLoader;
+import com.genir.renderer.overrides.TextureBuilder;
 import org.apache.log4j.Logger;
 import proxy.com.fs.graphics.AlphaAdder;
 import proxy.com.fs.graphics.TextureHandler;
@@ -13,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
 
-public class ImageLoader {
+public class TextureLoader {
     private static final Set<String> knownImages = ConcurrentHashMap.newKeySet();
-    private static final Logger logger = Logger.getLogger(ImageLoader.class);
+    private static final Logger logger = Logger.getLogger(TextureLoader.class);
 
     public static void queueImage(String type, String path) {
         queueImage(type, path, false);
@@ -59,7 +59,7 @@ public class ImageLoader {
                 image = new AlphaAdder().TextureTransformer_apply(image);
             }
 
-            TextureLoader.TextureData texData = TextureLoader.analyzeImage(image);
+            TextureBuilder.TextureData texData = TextureBuilder.analyzeImage(image);
 
             mainThreadWaitGroup.incrementAndGet();
             ResourceLoader.mainThreadQueue.add(() -> {
@@ -76,9 +76,10 @@ public class ImageLoader {
         }
     }
 
-    private static void defineTexture(String name, String path, TextureLoader.TextureData texData) {
+    private static void defineTexture(String name, String path, TextureBuilder.TextureData texData) {
         try {
-            TextureHandler tex = TextureLoader.commitTexture(path, texData);
+            TextureHandler tex = TextureBuilder.commitTexture(path, texData);
+            tex.TextureHandler_setStringID(name);
             TextureRepository.TextureRepository_addTexture(name, tex);
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);

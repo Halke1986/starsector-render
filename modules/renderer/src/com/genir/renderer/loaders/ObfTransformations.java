@@ -73,6 +73,7 @@ public class ObfTransformations {
             newTransform("TextureHandler_serColor0", "Object"),
             newTransform("TextureHandler_serColor2", "Ò00000"),
             newTransform("TextureTransformer_apply", "o00000"),
+            newTransform("TextureHandler_setStringID", "Ò00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
