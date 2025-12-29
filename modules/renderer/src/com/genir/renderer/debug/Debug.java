@@ -5,6 +5,9 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -183,5 +186,14 @@ public class Debug {
         }
 
         return bpe * epp;
+    }
+
+    public static byte[] readAllBytesRobust(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(64 * 1024);
+        byte[] buf = new byte[64 * 1024];
+        for (int n; (n = in.read(buf)) != -1; ) {
+            out.write(buf, 0, n);
+        }
+        return out.toByteArray();
     }
 }
