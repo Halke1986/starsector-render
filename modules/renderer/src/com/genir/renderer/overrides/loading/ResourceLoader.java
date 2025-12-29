@@ -24,13 +24,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
             3, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
-    // Sound loading uses a dedicated worker pool because the decoder contains a large synchronized section,
-    // making it effectively single-threaded. Running sound decoding on the common worker pool would stall it.
+    // Sound loading, despite vanilla implementation, is inherently non-parallelizable.
     // NOTE: SpecStore.SpecStore_init call order is modified in assembly so that sound loading runs earlier.
     // This gives the non-parallelizable sound loading more time to complete, reducing the chance of the main
     // thread waiting.
     public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
-            2, "FR-Sound-Loader", new ExceptionHandler());
+            1, "FR-Sound-Loader", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 
