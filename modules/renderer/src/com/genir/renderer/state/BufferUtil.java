@@ -1,5 +1,7 @@
 package com.genir.renderer.state;
 
+import org.lwjgl.BufferUtils;
+
 import java.lang.reflect.Array;
 import java.nio.*;
 
@@ -12,7 +14,7 @@ public class BufferUtil {
             return null;
         }
 
-        FloatBuffer snapshot = org.lwjgl.BufferUtils.createFloatBuffer(params.capacity());
+        FloatBuffer snapshot = BufferUtils.createFloatBuffer(params.capacity());
         snapshot.put(0, params, 0, params.limit());
 
         snapshot.position(params.position());
@@ -26,7 +28,7 @@ public class BufferUtil {
             return null;
         }
 
-        ByteBuffer snapshot = org.lwjgl.BufferUtils.createByteBuffer(params.capacity());
+        ByteBuffer snapshot = BufferUtils.createByteBuffer(params.capacity());
         snapshot.put(0, params, 0, params.limit());
 
         snapshot.position(params.position());
@@ -40,7 +42,7 @@ public class BufferUtil {
             return null;
         }
 
-        IntBuffer snapshot = org.lwjgl.BufferUtils.createIntBuffer(params.capacity());
+        IntBuffer snapshot = BufferUtils.createIntBuffer(params.capacity());
         snapshot.put(0, params, 0, params.limit());
 
         snapshot.position(params.position());
@@ -54,7 +56,7 @@ public class BufferUtil {
             return null;
         }
 
-        ShortBuffer snapshot = org.lwjgl.BufferUtils.createShortBuffer(params.capacity());
+        ShortBuffer snapshot = BufferUtils.createShortBuffer(params.capacity());
         snapshot.put(0, params, 0, params.limit());
 
         snapshot.position(params.position());
@@ -86,7 +88,7 @@ public class BufferUtil {
     }
 
     public static FloatBuffer reallocate(int size, FloatBuffer old) {
-        FloatBuffer n = org.lwjgl.BufferUtils.createFloatBuffer(size);
+        FloatBuffer n = BufferUtils.createFloatBuffer(size);
 
         n.put(0, old, 0, Math.min(size, old.limit()));
         n.position(Math.min(size, old.position()));
@@ -121,5 +123,11 @@ public class BufferUtil {
         } while (capacity < capacityRequired);
 
         return capacity;
+    }
+
+    public static void putIfPossible(IntBuffer buffer, int element) {
+        if (buffer != null && buffer.hasRemaining()) {
+            buffer.put(element);
+        }
     }
 }

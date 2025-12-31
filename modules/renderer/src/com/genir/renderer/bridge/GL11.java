@@ -3,6 +3,7 @@ package com.genir.renderer.bridge;
 import com.genir.renderer.state.BufferUtil;
 import com.genir.renderer.state.ClientAttribTracker;
 import com.genir.renderer.state.Recordable;
+import com.genir.renderer.state.stall.AttribState;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
 import static com.genir.renderer.state.AppState.state;
+import static com.genir.renderer.state.BufferUtil.putIfPossible;
 
 public class GL11 {
     /**
@@ -545,6 +547,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
             }
         }
+        state.attribTracker.glViewport(x, y, width, height);
         state.exec.execute(new glViewport(x, y, width, height));
     }
 
@@ -942,6 +945,30 @@ public class GL11 {
             }
         }
         return state.exec.get(new glGetInteger(pname));
+    }
+
+    public static void glGetInteger(int pname, IntBuffer params) { // NoList
+        IntBuffer outBuffer = params.duplicate();
+
+        // Return a cached value.
+        switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_VIEWPORT:
+                AttribState.Viewport viewport = state.attribTracker.getViewport();
+                putIfPossible(outBuffer, viewport.x());
+                putIfPossible(outBuffer, viewport.y());
+                putIfPossible(outBuffer, viewport.width());
+                putIfPossible(outBuffer, viewport.height());
+                return;
+        }
+
+        // Fallback to blocking GL call.
+        record glGetInteger(int pname, IntBuffer params) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL11.glGetInteger(pname, params);
+            }
+        }
+        state.exec.wait(new glGetInteger(pname, outBuffer));
     }
 
     public static float glGetFloat(int pname) { // NoList

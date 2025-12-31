@@ -1,6 +1,9 @@
+v0.6.4
+
 - Optimized game startup time. Performance issue reported by Bûğäţţï Êçhëłøñ.
-- Fixed occasional freezes and crashes during game saving. Many thanks to Hyperkayak and Zavek for help with debugging the issue!
+- Fixed occasional freezes and crashes during game saving/loading. Many thanks to Hyperkayak and Zavek for help with debugging the issue!
 - Fixed a vanilla race condition that could cause java.lang.ClassCastException during sound loading at game startup. Reported by Bûğäţţï Êçhëłøñ.
+- Implemented missing glGetInteger overload required by Moci Ship Pack. Incompatibility reported by Mycophobia and HoeHarto, Likely Sided With VOC.
 
 v0.6.3
 
