@@ -26,7 +26,7 @@ public class Executor {
         this.stallDetector = stallDetector;
     }
 
-    synchronized public void execute(Runnable command) {
+    public void execute(Runnable command) {
         // Do not run rethrowExecutionException here, it's too slow.
 
         commandBatch[batchSize] = command;
@@ -45,7 +45,7 @@ public class Executor {
         wait(command, false);
     }
 
-    synchronized public void wait(Runnable command, boolean cleanup) {
+    public void wait(Runnable command, boolean cleanup) {
         rethrowExecutionException();
 
         stallDetector.detectStall();
@@ -61,7 +61,7 @@ public class Executor {
         }
     }
 
-    synchronized public Future<?> submit(Runnable command) {
+    public Future<?> submit(Runnable command) {
         rethrowExecutionException();
 
         flushCommands();
@@ -73,7 +73,7 @@ public class Executor {
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
-    synchronized public <T> T get(Callable<T> task) {
+    public <T> T get(Callable<T> task) {
         stallDetector.detectStall();
         flushCommands();
 
