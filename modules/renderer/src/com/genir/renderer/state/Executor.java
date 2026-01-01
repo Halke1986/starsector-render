@@ -27,7 +27,7 @@ public class Executor {
     }
 
     synchronized public void execute(Runnable command) {
-        rethrowExecutionException();
+        // Do not run rethrowExecutionException here, it's too slow.
 
         commandBatch[batchSize] = command;
         batchSize++;

@@ -1,3 +1,5 @@
+- Improved rendering performance.
+
 v0.6.4
 
 - Optimized game startup time. Performance issue reported by Bûğäţţï Êçhëłøñ.
