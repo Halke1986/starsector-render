@@ -83,52 +83,39 @@ public class Executor {
 
     private FrameResult executeCommands(Runnable[] commands, Future<FrameResult> prevFrameFuture) {
         long start = System.nanoTime();
-        Throwable caught = null;
-        boolean prevFrameFailed = false;
 
         try {
             FrameResult prevFrameResult = prevFrameFuture.get();
-            prevFrameFailed = prevFrameResult.caught != null;
-
-            // Run all scheduled commands.
-            for (int i = 0; i < commands.length; i++) {
-                Runnable command = commands[i];
-                commands[i] = null;
-
-                if (command == null) {
-                    break;
-                }
-
-                // Skip further commands if an exception occured, including the previous frame.
-                if (caught != null || prevFrameFailed) {
-                    continue;
-                }
-
-                try {
-                    // Record the command instead of running it immediately.
-                    if (command instanceof Recordable && listManager.isRecording()) {
-                        listManager.record(command);
-                        continue;
-                    }
-
-                    command.run();
-                } catch (Throwable t) {
-                    caught = t;
-                }
+            if (prevFrameResult.caught == null) {
+                runCommands(commands);
             }
+
+            return new FrameResult(commands, null);
         } catch (Throwable t) {
-            caught = t;
+            return new FrameResult(commands, t);
         } finally {
             // Cleanup.
-            if (caught != null || prevFrameFailed) {
-                for (int i = 0; i < commands.length; i++) {
-                    commands[i] = null;
-                }
+            for (int i = 0; i < commands.length && commands[i] != null; i++) {
+                commands[i] = null;
             }
+
             Profiler.FrameMark.markRenderWork(start);
         }
+    }
 
-        return new FrameResult(commands, caught);
+    private void runCommands(Runnable[] commands) {
+        // Run all scheduled commands.
+        for (int i = 0; i < commands.length && commands[i] != null; i++) {
+            Runnable command = commands[i];
+            commands[i] = null;
+
+            if (command instanceof Recordable && listManager.isRecording()) {
+                // Record the command instead of running it immediately.
+                listManager.record(command);
+            } else {
+                command.run();
+            }
+        }
     }
 
     public boolean isIdle() {
