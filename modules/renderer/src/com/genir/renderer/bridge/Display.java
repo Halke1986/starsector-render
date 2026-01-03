@@ -8,15 +8,11 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static com.genir.renderer.debug.Debug.log;
 import static com.genir.renderer.state.AppState.state;
 
 public class Display {
-    private static Future<?> prevFrameFinished = null;
-
     private static void updateAppState() {
         if (!org.lwjgl.opengl.Display.isCreated()) {
             return;
@@ -30,7 +26,7 @@ public class Display {
         state.profiler.update();
     }
 
-    public static Future<?> submitUpdate(boolean processMessages) {
+    public static void update(boolean processMessages) {
         state.stallDetector.update();
 
         // Swap OpenGL buffers and update the bridge state.
@@ -46,21 +42,8 @@ public class Display {
             }
         }
 
-        return state.exec.submit(new update(processMessages));
-    }
-
-    public static void update(boolean processMessages) {
-        Future<?> thisFrameFinished = submitUpdate(processMessages);
-
-        if (prevFrameFinished != null) {
-            try {
-                prevFrameFinished.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        prevFrameFinished = thisFrameFinished;
+        state.exec.execute(new update(processMessages));
+        state.exec.swapFrames();
     }
 
     public static void update() {
@@ -159,8 +142,6 @@ public class Display {
         state.texGenerator.clear();
         ProgressBar.clear();
 
-        prevFrameFinished = null;
-
         record create(PixelFormat pixel_format) implements Runnable {
             @Override
             public void run() {
@@ -208,7 +189,7 @@ public class Display {
                 org.lwjgl.opengl.Display.destroy();
             }
         }
-        state.exec.wait(new destroy(), true);
+        state.exec.wait(new destroy());
     }
 
     public static boolean isFullscreen() {

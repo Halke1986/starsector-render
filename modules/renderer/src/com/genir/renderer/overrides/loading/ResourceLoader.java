@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.Display;
+import com.genir.renderer.state.AppState;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.starfarer.loading.SpecStore;
@@ -13,7 +14,10 @@ import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,8 +56,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             }
         });
 
-        Future<?> updateCompleted = Display.submitUpdate(true);
-
         // Run commands on main thread, as it was an Executor.
         do {
             try {
@@ -62,9 +64,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                     r.run();
                 }
 
-                if (updateCompleted.isDone()) {
+                if (AppState.state.exec.isIdle()) {
                     state.renderProgress(0);
-                    updateCompleted = Display.submitUpdate(true);
+                    Display.update(true);
                 }
 
             } catch (InterruptedException e) {

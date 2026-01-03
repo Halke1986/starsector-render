@@ -3,21 +3,15 @@ package com.genir.renderer.state;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.state.stall.StallDetector;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.*;
 
 public class Executor {
     private final ListManager listManager;
     private final StallDetector stallDetector;
 
-    private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
-    private boolean exceptionCaptured = false;
-
-    static final int BATCH_CAPACITY = 2048;
-    private Runnable[] commandBatch = new Runnable[BATCH_CAPACITY];
-    private int batchSize = 0;
+    private Runnable[] currentFrame = new Runnable[2];
+    private int frameSize = 0;
+    private Future<FrameResult> prevFrameFuture = CompletableFuture.completedFuture(new FrameResult(new Runnable[1], null));
 
     private static final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
@@ -26,15 +20,21 @@ public class Executor {
         this.stallDetector = stallDetector;
     }
 
-    public void execute(Runnable command) {
-        // Do not run rethrowExecutionException here, it's too slow.
+    /**
+     * Execute callable and block until it returns a value.
+     * This method stalls the concurrent pipeline.
+     */
+    public <T> T get(Callable<T> task) {
+        final Object[] result = new Object[1];
+        wait(() -> {
+            try {
+                result[0] = task.call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        commandBatch[batchSize] = command;
-        batchSize++;
-
-        if (batchSize == BATCH_CAPACITY) {
-            flushCommands();
-        }
+        return (T) result[0];
     }
 
     /**
@@ -42,122 +42,105 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        wait(command, false);
-    }
-
-    public void wait(Runnable command, boolean cleanup) {
-        rethrowExecutionException();
-
         stallDetector.detectStall();
-        flushCommands();
+
+        execute(command);
+        swapFrames();
 
         long start = System.nanoTime();
         try {
-            execActual.submit(() -> executeCommand(command, cleanup)).get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            // Wait for previous frame.
+            getResult(prevFrameFuture);
         } finally {
             Profiler.FrameMark.markStall(start);
         }
     }
 
-    public Future<?> submit(Runnable command) {
-        rethrowExecutionException();
-
-        flushCommands();
-
-        return execActual.submit(() -> executeCommand(command, false));
-    }
-
-    /**
-     * Execute callable and block until it returns a value.
-     * This method stalls the concurrent pipeline.
-     */
-    public <T> T get(Callable<T> task) {
-        stallDetector.detectStall();
-        flushCommands();
-
-        long start = System.nanoTime();
-        try {
-            return execActual.submit(() -> {
-                long taskStart = System.nanoTime();
-                try {
-                    return task.call();
-                } finally {
-                    Profiler.FrameMark.markRenderWork(taskStart);
-                }
-            }).get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            Profiler.FrameMark.markStall(start);
-        }
-    }
-
-    private void flushCommands() {
-        if (batchSize == 0) {
-            return;
+    public void execute(Runnable command) {
+        if (currentFrame.length <= frameSize) {
+            currentFrame = BufferUtil.reallocate(Runnable.class, currentFrame.length * 2, currentFrame);
         }
 
-        final Runnable[] currentBatch = commandBatch;
-        final int count = batchSize;
-
-        commandBatch = new Runnable[BATCH_CAPACITY];
-        batchSize = 0;
-
-        execActual.execute(() -> executeCommands(currentBatch, count, false));
+        currentFrame[frameSize] = command;
+        frameSize++;
     }
 
-    private void executeCommand(Runnable command, boolean cleanup) {
-        executeCommands(new Runnable[]{command}, 1, cleanup);
-    }
+    public void swapFrames() {
+        final Runnable[] currentFrame = this.currentFrame;
+        final Future<FrameResult> prevFrameFuture = this.prevFrameFuture;
+        Future<FrameResult> frameFuture = execActual.submit(() -> executeCommands(currentFrame, prevFrameFuture));
 
-    private void executeCommands(Runnable[] commands, int count, boolean cleanup) {
-        long start = System.nanoTime();
-        try {
-            // Rendering thread has already thrown an exception.
-            // Skip further commands, except get and cleanup,
-            // to avoid a potential hard crash without logging.
-            if (exceptionCaptured && !cleanup) {
-                return;
+        // Wait for the previous frame.
+        FrameResult prevFrameResult = getResult(prevFrameFuture);
+
+        this.currentFrame = prevFrameResult.commands;
+        this.prevFrameFuture = frameFuture;
+        frameSize = 0;
+
+        Throwable caught = prevFrameResult.caught;
+        if (caught != null) {
+            if (caught instanceof RuntimeException e) {
+                throw e;
+            } else {
+                throw new RuntimeException(caught);
             }
+        }
+    }
+
+    private FrameResult executeCommands(Runnable[] commands, Future<FrameResult> prevFrameFuture) {
+        long start = System.nanoTime();
+        Throwable caught = null;
+
+        try {
+            FrameResult prevFrameResult = prevFrameFuture.get();
+            caught = prevFrameResult.caught;
 
             // Run all scheduled commands.
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < commands.length; i++) {
                 Runnable command = commands[i];
+                commands[i] = null;
 
-                // Record the command instead of running it immediately.
-                if (command instanceof Recordable && listManager.isRecording()) {
-                    listManager.record(command);
+                if (command == null) {
+                    break;
+                }
+
+                // Skip further commands if an exception occured.
+                if (caught != null) {
                     continue;
                 }
 
-                command.run();
-            }
+                try {
+                    // Record the command instead of running it immediately.
+                    if (command instanceof Recordable && listManager.isRecording()) {
+                        listManager.record(command);
+                        continue;
+                    }
 
-        } catch (RuntimeException e) {
-            setExecutionException(e);
+                    command.run();
+                } catch (Throwable t) {
+                    caught = t;
+                }
+            }
         } catch (Throwable t) {
-            setExecutionException(new RuntimeException(t));
+            caught = t;
         } finally {
             Profiler.FrameMark.markRenderWork(start);
+            return new FrameResult(commands, caught);
         }
     }
 
-    private void setExecutionException(RuntimeException e) {
-        if (!exceptionCaptured) {
-            exceptionCaptured = true;
-            exception.set(e);
+    public boolean isIdle() {
+        return prevFrameFuture.isDone();
+    }
+
+    private FrameResult getResult(Future<FrameResult> resultFuture) {
+        try {
+            return resultFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void rethrowExecutionException() {
-        // If the rendering thread throws an exception, crash the application.
-        // This ensures a clear log message. Rethrow the exception only once,
-        // to not interrupt main thread cleanup triggered by the first rethrow.
-        RuntimeException e = exception.getAndSet(null);
-        if (e != null) {
-            throw e;
-        }
+    private static record FrameResult(Runnable[] commands, Throwable caught) {
     }
 }
