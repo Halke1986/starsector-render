@@ -88,17 +88,16 @@ public class Executor {
             FrameResult prevFrameResult = prevFrameFuture.get();
             if (prevFrameResult.caught == null) {
                 runCommands(commands);
+            } else {
+                cleanBuffer(commands);
             }
 
             return new FrameResult(commands, null);
         } catch (Throwable t) {
+            cleanBuffer(commands);
+
             return new FrameResult(commands, t);
         } finally {
-            // Cleanup.
-            for (int i = 0; i < commands.length && commands[i] != null; i++) {
-                commands[i] = null;
-            }
-
             Profiler.FrameMark.markRenderWork(start);
         }
     }
@@ -137,6 +136,12 @@ public class Executor {
             throw e;
         } else {
             throw new RuntimeException(t);
+        }
+    }
+
+    private void cleanBuffer(Runnable[] commands) {
+        for (int i = 0; i < commands.length && commands[i] != null; i++) {
+            commands[i] = null;
         }
     }
 
