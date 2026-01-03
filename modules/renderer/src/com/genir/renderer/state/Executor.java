@@ -9,54 +9,55 @@ public class Executor {
     private final ListManager listManager;
     private final StallDetector stallDetector;
 
-    private Runnable[] currentFrame = new Runnable[2];
+    private Runnable[] currentFrame = new Runnable[1];
     private int frameSize = 0;
-    private Future<FrameResult> prevFrameFuture = CompletableFuture.completedFuture(new FrameResult(new Runnable[1], null));
+    private Future<FrameResult> executedFrameFuture = CompletableFuture.completedFuture(new FrameResult(new Runnable[1], null));
 
-    private static final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
+    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
     public Executor(ListManager listManager, StallDetector stallDetector) {
         this.listManager = listManager;
         this.stallDetector = stallDetector;
     }
 
-    /**
-     * Execute callable and block until it returns a value.
-     * This method stalls the concurrent pipeline.
-     */
     public <T> T get(Callable<T> task) {
         final Object[] result = new Object[1];
         wait(() -> {
             try {
                 result[0] = task.call();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                rethrowAsRuntimeException(e);
             }
         });
 
         return (T) result[0];
     }
 
-    /**
-     * Execute callable and block until it returns.
-     * This method stalls the concurrent pipeline.
-     */
     public void wait(Runnable command) {
         stallDetector.detectStall();
+
+        long start = System.nanoTime();
 
         execute(command);
         swapFrames();
 
-        long start = System.nanoTime();
+        FrameResult currFrameResult;
         try {
-            // Wait for previous frame.
-            getResult(prevFrameFuture);
+            currFrameResult = waitForFrame(executedFrameFuture);
+            if (currFrameResult.caught != null) {
+                executedFrameFuture = CompletableFuture.completedFuture(new FrameResult(currFrameResult.commands, null));
+                rethrowAsRuntimeException(currFrameResult.caught);
+            }
         } finally {
             Profiler.FrameMark.markStall(start);
         }
     }
 
     public void execute(Runnable command) {
+        if (command == null) {
+            return;
+        }
+
         if (currentFrame.length <= frameSize) {
             currentFrame = BufferUtil.reallocate(Runnable.class, currentFrame.length * 2, currentFrame);
         }
@@ -67,33 +68,27 @@ public class Executor {
 
     public void swapFrames() {
         final Runnable[] currentFrame = this.currentFrame;
-        final Future<FrameResult> prevFrameFuture = this.prevFrameFuture;
+        final Future<FrameResult> prevFrameFuture = this.executedFrameFuture;
         Future<FrameResult> frameFuture = execActual.submit(() -> executeCommands(currentFrame, prevFrameFuture));
 
         // Wait for the previous frame.
-        FrameResult prevFrameResult = getResult(prevFrameFuture);
+        FrameResult prevFrameResult = waitForFrame(prevFrameFuture);
 
-        this.currentFrame = prevFrameResult.commands;
-        this.prevFrameFuture = frameFuture;
+        this.currentFrame = prevFrameResult.commands; // Reuse command buffer.
+        this.executedFrameFuture = frameFuture;
         frameSize = 0;
 
-        Throwable caught = prevFrameResult.caught;
-        if (caught != null) {
-            if (caught instanceof RuntimeException e) {
-                throw e;
-            } else {
-                throw new RuntimeException(caught);
-            }
-        }
+        rethrowAsRuntimeException(prevFrameResult.caught);
     }
 
     private FrameResult executeCommands(Runnable[] commands, Future<FrameResult> prevFrameFuture) {
         long start = System.nanoTime();
         Throwable caught = null;
+        boolean prevFrameFailed = false;
 
         try {
             FrameResult prevFrameResult = prevFrameFuture.get();
-            caught = prevFrameResult.caught;
+            prevFrameFailed = prevFrameResult.caught != null;
 
             // Run all scheduled commands.
             for (int i = 0; i < commands.length; i++) {
@@ -104,8 +99,8 @@ public class Executor {
                     break;
                 }
 
-                // Skip further commands if an exception occured.
-                if (caught != null) {
+                // Skip further commands if an exception occured, including the previous frame.
+                if (caught != null || prevFrameFailed) {
                     continue;
                 }
 
@@ -124,20 +119,37 @@ public class Executor {
         } catch (Throwable t) {
             caught = t;
         } finally {
+            // Cleanup.
+            if (caught != null || prevFrameFailed) {
+                for (int i = 0; i < commands.length; i++) {
+                    commands[i] = null;
+                }
+            }
             Profiler.FrameMark.markRenderWork(start);
-            return new FrameResult(commands, caught);
         }
+
+        return new FrameResult(commands, caught);
     }
 
     public boolean isIdle() {
-        return prevFrameFuture.isDone();
+        return executedFrameFuture.isDone();
     }
 
-    private FrameResult getResult(Future<FrameResult> resultFuture) {
+    private FrameResult waitForFrame(Future<FrameResult> resultFuture) {
         try {
             return resultFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void rethrowAsRuntimeException(Throwable t) {
+        if (t == null) {
+            return;
+        } else if (t instanceof RuntimeException e) {
+            throw e;
+        } else {
+            throw new RuntimeException(t);
         }
     }
 
