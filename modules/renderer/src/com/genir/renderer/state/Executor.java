@@ -109,7 +109,11 @@ public class Executor {
                     // Record the command instead of running it immediately.
                     listManager.record(command);
                 } else {
-                    command.run();
+                    try {
+                        command.run();
+                    } catch (Throwable t) {
+                        throw new RuntimeException(command.toString(), t);
+                    }
                 }
             }
 
