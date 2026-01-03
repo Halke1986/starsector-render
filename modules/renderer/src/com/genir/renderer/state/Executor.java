@@ -20,6 +20,10 @@ public class Executor {
         this.stallDetector = stallDetector;
     }
 
+    /**
+     * Execute callable and block until it returns a value.
+     * This method stalls the concurrent pipeline.
+     */
     public <T> T get(Callable<T> task) {
         final Object[] result = new Object[1];
         wait(() -> {
@@ -33,10 +37,14 @@ public class Executor {
         return (T) result[0];
     }
 
+    /**
+     * Execute command and block until it returns.
+     * This method stalls the concurrent pipeline.
+     */
     public void wait(Runnable command) {
-        stallDetector.detectStall();
-
         long start = System.nanoTime();
+
+        stallDetector.detectStall();
 
         execute(command);
         swapFrames();
@@ -44,15 +52,15 @@ public class Executor {
         FrameResult currFrameResult;
         try {
             currFrameResult = waitForFrame(executedFrameFuture);
-            if (currFrameResult.caught != null) {
-                executedFrameFuture = CompletableFuture.completedFuture(new FrameResult(currFrameResult.commands, null));
-                rethrowAsRuntimeException(currFrameResult.caught);
-            }
+            rethrowAsRuntimeException(currFrameResult.caught);
         } finally {
             Profiler.FrameMark.markStall(start);
         }
     }
 
+    /**
+     * Queue command for execution.
+     */
     public void execute(Runnable command) {
         if (command == null) {
             return;
@@ -66,30 +74,43 @@ public class Executor {
         frameSize++;
     }
 
+    /**
+     * Execute queued commands.
+     */
     public void swapFrames() {
-        final Runnable[] currentFrame = this.currentFrame;
-        final Future<FrameResult> prevFrameFuture = this.executedFrameFuture;
-        Future<FrameResult> frameFuture = execActual.submit(() -> executeCommands(currentFrame, prevFrameFuture));
-
         // Wait for the previous frame.
-        FrameResult prevFrameResult = waitForFrame(prevFrameFuture);
+        FrameResult prevFrameResult = waitForFrame(this.executedFrameFuture);
 
+        // If previous frame failed, do not execute the current one.
+        // This is because the producer composed the frame without
+        // learning the previous one failed.
+        if (prevFrameResult.caught != null) {
+            cleanBuffer(this.currentFrame);
+        }
+
+        final Runnable[] currentFrame = this.currentFrame;
+        this.executedFrameFuture = execActual.submit(() -> executeCommands(currentFrame));
         this.currentFrame = prevFrameResult.commands; // Reuse command buffer.
-        this.executedFrameFuture = frameFuture;
-        frameSize = 0;
+        this.frameSize = 0;
 
         rethrowAsRuntimeException(prevFrameResult.caught);
     }
 
-    private FrameResult executeCommands(Runnable[] commands, Future<FrameResult> prevFrameFuture) {
+    private FrameResult executeCommands(Runnable[] commands) {
         long start = System.nanoTime();
 
         try {
-            FrameResult prevFrameResult = prevFrameFuture.get();
-            if (prevFrameResult.caught == null) {
-                runCommands(commands);
-            } else {
-                cleanBuffer(commands);
+            // Run all scheduled commands.
+            for (int i = 0; i < commands.length && commands[i] != null; i++) {
+                Runnable command = commands[i];
+                commands[i] = null;
+
+                if (command instanceof Recordable && listManager.isRecording()) {
+                    // Record the command instead of running it immediately.
+                    listManager.record(command);
+                } else {
+                    command.run();
+                }
             }
 
             return new FrameResult(commands, null);
@@ -102,21 +123,9 @@ public class Executor {
         }
     }
 
-    private void runCommands(Runnable[] commands) {
-        // Run all scheduled commands.
-        for (int i = 0; i < commands.length && commands[i] != null; i++) {
-            Runnable command = commands[i];
-            commands[i] = null;
-
-            if (command instanceof Recordable && listManager.isRecording()) {
-                // Record the command instead of running it immediately.
-                listManager.record(command);
-            } else {
-                command.run();
-            }
-        }
-    }
-
+    /**
+     * Returns true if no commands are being executed.
+     */
     public boolean isIdle() {
         return executedFrameFuture.isDone();
     }
@@ -140,7 +149,7 @@ public class Executor {
     }
 
     private void cleanBuffer(Runnable[] commands) {
-        for (int i = 0; i < commands.length && commands[i] != null; i++) {
+        for (int i = 0; i < commands.length; i++) {
             commands[i] = null;
         }
     }
