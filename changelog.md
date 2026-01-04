@@ -1,3 +1,5 @@
+v0.6.5
+
 - Improved rendering performance.
 
 v0.6.4
