@@ -1,3 +1,5 @@
+- Reverted JVM Xss parameter to 4mb, improving stability. Suggested by Seekers.
+
 v0.6.5
 
 - Improved rendering performance.

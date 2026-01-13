@@ -1,6 +1,6 @@
 -Xmx4g
 -Xms4g
--Xss16m
+-Xss4m
 
 # General config
 -XX:+UnlockDiagnosticVMOptions
