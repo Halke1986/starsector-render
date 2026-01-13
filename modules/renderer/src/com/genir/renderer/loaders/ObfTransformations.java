@@ -23,6 +23,7 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             newTransform("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             newTransform("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
+            newTransform("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
 
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -39,6 +40,8 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             newTransform("proxy/com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
             newTransform("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
+            newTransform("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
+            newTransform("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -74,6 +77,7 @@ public class ObfTransformations {
             newTransform("TextureHandler_serColor2", "Ò00000"),
             newTransform("TextureTransformer_apply", "o00000"),
             newTransform("TextureHandler_setStringID", "Ò00000"),
+            newTransform("DeploymentManager_pickReinforcement", "o00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
