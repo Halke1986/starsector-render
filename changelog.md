@@ -1,4 +1,5 @@
 - Reverted JVM Xss parameter to 4mb, improving stability. Suggested by Seekers.
+- Fixed a vanilla bug where enemy ships were deployed progressively from smallest to largest. Enemy fleets now maintain a balanced composition throughout the entire battle.
 
 v0.6.5
 
