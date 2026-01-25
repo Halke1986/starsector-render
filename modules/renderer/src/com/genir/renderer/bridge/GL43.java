@@ -1,11 +1,11 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.state.BufferUtil;
+import com.genir.renderer.bridge.state.BufferUtil;
 import org.lwjgl.opengl.KHRDebugCallback;
 
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.state.AppState.state;
+import static com.genir.renderer.bridge.state.AppState.state;
 
 public class GL43 {
     public static int glGetProgramResourceIndex(int program, int programInterface, CharSequence name) {

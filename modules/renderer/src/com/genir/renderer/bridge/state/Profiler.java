@@ -1,4 +1,4 @@
-package com.genir.renderer.state;
+package com.genir.renderer.bridge.state;
 
 import jdk.jfr.*;
 import org.apache.log4j.Logger;

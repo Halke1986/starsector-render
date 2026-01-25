@@ -1,7 +1,7 @@
-package com.genir.renderer.state.stall;
+package com.genir.renderer.bridge.state.stall;
 
 
-import com.genir.renderer.state.Executor;
+import com.genir.renderer.bridge.state.Executor;
 
 import java.nio.IntBuffer;
 import java.util.Stack;

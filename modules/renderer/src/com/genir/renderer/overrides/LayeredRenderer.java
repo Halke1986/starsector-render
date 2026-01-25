@@ -9,7 +9,7 @@ import proxy.com.fs.starfarer.combat.entities.CustomCombatEntity;
 
 import java.util.List;
 
-import static com.genir.renderer.state.AppState.state;
+import static com.genir.renderer.bridge.state.AppState.state;
 
 public class LayeredRenderer {
     public static void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {

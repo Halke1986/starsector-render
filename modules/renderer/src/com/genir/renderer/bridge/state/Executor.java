@@ -1,7 +1,7 @@
-package com.genir.renderer.state;
+package com.genir.renderer.bridge.state;
 
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.state.stall.StallDetector;
+import com.genir.renderer.bridge.state.stall.StallDetector;
 
 import java.util.concurrent.*;
 

@@ -1,4 +1,4 @@
-package com.genir.renderer.state;
+package com.genir.renderer.bridge.state;
 
 /**
  * Recordable is an interface for OpenGL commands

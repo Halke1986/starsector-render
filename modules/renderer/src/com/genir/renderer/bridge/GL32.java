@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.state.AppState.state;
+import static com.genir.renderer.bridge.state.AppState.state;
 
 public class GL32 {
     public static long glGetInteger64(int pname) {

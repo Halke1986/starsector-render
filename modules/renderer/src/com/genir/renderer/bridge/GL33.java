@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.state.AppState.state;
+import static com.genir.renderer.bridge.state.AppState.state;
 
 public class GL33 {
     public static void glVertexAttribDivisor(int index, int divisor) {

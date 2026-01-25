@@ -1,14 +1,14 @@
 package com.genir.renderer.bridge;
 
 
-import com.genir.renderer.state.BufferUtil;
+import com.genir.renderer.bridge.state.BufferUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.state.AppState.state;
+import static com.genir.renderer.bridge.state.AppState.state;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {

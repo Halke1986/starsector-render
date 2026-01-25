@@ -1,4 +1,4 @@
-package com.genir.renderer.state;
+package com.genir.renderer.bridge.state;
 
 import org.lwjgl.util.vector.Matrix4f;
 
