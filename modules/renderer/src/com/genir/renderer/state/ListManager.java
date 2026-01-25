@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.genir.renderer.Debug.asert;
+import static com.genir.renderer.debug.Debug.asert;
 
 public class ListManager {
     private int totalListsAllocated = 0;

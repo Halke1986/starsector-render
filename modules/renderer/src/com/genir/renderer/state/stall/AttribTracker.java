@@ -66,6 +66,10 @@ public class AttribTracker {
         return vertexArrayBinding;
     }
 
+    public AttribState.Viewport getViewport() {
+        return state.viewport;
+    }
+
     public void clear() {
         state = new AttribState();
         expectedStack = new Stack<>();
@@ -73,6 +77,10 @@ public class AttribTracker {
         framebufferBinding = 0;
         vertexArrayBinding = 0;
     }
+
+    //
+    // GL calls.
+    //
 
     public void glPushAttrib(int mask) {
         // Save expected state.
@@ -125,5 +133,9 @@ public class AttribTracker {
 
     public void glBindVertexArray(int array) {
         vertexArrayBinding = array;
+    }
+
+    public void glViewport(int x, int y, int width, int height) {
+        state.glViewport(x, y, width, height);
     }
 }

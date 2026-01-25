@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="xstream-1.4.10">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../starsector-core/xstream-1.4.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/xstream-1.4.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

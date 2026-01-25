@@ -36,6 +36,9 @@ public class AttribState {
     public Map<Integer, BlendFactors> blendi = null;
     public Map<Integer, Integer> blendEquationi = null;
 
+    // GL_VIEWPORT_BIT
+    public Viewport viewport = new Viewport(0, 0, 0, 0);
+
     //
     // GL Setters
     //
@@ -110,6 +113,10 @@ public class AttribState {
         blendEquationi.put(buf, mode);
     }
 
+    public void glViewport(int x, int y, int width, int height) {
+        viewport = new Viewport(x, y, width, height);
+    }
+
     private void setEnable(int cap, boolean value) {
         switch (cap) {
             case GL11.GL_STENCIL_TEST:
@@ -140,7 +147,7 @@ public class AttribState {
         }
 
         if ((attribMask & GL11.GL_STENCIL_BUFFER_BIT) != 0) {
-            overwriteStencilBufferBit(source);
+            enableStencilTest = source.enableStencilTest;
         }
 
         if ((attribMask & GL11.GL_TEXTURE_BIT) != 0) {
@@ -148,19 +155,23 @@ public class AttribState {
         }
 
         if ((attribMask & GL11.GL_TRANSFORM_BIT) != 0) {
-            overwriteTransformBit(source);
+            matrixMode = source.matrixMode;
         }
 
         if ((attribMask & GL11.GL_LINE_BIT) != 0) {
-            overwriteLineBit(source);
+            lineWidth = source.lineWidth;
         }
 
         if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
-            overwriteClientVertexArrayBit(source);
+            arrayBufferBinding = source.arrayBufferBinding;
         }
 
         if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {
             overwriteColorBufferBit(source);
+        }
+
+        if ((attribMask & GL11.GL_VIEWPORT_BIT) != 0) {
+            viewport = source.viewport;
         }
     }
 
@@ -176,22 +187,6 @@ public class AttribState {
         textureTarget = source.textureTarget;
         textureID = source.textureID;
         activeTexture = source.activeTexture;
-    }
-
-    private void overwriteStencilBufferBit(AttribState source) {
-        enableStencilTest = source.enableStencilTest;
-    }
-
-    private void overwriteTransformBit(AttribState source) {
-        matrixMode = source.matrixMode;
-    }
-
-    private void overwriteLineBit(AttribState source) {
-        lineWidth = source.lineWidth;
-    }
-
-    private void overwriteClientVertexArrayBit(AttribState source) {
-        arrayBufferBinding = source.arrayBufferBinding;
     }
 
     private void overwriteColorBufferBit(AttribState source) {
@@ -235,6 +230,9 @@ public class AttribState {
             sfactorAlpha = source.sfactorAlpha;
             dfactorAlpha = source.dfactorAlpha;
         }
+    }
+
+    public record Viewport(int x, int y, int width, int height) {
     }
 
     public record Snapshot(AttribState state, int attribMask) {

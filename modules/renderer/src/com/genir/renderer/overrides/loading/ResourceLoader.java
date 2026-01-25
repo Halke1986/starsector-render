@@ -4,6 +4,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.Display;
+import com.genir.renderer.state.AppState;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.starfarer.loading.SpecStore;
@@ -26,13 +28,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
             3, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
-    // Sound loading uses a dedicated worker pool because the decoder contains a large synchronized section,
-    // making it effectively single-threaded. Running sound decoding on the common worker pool would stall it.
+    // Sound loading, despite vanilla implementation, is inherently non-parallelizable.
     // NOTE: SpecStore.SpecStore_init call order is modified in assembly so that sound loading runs earlier.
     // This gives the non-parallelizable sound loading more time to complete, reducing the chance of the main
     // thread waiting.
     public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
-            2, "FR-Sound-Loader", new ExceptionHandler());
+            1, "FR-Sound-Loader", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 
@@ -62,7 +63,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 if (r != null) {
                     r.run();
                 }
-                state.renderProgress(0);
+
+                if (AppState.state.exec.isIdle()) {
+                    state.renderProgress(0);
+                    Display.update(true);
+                }
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -99,6 +105,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         barAnimation.forwardOnly = true;
         while (barAnimation.barIsNotFull()) {
             state.renderProgress(0);
+            Display.update();
             Thread.sleep(10);
         }
     }
@@ -112,7 +119,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             case "TEXTURE":
             case "TEXTURE_OPTIONAL":
             case "TEXTURE_ALPHA_ADDER":
-                ImageLoader.queueImage(type, path);
+                TextureLoader.queueImage(type, path);
                 break;
             case "SOUND":
                 if (Global.getSettings().isSoundEnabled()) {
@@ -138,21 +145,21 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     }
 
     public static void queueWeaponSprite(WeaponSpecAPI weaponSpec) {
-        ImageLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointSpriteName());
-        ImageLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretSpriteName());
-        ImageLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointUnderSpriteName());
-        ImageLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretUnderSpriteName());
+        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointSpriteName());
+        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretSpriteName());
+        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointUnderSpriteName());
+        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretUnderSpriteName());
 
         if (weaponSpec instanceof BeamWeaponSpecAPI beamWeaponSpec) {
-            ImageLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getHardpointGlowSpriteName());
-            ImageLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getTurretGlowSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getHardpointGlowSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getTurretGlowSpriteName());
 
             queueWeaponAnimation(weaponSpec);
         } else if (weaponSpec instanceof ProjectileWeaponSpecAPI projectileWeaponSpec) {
-            ImageLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGlowSpriteName());
-            ImageLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGlowSpriteName());
-            ImageLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGunSpriteName());
-            ImageLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGunSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGlowSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGlowSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGunSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGunSpriteName());
 
             queueWeaponAnimation(weaponSpec);
         }
@@ -163,25 +170,25 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         String hardpointText = weaponSpec.getHardpointSpriteName().replaceAll("00\\.png", "");
 
         for (int i = 1; i < ((BaseWeaponSpec) weaponSpec).getNumFrames(); ++i) {
-            ImageLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", turretTex, i));
-            ImageLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", hardpointText, i));
+            TextureLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", turretTex, i));
+            TextureLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", hardpointText, i));
         }
     }
 
     public static void queueProjectileSprite(Object abstractProjectileSpec) {
         if (abstractProjectileSpec instanceof MissileSpecAPI missileSpec) {
-            ImageLoader.queueImageOptional("TEXTURE", missileSpec.getHullSpec().getSpriteName());
-            ImageLoader.queueImageOptional("TEXTURE", missileSpec.getGlowSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", missileSpec.getHullSpec().getSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", missileSpec.getGlowSpriteName());
         } else if (abstractProjectileSpec instanceof ProjectileSpecAPI projectileSpec) {
-            ImageLoader.queueImageOptional("TEXTURE", projectileSpec.getBulletSpriteName());
-            ImageLoader.queueImageOptional("TEXTURE", projectileSpec.getFringeTex());
-            ImageLoader.queueImageOptional("TEXTURE", projectileSpec.getCoreTex());
+            TextureLoader.queueImageOptional("TEXTURE", projectileSpec.getBulletSpriteName());
+            TextureLoader.queueImageOptional("TEXTURE", projectileSpec.getFringeTex());
+            TextureLoader.queueImageOptional("TEXTURE", projectileSpec.getCoreTex());
         }
     }
 
     public static void queueShipSprite(ShipHullSpec hullSpec) {
         String texture = ((ShipHullSpecAPI) hullSpec).getSpriteName();
-        ImageLoader.queueImageOptional("TEXTURE", texture);
+        TextureLoader.queueImageOptional("TEXTURE", texture);
     }
 
     public static void animateBar(Sprite bar) {

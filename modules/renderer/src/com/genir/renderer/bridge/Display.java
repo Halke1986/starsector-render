@@ -9,14 +9,11 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
-import static com.genir.renderer.Debug.log;
+import static com.genir.renderer.debug.Debug.log;
 import static com.genir.renderer.state.AppState.state;
 
 public class Display {
-    private static Future<?> prevFrameFinished = null;
-
     private static void updateAppState() {
         if (!org.lwjgl.opengl.Display.isCreated()) {
             return;
@@ -31,8 +28,7 @@ public class Display {
     }
 
     public static void update(boolean processMessages) {
-        try {
-            state.stallDetector.update();
+        state.stallDetector.update();
 
             // Swap OpenGL buffers and update the bridge state.
             // Ideally, these would run on the render thread synchronously
@@ -49,18 +45,8 @@ public class Display {
                 }
             }
 
-            Future<?> thisFrameFinished = state.exec.submit(new update(processMessages));
-
-            if (prevFrameFinished != null) {
-                prevFrameFinished.get();
-            }
-
-            prevFrameFinished = thisFrameFinished;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
+        state.exec.execute(new update(processMessages));
+        state.exec.swapFrames();
     }
 
     public static void update() {
@@ -159,8 +145,6 @@ public class Display {
         state.texGenerator.clear();
         ProgressBar.clear();
 
-        prevFrameFinished = null;
-
         record create(PixelFormat pixel_format) implements Runnable {
             @Override
             public void run() {
@@ -208,7 +192,7 @@ public class Display {
                 org.lwjgl.opengl.Display.destroy();
             }
         }
-        state.exec.wait(new destroy(), true);
+        state.exec.wait(new destroy());
     }
 
     public static boolean isFullscreen() {
