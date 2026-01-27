@@ -56,7 +56,7 @@ public class GL31 {
     public static int glGetUniformBlockIndex(int program, CharSequence uniformBlockName) {
         record glGetUniformBlockIndex(int program, CharSequence uniformBlockName) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL31.glGetUniformBlockIndex(program, uniformBlockName);
             }
         }
@@ -76,10 +76,20 @@ public class GL31 {
     public static int glGetActiveUniformBlocki(int program, int uniformBlockIndex, int pname) {
         record glGetActiveUniformBlocki(int program, int uniformBlockIndex, int pname) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL31.glGetActiveUniformBlocki(program, uniformBlockIndex, pname);
             }
         }
         return state.exec.get(new glGetActiveUniformBlocki(program, uniformBlockIndex, pname));
+    }
+
+    public static void glCopyBufferSubData(int readtarget, int writetarget, long readoffset, long writeoffset, long size) {
+        record glCopyBufferSubData(int readtarget, int writetarget, long readoffset, long writeoffset, long size) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL31.glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size);
+            }
+        }
+        state.exec.execute(new glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size));
     }
 }

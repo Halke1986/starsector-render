@@ -129,6 +129,17 @@ public class TransformManager {
         }
     }
 
+    public void glLoadMatrix(FloatBuffer m) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
+            modelView.glLoadMatrix(m);
+        }
+
+        if (shouldDelegate()) {
+            attribManager.applyMatrixMode();
+            GL11.glLoadMatrix(m);
+        }
+    }
+
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glOrtho(left, right, bottom, top, zNear, zFar);

@@ -233,4 +233,14 @@ public class GL30 {
         }
         state.exec.execute(new glUniform2ui(location, v0, v1));
     }
+
+    public static void glUniform3ui(int location, int v0, int v1, int v2) {
+        record glUniform3ui(int location, int v0, int v1, int v2) implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.GL30.glUniform3ui(location, v0, v1, v2);
+            }
+        }
+        state.exec.execute(new glUniform3ui(location, v0, v1, v2));
+    }
 }

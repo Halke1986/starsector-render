@@ -423,6 +423,17 @@ public class GL11 {
         state.exec.execute(new glMultMatrix(snapshot));
     }
 
+    public static void glLoadMatrix(FloatBuffer m) {
+        record glLoadMatrix(FloatBuffer m) implements Runnable, Recordable {
+            @Override
+            public void run() {
+                state.transformManager.glLoadMatrix(m);
+            }
+        }
+        final FloatBuffer snapshot = BufferUtil.snapshot(m);
+        state.exec.execute(new glLoadMatrix(snapshot));
+    }
+
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable, Recordable {
             @Override

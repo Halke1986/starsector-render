@@ -178,6 +178,12 @@ public class MatrixStack {
         Matrix4f.mul(m2, m, m);
     }
 
+    public void glLoadMatrix(FloatBuffer buf) {
+        FloatBuffer reader = buf.duplicate();
+        reader.clear();
+        current.loadTranspose(reader);
+    }
+
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         Matrix4f p = new Matrix4f();
 

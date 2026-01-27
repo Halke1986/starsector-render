@@ -21,6 +21,7 @@ public class ScriptTransformations {
             newTransform("org/lwjgl/opengl/GL41", "com/genir/renderer/bridge/GL41"),
             newTransform("org/lwjgl/opengl/GL42", "com/genir/renderer/bridge/GL42"),
             newTransform("org/lwjgl/opengl/GL43", "com/genir/renderer/bridge/GL43"),
+            newTransform("org/lwjgl/opengl/GL44", "com/genir/renderer/bridge/GL44"),
             newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/Display"),
             newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
 
