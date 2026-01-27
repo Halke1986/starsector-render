@@ -10,7 +10,7 @@ public class GL32 {
     public static long glGetInteger64(int pname) {
         record glGetInteger64(int pname) implements Callable<Long> {
             @Override
-            public Long call() throws Exception {
+            public Long call() {
                 return org.lwjgl.opengl.GL32.glGetInteger64(pname);
             }
         }
@@ -21,7 +21,7 @@ public class GL32 {
     public static long glGetInteger64(int value, int index) {
         record glGetInteger64(int value, int index) implements Callable<Long> {
             @Override
-            public Long call() throws Exception {
+            public Long call() {
                 return org.lwjgl.opengl.GL32.glGetInteger64(value, index);
             }
         }

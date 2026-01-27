@@ -12,7 +12,7 @@ public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {
         record glGetSubroutineIndex(int program, int shadertype, CharSequence name) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL40.glGetSubroutineIndex(program, shadertype, name);
             }
         }
@@ -22,7 +22,7 @@ public class GL40 {
     public static int glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) {
         record glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) implements Callable<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return org.lwjgl.opengl.GL40.glGetSubroutineUniformLocation(program, shadertype, name);
             }
         }
