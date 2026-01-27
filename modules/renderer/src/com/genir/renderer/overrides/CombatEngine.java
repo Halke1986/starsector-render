@@ -3,7 +3,7 @@ package com.genir.renderer.overrides;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.bridge.context.AppState.state;
+import static com.genir.renderer.bridge.context.Context.context;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
@@ -31,9 +31,9 @@ public class CombatEngine {
 
         // Assume first run of Combat Engine render loop happens
         // immediately after the game finished initializing.
-        if (!state.gameInitialized) {
-            state.gameInitialized = true;
-            state.stallDetector.enableDetection();
+        if (!GameState.gameInitialized) {
+            GameState.gameInitialized = true;
+            context.stallDetector.enableDetection();
             FileUtils.closeFileRepository();
             unlockParticleLimit();
         }
@@ -89,11 +89,11 @@ public class CombatEngine {
     private static void renderLayer(CombatEngineLayers layer) {
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
-        state.exec.execute(() -> state.vertexInterceptor.commitLayer());
+        context.exec.execute(() -> context.vertexInterceptor.commitLayer());
     }
 
     private static void renderLayer(String layer) {
-        state.exec.execute(() -> state.vertexInterceptor.setReorderDraw(true));
+        context.exec.execute(() -> context.vertexInterceptor.setReorderDraw(true));
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -113,7 +113,7 @@ public class CombatEngine {
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
 
-        state.exec.execute(() -> state.vertexInterceptor.setReorderDraw(false));
-        state.exec.execute(() -> state.vertexInterceptor.commitLayer());
+        context.exec.execute(() -> context.vertexInterceptor.setReorderDraw(false));
+        context.exec.execute(() -> context.vertexInterceptor.commitLayer());
     }
 }

@@ -11,8 +11,8 @@ import java.util.Stack;
  * through AttribTracker.
  */
 public class AttribTracker {
-    private AttribState state = new AttribState();
-    private Stack<AttribState.Snapshot> expectedStack = new Stack<>();
+    private final AttribState state = new AttribState();
+    private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
 
     // Values not being a part of attributes stack.
     private int framebufferBinding = 0;
@@ -68,14 +68,6 @@ public class AttribTracker {
 
     public AttribState.Viewport getViewport() {
         return state.viewport;
-    }
-
-    public void clear() {
-        state = new AttribState();
-        expectedStack = new Stack<>();
-
-        framebufferBinding = 0;
-        vertexArrayBinding = 0;
     }
 
     //

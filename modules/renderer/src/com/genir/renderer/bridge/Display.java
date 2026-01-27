@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
@@ -10,28 +11,59 @@ import org.lwjgl.opengl.PixelFormat;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.AppState.state;
+import static com.genir.renderer.bridge.context.Context.context;
 import static com.genir.renderer.debug.Debug.log;
 
 public class Display {
-    private static void updateAppState() {
+    public static void create(PixelFormat pixel_format) {
+        record create(PixelFormat pixel_format) implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    org.lwjgl.opengl.Display.create(pixel_format);
+
+                    // Clear server attributes when a new display is created.
+                    context.attribManager.clear();
+
+                    updateState();
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
+            }
+        }
+
+        ProgressBar.clear();
+        Context.create();
+        context.exec.wait(new create(pixel_format));
+    }
+
+    public static void destroy() {
+        record destroy() implements Runnable {
+            @Override
+            public void run() {
+                org.lwjgl.opengl.Display.destroy();
+            }
+        }
+        context.exec.wait(new destroy());
+        Context.destroy();
+    }
+
+    private static void updateState() {
         if (!org.lwjgl.opengl.Display.isCreated()) {
             return;
         }
 
-        state.glStateCache.update();
-        state.vertexInterceptor.update();
-        state.texGenerator.update();
-        state.arrayGenerator.update();
-        state.bufferGenerator.update();
+        context.update();
 
         Profiler.profiler.update();
     }
 
     public static void update(boolean processMessages) {
-        state.stallDetector.update();
+        context.stallDetector.update();
 
-        // Swap OpenGL buffers and update the bridge state.
+        // Swap OpenGL buffers and update the bridge context.
         // Ideally, these would run on the render thread synchronously
         // to avoid concurrency issues. However, profiling showed a ~5%
         // performance penalty from lock contention when blocking.
@@ -40,12 +72,12 @@ public class Display {
             @Override
             public void run() {
                 org.lwjgl.opengl.Display.update(processMessages);
-                updateAppState();
+                updateState();
             }
         }
 
-        state.exec.execute(new update(processMessages));
-        state.exec.swapFrames();
+        context.exec.execute(new update(processMessages));
+        context.exec.swapFrames();
     }
 
     public static void update() {
@@ -59,7 +91,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getAvailableDisplayModes();
             }
         }
-        return state.exec.get(new getAvailableDisplayModes());
+        return context.exec.get(new getAvailableDisplayModes());
     }
 
     public static int setIcon(ByteBuffer[] icons) {
@@ -69,7 +101,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.setIcon(icons);
             }
         }
-        return state.exec.get(new setIcon(icons));
+        return context.exec.get(new setIcon(icons));
     }
 
     public static DisplayMode getDesktopDisplayMode() {
@@ -79,7 +111,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDesktopDisplayMode();
             }
         }
-        return state.exec.get(new getDesktopDisplayMode());
+        return context.exec.get(new getDesktopDisplayMode());
     }
 
     public static DisplayMode getDisplayMode() {
@@ -89,7 +121,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDisplayMode();
             }
         }
-        return state.exec.get(new getDisplayMode());
+        return context.exec.get(new getDisplayMode());
     }
 
     public static void setTitle(String newTitle) {
@@ -100,7 +132,7 @@ public class Display {
             }
         }
 
-        state.exec.wait(new setTitle(newTitle));
+        context.exec.wait(new setTitle(newTitle));
     }
 
     public static void setVSyncEnabled(boolean sync) {
@@ -134,68 +166,31 @@ public class Display {
                 }
             }
         }
-        state.exec.wait(new setVSyncEnabled(sync));
-    }
-
-    public static void create(PixelFormat pixel_format) {
-        state.attribTracker.clear();
-        state.arrayGenerator.clear();
-        state.bufferGenerator.clear();
-        state.texGenerator.clear();
-        ProgressBar.clear();
-
-        record create(PixelFormat pixel_format) implements Runnable {
-            @Override
-            public void run() {
-                try {
-                    org.lwjgl.opengl.Display.create(pixel_format);
-
-                    // Clear server attributes when a new display is created.
-                    state.attribManager.clear();
-
-                    updateAppState();
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Throwable t) {
-                    throw new RuntimeException(t);
-                }
-            }
-        }
-        state.exec.wait(new create(pixel_format));
+        context.exec.wait(new setVSyncEnabled(sync));
     }
 
     public static int getHeight() {
-        return state.glStateCache.getDisplayHeight();
+        return context.glStateCache.getDisplayHeight();
     }
 
     public static int getWidth() {
-        return state.glStateCache.getDisplayWidth();
+        return context.glStateCache.getDisplayWidth();
     }
 
     public static float getPixelScaleFactor() {
-        return state.glStateCache.getDisplayPixelScaleFactor();
+        return context.glStateCache.getDisplayPixelScaleFactor();
     }
 
     public static boolean isCloseRequested() {
-        return state.glStateCache.getDisplayIsCloseRequested();
+        return context.glStateCache.getDisplayIsCloseRequested();
     }
 
     public static boolean isActive() {
-        return state.glStateCache.getDisplayIsActive();
-    }
-
-    public static void destroy() {
-        record destroy() implements Runnable {
-            @Override
-            public void run() {
-                org.lwjgl.opengl.Display.destroy();
-            }
-        }
-        state.exec.wait(new destroy());
+        return context.glStateCache.getDisplayIsActive();
     }
 
     public static boolean isFullscreen() {
-        return state.glStateCache.getDisplayIsFullscreen();
+        return context.glStateCache.getDisplayIsFullscreen();
     }
 
     public static void setFullscreen(boolean fullscreen) {
@@ -204,17 +199,17 @@ public class Display {
             public void run() {
                 try {
                     org.lwjgl.opengl.Display.setFullscreen(fullscreen);
-                    updateAppState();
+                    updateState();
                 } catch (LWJGLException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        state.exec.wait(new setFullscreen(fullscreen));
+        context.exec.wait(new setFullscreen(fullscreen));
     }
 
     public static boolean isVisible() {
-        return state.glStateCache.getDisplayIsVisible();
+        return context.glStateCache.getDisplayIsVisible();
     }
 
     public static void processMessages() {
@@ -222,10 +217,10 @@ public class Display {
             @Override
             public void run() {
                 org.lwjgl.opengl.Display.processMessages();
-                updateAppState();
+                updateState();
             }
         }
-        state.exec.wait(new processMessages());
+        context.exec.wait(new processMessages());
     }
 
     public static void sync(int fps) {
@@ -235,15 +230,15 @@ public class Display {
                 org.lwjgl.opengl.Display.sync(fps);
             }
         }
-        state.exec.execute(new sync(fps));
+        context.exec.execute(new sync(fps));
     }
 
     public static int getX() {
-        return state.glStateCache.getDisplayX();
+        return context.glStateCache.getDisplayX();
     }
 
     public static int getY() {
-        return state.glStateCache.getDisplayY();
+        return context.glStateCache.getDisplayY();
     }
 
     public static Drawable getDrawable() {
@@ -253,6 +248,6 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDrawable();
             }
         }
-        return state.exec.get(new getDrawable());
+        return context.exec.get(new getDrawable());
     }
 }

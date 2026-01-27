@@ -2,10 +2,10 @@ package com.genir.renderer.bridge;
 
 import org.lwjgl.opengl.ContextCapabilities;
 
-import static com.genir.renderer.bridge.context.AppState.state;
+import static com.genir.renderer.bridge.context.Context.context;
 
 public class GLContext {
     public static ContextCapabilities getCapabilities() {
-        return state.glStateCache.getContextCapabilities();
+        return context.glStateCache.getContextCapabilities();
     }
 }

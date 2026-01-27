@@ -128,6 +128,10 @@ public class Executor {
         }
     }
 
+    public void shutdown() {
+        execActual.shutdown();
+    }
+
     /**
      * Returns true if no commands are being executed.
      */

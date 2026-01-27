@@ -5,7 +5,6 @@ import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.Display;
-import com.genir.renderer.bridge.context.AppState;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.starfarer.loading.SpecStore;
@@ -20,6 +19,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.genir.renderer.bridge.context.Context.context;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
@@ -64,7 +65,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                     r.run();
                 }
 
-                if (AppState.state.exec.isIdle()) {
+                if (context.exec.isIdle()) {
                     state.renderProgress(0);
                     Display.update(true);
                 }

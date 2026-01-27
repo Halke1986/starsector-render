@@ -73,10 +73,4 @@ public class ResourceGenerator {
             }
         }
     }
-
-    synchronized public void clear() {
-        requiredThisFrame = 0;
-        cacheSize = 0;
-        stash.clear();
-    }
 }

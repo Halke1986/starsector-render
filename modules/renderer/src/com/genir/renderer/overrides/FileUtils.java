@@ -7,8 +7,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.genir.renderer.bridge.context.AppState.state;
-
 public class FileUtils { // com.fs.util.C
     private static PathCache pathCache = new PathCache();
 
@@ -40,7 +38,7 @@ public class FileUtils { // com.fs.util.C
             // The vanilla check is low throughput but guarantees no false positives.
             // The optimized File.exists may report a false positive if a mod
             // deletes a file during game initialization.
-            boolean tryFastExists = !state.gameInitialized;
+            boolean tryFastExists = !GameState.gameInitialized;
 
             return findResources(path, locationFilter, skipMods, locations, true, tryFastExists).get(0).two;
         } finally {
@@ -52,7 +50,7 @@ public class FileUtils { // com.fs.util.C
     public static List<Pair<ResourceLoader.ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
         ResourceLoader loaderInstance = ResourceLoader.ResourceLoader_getInstance();
         List<ResourceLoader.ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
-        boolean tryFastExists = !state.gameInitialized;
+        boolean tryFastExists = !GameState.gameInitialized;
 
         return findResources(path, null, false, locations, false, tryFastExists);
     }
