@@ -16,7 +16,6 @@ public class AppState {
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
     public final Executor exec = new Executor(listManager, stallDetector);
-    public final Profiler profiler = new Profiler();
     public final StateCache glStateCache = new StateCache();
 
     // Client state. Runs on main thread.

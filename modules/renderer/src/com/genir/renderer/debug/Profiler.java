@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.context;
+package com.genir.renderer.debug;
 
 import jdk.jfr.*;
 import org.apache.log4j.Logger;
@@ -10,6 +10,10 @@ import java.time.Duration;
 import static org.lwjgl.input.Keyboard.*;
 
 public class Profiler {
+    public static final Profiler profiler = new Profiler();
+
+    public final Frame frame = new Frame();
+
     private Recording rec = null;
     private boolean wasKeyPressed = false;
 
@@ -29,7 +33,7 @@ public class Profiler {
         }
     }
 
-    public void startProfiler(String profilePrefix) {
+    private void startProfiler(String profilePrefix) {
         try {
             Logger.getLogger(Profiler.class).info("Started profiling");
 
@@ -47,7 +51,7 @@ public class Profiler {
         }
     }
 
-    public void stopProfiler() {
+    private void stopProfiler() {
         try {
             String fileName = rec.getDestination().toString();
             Logger.getLogger(Profiler.class).info("Finished profiling. Writing results to: " + fileName);
@@ -115,37 +119,17 @@ public class Profiler {
         return ctrl && alt && backslash;
     }
 
-    @Name("app.UpdateMark")
-    public static class UpdateMark extends Event {
-        private static long prevMark = 0;
-        public long dtNs;
+    /**
+     * Custom frame progress metrics.
+     */
+    public static class Frame {
+        private long frameStart = 0;
+        private long swapStart = 0;
+        private long syncStart = 0;
+        private long renderSum = 0;
+        private long stallSum = 0;
 
-        public static void mark() {
-            var e = new UpdateMark();
-            long thisFrame = System.nanoTime();
-            e.dtNs = thisFrame - prevMark;
-            e.commit();
-
-            prevMark = thisFrame;
-        }
-    }
-
-    @Name("app.FrameMark")
-    public static class FrameMark extends Event {
-        private static long frameStart = 0;
-        private static long swapStart = 0;
-        private static long syncStart = 0;
-        private static long renderSum = 0;
-        private static long stallSum = 0;
-
-        public long frame; // Total frame duration.
-        public long sim__; // Game engine update.
-        public long swap_; // Wait for render thread.
-        public long sync_; // Idle while waiting for next frame.
-        public long stall;
-        public long rendr; // Rendering thread work time.
-
-        public static void beginFrame() {
+        public void beginFrame() {
             long nextFrameStart = System.nanoTime();
 
             var e = new FrameMark();
@@ -167,20 +151,30 @@ public class Profiler {
             frameStart = nextFrameStart;
         }
 
-        public static void beginSwap() {
+        public void beginSwap() {
             swapStart = System.nanoTime();
         }
 
-        public static void beginSync() {
+        public void beginSync() {
             syncStart = System.nanoTime();
         }
 
-        public static void markRenderWork(long start) {
+        public void markRenderWork(long start) {
             renderSum += System.nanoTime() - start;
         }
 
-        public static void markStall(long start) {
+        public void markStall(long start) {
             stallSum += System.nanoTime() - start;
         }
+    }
+
+    @Name("app.FrameMark")
+    public static class FrameMark extends Event {
+        public long frame; // Total frame duration.
+        public long sim__; // Game engine update.
+        public long swap_; // Wait for render thread.
+        public long sync_; // Idle while waiting for next frame.
+        public long stall;
+        public long rendr; // Rendering thread work time.
     }
 }

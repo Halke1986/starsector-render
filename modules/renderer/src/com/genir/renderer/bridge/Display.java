@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -9,8 +10,8 @@ import org.lwjgl.opengl.PixelFormat;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.debug.Debug.log;
 import static com.genir.renderer.bridge.context.AppState.state;
+import static com.genir.renderer.debug.Debug.log;
 
 public class Display {
     private static void updateAppState() {
@@ -23,7 +24,8 @@ public class Display {
         state.texGenerator.update();
         state.arrayGenerator.update();
         state.bufferGenerator.update();
-        state.profiler.update();
+
+        Profiler.profiler.update();
     }
 
     public static void update(boolean processMessages) {

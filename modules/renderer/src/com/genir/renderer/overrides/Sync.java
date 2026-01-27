@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.genir.renderer.bridge.Display;
-import com.genir.renderer.bridge.context.Profiler;
+import com.genir.renderer.debug.Profiler;
 import proxy.com.fs.starfarer.settings.StarfarerSettings;
 
 public class Sync {
@@ -11,13 +11,13 @@ public class Sync {
     }
 
     public static void syncAndUpdate(boolean processMessages) {
-        Profiler.FrameMark.beginSwap();
+        Profiler.profiler.frame.beginSwap();
         Display.update(processMessages);
 
-        Profiler.FrameMark.beginSync();
+        Profiler.profiler.frame.beginSync();
         sync(0);
 
-        Profiler.FrameMark.beginFrame();
+        Profiler.profiler.frame.beginFrame();
     }
 
     /**

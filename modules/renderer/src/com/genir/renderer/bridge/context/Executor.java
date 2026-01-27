@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.stall.StallDetector;
+import com.genir.renderer.debug.Profiler;
 
 import java.util.concurrent.*;
 
@@ -54,7 +55,7 @@ public class Executor {
             currFrameResult = waitForFrame(executedFrameFuture);
             rethrowAsRuntimeException(currFrameResult.caught);
         } finally {
-            Profiler.FrameMark.markStall(start);
+            Profiler.profiler.frame.markStall(start);
         }
     }
 
@@ -123,7 +124,7 @@ public class Executor {
 
             return new FrameResult(commands, t);
         } finally {
-            Profiler.FrameMark.markRenderWork(start);
+            Profiler.profiler.frame.markRenderWork(start);
         }
     }
 
