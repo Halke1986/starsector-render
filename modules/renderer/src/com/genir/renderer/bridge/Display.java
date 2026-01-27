@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
 import static com.genir.renderer.debug.Debug.log;
-import static com.genir.renderer.bridge.state.AppState.state;
+import static com.genir.renderer.bridge.context.AppState.state;
 
 public class Display {
     private static void updateAppState() {

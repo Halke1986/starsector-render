@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.bridge.state.AppState.state;
+import static com.genir.renderer.bridge.context.AppState.state;
 
 public class GL41 {
     public static void glProgramUniform1i(int program, int location, int v0) {

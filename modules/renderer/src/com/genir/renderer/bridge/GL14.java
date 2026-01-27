@@ -1,8 +1,8 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.state.Recordable;
+import com.genir.renderer.bridge.context.Recordable;
 
-import static com.genir.renderer.bridge.state.AppState.state;
+import static com.genir.renderer.bridge.context.AppState.state;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {

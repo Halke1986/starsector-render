@@ -3,7 +3,7 @@ package com.genir.renderer.overrides;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.bridge.state.AppState.state;
+import static com.genir.renderer.bridge.context.AppState.state;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;

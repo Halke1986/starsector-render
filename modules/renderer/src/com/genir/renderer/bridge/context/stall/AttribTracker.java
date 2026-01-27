@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.state.stall;
+package com.genir.renderer.bridge.context.stall;
 
 import java.util.Stack;
 

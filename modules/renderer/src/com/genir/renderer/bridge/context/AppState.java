@@ -1,6 +1,6 @@
-package com.genir.renderer.bridge.state;
+package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.state.stall.*;
+import com.genir.renderer.bridge.context.stall.*;
 
 public class AppState {
     public static final AppState state = new AppState();

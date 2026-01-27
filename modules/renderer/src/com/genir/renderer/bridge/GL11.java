@@ -1,9 +1,9 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.state.BufferUtil;
-import com.genir.renderer.bridge.state.ClientAttribTracker;
-import com.genir.renderer.bridge.state.Recordable;
-import com.genir.renderer.bridge.state.stall.AttribState;
+import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.ClientAttribTracker;
+import com.genir.renderer.bridge.context.Recordable;
+import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -13,8 +13,8 @@ import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
-import static com.genir.renderer.bridge.state.AppState.state;
-import static com.genir.renderer.bridge.state.BufferUtil.putIfPossible;
+import static com.genir.renderer.bridge.context.AppState.state;
+import static com.genir.renderer.bridge.context.BufferUtil.putIfPossible;
 
 public class GL11 {
     /**

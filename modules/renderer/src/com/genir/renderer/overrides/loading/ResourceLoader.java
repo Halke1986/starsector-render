@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.Display;
-import com.genir.renderer.bridge.state.AppState;
+import com.genir.renderer.bridge.context.AppState;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.starfarer.loading.SpecStore;

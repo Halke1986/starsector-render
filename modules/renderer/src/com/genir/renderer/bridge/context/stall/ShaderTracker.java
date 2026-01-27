@@ -1,6 +1,6 @@
-package com.genir.renderer.bridge.state.stall;
+package com.genir.renderer.bridge.context.stall;
 
-import com.genir.renderer.bridge.state.Executor;
+import com.genir.renderer.bridge.context.Executor;
 import org.lwjgl.opengl.GL20;
 
 import java.util.HashMap;

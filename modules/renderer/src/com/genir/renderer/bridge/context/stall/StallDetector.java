@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.state.stall;
+package com.genir.renderer.bridge.context.stall;
 
 public class StallDetector {
     static final int STALL_FRAMES = 60;

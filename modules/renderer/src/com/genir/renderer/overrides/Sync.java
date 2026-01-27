@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.genir.renderer.bridge.Display;
-import com.genir.renderer.bridge.state.Profiler;
+import com.genir.renderer.bridge.context.Profiler;
 import proxy.com.fs.starfarer.settings.StarfarerSettings;
 
 public class Sync {

@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.state;
+package com.genir.renderer.bridge.context;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;

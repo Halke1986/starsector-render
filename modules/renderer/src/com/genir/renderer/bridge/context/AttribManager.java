@@ -1,6 +1,6 @@
-package com.genir.renderer.bridge.state;
+package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.state.stall.AttribState;
+import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL40;
