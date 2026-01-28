@@ -57,7 +57,7 @@ public class GL40 {
                 context.attribManager.glBlendEquationi(buf, mode);
             }
         }
-        Context context = getContext();
+        final Context context = getContext();
         context.exec.execute(new glBlendEquationi(context, buf, mode));
     }
 
@@ -68,7 +68,7 @@ public class GL40 {
                 context.attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }
-        Context context = getContext();
+        final Context context = getContext();
         context.exec.execute(new glBlendFuncSeparatei(context, buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 

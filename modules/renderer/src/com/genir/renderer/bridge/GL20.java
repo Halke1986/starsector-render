@@ -146,8 +146,9 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glLinkProgram(program);
             }
         }
-        getContext().shaderTracker.glLinkProgram(program);
-        getContext().exec.execute(new glLinkProgram(program));
+        final Context context = getContext();
+        context.shaderTracker.glLinkProgram(program);
+        context.exec.execute(new glLinkProgram(program));
     }
 
     public static void glShaderSource(int shader, CharSequence string) {
@@ -301,7 +302,7 @@ public class GL20 {
                 }
             }
         }
-        Context context = getContext();
+        final Context context = getContext();
         context.exec.execute(new glUseProgram(context, program));
     }
 

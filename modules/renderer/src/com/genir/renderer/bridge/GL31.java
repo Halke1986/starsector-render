@@ -18,7 +18,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glDrawArraysInstanced(mode, first, count, primcount);
             }
         }
-        Context context = getContext();
+        final Context context = getContext();
         context.exec.execute(new glDrawArraysInstanced(context, mode, first, count, primcount));
     }
 
@@ -30,7 +30,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices_count, type, indices_buffer_offset, primcount);
             }
         }
-        Context context = getContext();
+        final Context context = getContext();
         context.exec.execute(new glDrawElementsInstanced(context, mode, indices_count, type, indices_buffer_offset, primcount));
     }
 
@@ -43,7 +43,7 @@ public class GL31 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
-        Context context = getContext();
+        final Context context = getContext();
         context.exec.execute(new glDrawElementsInstanced(context, mode, snapshot, primcount));
     }
 

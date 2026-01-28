@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.Context;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -49,9 +50,10 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }
-        getContext().bufferManager.glBindBuffer(target, buffer);
-        getContext().attribTracker.glBindBuffer(target, buffer);
-        getContext().exec.execute(new glBindBuffer(target, buffer));
+        final Context context = getContext();
+        context.bufferManager.glBindBuffer(target, buffer);
+        context.attribTracker.glBindBuffer(target, buffer);
+        context.exec.execute(new glBindBuffer(target, buffer));
     }
 
     public static void glBufferData(int target, long data_size, int usage) {
@@ -153,7 +155,9 @@ public class GL15 {
     }
 
     public static boolean glUnmapBuffer(int target) {
-        boolean handled = getContext().bufferManager.glUnmapBuffer(target);
+        final Context context = getContext();
+
+        boolean handled = context.bufferManager.glUnmapBuffer(target);
         if (handled) {
             return true;
         }
@@ -165,6 +169,6 @@ public class GL15 {
                 return org.lwjgl.opengl.GL15.glUnmapBuffer(target);
             }
         }
-        return getContext().exec.get(new glUnmapBuffer(target));
+        return context.exec.get(new glUnmapBuffer(target));
     }
 }

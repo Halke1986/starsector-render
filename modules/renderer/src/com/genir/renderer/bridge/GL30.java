@@ -1,6 +1,8 @@
 package com.genir.renderer.bridge;
 
 
+import com.genir.renderer.bridge.context.Context;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
@@ -75,8 +77,9 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindFramebuffer(target, framebuffer);
             }
         }
-        getContext().attribTracker.glBindFramebuffer(target, framebuffer);
-        getContext().exec.execute(new glBindFramebuffer(target, framebuffer));
+        final Context context = getContext();
+        context.attribTracker.glBindFramebuffer(target, framebuffer);
+        context.exec.execute(new glBindFramebuffer(target, framebuffer));
     }
 
     public static void glDeleteFramebuffers(int framebuffer) {
@@ -126,8 +129,9 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindVertexArray(array);
             }
         }
-        getContext().attribTracker.glBindVertexArray(array);
-        getContext().exec.execute(new glBindVertexArray(array));
+        final Context context = getContext();
+        context.attribTracker.glBindVertexArray(array);
+        context.exec.execute(new glBindVertexArray(array));
     }
 
     public static void glDeleteVertexArrays(int array) {
@@ -155,8 +159,10 @@ public class GL30 {
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
+        final Context context = getContext();
+
         try {
-            ByteBuffer range = getContext().bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
+            ByteBuffer range = context.bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
             if (range != null) {
                 return range;
             }
@@ -171,7 +177,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer);
             }
         }
-        return getContext().exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
+        return context.exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
     }
 
     public static int glGetInteger(int value, int index) {
