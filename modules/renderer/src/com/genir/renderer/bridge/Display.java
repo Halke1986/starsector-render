@@ -152,29 +152,6 @@ public class Display {
         getContext().exec.wait(new setVSyncEnabled(sync));
     }
 
-    public static int getHeight() {
-        return getContext().glStateCache.getDisplayHeight();
-    }
-
-    public static int getWidth() {
-        return getContext().glStateCache.getDisplayWidth();
-    }
-
-    public static float getPixelScaleFactor() {
-        return getContext().glStateCache.getDisplayPixelScaleFactor();
-    }
-
-    public static boolean isCloseRequested() {
-        return getContext().glStateCache.getDisplayIsCloseRequested();
-    }
-
-    public static boolean isActive() {
-        return getContext().glStateCache.getDisplayIsActive();
-    }
-
-    public static boolean isFullscreen() {
-        return getContext().glStateCache.getDisplayIsFullscreen();
-    }
 
     public static void setFullscreen(boolean fullscreen) {
         record setFullscreen(boolean fullscreen) implements Runnable {
@@ -191,9 +168,6 @@ public class Display {
         ContextManager.updateSynchronous();
     }
 
-    public static boolean isVisible() {
-        return getContext().glStateCache.getDisplayIsVisible();
-    }
 
     public static void processMessages() {
         record processMessages() implements Runnable {
@@ -216,13 +190,6 @@ public class Display {
         getContext().exec.execute(new sync(fps));
     }
 
-    public static int getX() {
-        return getContext().glStateCache.getDisplayX();
-    }
-
-    public static int getY() {
-        return getContext().glStateCache.getDisplayY();
-    }
 
     public static Drawable getDrawable() {
         record getDrawable() implements Callable<Drawable> {
@@ -232,5 +199,44 @@ public class Display {
             }
         }
         return getContext().exec.get(new getDrawable());
+    }
+
+    //**********************************************************************
+    // Following methods do not need to be called from OpenGl context proxy.
+
+    public static int getX() {
+        return org.lwjgl.opengl.Display.getX();
+    }
+
+    public static int getY() {
+        return org.lwjgl.opengl.Display.getY();
+    }
+
+    public static int getHeight() {
+        return org.lwjgl.opengl.Display.getHeight();
+    }
+
+    public static int getWidth() {
+        return org.lwjgl.opengl.Display.getWidth();
+    }
+
+    public static float getPixelScaleFactor() {
+        return org.lwjgl.opengl.Display.getPixelScaleFactor();
+    }
+
+    public static boolean isCloseRequested() {
+        return org.lwjgl.opengl.Display.isCloseRequested();
+    }
+
+    public static boolean isActive() {
+        return org.lwjgl.opengl.Display.isActive();
+    }
+
+    public static boolean isFullscreen() {
+        return org.lwjgl.opengl.Display.isFullscreen();
+    }
+
+    public static boolean isVisible() {
+        return org.lwjgl.opengl.Display.isVisible();
     }
 }
