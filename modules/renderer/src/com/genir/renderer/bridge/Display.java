@@ -32,7 +32,7 @@ public class Display {
         ProgressBar.clear();
         ContextManager.createContext();
         getContext().exec.execute(new create(pixel_format));
-        swapFrames();
+        ContextManager.updateSynchronous();
     }
 
     public static void destroy() {
@@ -47,8 +47,7 @@ public class Display {
     }
 
     private static void swapFrames() {
-        ContextManager.updateAll();
-
+        ContextManager.updateAsynchronous();
         Profiler.profiler.update();
     }
 
@@ -189,7 +188,7 @@ public class Display {
             }
         }
         getContext().exec.execute(new setFullscreen(fullscreen));
-        swapFrames();
+        ContextManager.updateSynchronous();
     }
 
     public static boolean isVisible() {
@@ -204,7 +203,7 @@ public class Display {
             }
         }
         getContext().exec.execute(new processMessages());
-        swapFrames();
+        ContextManager.updateAsynchronous();
     }
 
     public static void sync(int fps) {

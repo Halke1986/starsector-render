@@ -43,16 +43,12 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        stallDetector.detectStall();
-
-        waitPrivileged(command);
-    }
-
-    public void waitPrivileged(Runnable command) {
         long start = System.nanoTime();
 
+        stallDetector.detectStall();
+
         execute(command);
-        swapFrames();
+        flush();
 
         FrameResult currFrameResult;
         try {
@@ -82,7 +78,7 @@ public class Executor {
     /**
      * Execute queued commands.
      */
-    private void swapFrames() {
+    public void flush() {
         // Wait for the previous frame.
         FrameResult prevFrameResult = waitForFrame(this.executedFrameFuture);
 

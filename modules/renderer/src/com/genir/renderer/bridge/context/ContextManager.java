@@ -52,9 +52,21 @@ public class ContextManager {
         getContext().active = false;
     }
 
-    public static void updateAll() {
+    /**
+     * Execute commands queued on all contexts and wait for the result.
+     */
+    public static void updateSynchronous() {
         for (Context context : contextMap.values()) {
-            context.update();
+            context.updateSynchronous();
+        }
+    }
+
+    /**
+     * Execute commands queued on all contexts and do not wait for the result.
+     */
+    public static void updateAsynchronous() {
+        for (Context context : contextMap.values()) {
+            context.updateAsynchronous();
         }
     }
 }
