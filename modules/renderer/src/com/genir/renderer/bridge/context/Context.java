@@ -3,6 +3,7 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.stall.*;
 
 public class Context {
+    // Is this Context object representing an active OpenGL context.
     public boolean active = false;
 
     // Server state. Runs on rendering thread.
@@ -29,7 +30,8 @@ public class Context {
         record update(Context context) implements Runnable {
             @Override
             public void run() {
-                if (context.active && org.lwjgl.opengl.Display.isCreated()) {
+                if (org.lwjgl.opengl.Display.isCreated()) {
+                    context.stallDetector.update();
                     context.glStateCache.update();
                     context.vertexInterceptor.update();
                     context.texGenerator.update();
@@ -39,6 +41,8 @@ public class Context {
             }
         }
 
-        exec.wait(new update(this));
+        if (this.active) {
+            exec.waitPrivileged(new update(this));
+        }
     }
 }

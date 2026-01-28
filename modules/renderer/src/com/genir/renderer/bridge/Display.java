@@ -30,9 +30,9 @@ public class Display {
         }
 
         ProgressBar.clear();
-        ContextManager.create();
-        getContext().exec.wait(new create(pixel_format));
-        updateState();
+        ContextManager.createContext();
+        getContext().exec.execute(new create(pixel_format));
+        swapFrames();
     }
 
     public static void destroy() {
@@ -46,20 +46,13 @@ public class Display {
         ContextManager.destroy();
     }
 
-    private static void updateState() {
+    private static void swapFrames() {
         ContextManager.updateAll();
 
         Profiler.profiler.update();
     }
 
     public static void update(boolean processMessages) {
-        getContext().stallDetector.update();
-
-        // Swap OpenGL buffers and update the bridge context.
-        // Ideally, these would run on the render thread synchronously
-        // to avoid concurrency issues. However, profiling showed a ~5%
-        // performance penalty from lock contention when blocking.
-        // To avoid this, the update is executed asynchronously.
         record update(boolean processMessages) implements Runnable {
             @Override
             public void run() {
@@ -68,7 +61,7 @@ public class Display {
         }
 
         getContext().exec.execute(new update(processMessages));
-        updateState();
+        swapFrames();
     }
 
     public static void update() {
@@ -195,8 +188,8 @@ public class Display {
                 }
             }
         }
-        getContext().exec.wait(new setFullscreen(fullscreen));
-        updateState();
+        getContext().exec.execute(new setFullscreen(fullscreen));
+        swapFrames();
     }
 
     public static boolean isVisible() {
@@ -210,8 +203,8 @@ public class Display {
                 org.lwjgl.opengl.Display.processMessages();
             }
         }
-        getContext().exec.wait(new processMessages());
-        updateState();
+        getContext().exec.execute(new processMessages());
+        swapFrames();
     }
 
     public static void sync(int fps) {

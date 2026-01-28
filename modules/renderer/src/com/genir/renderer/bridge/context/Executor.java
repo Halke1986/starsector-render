@@ -43,9 +43,13 @@ public class Executor {
      * This method stalls the concurrent pipeline.
      */
     public void wait(Runnable command) {
-        long start = System.nanoTime();
-
         stallDetector.detectStall();
+
+        waitPrivileged(command);
+    }
+
+    public void waitPrivileged(Runnable command) {
+        long start = System.nanoTime();
 
         execute(command);
         swapFrames();

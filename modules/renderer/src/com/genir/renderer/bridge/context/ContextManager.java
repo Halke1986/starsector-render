@@ -27,7 +27,7 @@ public class ContextManager {
         return contextMap.computeIfAbsent(Thread.currentThread(), t -> new Context());
     }
 
-    public static void create() {
+    public static void createContext() {
         Context context = getContext();
 
         context.active = true;
