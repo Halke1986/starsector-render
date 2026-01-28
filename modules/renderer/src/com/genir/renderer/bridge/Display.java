@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
@@ -11,7 +12,7 @@ import org.lwjgl.opengl.PixelFormat;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 import static com.genir.renderer.debug.Debug.log;
 
 public class Display {
@@ -35,7 +36,7 @@ public class Display {
         }
 
         ProgressBar.clear();
-        Context.create();
+        ContextManager.create();
         context.exec.wait(new create(pixel_format));
     }
 
@@ -47,7 +48,7 @@ public class Display {
             }
         }
         context.exec.wait(new destroy());
-        Context.destroy();
+        ContextManager.destroy();
     }
 
     private static void updateState() {

@@ -6,7 +6,7 @@ import com.genir.renderer.bridge.context.BufferUtil;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL31 {
     public static void glDrawArraysInstanced(int mode, int first, int count, int primcount) {

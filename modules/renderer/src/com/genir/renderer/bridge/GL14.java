@@ -2,7 +2,7 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Recordable;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {

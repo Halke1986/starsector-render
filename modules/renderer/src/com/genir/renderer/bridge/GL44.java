@@ -5,7 +5,7 @@ import com.genir.renderer.bridge.context.BufferUtil;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL44 {
     public static void glBufferStorage(int target, ByteBuffer data, int flags) {

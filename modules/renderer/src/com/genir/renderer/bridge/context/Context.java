@@ -2,18 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.genir.renderer.debug.Debug.asert;
-
 public class Context {
-    // Default context for running LWJGL methods when OpenGL context is not defined.
-    private static final Context backgroundContext = new Context();
-
-    private static final Map<Thread, Context> contextMap = new HashMap<>();
-    public static Context context = backgroundContext;
-
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();
     public final AttribManager attribManager = new AttribManager();
@@ -34,27 +23,18 @@ public class Context {
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
 
-    public static void create() {
-        Context newContext = new Context();
+    public void update() {
+        record update(Context context) implements Runnable {
+            @Override
+            public void run() {
+                context.glStateCache.update();
+                context.vertexInterceptor.update();
+                context.texGenerator.update();
+                context.arrayGenerator.update();
+                context.bufferGenerator.update();
+            }
+        }
 
-        contextMap.put(Thread.currentThread(), newContext);
-        context = newContext;
-    }
-
-    public static void destroy() {
-        asert(contextMap.get(Thread.currentThread()) == context);
-
-        context.exec.shutdown();
-
-        contextMap.remove(Thread.currentThread());
-        context = backgroundContext;
-    }
-
-    public void update() { // Rendering thread
-        glStateCache.update();
-        vertexInterceptor.update();
-        texGenerator.update();
-        arrayGenerator.update();
-        bufferGenerator.update();
+        exec.execute(new update(this));
     }
 }

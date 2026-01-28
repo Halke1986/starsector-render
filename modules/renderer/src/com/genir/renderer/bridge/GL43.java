@@ -6,7 +6,7 @@ import org.lwjgl.opengl.KHRDebugCallback;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL43 {
     public static int glGetProgramResourceIndex(int program, int programInterface, CharSequence name) {

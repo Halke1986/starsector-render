@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GLSync;
 
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL32 {
     public static long glGetInteger64(int pname) {

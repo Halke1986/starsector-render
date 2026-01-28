@@ -5,7 +5,7 @@ import com.genir.renderer.bridge.context.BufferUtil;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {

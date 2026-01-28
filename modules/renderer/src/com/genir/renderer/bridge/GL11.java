@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
 import static com.genir.renderer.bridge.context.BufferUtil.putIfPossible;
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL11 {
     /**

@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.bridge.context.Context.context;
+import static com.genir.renderer.bridge.context.ContextManager.context;
 
 public class GL42 {
     public static void glMemoryBarrier(int barriers) {
