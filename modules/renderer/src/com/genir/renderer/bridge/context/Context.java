@@ -3,6 +3,8 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.stall.*;
 
 public class Context {
+    public boolean active = false;
+
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();
     public final AttribManager attribManager = new AttribManager();
@@ -27,11 +29,13 @@ public class Context {
         record update(Context context) implements Runnable {
             @Override
             public void run() {
-                context.glStateCache.update();
-                context.vertexInterceptor.update();
-                context.texGenerator.update();
-                context.arrayGenerator.update();
-                context.bufferGenerator.update();
+                if (context.active && org.lwjgl.opengl.Display.isCreated()) {
+                    context.glStateCache.update();
+                    context.vertexInterceptor.update();
+                    context.texGenerator.update();
+                    context.arrayGenerator.update();
+                    context.bufferGenerator.update();
+                }
             }
         }
 

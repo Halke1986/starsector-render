@@ -1,35 +1,43 @@
 package com.genir.renderer.bridge.context;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static com.genir.renderer.debug.Debug.asert;
-
+/**
+ * ContextManager manages virtual OpenGL contexts.
+ * Each non-context thread should have a separate context enabled,
+ * even if OpenGL context was not created explicitly. This is to
+ * allow executing LWJGL commands at all times.
+ */
 public class ContextManager {
-    // Default context for running LWJGL methods when OpenGL context is not defined.
-    private static final Context backgroundContext = new Context();
+    private static final Map<Thread, Context> contextMap = new ConcurrentHashMap<>();
 
-    private static final Map<Thread, Context> contextMap = new HashMap<>();
-    private static Context context = backgroundContext;
+    private static Context mainContext = new Context();
+    private static Thread mainThread = Thread.currentThread();
+
+    static {
+        contextMap.put(mainThread, mainContext);
+    }
 
     public static Context getContext() {
-        return context;
+        if (Thread.currentThread() == mainThread) {
+            return mainContext;
+        }
+
+        return contextMap.computeIfAbsent(Thread.currentThread(), t -> new Context());
     }
 
     public static void create() {
-        Context newContext = new Context();
+        Context context = getContext();
 
-        contextMap.put(Thread.currentThread(), newContext);
-        context = newContext;
+        context.active = true;
+
+        mainContext = context;
+        mainThread = Thread.currentThread();
     }
 
     public static void destroy() {
-        asert(contextMap.get(Thread.currentThread()) == context);
-
-        context.exec.shutdown();
-
-        contextMap.remove(Thread.currentThread());
-        context = backgroundContext;
+        getContext().active = false;
     }
 
     public static void updateAll() {
