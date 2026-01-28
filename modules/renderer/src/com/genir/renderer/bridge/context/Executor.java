@@ -78,7 +78,7 @@ public class Executor {
     /**
      * Execute queued commands.
      */
-    public void swapFrames() {
+    private void swapFrames() {
         // Wait for the previous frame.
         FrameResult prevFrameResult = waitForFrame(this.executedFrameFuture);
 

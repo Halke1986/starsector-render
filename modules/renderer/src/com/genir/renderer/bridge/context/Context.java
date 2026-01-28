@@ -35,6 +35,6 @@ public class Context {
             }
         }
 
-        exec.execute(new update(this));
+        exec.wait(new update(this));
     }
 }

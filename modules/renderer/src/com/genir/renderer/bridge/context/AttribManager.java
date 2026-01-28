@@ -13,11 +13,11 @@ import java.util.Stack;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
-    private AttribState expected = new AttribState();
-    private AttribState actual = new AttribState();
+    private final AttribState expected = new AttribState();
+    private final AttribState actual = new AttribState();
 
-    private Stack<AttribState.Snapshot> expectedStack = new Stack<>();
-    private Stack<AttribState.Snapshot> actualStack = new Stack<>();
+    private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
+    private final Stack<AttribState.Snapshot> actualStack = new Stack<>();
 
     public boolean interceptEnable(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
@@ -125,14 +125,6 @@ public class AttribManager {
 
             GL11.glMatrixMode(mode);
         }
-    }
-
-    public void clear() {
-        expected = new AttribState();
-        actual = new AttribState();
-
-        expectedStack = new Stack<>();
-        actualStack = new Stack<>();
     }
 
     public void glEnable(int cap) {

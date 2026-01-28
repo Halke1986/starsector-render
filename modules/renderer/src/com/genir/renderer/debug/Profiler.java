@@ -18,6 +18,10 @@ public class Profiler {
     private boolean wasKeyPressed = false;
 
     public void update() {
+        if (!org.lwjgl.input.Keyboard.isCreated()) {
+            return;
+        }
+
         boolean isKeyPressed = isKeyPressed();
         boolean isActionPerformed = isKeyPressed && !wasKeyPressed;
         wasKeyPressed = isKeyPressed;

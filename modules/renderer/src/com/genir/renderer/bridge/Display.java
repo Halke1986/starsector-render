@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.overrides.ProgressBar;
@@ -22,11 +21,6 @@ public class Display {
             public void run() {
                 try {
                     org.lwjgl.opengl.Display.create(pixel_format);
-
-                    // Clear server attributes when a new display is created.
-                    context.attribManager.clear();
-
-                    updateState();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {
@@ -38,6 +32,7 @@ public class Display {
         ProgressBar.clear();
         ContextManager.create();
         context.exec.wait(new create(pixel_format));
+        updateState();
     }
 
     public static void destroy() {
@@ -52,11 +47,7 @@ public class Display {
     }
 
     private static void updateState() {
-        if (!org.lwjgl.opengl.Display.isCreated()) {
-            return;
-        }
-
-        context.update();
+        ContextManager.updateAll();
 
         Profiler.profiler.update();
     }
@@ -73,12 +64,11 @@ public class Display {
             @Override
             public void run() {
                 org.lwjgl.opengl.Display.update(processMessages);
-                updateState();
             }
         }
 
         context.exec.execute(new update(processMessages));
-        context.exec.swapFrames();
+        updateState();
     }
 
     public static void update() {
@@ -200,13 +190,13 @@ public class Display {
             public void run() {
                 try {
                     org.lwjgl.opengl.Display.setFullscreen(fullscreen);
-                    updateState();
                 } catch (LWJGLException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
         context.exec.wait(new setFullscreen(fullscreen));
+        updateState();
     }
 
     public static boolean isVisible() {
@@ -218,10 +208,10 @@ public class Display {
             @Override
             public void run() {
                 org.lwjgl.opengl.Display.processMessages();
-                updateState();
             }
         }
         context.exec.wait(new processMessages());
+        updateState();
     }
 
     public static void sync(int fps) {
