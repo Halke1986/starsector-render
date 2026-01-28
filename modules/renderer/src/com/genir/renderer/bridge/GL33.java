@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL33 {
     public static void glVertexAttribDivisor(int index, int divisor) {
@@ -10,6 +10,6 @@ public class GL33 {
                 org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor);
             }
         }
-        context.exec.execute(new glVertexAttribDivisor(index, divisor));
+        getContext().exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }

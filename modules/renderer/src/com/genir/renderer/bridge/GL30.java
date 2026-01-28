@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL30 {
     public static void glGenerateMipmap(int target) {
@@ -15,7 +15,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glGenerateMipmap(target);
             }
         }
-        context.exec.execute(new glGenerateMipmap(target));
+        getContext().exec.execute(new glGenerateMipmap(target));
     }
 
     public static void glGenRenderbuffers(IntBuffer renderbuffers) {
@@ -25,7 +25,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glGenRenderbuffers(renderbuffers);
             }
         }
-        context.exec.wait(new glGenRenderbuffers(renderbuffers));
+        getContext().exec.wait(new glGenRenderbuffers(renderbuffers));
     }
 
     public static int glGenRenderbuffers() {
@@ -35,7 +35,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glGenRenderbuffers();
             }
         }
-        return context.exec.get(new glGenRenderbuffers());
+        return getContext().exec.get(new glGenRenderbuffers());
     }
 
     public static void glBindRenderbuffer(int target, int renderbuffer) {
@@ -45,7 +45,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindRenderbuffer(target, renderbuffer);
             }
         }
-        context.exec.execute(new glBindRenderbuffer(target, renderbuffer));
+        getContext().exec.execute(new glBindRenderbuffer(target, renderbuffer));
     }
 
     public static void glRenderbufferStorage(int target, int internalformat, int width, int height) {
@@ -55,7 +55,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glRenderbufferStorage(target, internalformat, width, height);
             }
         }
-        context.exec.execute(new glRenderbufferStorage(target, internalformat, width, height));
+        getContext().exec.execute(new glRenderbufferStorage(target, internalformat, width, height));
     }
 
     public static int glGenFramebuffers() {
@@ -65,7 +65,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glGenFramebuffers();
             }
         }
-        return context.exec.get(new glGenFramebuffers());
+        return getContext().exec.get(new glGenFramebuffers());
     }
 
     public static void glBindFramebuffer(int target, int framebuffer) {
@@ -75,8 +75,8 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindFramebuffer(target, framebuffer);
             }
         }
-        context.attribTracker.glBindFramebuffer(target, framebuffer);
-        context.exec.execute(new glBindFramebuffer(target, framebuffer));
+        getContext().attribTracker.glBindFramebuffer(target, framebuffer);
+        getContext().exec.execute(new glBindFramebuffer(target, framebuffer));
     }
 
     public static void glDeleteFramebuffers(int framebuffer) {
@@ -86,7 +86,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glDeleteFramebuffers(framebuffer);
             }
         }
-        context.exec.execute(new glDeleteFramebuffers(framebuffer));
+        getContext().exec.execute(new glDeleteFramebuffers(framebuffer));
     }
 
     public static void glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
@@ -96,7 +96,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glFramebufferTexture2D(target, attachment, textarget, texture, level);
             }
         }
-        context.exec.execute(new glFramebufferTexture2D(target, attachment, textarget, texture, level));
+        getContext().exec.execute(new glFramebufferTexture2D(target, attachment, textarget, texture, level));
     }
 
     public static void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
@@ -106,7 +106,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
             }
         }
-        context.exec.execute(new glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer));
+        getContext().exec.execute(new glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer));
     }
 
     public static int glCheckFramebufferStatus(int target) {
@@ -116,7 +116,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glCheckFramebufferStatus(target);
             }
         }
-        return context.exec.get(new glCheckFramebufferStatus(target));
+        return getContext().exec.get(new glCheckFramebufferStatus(target));
     }
 
     public static void glBindVertexArray(int array) {
@@ -126,8 +126,8 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindVertexArray(array);
             }
         }
-        context.attribTracker.glBindVertexArray(array);
-        context.exec.execute(new glBindVertexArray(array));
+        getContext().attribTracker.glBindVertexArray(array);
+        getContext().exec.execute(new glBindVertexArray(array));
     }
 
     public static void glDeleteVertexArrays(int array) {
@@ -137,11 +137,11 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glDeleteVertexArrays(array);
             }
         }
-        context.exec.execute(new glDeleteVertexArrays(array));
+        getContext().exec.execute(new glDeleteVertexArrays(array));
     }
 
     public static int glGenVertexArrays() {
-        return context.arrayGenerator.get();
+        return getContext().arrayGenerator.get();
     }
 
     public static void glBindBufferBase(int target, int index, int buffer) {
@@ -151,12 +151,12 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindBufferBase(target, index, buffer);
             }
         }
-        context.exec.execute(new glBindBufferBase(target, index, buffer));
+        getContext().exec.execute(new glBindBufferBase(target, index, buffer));
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
         try {
-            ByteBuffer range = context.bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
+            ByteBuffer range = getContext().bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
             if (range != null) {
                 return range;
             }
@@ -171,7 +171,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer);
             }
         }
-        return context.exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
+        return getContext().exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
     }
 
     public static int glGetInteger(int value, int index) {
@@ -181,7 +181,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glGetInteger(value, index);
             }
         }
-        return context.exec.get(new glGetInteger(value, index));
+        return getContext().exec.get(new glGetInteger(value, index));
     }
 
     public static void glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
@@ -191,7 +191,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
             }
         }
-        context.exec.execute(new glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
+        getContext().exec.execute(new glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
     }
 
     public static void glDeleteRenderbuffers(int renderbuffer) {
@@ -201,7 +201,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glDeleteRenderbuffers(renderbuffer);
             }
         }
-        context.exec.execute(new glDeleteRenderbuffers(renderbuffer));
+        getContext().exec.execute(new glDeleteRenderbuffers(renderbuffer));
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) {
@@ -211,7 +211,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset);
             }
         }
-        context.exec.execute(new glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset));
+        getContext().exec.execute(new glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset));
     }
 
     public static void glUniform1ui(int location, int v0) {
@@ -221,7 +221,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glUniform1ui(location, v0);
             }
         }
-        context.exec.execute(new glUniform1ui(location, v0));
+        getContext().exec.execute(new glUniform1ui(location, v0));
     }
 
     public static void glUniform2ui(int location, int v0, int v1) {
@@ -231,7 +231,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glUniform2ui(location, v0, v1);
             }
         }
-        context.exec.execute(new glUniform2ui(location, v0, v1));
+        getContext().exec.execute(new glUniform2ui(location, v0, v1));
     }
 
     public static void glUniform3ui(int location, int v0, int v1, int v2) {
@@ -241,6 +241,6 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glUniform3ui(location, v0, v1, v2);
             }
         }
-        context.exec.execute(new glUniform3ui(location, v0, v1, v2));
+        getContext().exec.execute(new glUniform3ui(location, v0, v1, v2));
     }
 }

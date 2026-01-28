@@ -6,7 +6,7 @@ import org.lwjgl.opengl.KHRDebugCallback;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL43 {
     public static int glGetProgramResourceIndex(int program, int programInterface, CharSequence name) {
@@ -16,7 +16,7 @@ public class GL43 {
                 return org.lwjgl.opengl.GL43.glGetProgramResourceIndex(program, programInterface, name);
             }
         }
-        return context.exec.get(new glGetProgramResourceIndex(program, programInterface, name));
+        return getContext().exec.get(new glGetProgramResourceIndex(program, programInterface, name));
     }
 
     public static void glShaderStorageBlockBinding(int program, int storageBlockIndex, int storageBlockBinding) {
@@ -26,7 +26,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
             }
         }
-        context.exec.execute(new glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding));
+        getContext().exec.execute(new glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding));
     }
 
     public static void glDispatchCompute(int num_groups_x, int num_groups_y, int num_groups_z) {
@@ -36,7 +36,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
             }
         }
-        context.exec.execute(new glDispatchCompute(num_groups_x, num_groups_y, num_groups_z));
+        getContext().exec.execute(new glDispatchCompute(num_groups_x, num_groups_y, num_groups_z));
     }
 
     public static void glDebugMessageCallback(KHRDebugCallback callback) {
@@ -46,7 +46,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glDebugMessageCallback(callback);
             }
         }
-        context.exec.execute(new glDebugMessageCallback(callback));
+        getContext().exec.execute(new glDebugMessageCallback(callback));
     }
 
     public static void glDebugMessageControl(int source, int type, int severity, IntBuffer ids, boolean enabled) {
@@ -57,7 +57,7 @@ public class GL43 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(ids);
-        context.exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
+        getContext().exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
     }
 
     public static void glInvalidateBufferData(int buffer) {
@@ -67,6 +67,6 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glInvalidateBufferData(buffer);
             }
         }
-        context.exec.execute(new glInvalidateBufferData(buffer));
+        getContext().exec.execute(new glInvalidateBufferData(buffer));
     }
 }

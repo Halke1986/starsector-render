@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
@@ -65,7 +65,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                     r.run();
                 }
 
-                if (context.exec.isIdle()) {
+                if (getContext().exec.isIdle()) {
                     state.renderProgress(0);
                     Display.update(true);
                 }

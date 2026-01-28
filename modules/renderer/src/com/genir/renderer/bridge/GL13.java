@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL13 {
     public static void glActiveTexture(int mode) {
@@ -11,7 +11,7 @@ public class GL13 {
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }
-        context.attribTracker.glActiveTexture(mode);
-        context.exec.execute(new glActiveTexture(mode));
+        getContext().attribTracker.glActiveTexture(mode);
+        getContext().exec.execute(new glActiveTexture(mode));
     }
 }

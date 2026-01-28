@@ -1,11 +1,12 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.Context;
 
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {
@@ -15,7 +16,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineIndex(program, shadertype, name);
             }
         }
-        return context.exec.get(new glGetSubroutineIndex(program, shadertype, name));
+        return getContext().exec.get(new glGetSubroutineIndex(program, shadertype, name));
     }
 
     public static int glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) {
@@ -25,7 +26,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineUniformLocation(program, shadertype, name);
             }
         }
-        return context.exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
+        return getContext().exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
     }
 
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
@@ -36,7 +37,7 @@ public class GL40 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
-        context.exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
+        getContext().exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
 
     public static void glPatchParameteri(int pname, int value) {
@@ -46,27 +47,29 @@ public class GL40 {
                 org.lwjgl.opengl.GL40.glPatchParameteri(pname, value);
             }
         }
-        context.exec.execute(new glPatchParameteri(pname, value));
+        getContext().exec.execute(new glPatchParameteri(pname, value));
     }
 
     public static void glBlendEquationi(int buf, int mode) {
-        record glBlendEquationi(int buf, int mode) implements Runnable {
+        record glBlendEquationi(Context context, int buf, int mode) implements Runnable {
             @Override
             public void run() {
                 context.attribManager.glBlendEquationi(buf, mode);
             }
         }
-        context.exec.execute(new glBlendEquationi(buf, mode));
+        Context context = getContext();
+        context.exec.execute(new glBlendEquationi(context, buf, mode));
     }
 
     public static void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
-        record glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) implements Runnable {
+        record glBlendFuncSeparatei(Context context, int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) implements Runnable {
             @Override
             public void run() {
                 context.attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }
-        context.exec.execute(new glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
+        Context context = getContext();
+        context.exec.execute(new glBlendFuncSeparatei(context, buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 
     public static void glBlendFunci(int buf, int src, int dst) {

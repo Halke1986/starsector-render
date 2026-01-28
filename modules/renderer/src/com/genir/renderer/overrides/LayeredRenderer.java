@@ -3,19 +3,22 @@ package com.genir.renderer.overrides;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
+import com.genir.renderer.bridge.context.Context;
 import proxy.com.fs.graphics.LayeredRenderable;
 import proxy.com.fs.starfarer.combat.CombatViewport;
 import proxy.com.fs.starfarer.combat.entities.CustomCombatEntity;
 
 import java.util.List;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class LayeredRenderer {
     public static void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
         if (entities == null) {
             return;
         }
+
+        final Context context = getContext();
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (isSwarm(entity)) {

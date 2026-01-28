@@ -10,7 +10,11 @@ public class ContextManager {
     private static final Context backgroundContext = new Context();
 
     private static final Map<Thread, Context> contextMap = new HashMap<>();
-    public static Context context = backgroundContext;
+    private static Context context = backgroundContext;
+
+    public static Context getContext() {
+        return context;
+    }
 
     public static void create() {
         Context newContext = new Context();

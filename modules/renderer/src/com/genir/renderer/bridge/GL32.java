@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GLSync;
 
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL32 {
     public static long glGetInteger64(int pname) {
@@ -15,7 +15,7 @@ public class GL32 {
             }
         }
 
-        return context.exec.get(new glGetInteger64(pname));
+        return getContext().exec.get(new glGetInteger64(pname));
     }
 
     public static long glGetInteger64(int value, int index) {
@@ -26,7 +26,7 @@ public class GL32 {
             }
         }
 
-        return context.exec.get(new glGetInteger64(value, index));
+        return getContext().exec.get(new glGetInteger64(value, index));
     }
 
 
@@ -38,7 +38,7 @@ public class GL32 {
             }
         }
 
-        context.exec.execute(new glDeleteSync(sync));
+        getContext().exec.execute(new glDeleteSync(sync));
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
@@ -49,7 +49,7 @@ public class GL32 {
             }
         }
 
-        return context.exec.get(new glFenceSync(condition, flags));
+        return getContext().exec.get(new glFenceSync(condition, flags));
     }
 
     public static void glWaitSync(GLSync sync, int flags, long timeout) {
@@ -60,6 +60,6 @@ public class GL32 {
             }
         }
 
-        context.exec.execute(new glWaitSync(sync, flags, timeout));
+        getContext().exec.execute(new glWaitSync(sync, flags, timeout));
     }
 }

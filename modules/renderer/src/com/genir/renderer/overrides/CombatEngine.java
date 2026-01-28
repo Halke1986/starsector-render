@@ -1,9 +1,10 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.genir.renderer.bridge.context.Context;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.bridge.context.ContextManager.context;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class CombatEngine {
     private static com.fs.starfarer.combat.CombatEngine engine;
@@ -33,7 +34,7 @@ public class CombatEngine {
         // immediately after the game finished initializing.
         if (!GameState.gameInitialized) {
             GameState.gameInitialized = true;
-            context.stallDetector.enableDetection();
+            getContext().stallDetector.enableDetection();
             FileUtils.closeFileRepository();
             unlockParticleLimit();
         }
@@ -89,10 +90,13 @@ public class CombatEngine {
     private static void renderLayer(CombatEngineLayers layer) {
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
+
+        final Context context = getContext();
         context.exec.execute(() -> context.vertexInterceptor.commitLayer());
     }
 
     private static void renderLayer(String layer) {
+        final Context context = getContext();
         context.exec.execute(() -> context.vertexInterceptor.setReorderDraw(true));
 
         switch (layer) {
