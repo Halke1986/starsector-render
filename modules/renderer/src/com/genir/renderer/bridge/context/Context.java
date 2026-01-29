@@ -26,26 +26,14 @@ public class Context {
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
 
-    public void updateSynchronous() {
-        exec.wait(new update(this));
-    }
-
-    public void updateAsynchronous() {
-        exec.execute(new update(this));
-        exec.flush();
-    }
-
-    private record update(Context context) implements Runnable {
-        @Override
-        public void run() {
-            if (context.active && org.lwjgl.opengl.Display.isCreated()) {
-                context.stallDetector.update();
-                context.glStateCache.update();
-                context.vertexInterceptor.update();
-                context.texGenerator.update();
-                context.arrayGenerator.update();
-                context.bufferGenerator.update();
-            }
+    public void update() {
+        if (active && org.lwjgl.opengl.Display.isCreated()) {
+            stallDetector.update();
+            glStateCache.update();
+            vertexInterceptor.update();
+            texGenerator.update();
+            arrayGenerator.update();
+            bufferGenerator.update();
         }
     }
 }

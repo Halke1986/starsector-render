@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.overrides.ProgressBar;
@@ -16,11 +17,12 @@ import static com.genir.renderer.debug.Debug.log;
 
 public class Display {
     public static void create(PixelFormat pixel_format) {
-        record create(PixelFormat pixel_format) implements Runnable {
+        record create(Context context, PixelFormat pixel_format) implements Runnable {
             @Override
             public void run() {
                 try {
                     org.lwjgl.opengl.Display.create(pixel_format);
+                    context.update();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {
@@ -31,8 +33,8 @@ public class Display {
 
         ProgressBar.clear();
         ContextManager.createContext();
-        getContext().exec.execute(new create(pixel_format));
-        ContextManager.updateSynchronous();
+        final Context context = getContext();
+        getContext().exec.wait(new create(context, pixel_format));
     }
 
     public static void destroy() {
@@ -46,21 +48,20 @@ public class Display {
         ContextManager.destroy();
     }
 
-    private static void swapFrames() {
-        ContextManager.updateAsynchronous();
-        Profiler.profiler.update();
-    }
-
     public static void update(boolean processMessages) {
-        record update(boolean processMessages) implements Runnable {
+        record update(Context context, boolean processMessages) implements Runnable {
             @Override
             public void run() {
+                context.update();
                 org.lwjgl.opengl.Display.update(processMessages);
             }
         }
 
-        getContext().exec.execute(new update(processMessages));
-        swapFrames();
+        final Context context = getContext();
+        context.exec.execute(new update(context, processMessages));
+        context.exec.swapFrames();
+
+        Profiler.profiler.update();
     }
 
     public static void update() {
@@ -154,30 +155,33 @@ public class Display {
 
 
     public static void setFullscreen(boolean fullscreen) {
-        record setFullscreen(boolean fullscreen) implements Runnable {
+        record setFullscreen(Context context, boolean fullscreen) implements Runnable {
             @Override
             public void run() {
                 try {
                     org.lwjgl.opengl.Display.setFullscreen(fullscreen);
+                    context.update();
                 } catch (LWJGLException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        getContext().exec.execute(new setFullscreen(fullscreen));
-        ContextManager.updateSynchronous();
+        final Context context = getContext();
+        context.exec.wait(new setFullscreen(context, fullscreen));
     }
 
 
     public static void processMessages() {
-        record processMessages() implements Runnable {
+        record processMessages(Context context) implements Runnable {
             @Override
             public void run() {
+                context.update();
                 org.lwjgl.opengl.Display.processMessages();
             }
         }
-        getContext().exec.execute(new processMessages());
-        ContextManager.updateAsynchronous();
+        final Context context = getContext();
+        context.exec.execute(new processMessages(context));
+        context.exec.swapFrames();
     }
 
     public static void sync(int fps) {

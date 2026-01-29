@@ -48,7 +48,7 @@ public class Executor {
         stallDetector.detectStall();
 
         execute(command);
-        flush();
+        swapFrames();
 
         FrameResult currFrameResult;
         try {
@@ -78,7 +78,7 @@ public class Executor {
     /**
      * Execute queued commands.
      */
-    public void flush() {
+    public void swapFrames() {
         // Wait for the previous frame.
         FrameResult prevFrameResult = waitForFrame(this.executedFrameFuture);
 

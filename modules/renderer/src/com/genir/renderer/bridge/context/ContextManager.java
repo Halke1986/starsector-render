@@ -51,22 +51,4 @@ public class ContextManager {
         // after destroying the OpenGL context.
         getContext().active = false;
     }
-
-    /**
-     * Execute commands queued on all contexts and wait for the result.
-     */
-    public static void updateSynchronous() {
-        for (Context context : contextMap.values()) {
-            context.updateSynchronous();
-        }
-    }
-
-    /**
-     * Execute commands queued on all contexts and do not wait for the result.
-     */
-    public static void updateAsynchronous() {
-        for (Context context : contextMap.values()) {
-            context.updateAsynchronous();
-        }
-    }
 }
