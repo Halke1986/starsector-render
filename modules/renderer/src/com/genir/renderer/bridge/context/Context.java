@@ -14,7 +14,7 @@ public class Context {
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
-    public final Executor exec = new Executor(listManager, stallDetector);
+    public final Executor exec = new Executor(stallDetector);
     public final StateCache glStateCache = new StateCache();
 
     // Client state. Runs on main thread.

@@ -7,7 +7,6 @@ import com.genir.renderer.debug.Profiler;
 import java.util.concurrent.*;
 
 public class Executor {
-    private final ListManager listManager;
     private final StallDetector stallDetector;
 
     private Runnable[] currentFrame = new Runnable[1];
@@ -16,8 +15,7 @@ public class Executor {
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
-    public Executor(ListManager listManager, StallDetector stallDetector) {
-        this.listManager = listManager;
+    public Executor(StallDetector stallDetector) {
         this.stallDetector = stallDetector;
     }
 
@@ -106,15 +104,10 @@ public class Executor {
                 Runnable command = commands[i];
                 commands[i] = null;
 
-                if (command instanceof Recordable && listManager.isRecording()) {
-                    // Record the command instead of running it immediately.
-                    listManager.record(command);
-                } else {
-                    try {
-                        command.run();
-                    } catch (Throwable t) {
-                        throw new RuntimeException(command.toString(), t);
-                    }
+                try {
+                    command.run();
+                } catch (Throwable t) {
+                    throw new RuntimeException(command.toString(), t);
                 }
             }
 
