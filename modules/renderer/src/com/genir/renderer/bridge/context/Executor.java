@@ -1,19 +1,14 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.stall.StallDetector;
 import com.genir.renderer.debug.Profiler;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-public class Executor {
+public class Executor extends ExecutorCore {
     private final StallDetector stallDetector;
-
-    private Runnable[] currentFrame = new Runnable[1];
-    private int frameSize = 0;
-    private Future<FrameResult> executedFrameFuture = CompletableFuture.completedFuture(new FrameResult(new Runnable[1], null));
-
-    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
     public Executor(StallDetector stallDetector) {
         this.stallDetector = stallDetector;
@@ -48,114 +43,27 @@ public class Executor {
         execute(command);
         swapFrames();
 
-        FrameResult currFrameResult;
         try {
-            currFrameResult = waitForFrame(executedFrameFuture);
-            rethrowAsRuntimeException(currFrameResult.caught);
+            waitForFrame(lastFrameFuture);
+            rethrowLast();
         } finally {
             Profiler.profiler.frame.markStall(start);
         }
     }
 
-    /**
-     * Queue command for execution.
-     */
-    public void execute(Runnable command) {
-        if (command == null) {
-            return;
-        }
+    public void swapFramesAndSync() {
+        Future<?> prevFrameFuture = lastFrameFuture;
 
-        if (currentFrame.length <= frameSize) {
-            currentFrame = BufferUtil.reallocate(Runnable.class, currentFrame.length * 2, currentFrame);
-        }
+        swapFrames();
 
-        currentFrame[frameSize] = command;
-        frameSize++;
+        waitForFrame(prevFrameFuture);
     }
 
-    /**
-     * Execute queued commands.
-     */
-    public void swapFrames() {
-        // Wait for the previous frame.
-        FrameResult prevFrameResult = waitForFrame(this.executedFrameFuture);
-
-        // If previous frame failed, do not execute the current one.
-        // This is because the producer composed the frame without
-        // learning the previous one failed.
-        if (prevFrameResult.caught != null) {
-            cleanBuffer(this.currentFrame);
-        }
-
-        final Runnable[] currentFrame = this.currentFrame;
-        this.executedFrameFuture = execActual.submit(() -> executeCommands(currentFrame));
-        this.currentFrame = prevFrameResult.commands; // Reuse command buffer.
-        this.frameSize = 0;
-
-        rethrowAsRuntimeException(prevFrameResult.caught);
-    }
-
-    private FrameResult executeCommands(Runnable[] commands) {
-        long start = System.nanoTime();
-
+    private void waitForFrame(Future<?> future) {
         try {
-            // Run all scheduled commands.
-            for (int i = 0; i < commands.length && commands[i] != null; i++) {
-                Runnable command = commands[i];
-                commands[i] = null;
-
-                try {
-                    command.run();
-                } catch (Throwable t) {
-                    throw new RuntimeException(command.toString(), t);
-                }
-            }
-
-            return new FrameResult(commands, null);
-        } catch (Throwable t) {
-            cleanBuffer(commands);
-
-            return new FrameResult(commands, t);
-        } finally {
-            Profiler.profiler.frame.markRenderWork(start);
-        }
-    }
-
-    public void shutdown() {
-        execActual.shutdown();
-    }
-
-    /**
-     * Returns true if no commands are being executed.
-     */
-    public boolean isIdle() {
-        return executedFrameFuture.isDone();
-    }
-
-    private FrameResult waitForFrame(Future<FrameResult> resultFuture) {
-        try {
-            return resultFuture.get();
+            future.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void rethrowAsRuntimeException(Throwable t) {
-        if (t == null) {
-            return;
-        } else if (t instanceof RuntimeException e) {
-            throw e;
-        } else {
-            throw new RuntimeException(t);
-        }
-    }
-
-    private void cleanBuffer(Runnable[] commands) {
-        for (int i = 0; i < commands.length; i++) {
-            commands[i] = null;
-        }
-    }
-
-    private static record FrameResult(Runnable[] commands, Throwable caught) {
     }
 }
