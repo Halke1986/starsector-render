@@ -24,6 +24,8 @@ public class ScriptTransformations {
             newTransform("org/lwjgl/opengl/GL44", "com/genir/renderer/bridge/GL44"),
             newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/Display"),
             newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
+            newTransform("org/lwjgl/opengl/GLSync", "com/genir/renderer/bridge/GLSync"),
+            newTransform("org/lwjgl/opengl/SharedDrawable", "com/genir/renderer/bridge/SharedDrawable"),
 
             // Replace URLClassLoader with this implementation, to support mods that use custom class loaders to bypass reflection ban.
             newTransform("java/net/URLClassLoader", "com/genir/renderer/loaders/ScriptClassLoader")
