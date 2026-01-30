@@ -13,6 +13,7 @@ public class Profiler {
     public static final Profiler profiler = new Profiler();
 
     public final Frame frame = new Frame();
+    public Thread mainThread = null;
 
     private Recording rec = null;
     private boolean wasKeyPressed = false;

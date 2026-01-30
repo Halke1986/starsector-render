@@ -1,5 +1,7 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.debug.Profiler;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +35,6 @@ public class ContextManager {
 
             Context context = entry.getValue();
 
-
             if (!context.active) {
                 context.exec.shutdown();
                 it.remove();
@@ -45,6 +46,7 @@ public class ContextManager {
 
         mainContext = context;
         mainThread = Thread.currentThread();
+        Profiler.profiler.mainThread = Thread.currentThread();
     }
 
     public static void makeCurrent() {

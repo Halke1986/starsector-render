@@ -2,10 +2,11 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.stall.StallDetector;
-import com.genir.renderer.debug.Profiler;
 
 import java.util.Deque;
 import java.util.concurrent.*;
+
+import static com.genir.renderer.debug.Profiler.profiler;
 
 public class Executor {
     private final StallDetector stallDetector;
@@ -73,7 +74,9 @@ public class Executor {
             waitForFrame(lastFrameFuture);
             rethrowLast();
         } finally {
-            Profiler.profiler.frame.markStall(start);
+            if (profiler.mainThread == Thread.currentThread()) {
+                profiler.frame.markStall(start);
+            }
         }
     }
 
@@ -84,11 +87,12 @@ public class Executor {
         rethrowLast();
 
         final Runnable[] commands = currentFrame;
+        final boolean isMainThread = profiler.mainThread == Thread.currentThread();
 
         currentFrame = new Runnable[maxFrameSize];
         frameSize = 0;
 
-        lastFrameFuture = execActual.submit(() -> executeCommands(commands));
+        lastFrameFuture = execActual.submit(() -> executeCommands(commands, isMainThread));
     }
 
     /**
@@ -112,7 +116,7 @@ public class Executor {
         }
     }
 
-    private void executeCommands(Runnable[] commands) {
+    private void executeCommands(Runnable[] commands, boolean isMainThread) {
         long start = System.nanoTime();
 
         try {
@@ -131,7 +135,9 @@ public class Executor {
         } catch (Throwable t) {
             exceptions.add(t);
         } finally {
-            Profiler.profiler.frame.markRenderWork(start);
+            if (isMainThread) {
+                profiler.frame.markRenderWork(start);
+            }
         }
     }
 
