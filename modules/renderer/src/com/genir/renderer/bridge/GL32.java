@@ -43,6 +43,9 @@ public class GL32 {
         final CompletableFuture<org.lwjgl.opengl.GLSync> future = new CompletableFuture<>();
         final Context context = getContext();
         context.exec.execute(new glFenceSync(context, future, condition, flags));
+
+        // Execute commands, so other rendering threads waiting for this
+        // glSync can proceed and do not deadlock on a get or wait call.
         context.exec.swapFrames();
         return new GLSync(future, context);
     }

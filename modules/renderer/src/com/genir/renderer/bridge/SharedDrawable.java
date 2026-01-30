@@ -41,7 +41,7 @@ public class SharedDrawable implements Drawable {
             }
         }
 
-        ContextManager.createContext();
+        ContextManager.makeCurrent();
         final Context context = getContext();
         context.exec.wait(new makeCurrent(context, impl));
     }

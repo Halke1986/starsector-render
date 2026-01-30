@@ -17,6 +17,8 @@ public class ContextManager {
     private static Thread mainThread = null;
 
     public static Context getContext() {
+        // Assume a majority of commands is executed by the main application thread.
+        // Skip the slow contextMap.computeIfAbsent call for those commands.
         if (Thread.currentThread() == mainThread) {
             return mainContext;
         }
@@ -43,6 +45,11 @@ public class ContextManager {
 
         mainContext = context;
         mainThread = Thread.currentThread();
+    }
+
+    public static void makeCurrent() {
+        Context context = getContext();
+        context.active = true;
     }
 
     public static void destroy() {
