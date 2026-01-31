@@ -1,19 +1,15 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.Recordable;
 
 import static com.genir.renderer.bridge.context.ContextManager.getContext;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
-        record glBlendEquation(Context context, int mode) implements Runnable {
+        record glBlendEquation(Context context, int mode) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (context.listManager.isRecording()) {
-                    context.listManager.record(this);
-                    return;
-                }
-
                 context.attribManager.glBlendEquation(mode);
             }
         }
@@ -22,14 +18,9 @@ public class GL14 {
     }
 
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        record glBlendFuncSeparate(Context context, int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements Runnable {
+        record glBlendFuncSeparate(Context context, int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements Runnable, Recordable {
             @Override
             public void run() {
-                if (context.listManager.isRecording()) {
-                    context.listManager.record(this);
-                    return;
-                }
-
                 context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
             }
         }

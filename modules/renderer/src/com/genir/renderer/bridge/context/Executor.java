@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 import static com.genir.renderer.debug.Profiler.profiler;
 
 public class Executor {
+    private final ListManager listManager;
     private final StallDetector stallDetector;
 
     private Runnable[] currentFrame = new Runnable[1];
@@ -20,7 +21,8 @@ public class Executor {
 
     private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
 
-    public Executor(StallDetector stallDetector) {
+    public Executor(ListManager listManager, StallDetector stallDetector) {
+        this.listManager = listManager;
         this.stallDetector = stallDetector;
     }
 
@@ -125,10 +127,15 @@ public class Executor {
                 Runnable command = commands[i];
                 commands[i] = null;
 
-                try {
-                    command.run();
-                } catch (Throwable t) {
-                    throw new RuntimeException(command.toString(), t);
+                if (command instanceof Recordable && listManager.isRecording()) {
+                    // Record the command instead of running it immediately.
+                    listManager.record(command);
+                } else {
+                    try {
+                        command.run();
+                    } catch (Throwable t) {
+                        throw new RuntimeException(command.toString(), t);
+                    }
                 }
             }
 
