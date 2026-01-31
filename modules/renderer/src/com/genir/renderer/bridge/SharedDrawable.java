@@ -9,7 +9,6 @@ import org.lwjgl.opengl.Drawable;
 import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.context.ContextManager.getContext;
-import static com.genir.renderer.debug.Debug.asert;
 
 public class SharedDrawable implements Drawable {
     private final org.lwjgl.opengl.SharedDrawable impl;
@@ -60,17 +59,16 @@ public class SharedDrawable implements Drawable {
 
     @Override
     public boolean isCurrent() throws LWJGLException {
-        asert(false);
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void releaseContext() throws LWJGLException {
-        asert(false);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setCLSharingProperties(PointerBuffer pointerBuffer) throws LWJGLException {
-        asert(false);
+        throw new UnsupportedOperationException();
     }
 }
