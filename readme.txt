@@ -1,9 +1,8 @@
-STARSECTOR RENDERING ENGINE OVERHAUL
+STARSECTOR ENGINE OVERHAUL
 
-This binary mod modifies the vanilla code and improves performance,
-typically providing a 100–200% increase in framerate on lower-end GPUs,
-especially during battles. The game’s visuals remain the same, with only
-the performance improved. Works only with Windows version of Starsector.
+- Improved framerate, especially on lower-end GPUs.
+- Improved game loading speed, especially on higher-end CPUs.
+- Numerous bugfixes and minor improvements to vanilla game engine.
 
 INSTALLATION
 
