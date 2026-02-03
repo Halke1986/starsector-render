@@ -14,15 +14,9 @@
 -XX:-BytecodeVerificationRemote
 
 # GC
--XX:+DisableExplicitGC
 -XX:+UseShenandoahGC
--XX:MaxGCPauseMillis=10
--XX:ShenandoahGuaranteedGCInterval=0
 
-# Runtime Optimization
--XX:-DontCompileHugeMethods
-
-# Misc
+# Performance optimization
 -XX:+UseFastStosb
 -XX:+UseXmmI2D
 -XX:+UseXmmI2F
