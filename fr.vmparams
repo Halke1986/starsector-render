@@ -5,16 +5,19 @@
 # General config
 -XX:+UnlockDiagnosticVMOptions
 -XX:+UnlockExperimentalVMOptions
+-XX:-BytecodeVerificationLocal
+-XX:-BytecodeVerificationRemote
+
+# Crash logging
 -XX:+ShowCodeDetailsInExceptionMessages
 -XX:+ExtensiveErrorReports
 -XX:+ShowMessageBoxOnError
 -XX:+PrintCommandLineFlags
 -XX:+PrintCodeCache
--XX:-BytecodeVerificationLocal
--XX:-BytecodeVerificationRemote
 
 # GC
 -XX:+UseShenandoahGC
+-XX:+DisableExplicitGC
 
 # Performance optimization
 -XX:+UseFastStosb
@@ -23,9 +26,9 @@
 -XX:+AlwaysPreTouch
 -XX:+ZeroTLAB
 -XX:+UseStringDeduplication
+-XX:+EnableVectorSupport
 -XX:+EnableVectorAggressiveReboxing
 -XX:+EnableVectorReboxing
--XX:+EnableVectorSupport
 -XX:+UseVectorCmov
 -XX:+UseVectorStubs
 -XX:ThreadPriorityPolicy=1
