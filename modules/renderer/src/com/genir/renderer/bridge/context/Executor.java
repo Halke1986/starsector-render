@@ -3,8 +3,8 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.stall.StallDetector;
 
-import java.util.Deque;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Profiler.profiler;
 
@@ -17,7 +17,7 @@ public class Executor {
     private int maxFrameSize = 1;
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
-    private final Deque<Throwable> exceptions = new ConcurrentLinkedDeque<>();
+    private final AtomicReference<Throwable> exception = new AtomicReference(null);
 
     private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
 
@@ -52,8 +52,11 @@ public class Executor {
         wait(() -> {
             try {
                 result[0] = task.call();
-            } catch (Exception e) {
-                rethrowAsRuntimeException(e);
+            } catch (Throwable t) {
+                // Sneaky throw the exeption to avoid an unncesessary
+                // "Cause By" level. The exception will be properly
+                // handled in executeCommands method.
+                sneakyThrow(t);
             }
         });
 
@@ -74,7 +77,6 @@ public class Executor {
 
         try {
             waitForFrame(lastFrameFuture);
-            rethrowLast();
         } finally {
             if (profiler.mainThread == Thread.currentThread()) {
                 profiler.frame.markStall(start);
@@ -86,7 +88,9 @@ public class Executor {
      * Execute queued commands.
      */
     public void swapFrames() {
-        rethrowLast();
+        // Assume all commands issued before the producer thread was notified
+        // of the exception are invalid and must not be executed.
+        rethrowAndClearException();
 
         final Runnable[] commands = currentFrame;
         final boolean isMainThread = profiler.mainThread == Thread.currentThread();
@@ -94,7 +98,9 @@ public class Executor {
         currentFrame = new Runnable[maxFrameSize];
         frameSize = 0;
 
-        lastFrameFuture = execActual.submit(() -> executeCommands(commands, isMainThread));
+        lastFrameFuture = execActual.submit(() -> {
+            executeCommands(commands, isMainThread);
+        });
     }
 
     /**
@@ -116,10 +122,32 @@ public class Executor {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+
+        // Rethrow exceptions after finishing the frame
+        // so that the get method can be notified of
+        // a throw in its callable.
+        rethrowAndClearException();
+    }
+
+    private void rethrowAndClearException() {
+        Throwable t = exception.getAndSet(null);
+        if (t != null) {
+            currentFrame = new Runnable[maxFrameSize];
+            frameSize = 0;
+
+            lastFrameFuture = CompletableFuture.completedFuture(null);
+
+            throw new RuntimeException(t);
+        }
     }
 
     private void executeCommands(Runnable[] commands, boolean isMainThread) {
         long start = System.nanoTime();
+
+        // Executor is in invalid state. Cancel all scheduled commands.
+        if (exception.get() != null) {
+            return;
+        }
 
         try {
             // Run all scheduled commands.
@@ -131,16 +159,12 @@ public class Executor {
                     // Record the command instead of running it immediately.
                     listManager.record(command);
                 } else {
-                    try {
-                        command.run();
-                    } catch (Throwable t) {
-                        throw new RuntimeException(command.toString(), t);
-                    }
+                    command.run();
                 }
             }
 
         } catch (Throwable t) {
-            exceptions.add(t);
+            exception.set(t);
         } finally {
             if (isMainThread) {
                 profiler.frame.markRenderWork(start);
@@ -159,21 +183,7 @@ public class Executor {
         return lastFrameFuture.isDone();
     }
 
-    private void rethrowLast() {
-        if (!exceptions.isEmpty()) {
-            Throwable t = exceptions.pop();
-            exceptions.clear();
-            rethrowAsRuntimeException(t);
-        }
-    }
-
-    private void rethrowAsRuntimeException(Throwable t) {
-        if (t == null) {
-            return;
-        } else if (t instanceof RuntimeException e) {
-            throw e;
-        } else {
-            throw new RuntimeException(t);
-        }
+    public static <E extends Throwable> void sneakyThrow(Throwable t) throws E {
+        throw (E) t;
     }
 }
