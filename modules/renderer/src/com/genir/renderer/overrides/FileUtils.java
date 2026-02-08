@@ -65,15 +65,15 @@ public class FileUtils { // com.fs.util.C
     ) throws IOException {
         // Filter locations.
         if (locationFilter != null) {
-            locations = locations.stream().filter(location -> {
-                return location.ResourceLocation_type.toString() == "DIRECTORY" && location.ResourceLocation_path.endsWith(locationFilter);
-            }).toList();
+            locations = locations.stream().filter(location ->
+                    location.ResourceLocation_type.toString() == "DIRECTORY" && location.ResourceLocation_path.endsWith(locationFilter)
+            ).toList();
         }
 
         if (skipMods) {
-            locations = locations.stream().filter(location -> {
-                return !location.ResourceLocation_isMod;
-            }).toList();
+            locations = locations.stream().filter(location ->
+                    !location.ResourceLocation_isMod
+            ).toList();
         }
 
         List<Pair<ResourceLoader.ResourceLocation, InputStream>> resources;
