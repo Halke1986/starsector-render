@@ -92,7 +92,7 @@ public class CombatEngine {
 
 
         final Context context = getContext();
-        context.exec.execute(() -> context.vertexInterceptor.commitLayer());
+        context.exec.execute(context.vertexInterceptor::commitLayer);
     }
 
     private static void renderLayer(String layer) {
@@ -117,7 +117,9 @@ public class CombatEngine {
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
 
-        context.exec.execute(() -> context.vertexInterceptor.setReorderDraw(false));
-        context.exec.execute(() -> context.vertexInterceptor.commitLayer());
+        context.exec.execute(() -> {
+            context.vertexInterceptor.setReorderDraw(false);
+            context.vertexInterceptor.commitLayer();
+        });
     }
 }

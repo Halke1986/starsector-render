@@ -19,9 +19,9 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
 
     private final Map<String, byte[]> bytecodeCache = new ConcurrentHashMap<>();
 
-    private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() -> {
-        return new JavaSourceCompiler(getParent(), bytecodeCache);
-    });
+    private final ThreadLocal<JavaSourceCompiler> compilers = ThreadLocal.withInitial(() ->
+            new JavaSourceCompiler(getParent(), bytecodeCache)
+    );
 
     public MultiThreadedJaninoClassLoader(ClassLoader parent) {
         super(parent);

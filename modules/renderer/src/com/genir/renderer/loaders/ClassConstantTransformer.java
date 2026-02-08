@@ -153,7 +153,9 @@ public class ClassConstantTransformer {
      * is matched by the shorter "package/Ship" transform.
      */
     private List<Transform> sortTransforms(List<Transform> transforms) {
-        transforms.sort(Comparator.comparingInt(t -> -t.from.length()));
+        transforms.sort(Comparator.comparingInt(t ->
+                -t.from.length())
+        );
         return transforms;
     }
 

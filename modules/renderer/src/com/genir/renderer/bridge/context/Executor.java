@@ -98,9 +98,9 @@ public class Executor {
         currentFrame = new Runnable[maxFrameSize];
         frameSize = 0;
 
-        lastFrameFuture = execActual.submit(() -> {
-            executeCommands(commands, isMainThread);
-        });
+        lastFrameFuture = execActual.submit(() ->
+                executeCommands(commands, isMainThread)
+        );
     }
 
     /**
