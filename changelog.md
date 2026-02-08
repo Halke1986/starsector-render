@@ -1,3 +1,6 @@
+- Fixed rendering regressions that caused visual artifacts. Reported by lchronosl.
+- Improved exception logging in the multithreaded rendering engine.
+
 v0.6.6
 
 - Reverted JVM Xss parameter to 4mb, improving stability. Suggested by Seekers.

@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.context.stall.*;
 public class Context {
     // Is this Context object representing an active OpenGL context.
     public boolean active = false;
+    private Thread parentThread = Thread.currentThread(); // Debug field.
 
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();

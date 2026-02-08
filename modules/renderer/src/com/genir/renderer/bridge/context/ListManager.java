@@ -8,12 +8,20 @@ import java.util.Map;
 import static com.genir.renderer.debug.Debug.asert;
 
 public class ListManager {
-    private int totalListsAllocated = 0;
     private int mode = 0;
     private int newListID;
     private List<Runnable> newList;
 
     private final Map<Integer, Runnable[]> lists = new HashMap<>();
+
+    // NOTE:
+    // https://fractalsoftworks.com/forum/index.php?topic=34104.0
+    //
+    // Vanilla GLListManager allocates a block of 1024 display lists (ideally) in the Starsector Launcher
+    // and then continues to use them throughout the game. However, the OpenGL context is destroyed and
+    // recreated between the Launcher and the main game. After that, the new context no longer has those
+    // lists allocated, yet GLListManager still assumes it does.
+    private static int allocatedListsNumber = 0;
 
     public boolean isRecording() {
         return mode != 0;
@@ -29,11 +37,9 @@ public class ListManager {
         }
     }
 
-    public int glGenLists(int range) {
-        // Note:
-        // https://fractalsoftworks.com/forum/index.php?topic=34104.0
-        int idx = totalListsAllocated + 1;
-        totalListsAllocated += range;
+    synchronized public int glGenLists(int range) {
+        int idx = allocatedListsNumber + 1;
+        allocatedListsNumber += range;
         return idx;
     }
 
