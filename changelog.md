@@ -1,3 +1,5 @@
+v0.6.7
+
 - Fixed rendering regressions that caused visual artifacts. Reported by lchronosl.
 - Improved exception logging in the multithreaded rendering engine.
 
