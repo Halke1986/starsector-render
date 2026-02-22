@@ -1,3 +1,5 @@
+- Added support for BoxUtil 1.5.4.
+
 v0.6.7
 
 - Fixed rendering regressions that caused visual artifacts. Reported by lchronosl.
