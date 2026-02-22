@@ -1,3 +1,5 @@
+v0.6.8
+
 - Added support for BoxUtil 1.5.4.
 
 v0.6.7

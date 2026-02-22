@@ -137,7 +137,7 @@ L60:    ldc Class com/fs/starfarer/StarfarerLauncher
 L62:    invokestatic Method org/apache/log4j/Logger getLogger (Ljava/lang/Class;)Lorg/apache/log4j/Logger; 
 L65:    putstatic Field com/fs/starfarer/StarfarerLauncher 'Ó00000' Lorg/apache/log4j/Logger; 
 L68:    getstatic Field com/fs/starfarer/StarfarerLauncher 'Ó00000' Lorg/apache/log4j/Logger; 
-L71:    ldc 'Starting Starsector 0.98a-RC8 FR6.7 launcher'
+L71:    ldc 'Starting Starsector 0.98a-RC8 FR6.8 launcher'
 L73:    invokevirtual Method org/apache/log4j/Logger info (Ljava/lang/Object;)V 
 L76:    getstatic Field com/fs/starfarer/StarfarerLauncher 'Ó00000' Lorg/apache/log4j/Logger; 
 L79:    new java/lang/StringBuilder 
