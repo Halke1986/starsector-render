@@ -1,8 +1,19 @@
-STARSECTOR ENGINE OVERHAUL
+STARSECTOR PERFORMANCE OVERHAUL
 
 - Improved framerate, especially on lower-end GPUs.
-- Improved game loading speed, especially on higher-end CPUs.
-- Numerous bugfixes and minor improvements to vanilla game engine.
+- Improved game loading speed.
+
+BUGFIXES AND IMPROVEMENTS TO VANILLA GAME ENGINE
+
+- Fixed multiple race conditions that could cause random crashes at game startup.
+- Fixed an issue where enemy ships were deployed progressively from smallest to largest.
+- Fixed an XStream issue that could cause freezes during game saving.
+- Fixed all instances of background flickering when saving and loading the game.
+- Improved animation smoothness by increasing frame duration resolution from milliseconds to microseconds.
+
+REQUIREMENTS
+
+- Quad-core CPU recommended. On single-core or dual-core CPUs, performance may decrease.
 
 INSTALLATION
 
