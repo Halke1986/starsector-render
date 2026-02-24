@@ -13,7 +13,13 @@ BUGFIXES AND IMPROVEMENTS TO VANILLA GAME ENGINE
 
 REQUIREMENTS
 
+- Starsector 0.98a-RC8 Windows.
 - Quad-core CPU recommended. On single-core or dual-core CPUs, performance may decrease.
+
+INCOMPATIBLE MODS
+
+- Official version of Combat Misc Utilities (CMUtils).
+- Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
 
 INSTALLATION
 
