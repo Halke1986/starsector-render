@@ -1,3 +1,5 @@
+- Profiling events are no longer emitted unless a performance profile is being gathered.
+
 v0.6.8
 
 - Added support for BoxUtil 1.5.4.
