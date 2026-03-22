@@ -122,10 +122,10 @@ public class Profiler {
     private boolean isKeyPressed() {
         // CTRL + ALT + \
         boolean ctrl = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL);
-        boolean alt = Keyboard.isKeyDown(KEY_LMENU) || Keyboard.isKeyDown(KEY_RMENU);
-        boolean backslash = Keyboard.isKeyDown(KEY_BACKSLASH);
+        boolean shift = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT);
+        boolean f10 = Keyboard.isKeyDown(KEY_F10);
 
-        return ctrl && alt && backslash;
+        return ctrl && shift && f10;
     }
 
     /**
