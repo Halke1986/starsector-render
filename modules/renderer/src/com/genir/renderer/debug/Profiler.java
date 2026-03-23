@@ -123,9 +123,9 @@ public class Profiler {
         // CTRL + ALT + \
         boolean ctrl = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL);
         boolean shift = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT);
-        boolean f10 = Keyboard.isKeyDown(KEY_F10);
+        boolean f8 = Keyboard.isKeyDown(KEY_F8);
 
-        return ctrl && shift && f10;
+        return ctrl && shift && f8;
     }
 
     /**

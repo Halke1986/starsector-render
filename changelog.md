@@ -1,5 +1,5 @@
 - Profiling events are no longer emitted unless a performance profile is being gathered.
-- Changed profiler shortcut to CTRL + SHIFT + F10.
+- Changed profiler shortcut to CTRL + SHIFT + F8.
 
 v0.6.8
 
