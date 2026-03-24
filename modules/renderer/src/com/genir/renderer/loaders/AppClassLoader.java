@@ -1,13 +1,18 @@
 package com.genir.renderer.loaders;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.List;
 
 public class AppClassLoader extends ClassLoader {
+    private JavaAgentLoader javaAgentLoader = null;
+
     private final List<ClassConstantTransformer> obfTransformers = List.of(
             new ClassConstantTransformer(ObfTransformations.transformations)
     );
@@ -63,7 +68,16 @@ public class AppClassLoader extends ClassLoader {
             // Class does not require transformation
             // and should be loaded by the parent.
             if (selectTransformer(name) == null) {
-                return getParent().loadClass(name);
+                try {
+                    return getParent().loadClass(name);
+                } catch (ClassNotFoundException e) {
+                    // Fallback to javaagent loader.
+                    if (javaAgentLoader != null) {
+                        return javaAgentLoader.loadClass(name, resolve);
+                    } else {
+                        throw e;
+                    }
+                }
             }
 
             Class<?> loaded = findLoadedClass(name);
@@ -133,5 +147,35 @@ public class AppClassLoader extends ClassLoader {
 
         // Do not intercept this class.
         return null;
+    }
+
+    // Signature expected by the JVM instrumentation mechanism.
+    @SuppressWarnings("unused")
+    void appendToClassPathForInstrumentation(String jar) {
+        if (javaAgentLoader == null) {
+            javaAgentLoader = new JavaAgentLoader(new URL[]{}, getParent());
+        }
+
+        try {
+            File file = new File(jar);
+            URL url = file.toURI().toURL();
+            javaAgentLoader.addURL(url);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to append agent jar to class path: " + jar, e);
+        }
+    }
+
+    private static class JavaAgentLoader extends URLClassLoader {
+        public JavaAgentLoader(URL[] urls, ClassLoader parent) {
+            super(urls, parent);
+        }
+
+        public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            return super.loadClass(name, resolve);
+        }
+
+        public void addURL(URL url) {
+            super.addURL(url);
+        }
     }
 }
