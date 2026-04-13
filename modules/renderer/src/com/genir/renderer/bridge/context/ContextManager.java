@@ -25,9 +25,9 @@ public class ContextManager {
             return mainContext;
         }
 
-        return contextMap.computeIfAbsent(Thread.currentThread(), t -> {
-            return new Context();
-        });
+        return contextMap.computeIfAbsent(Thread.currentThread(), k ->
+                new Context()
+        );
     }
 
     public static void createContext() {

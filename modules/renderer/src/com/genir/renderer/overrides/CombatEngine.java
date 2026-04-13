@@ -90,7 +90,6 @@ public class CombatEngine {
     private static void renderLayer(CombatEngineLayers layer) {
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
-
         final Context context = getContext();
         context.exec.execute(context.vertexInterceptor::commitLayer);
     }
