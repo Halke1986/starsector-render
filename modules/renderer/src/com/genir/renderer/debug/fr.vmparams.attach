@@ -1,37 +1,34 @@
 -Xmx4g
 -Xms4g
--Xss16m
+-Xss4m
 
 # General config
 -XX:+UnlockDiagnosticVMOptions
 -XX:+UnlockExperimentalVMOptions
+-XX:-BytecodeVerificationLocal
+-XX:-BytecodeVerificationRemote
+
+# Crash logging
 -XX:+ShowCodeDetailsInExceptionMessages
 -XX:+ExtensiveErrorReports
 -XX:+ShowMessageBoxOnError
 -XX:+PrintCommandLineFlags
 -XX:+PrintCodeCache
--XX:-BytecodeVerificationLocal
--XX:-BytecodeVerificationRemote
 
 # GC
--XX:+DisableExplicitGC
 -XX:+UseShenandoahGC
--XX:MaxGCPauseMillis=10
--XX:ShenandoahGuaranteedGCInterval=0
+-XX:+DisableExplicitGC
 
-# Runtime Optimization
--XX:-DontCompileHugeMethods
-
-# Misc
+# Performance optimization
 -XX:+UseFastStosb
 -XX:+UseXmmI2D
 -XX:+UseXmmI2F
 -XX:+AlwaysPreTouch
 -XX:+ZeroTLAB
 -XX:+UseStringDeduplication
+-XX:+EnableVectorSupport
 -XX:+EnableVectorAggressiveReboxing
 -XX:+EnableVectorReboxing
--XX:+EnableVectorSupport
 -XX:+UseVectorCmov
 -XX:+UseVectorStubs
 -XX:ThreadPriorityPolicy=1
@@ -65,6 +62,7 @@
 -Dcom.fs.starfarer.settings.paths.screenshots=../screenshots
 -Dcom.fs.starfarer.settings.paths.mods=../mods
 -Dcom.fs.starfarer.settings.paths.logs=.
+-Dcom.genir.renderer.settings.sampler=true
 
 -classpath
 fr.jar;janino.jar;commons-compiler.jar;commons-compiler-jdk.jar;starfarer.api.jar;starfarer_obf.jar;jogg-0.0.7.jar;jorbis-0.0.15.jar;json.jar;lwjgl.jar;jinput.jar;log4j-1.2.9.jar;lwjgl_util.jar;fs.sound_obf.jar;fs.common_obf.jar;xstream-1.4.10.jar;txw2-3.0.2.jar;jaxb-api-2.4.0-b180830.0359.jar;webp-imageio-0.1.6.jar

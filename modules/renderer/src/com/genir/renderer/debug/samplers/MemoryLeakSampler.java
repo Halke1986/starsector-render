@@ -1,4 +1,4 @@
-package com.genir.renderer.debug;
+package com.genir.renderer.debug.samplers;
 
 import com.sun.tools.attach.VirtualMachine;
 
@@ -17,7 +17,7 @@ public final class MemoryLeakSampler {
 
             String pid = String.valueOf(ProcessHandle.current().pid());
 
-            long unixTimestamp = System.currentTimeMillis() / 1000L;
+            long unixTimestamp = System.currentTimeMillis();
             fileName = samplePrefix + "leak-" + unixTimestamp + ".jfr";
 
             // Start recording (profile preset is usually enough to get allocation stacks).

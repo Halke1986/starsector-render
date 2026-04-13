@@ -1,4 +1,4 @@
-package com.genir.renderer.debug;
+package com.genir.renderer.debug.samplers;
 
 import com.sun.tools.attach.VirtualMachine;
 
@@ -17,7 +17,7 @@ public final class ClassHistogramSampler {
             String pid = String.valueOf(ProcessHandle.current().pid());
             boolean liveOnly = false;
 
-            long unixTimestamp = System.currentTimeMillis() / 1000L;
+            long unixTimestamp = System.currentTimeMillis();
             String fileName = histogramPrefix + "histogram-" + unixTimestamp + ".txt";
             Path out = Path.of(fileName);
 

@@ -2,6 +2,9 @@ package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.debug.SamplerRunner;
+
+import java.util.Objects;
 
 import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
 import static com.genir.renderer.bridge.context.ContextManager.getContext;
@@ -37,6 +40,10 @@ public class CombatEngine {
             getContext().stallDetector.enableDetection();
             FileUtils.closeFileRepository();
             unlockParticleLimit();
+
+            if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
+                SamplerRunner.samplerRunner.start();
+            }
         }
 
         if (engine.isDestroyed()) {

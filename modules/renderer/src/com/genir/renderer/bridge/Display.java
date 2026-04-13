@@ -3,6 +3,7 @@ package com.genir.renderer.bridge;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
+import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -62,6 +63,7 @@ public class Display {
         context.exec.swapFramesAndSync();
 
         Profiler.profiler.update();
+        SamplerRunner.samplerRunner.update();
     }
 
     public static void update() {
