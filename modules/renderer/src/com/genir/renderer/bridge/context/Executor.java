@@ -1,8 +1,10 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.Pool;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.stall.StallDetector;
 
+import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -15,9 +17,10 @@ public class Executor {
     private Runnable[] currentFrame = new Runnable[1];
     private int frameSize = 0;
     private int maxFrameSize = 1;
+    private final Pool framePool = new Pool();
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
-    private final AtomicReference<Throwable> exception = new AtomicReference(null);
+    private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
 
     private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
 
@@ -53,7 +56,7 @@ public class Executor {
             try {
                 result[0] = task.call();
             } catch (Throwable t) {
-                // Sneaky throw the exeption to avoid an unncesessary
+                // Sneaky throw the exception to avoid an unnecessary
                 // "Cause By" level. The exception will be properly
                 // handled in executeCommands method.
                 sneakyThrow(t);
@@ -95,12 +98,20 @@ public class Executor {
         final Runnable[] commands = currentFrame;
         final boolean isMainThread = profiler.mainThread == Thread.currentThread();
 
-        currentFrame = new Runnable[maxFrameSize];
+        // Reuse frame array to avoid excessive heap pressure.
+        currentFrame = (Runnable[]) framePool.get();
+        if (currentFrame == null || currentFrame.length != maxFrameSize) {
+            currentFrame = new Runnable[maxFrameSize];
+        }
         frameSize = 0;
 
-        lastFrameFuture = execActual.submit(() ->
-                executeCommands(commands, isMainThread)
-        );
+        lastFrameFuture = execActual.submit(() -> {
+            executeCommands(commands, isMainThread);
+
+            // Reuse frame array.
+            Arrays.fill(commands, null);
+            framePool.put(commands);
+        });
     }
 
     /**
@@ -153,8 +164,6 @@ public class Executor {
             // Run all scheduled commands.
             for (int i = 0; i < commands.length && commands[i] != null; i++) {
                 Runnable command = commands[i];
-                commands[i] = null;
-
                 if (command instanceof Recordable && listManager.isRecording()) {
                     // Record the command instead of running it immediately.
                     listManager.record(command);
