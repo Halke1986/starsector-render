@@ -32,5 +32,4 @@ public class GL42 {
         }
         getContext().exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
     }
-
 }

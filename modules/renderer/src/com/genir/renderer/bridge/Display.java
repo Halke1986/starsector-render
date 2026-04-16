@@ -45,8 +45,9 @@ public class Display {
                 org.lwjgl.opengl.Display.destroy();
             }
         }
-        getContext().exec.wait(new destroy());
-        ContextManager.destroy();
+        final Context context = getContext();
+        context.exec.wait(new destroy());
+        context.active = false;
     }
 
     public static void update(boolean processMessages) {

@@ -4,8 +4,10 @@ import com.genir.renderer.bridge.context.stall.*;
 
 public class Context {
     // Is this Context object representing an active OpenGL context.
+    // If not, the context is marked for non-immediate deletion.
+    // This is because vanilla may perform additional LWJGL calls
+    // after destroying the OpenGL context.
     public boolean active = false;
-    private Thread parentThread = Thread.currentThread(); // Debug field.
 
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();

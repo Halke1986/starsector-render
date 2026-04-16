@@ -36,7 +36,6 @@ public class ContextManager {
             Map.Entry<Thread, Context> entry = it.next();
 
             Context context = entry.getValue();
-
             if (!context.active) {
                 context.exec.shutdown();
                 it.remove();
@@ -49,17 +48,5 @@ public class ContextManager {
         mainContext = context;
         mainThread = Thread.currentThread();
         Profiler.profiler.mainThread = Thread.currentThread();
-    }
-
-    public static void makeCurrent() {
-        Context context = getContext();
-        context.active = true;
-    }
-
-    public static void destroy() {
-        // Mark context for deletion, but do not remove immediately.
-        // This is because vanilla may perform additional LWJGL calls
-        // after destroying the OpenGL context.
-        getContext().active = false;
     }
 }

@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.Drawable;
@@ -40,8 +39,8 @@ public class SharedDrawable implements Drawable {
             }
         }
 
-        ContextManager.makeCurrent();
         final Context context = getContext();
+        context.active = true;
         context.exec.wait(new makeCurrent(context, impl));
     }
 
@@ -53,8 +52,9 @@ public class SharedDrawable implements Drawable {
                 impl.destroy();
             }
         }
-        getContext().exec.wait(new destroy(impl));
-        ContextManager.destroy();
+        final Context context = getContext();
+        context.exec.wait(new destroy(impl));
+        context.active = false;
     }
 
     @Override
