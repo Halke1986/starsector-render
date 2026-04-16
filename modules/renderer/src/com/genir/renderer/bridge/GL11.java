@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
 import static com.genir.renderer.bridge.context.BufferUtil.putIfPossible;
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL11 {
@@ -22,72 +23,72 @@ public class GL11 {
      * Lists.
      */
     public static int glGenLists(int range) { // NoList
-        record glGenLists(Context context, int range) implements Callable<Integer> {
+        record glGenLists(int contextId, int range) implements Callable<Integer> {
             @Override
             public Integer call() throws Exception {
-                return context.listManager.glGenLists(range);
+                return getContext(contextId).listManager.glGenLists(range);
             }
         }
         final Context context = getThreadContext();
-        return context.exec.get(new glGenLists(context, range));
+        return context.exec.get(new glGenLists(context.id, range));
     }
 
     public static void glNewList(int list, int mode) {
-        record glNewList(Context context, int list, int mode) implements Runnable {
+        record glNewList(int contextId, int list, int mode) implements Runnable {
             @Override
             public void run() {
-                context.listManager.glNewList(list, mode);
+                getContext(contextId).listManager.glNewList(list, mode);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glNewList(context, list, mode));
+        context.exec.execute(new glNewList(context.id, list, mode));
     }
 
     public static void glEndList() {
-        record glEndList(Context context) implements Runnable {
+        record glEndList(int contextId) implements Runnable {
             @Override
             public void run() {
-                context.listManager.glEndList();
+                getContext(contextId).listManager.glEndList();
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glEndList(context));
+        context.exec.execute(new glEndList(context.id));
     }
 
     public static void glCallList(int list) {
-        record glCallList(Context context, int list) implements Runnable {
+        record glCallList(int contextId, int list) implements Runnable {
             @Override
             public void run() {
-                context.listManager.glCallList(list);
+                getContext(contextId).listManager.glCallList(list);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glCallList(context, list));
+        context.exec.execute(new glCallList(context.id, list));
     }
 
     /**
      * Draw.
      */
     public static void glBegin(int mode) {
-        record glBegin(Context context, int mode) implements Runnable, Recordable {
+        record glBegin(int contextId, int mode) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.vertexInterceptor.glBegin(mode);
+                getContext(contextId).vertexInterceptor.glBegin(mode);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glBegin(context, mode));
+        context.exec.execute(new glBegin(context.id, mode));
     }
 
     public static void glEnd() {
-        record glEnd(Context context) implements Runnable, Recordable {
+        record glEnd(int contextId) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.vertexInterceptor.glEnd();
+                getContext(contextId).vertexInterceptor.glEnd();
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glEnd(context));
+        context.exec.execute(new glEnd(context.id));
     }
 
     public static void glColor3f(float red, float green, float blue) {
@@ -118,14 +119,14 @@ public class GL11 {
     }
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        record glColor4f(Context context, float red, float green, float blue, float alpha) implements Runnable, Recordable {
+        record glColor4f(int contextId, float red, float green, float blue, float alpha) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.vertexInterceptor.glColor4f(red, green, blue, alpha);
+                getContext(contextId).vertexInterceptor.glColor4f(red, green, blue, alpha);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glColor4f(context, red, green, blue, alpha));
+        context.exec.execute(new glColor4f(context.id, red, green, blue, alpha));
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -149,25 +150,25 @@ public class GL11 {
     }
 
     public static void glTexCoord4f(float s, float t, float r, float q) {
-        record glTexCoord4f(Context context, float s, float t, float r, float q) implements Runnable, Recordable {
+        record glTexCoord4f(int contextId, float s, float t, float r, float q) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.vertexInterceptor.glTexCoord4f(s, t, r, q);
+                getContext(contextId).vertexInterceptor.glTexCoord4f(s, t, r, q);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glTexCoord4f(context, s, t, r, q));
+        context.exec.execute(new glTexCoord4f(context.id, s, t, r, q));
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
-        record glNormal3f(Context context, float nx, float ny, float nz) implements Runnable, Recordable {
+        record glNormal3f(int contextId, float nx, float ny, float nz) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.vertexInterceptor.glNormal3f(nx, ny, nz);
+                getContext(contextId).vertexInterceptor.glNormal3f(nx, ny, nz);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glNormal3f(context, nx, ny, nz));
+        context.exec.execute(new glNormal3f(context.id, nx, ny, nz));
     }
 
     public static void glVertex2f(float x, float y) {
@@ -191,14 +192,14 @@ public class GL11 {
     }
 
     public static void glVertex3f(float x, float y, float z) {
-        record glVertex3f(Context context, float x, float y, float z) implements Runnable, Recordable {
+        record glVertex3f(int contextId, float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.vertexInterceptor.glVertex3f(x, y, z);
+                getContext(contextId).vertexInterceptor.glVertex3f(x, y, z);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glVertex3f(context, x, y, z));
+        context.exec.execute(new glVertex3f(context.id, x, y, z));
     }
 
     public static void glVertex3d(double x, double y, double z) {
@@ -230,29 +231,29 @@ public class GL11 {
     }
 
     public static void glPushClientAttrib(int mask) { // NoList
-        record glPushClientAttrib(Context context, int mask) implements Runnable {
+        record glPushClientAttrib(int contextId, int mask) implements Runnable {
             @Override
             public void run() {
-                context.vertexInterceptor.arraysTouched();
+                getContext(contextId).vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
             }
         }
         final Context context = getThreadContext();
         context.clientAttribTracker.glPushClientAttrib(mask);
-        context.exec.execute(new glPushClientAttrib(context, mask));
+        context.exec.execute(new glPushClientAttrib(context.id, mask));
     }
 
     public static void glPopClientAttrib() { // NoList
-        record glPopClientAttrib(Context context) implements Runnable {
+        record glPopClientAttrib(int contextId) implements Runnable {
             @Override
             public void run() {
-                context.vertexInterceptor.arraysTouched();
+                getContext(contextId).vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL11.glPopClientAttrib();
             }
         }
         final Context context = getThreadContext();
         context.clientAttribTracker.glPopClientAttrib();
-        context.exec.execute(new glPopClientAttrib(context));
+        context.exec.execute(new glPopClientAttrib(context.id));
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) { // NoList
@@ -316,169 +317,170 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        record glDrawArrays(Context context, int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements Runnable, Recordable {
+        record glDrawArrays(int contextId, int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements Runnable, Recordable {
             @Override
             public void run() {
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
-                context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+                getContext(contextId).vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
         }
 
         final Context context = getThreadContext();
         final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
-        context.exec.execute(new glDrawArrays(context, mode, first, count, snapshot));
+        context.exec.execute(new glDrawArrays(context.id, mode, first, count, snapshot));
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        record glDrawElements(Context context, int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements Runnable, Recordable {
+        record glDrawElements(int contextId, int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements Runnable, Recordable {
             @Override
             public void run() {
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
-                context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+                getContext(contextId).vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
         }
 
         final IntBuffer indicesSnapshot = BufferUtil.snapshot(indices);
         final Context context = getThreadContext();
         final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
-        context.exec.execute(new glDrawElements(context, mode, indicesSnapshot, snapshot));
+        context.exec.execute(new glDrawElements(context.id, mode, indicesSnapshot, snapshot));
     }
 
     public static void glDrawElements(int mode, int indices_count, int type, long indices_buffer_offset) {
-        record glDrawElements(Context context, int mode, int indices_count, int type, long indices_buffer_offset) implements Runnable, Recordable {
+        record glDrawElements(int contextId, int mode, int indices_count, int type, long indices_buffer_offset) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.attribManager.applyDrawAttribs();
+                getContext(contextId).attribManager.applyDrawAttribs();
                 org.lwjgl.opengl.GL11.glDrawElements(mode, indices_count, type, indices_buffer_offset);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glDrawElements(context, mode, indices_count, type, indices_buffer_offset));
+        context.exec.execute(new glDrawElements(context.id, mode, indices_count, type, indices_buffer_offset));
     }
 
     /**
      * Matrix.
      */
     public static void glMatrixMode(int mode) {
-        record glMatrixMode(Context context, int mode) implements Runnable, Recordable {
+        record glMatrixMode(int contextId, int mode) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.attribManager.glMatrixMode(mode);
+                getContext(contextId).attribManager.glMatrixMode(mode);
             }
         }
         final Context context = getThreadContext();
         context.attribTracker.glMatrixMode(mode);
-        context.exec.execute(new glMatrixMode(context, mode));
+        context.exec.execute(new glMatrixMode(context.id, mode));
     }
 
     public static void glPushMatrix() {
-        record glPushMatrix(Context context) implements Runnable, Recordable {
+        record glPushMatrix(int contextId) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glPushMatrix();
+                getContext(contextId).transformManager.glPushMatrix();
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glPushMatrix(context));
+        context.exec.execute(new glPushMatrix(context.id));
     }
 
     public static void glPopMatrix() {
-        record glPopMatrix(Context context) implements Runnable, Recordable {
+        record glPopMatrix(int contextId) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glPopMatrix();
+                getContext(contextId).transformManager.glPopMatrix();
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glPopMatrix(context));
+        context.exec.execute(new glPopMatrix(context.id));
     }
 
     public static void glLoadIdentity() {
-        record glLoadIdentity(Context context) implements Runnable, Recordable {
+        record glLoadIdentity(int contextId) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glLoadIdentity();
+                getContext(contextId).transformManager.glLoadIdentity();
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glLoadIdentity(context));
+        context.exec.execute(new glLoadIdentity(context.id));
     }
 
     public static void glTranslatef(float x, float y, float z) {
-        record glTranslatef(Context context, float x, float y, float z) implements Runnable, Recordable {
+        record glTranslatef(int contextId, float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glTranslatef(x, y, z);
+                getContext(contextId).transformManager.glTranslatef(x, y, z);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glTranslatef(context, x, y, z));
+        context.exec.execute(new glTranslatef(context.id, x, y, z));
     }
 
     public static void glRotatef(float angle, float x, float y, float z) {
-        record glRotatef(Context context, float angle, float x, float y, float z) implements Runnable, Recordable {
+        record glRotatef(int contextId, float angle, float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glRotatef(angle, x, y, z);
+                getContext(contextId).transformManager.glRotatef(angle, x, y, z);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glRotatef(context, angle, x, y, z));
+        context.exec.execute(new glRotatef(context.id, angle, x, y, z));
     }
 
     public static void glScalef(float x, float y, float z) {
-        record glScalef(Context context, float x, float y, float z) implements Runnable, Recordable {
+        record glScalef(int contextId, float x, float y, float z) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glScalef(x, y, z);
+                getContext(contextId).transformManager.glScalef(x, y, z);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glScalef(context, x, y, z));
+        context.exec.execute(new glScalef(context.id, x, y, z));
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        record glMultMatrix(Context context, FloatBuffer m) implements Runnable, Recordable {
+        record glMultMatrix(int contextId, FloatBuffer m) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glMultMatrix(m);
+                getContext(contextId).transformManager.glMultMatrix(m);
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
         final Context context = getThreadContext();
-        context.exec.execute(new glMultMatrix(context, snapshot));
+        context.exec.execute(new glMultMatrix(context.id, snapshot));
     }
 
     public static void glLoadMatrix(FloatBuffer m) {
-        record glLoadMatrix(Context context, FloatBuffer m) implements Runnable, Recordable {
+        record glLoadMatrix(int contextId, FloatBuffer m) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glLoadMatrix(m);
+                getContext(contextId).transformManager.glLoadMatrix(m);
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
         final Context context = getThreadContext();
-        context.exec.execute(new glLoadMatrix(context, snapshot));
+        context.exec.execute(new glLoadMatrix(context.id, snapshot));
     }
 
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        record glOrtho(Context context, double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable, Recordable {
+        record glOrtho(int contextId, double left, double right, double bottom, double top, double zNear, double zFar) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
+                getContext(contextId).transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glOrtho(context, left, right, bottom, top, zNear, zFar));
+        context.exec.execute(new glOrtho(context.id, left, right, bottom, top, zNear, zFar));
     }
 
     /**
      * Render getContext().
      */
     public static void glEnable(int cap) {
-        record glEnable(Context context, int cap) implements Runnable, Recordable {
+        record glEnable(int contextId, int cap) implements Runnable, Recordable {
             @Override
             public void run() {
+                Context context = getContext(contextId);
                 if (context.attribManager.interceptEnable(cap)) {
                     context.attribManager.glEnable(cap);
                 } else {
@@ -488,13 +490,14 @@ public class GL11 {
         }
         final Context context = getThreadContext();
         context.attribTracker.glEnable(cap);
-        context.exec.execute(new glEnable(context, cap));
+        context.exec.execute(new glEnable(context.id, cap));
     }
 
     public static void glDisable(int cap) {
-        record glDisable(Context context, int cap) implements Runnable, Recordable {
+        record glDisable(int contextId, int cap) implements Runnable, Recordable {
             @Override
             public void run() {
+                Context context = getContext(contextId);
                 if (context.attribManager.interceptEnable(cap)) {
                     context.attribManager.glDisable(cap);
                 } else {
@@ -504,7 +507,7 @@ public class GL11 {
         }
         final Context context = getThreadContext();
         context.attribTracker.glDisable(cap);
-        context.exec.execute(new glDisable(context, cap));
+        context.exec.execute(new glDisable(context.id, cap));
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
@@ -512,42 +515,42 @@ public class GL11 {
     }
 
     public static void glBindTexture(int target, int texture) {
-        record glBindTexture(Context context, int target, int texture) implements Runnable, Recordable {
+        record glBindTexture(int contextId, int target, int texture) implements Runnable, Recordable {
             @Override
             public void run() {
-                context.attribManager.glBindTexture(target, texture);
+                getContext(contextId).attribManager.glBindTexture(target, texture);
                 org.lwjgl.opengl.GL11.glBindTexture(target, texture);
             }
         }
         final Context context = getThreadContext();
         context.attribTracker.glBindTexture(target, texture);
-        context.exec.execute(new glBindTexture(context, target, texture));
+        context.exec.execute(new glBindTexture(context.id, target, texture));
     }
 
     public static void glPushAttrib(int mask) { // NoList
-        record glPushAttrib(Context context, int mask) implements Runnable {
+        record glPushAttrib(int contextId, int mask) implements Runnable {
             @Override
             public void run() {
-                context.attribManager.glPushAttrib(mask);
+                getContext(contextId).attribManager.glPushAttrib(mask);
                 org.lwjgl.opengl.GL11.glPushAttrib(mask);
             }
         }
         final Context context = getThreadContext();
         context.attribTracker.glPushAttrib(mask);
-        context.exec.execute(new glPushAttrib(context, mask));
+        context.exec.execute(new glPushAttrib(context.id, mask));
     }
 
     public static void glPopAttrib() { // NoList
-        record glPopAttrib(Context context) implements Runnable {
+        record glPopAttrib(int contextId) implements Runnable {
             @Override
             public void run() {
-                context.attribManager.glPopAttrib();
+                getContext(contextId).attribManager.glPopAttrib();
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }
         final Context context = getThreadContext();
         context.attribTracker.glPopAttrib();
-        context.exec.execute(new glPopAttrib(context));
+        context.exec.execute(new glPopAttrib(context.id));
     }
 
     /**

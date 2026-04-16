@@ -8,6 +8,7 @@ public class Context {
     // This is because vanilla may perform additional LWJGL calls
     // after destroying the OpenGL context.
     public boolean active = false;
+    public final int id;
 
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager();
@@ -28,6 +29,10 @@ public class Context {
     public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
+
+    public Context(int id) {
+        this.id = id;
+    }
 
     public void update() {
         if (active && org.lwjgl.opengl.Display.isCreated()) {

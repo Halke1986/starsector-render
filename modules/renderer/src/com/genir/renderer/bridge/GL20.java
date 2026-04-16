@@ -8,6 +8,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL20 {
@@ -286,9 +287,10 @@ public class GL20 {
     }
 
     public static void glUseProgram(int program) {
-        record glUseProgram(Context context, int program) implements Runnable {
+        record glUseProgram(int contextId, int program) implements Runnable {
             @Override
             public void run() {
+                Context context = getContext(contextId);
                 if (program != 0) {
                     // Performing model view transformation on
                     // CPU may interfere with the shader program.
@@ -303,7 +305,7 @@ public class GL20 {
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glUseProgram(context, program));
+        context.exec.execute(new glUseProgram(context.id, program));
     }
 
     public static void glValidateProgram(int program) {

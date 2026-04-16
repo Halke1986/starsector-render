@@ -6,6 +6,7 @@ import com.genir.renderer.bridge.context.Context;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL40 {
@@ -51,25 +52,25 @@ public class GL40 {
     }
 
     public static void glBlendEquationi(int buf, int mode) {
-        record glBlendEquationi(Context context, int buf, int mode) implements Runnable {
+        record glBlendEquationi(int contextId, int buf, int mode) implements Runnable {
             @Override
             public void run() {
-                context.attribManager.glBlendEquationi(buf, mode);
+                getContext(contextId).attribManager.glBlendEquationi(buf, mode);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glBlendEquationi(context, buf, mode));
+        context.exec.execute(new glBlendEquationi(context.id, buf, mode));
     }
 
     public static void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
-        record glBlendFuncSeparatei(Context context, int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) implements Runnable {
+        record glBlendFuncSeparatei(int contextId, int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) implements Runnable {
             @Override
             public void run() {
-                context.attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+                getContext(contextId).attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }
         final Context context = getThreadContext();
-        context.exec.execute(new glBlendFuncSeparatei(context, buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
+        context.exec.execute(new glBlendFuncSeparatei(context.id, buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 
     public static void glBlendFunci(int buf, int src, int dst) {

@@ -7,6 +7,7 @@ import org.lwjgl.opengl.Drawable;
 
 import java.util.concurrent.Callable;
 
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class SharedDrawable implements Drawable {
@@ -25,12 +26,12 @@ public class SharedDrawable implements Drawable {
 
     @Override
     public void makeCurrent() {
-        record makeCurrent(Context context, org.lwjgl.opengl.SharedDrawable impl) implements Runnable {
+        record makeCurrent(int contextId, org.lwjgl.opengl.SharedDrawable impl) implements Runnable {
             @Override
             public void run() {
                 try {
                     impl.makeCurrent();
-                    context.update();
+                    getContext(contextId).update();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {
@@ -41,7 +42,7 @@ public class SharedDrawable implements Drawable {
 
         final Context context = getThreadContext();
         context.active = true;
-        context.exec.wait(new makeCurrent(context, impl));
+        context.exec.wait(new makeCurrent(context.id, impl));
     }
 
     @Override

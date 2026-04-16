@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL32 {
@@ -32,17 +33,17 @@ public class GL32 {
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
-        record glFenceSync(Context context, CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements Runnable {
+        record glFenceSync(int contextId, CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements Runnable {
             @Override
             public void run() {
                 future.complete(org.lwjgl.opengl.GL32.glFenceSync(condition, flags));
-                context.update();
+                getContext(contextId).update();
             }
         }
 
         final CompletableFuture<org.lwjgl.opengl.GLSync> future = new CompletableFuture<>();
         final Context context = getThreadContext();
-        context.exec.execute(new glFenceSync(context, future, condition, flags));
+        context.exec.execute(new glFenceSync(context.id, future, condition, flags));
 
         // Execute commands, so other rendering threads waiting for this
         // glSync can proceed and do not deadlock on a get or wait call.

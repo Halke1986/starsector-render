@@ -2,9 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.debug.Profiler;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * ContextManager manages virtual OpenGL contexts.
@@ -13,10 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * allow executing LWJGL commands at all times.
  */
 public class ContextManager {
-    private static final Map<Thread, Context> contextMap = new ConcurrentHashMap<>();
+    private static final Map<Thread, Context> contextMap = new HashMap<>();
+    private static final List<Context> contextList = new ArrayList<>();
 
     private static Context mainContext = null;
     private static Thread mainThread = null;
+
+    public static Context getContext(int id) {
+        return contextList.get(id);
+    }
 
     public static Context getThreadContext() {
         // Assume a majority of commands is executed by the main application thread.
@@ -25,12 +28,23 @@ public class ContextManager {
             return mainContext;
         }
 
-        return contextMap.computeIfAbsent(Thread.currentThread(), k ->
-                new Context()
-        );
+        return getThreadContextFallback();
     }
 
-    public static Context createThreadContext() {
+    synchronized private static Context getThreadContextFallback() {
+        Context context = contextMap.get(Thread.currentThread());
+        if (context == null) {
+            int id = contextList.size();
+            context = new Context(id);
+
+            contextList.add(context);
+            contextMap.put(Thread.currentThread(), context);
+        }
+
+        return context;
+    }
+
+    synchronized public static Context createThreadContext() {
         // Garbage collection. Remove all Context objects not associated with an OpenGL context.
         for (Iterator<Map.Entry<Thread, Context>> it = contextMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Thread, Context> entry = it.next();
@@ -39,6 +53,7 @@ public class ContextManager {
             if (!context.active) {
                 context.exec.shutdown();
                 it.remove();
+                contextList.set(context.id, null);
             }
         }
 
