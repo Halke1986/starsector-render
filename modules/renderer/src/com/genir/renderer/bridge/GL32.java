@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
+import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL32 {
     public static long glGetInteger64(int pname) {
@@ -17,7 +17,7 @@ public class GL32 {
             }
         }
 
-        return getContext().exec.get(new glGetInteger64(pname));
+        return getThreadContext().exec.get(new glGetInteger64(pname));
     }
 
     public static long glGetInteger64(int value, int index) {
@@ -28,7 +28,7 @@ public class GL32 {
             }
         }
 
-        return getContext().exec.get(new glGetInteger64(value, index));
+        return getThreadContext().exec.get(new glGetInteger64(value, index));
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
@@ -41,7 +41,7 @@ public class GL32 {
         }
 
         final CompletableFuture<org.lwjgl.opengl.GLSync> future = new CompletableFuture<>();
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.exec.execute(new glFenceSync(context, future, condition, flags));
 
         // Execute commands, so other rendering threads waiting for this
@@ -66,7 +66,7 @@ public class GL32 {
             }
         }
 
-        getContext().exec.execute(new glWaitSync(sync, flags, timeout));
+        getThreadContext().exec.execute(new glWaitSync(sync, flags, timeout));
     }
 
     public static void glDeleteSync(GLSync sync) {
@@ -82,6 +82,6 @@ public class GL32 {
             }
         }
 
-        getContext().exec.execute(new glDeleteSync(sync));
+        getThreadContext().exec.execute(new glDeleteSync(sync));
     }
 }

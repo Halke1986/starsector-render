@@ -3,7 +3,7 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
+import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL13 {
     public static void glActiveTexture(int mode) {
@@ -13,7 +13,7 @@ public class GL13 {
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.attribTracker.glActiveTexture(mode);
         context.exec.execute(new glActiveTexture(mode));
     }

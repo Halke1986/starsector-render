@@ -6,7 +6,7 @@ import com.genir.renderer.bridge.context.Context;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
+import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {
@@ -16,7 +16,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineIndex(program, shadertype, name);
             }
         }
-        return getContext().exec.get(new glGetSubroutineIndex(program, shadertype, name));
+        return getThreadContext().exec.get(new glGetSubroutineIndex(program, shadertype, name));
     }
 
     public static int glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) {
@@ -26,7 +26,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineUniformLocation(program, shadertype, name);
             }
         }
-        return getContext().exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
+        return getThreadContext().exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
     }
 
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
@@ -37,7 +37,7 @@ public class GL40 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
-        getContext().exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
+        getThreadContext().exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
 
     public static void glPatchParameteri(int pname, int value) {
@@ -47,7 +47,7 @@ public class GL40 {
                 org.lwjgl.opengl.GL40.glPatchParameteri(pname, value);
             }
         }
-        getContext().exec.execute(new glPatchParameteri(pname, value));
+        getThreadContext().exec.execute(new glPatchParameteri(pname, value));
     }
 
     public static void glBlendEquationi(int buf, int mode) {
@@ -57,7 +57,7 @@ public class GL40 {
                 context.attribManager.glBlendEquationi(buf, mode);
             }
         }
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.exec.execute(new glBlendEquationi(context, buf, mode));
     }
 
@@ -68,7 +68,7 @@ public class GL40 {
                 context.attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.exec.execute(new glBlendFuncSeparatei(context, buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 

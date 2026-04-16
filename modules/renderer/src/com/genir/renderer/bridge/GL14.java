@@ -3,7 +3,7 @@ package com.genir.renderer.bridge;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.Recordable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
+import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
@@ -13,7 +13,7 @@ public class GL14 {
                 context.attribManager.glBlendEquation(mode);
             }
         }
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.exec.execute(new glBlendEquation(context, mode));
     }
 
@@ -24,7 +24,7 @@ public class GL14 {
                 context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
             }
         }
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.exec.execute(new glBlendFuncSeparate(context, sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
     }
 }

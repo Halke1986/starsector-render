@@ -10,7 +10,7 @@ import proxy.com.fs.starfarer.combat.entities.CustomCombatEntity;
 
 import java.util.List;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
+import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class LayeredRenderer {
     public static void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
@@ -18,7 +18,7 @@ public class LayeredRenderer {
             return;
         }
 
-        final Context context = getContext();
+        final Context context = getThreadContext();
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (isSwarm(entity)) {

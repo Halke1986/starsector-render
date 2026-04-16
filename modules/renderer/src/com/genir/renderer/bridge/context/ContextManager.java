@@ -18,7 +18,7 @@ public class ContextManager {
     private static Context mainContext = null;
     private static Thread mainThread = null;
 
-    public static Context getContext() {
+    public static Context getThreadContext() {
         // Assume a majority of commands is executed by the main application thread.
         // Skip the slow contextMap.computeIfAbsent call for those commands.
         if (Thread.currentThread() == mainThread) {
@@ -30,7 +30,7 @@ public class ContextManager {
         );
     }
 
-    public static void createContext() {
+    public static Context createThreadContext() {
         // Garbage collection. Remove all Context objects not associated with an OpenGL context.
         for (Iterator<Map.Entry<Thread, Context>> it = contextMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Thread, Context> entry = it.next();
@@ -42,11 +42,13 @@ public class ContextManager {
             }
         }
 
-        Context context = getContext();
+        Context context = getThreadContext();
         context.active = true;
 
         mainContext = context;
         mainThread = Thread.currentThread();
         Profiler.profiler.mainThread = Thread.currentThread();
+
+        return context;
     }
 }

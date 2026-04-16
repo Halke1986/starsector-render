@@ -9,16 +9,16 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
+import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL15 {
     public static int glGenBuffers() {
-        return getContext().bufferGenerator.get();
+        return getThreadContext().bufferGenerator.get();
     }
 
     public static void glGenBuffers(IntBuffer buffers) {
         while (buffers.remaining() > 0) {
-            buffers.put(getContext().bufferGenerator.get());
+            buffers.put(getThreadContext().bufferGenerator.get());
         }
     }
 
@@ -29,7 +29,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glDeleteBuffers(buffer);
             }
         }
-        getContext().exec.execute(new glDeleteBuffers(buffer));
+        getThreadContext().exec.execute(new glDeleteBuffers(buffer));
     }
 
     public static void glDeleteBuffers(IntBuffer buffers) {
@@ -40,7 +40,7 @@ public class GL15 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(buffers);
-        getContext().exec.execute(new glDeleteBuffers(snapshot));
+        getThreadContext().exec.execute(new glDeleteBuffers(snapshot));
     }
 
     public static void glBindBuffer(int target, int buffer) {
@@ -50,7 +50,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }
-        final Context context = getContext();
+        final Context context = getThreadContext();
         context.bufferManager.glBindBuffer(target, buffer);
         context.attribTracker.glBindBuffer(target, buffer);
         context.exec.execute(new glBindBuffer(target, buffer));
@@ -63,7 +63,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferData(target, data_size, usage);
             }
         }
-        getContext().exec.execute(new glBufferData(target, data_size, usage));
+        getThreadContext().exec.execute(new glBufferData(target, data_size, usage));
     }
 
     public static void glBufferData(int target, FloatBuffer data, int usage) {
@@ -74,7 +74,7 @@ public class GL15 {
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferData(target, snapshot, usage));
+        getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferData(int target, ByteBuffer data, int usage) {
@@ -85,7 +85,7 @@ public class GL15 {
             }
         }
         final ByteBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferData(target, snapshot, usage));
+        getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferData(int target, ShortBuffer data, int usage) {
@@ -96,7 +96,7 @@ public class GL15 {
             }
         }
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferData(target, snapshot, usage));
+        getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferData(int target, IntBuffer data, int usage) {
@@ -107,7 +107,7 @@ public class GL15 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferData(target, snapshot, usage));
+        getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferSubData(int target, long offset, FloatBuffer data) {
@@ -118,7 +118,7 @@ public class GL15 {
             }
         }
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferSubData(target, offset, snapshot));
+        getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static void glBufferSubData(int target, long offset, ShortBuffer data) {
@@ -129,7 +129,7 @@ public class GL15 {
             }
         }
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferSubData(target, offset, snapshot));
+        getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static void glBufferSubData(int target, long offset, IntBuffer data) {
@@ -140,7 +140,7 @@ public class GL15 {
             }
         }
         final IntBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferSubData(target, offset, snapshot));
+        getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static void glBufferSubData(int target, long offset, ByteBuffer data) {
@@ -151,11 +151,11 @@ public class GL15 {
             }
         }
         final ByteBuffer snapshot = BufferUtil.snapshot(data);
-        getContext().exec.execute(new glBufferSubData(target, offset, snapshot));
+        getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static boolean glUnmapBuffer(int target) {
-        final Context context = getContext();
+        final Context context = getThreadContext();
 
         boolean handled = context.bufferManager.glUnmapBuffer(target);
         if (handled) {
