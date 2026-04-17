@@ -19,6 +19,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glDrawArraysInstanced(mode, first, count, primcount);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glDrawArraysInstanced(context.id, mode, first, count, primcount));
     }
@@ -31,6 +32,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices_count, type, indices_buffer_offset, primcount);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glDrawElementsInstanced(context.id, mode, indices_count, type, indices_buffer_offset, primcount));
     }
@@ -43,6 +45,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices, primcount);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
         final Context context = getThreadContext();
         context.exec.execute(new glDrawElementsInstanced(context.id, mode, snapshot, primcount));
@@ -55,6 +58,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glTexBuffer(target, internalformat, buffer);
             }
         }
+
         getThreadContext().exec.execute(new glTexBuffer(target, internalformat, buffer));
     }
 
@@ -65,6 +69,7 @@ public class GL31 {
                 return org.lwjgl.opengl.GL31.glGetUniformBlockIndex(program, uniformBlockName);
             }
         }
+
         return getThreadContext().exec.get(new glGetUniformBlockIndex(program, uniformBlockName));
     }
 
@@ -75,6 +80,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
             }
         }
+
         getThreadContext().exec.execute(new glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding));
     }
 
@@ -85,6 +91,7 @@ public class GL31 {
                 return org.lwjgl.opengl.GL31.glGetActiveUniformBlocki(program, uniformBlockIndex, pname);
             }
         }
+
         return getThreadContext().exec.get(new glGetActiveUniformBlocki(program, uniformBlockIndex, pname));
     }
 
@@ -95,6 +102,7 @@ public class GL31 {
                 org.lwjgl.opengl.GL31.glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size);
             }
         }
+
         getThreadContext().exec.execute(new glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size));
     }
 }

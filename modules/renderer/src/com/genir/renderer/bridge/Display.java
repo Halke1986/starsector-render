@@ -45,6 +45,7 @@ public class Display {
                 org.lwjgl.opengl.Display.destroy();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.wait(new destroy());
         context.active = false;
@@ -78,6 +79,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getAvailableDisplayModes();
             }
         }
+
         return getThreadContext().exec.get(new getAvailableDisplayModes());
     }
 
@@ -88,6 +90,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.setIcon(icons);
             }
         }
+
         return getThreadContext().exec.get(new setIcon(icons));
     }
 
@@ -98,6 +101,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDesktopDisplayMode();
             }
         }
+
         return getThreadContext().exec.get(new getDesktopDisplayMode());
     }
 
@@ -108,6 +112,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDisplayMode();
             }
         }
+
         return getThreadContext().exec.get(new getDisplayMode());
     }
 
@@ -153,6 +158,7 @@ public class Display {
                 }
             }
         }
+
         getThreadContext().exec.wait(new setVSyncEnabled(sync));
     }
 
@@ -169,6 +175,7 @@ public class Display {
                 }
             }
         }
+
         final Context context = getThreadContext();
         context.exec.wait(new setFullscreen(context.id, fullscreen));
     }
@@ -182,6 +189,7 @@ public class Display {
                 org.lwjgl.opengl.Display.processMessages();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new processMessages(context.id));
         context.exec.swapFramesAndSync();
@@ -194,6 +202,7 @@ public class Display {
                 org.lwjgl.opengl.Display.sync(fps);
             }
         }
+
         getThreadContext().exec.execute(new sync(fps));
     }
 
@@ -205,6 +214,7 @@ public class Display {
                 return org.lwjgl.opengl.Display.getDrawable();
             }
         }
+
         return getThreadContext().exec.get(new getDrawable());
     }
 

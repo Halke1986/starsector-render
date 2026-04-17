@@ -17,6 +17,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glGenerateMipmap(target);
             }
         }
+
         getThreadContext().exec.execute(new glGenerateMipmap(target));
     }
 
@@ -27,6 +28,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glGenRenderbuffers(renderbuffers);
             }
         }
+
         getThreadContext().exec.wait(new glGenRenderbuffers(renderbuffers));
     }
 
@@ -37,6 +39,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glGenRenderbuffers();
             }
         }
+
         return getThreadContext().exec.get(new glGenRenderbuffers());
     }
 
@@ -47,6 +50,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindRenderbuffer(target, renderbuffer);
             }
         }
+
         getThreadContext().exec.execute(new glBindRenderbuffer(target, renderbuffer));
     }
 
@@ -57,6 +61,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glRenderbufferStorage(target, internalformat, width, height);
             }
         }
+
         getThreadContext().exec.execute(new glRenderbufferStorage(target, internalformat, width, height));
     }
 
@@ -67,6 +72,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glGenFramebuffers();
             }
         }
+
         return getThreadContext().exec.get(new glGenFramebuffers());
     }
 
@@ -77,6 +83,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindFramebuffer(target, framebuffer);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glBindFramebuffer(target, framebuffer);
         context.exec.execute(new glBindFramebuffer(target, framebuffer));
@@ -89,6 +96,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glDeleteFramebuffers(framebuffer);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteFramebuffers(framebuffer));
     }
 
@@ -99,6 +107,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glFramebufferTexture2D(target, attachment, textarget, texture, level);
             }
         }
+
         getThreadContext().exec.execute(new glFramebufferTexture2D(target, attachment, textarget, texture, level));
     }
 
@@ -109,6 +118,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
             }
         }
+
         getThreadContext().exec.execute(new glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer));
     }
 
@@ -119,6 +129,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glCheckFramebufferStatus(target);
             }
         }
+
         return getThreadContext().exec.get(new glCheckFramebufferStatus(target));
     }
 
@@ -129,6 +140,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindVertexArray(array);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glBindVertexArray(array);
         context.exec.execute(new glBindVertexArray(array));
@@ -141,6 +153,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glDeleteVertexArrays(array);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteVertexArrays(array));
     }
 
@@ -155,6 +168,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBindBufferBase(target, index, buffer);
             }
         }
+
         getThreadContext().exec.execute(new glBindBufferBase(target, index, buffer));
     }
 
@@ -177,6 +191,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer);
             }
         }
+
         return context.exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
     }
 
@@ -187,6 +202,7 @@ public class GL30 {
                 return org.lwjgl.opengl.GL30.glGetInteger(value, index);
             }
         }
+
         return getThreadContext().exec.get(new glGetInteger(value, index));
     }
 
@@ -197,6 +213,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
             }
         }
+
         getThreadContext().exec.execute(new glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
     }
 
@@ -207,6 +224,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glDeleteRenderbuffers(renderbuffer);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteRenderbuffers(renderbuffer));
     }
 
@@ -217,6 +235,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset);
             }
         }
+
         getThreadContext().exec.execute(new glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset));
     }
 
@@ -227,6 +246,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glUniform1ui(location, v0);
             }
         }
+
         getThreadContext().exec.execute(new glUniform1ui(location, v0));
     }
 
@@ -237,6 +257,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glUniform2ui(location, v0, v1);
             }
         }
+
         getThreadContext().exec.execute(new glUniform2ui(location, v0, v1));
     }
 
@@ -247,6 +268,7 @@ public class GL30 {
                 org.lwjgl.opengl.GL30.glUniform3ui(location, v0, v1, v2);
             }
         }
+
         getThreadContext().exec.execute(new glUniform3ui(location, v0, v1, v2));
     }
 }

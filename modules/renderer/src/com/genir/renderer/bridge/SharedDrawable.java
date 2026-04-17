@@ -53,6 +53,7 @@ public class SharedDrawable implements Drawable {
                 impl.destroy();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.wait(new destroy(impl));
         context.active = false;

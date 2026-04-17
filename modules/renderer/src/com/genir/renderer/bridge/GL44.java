@@ -15,6 +15,7 @@ public class GL44 {
                 org.lwjgl.opengl.GL44.glBufferStorage(target, data, flags);
             }
         }
+
         final ByteBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferStorage(target, snapshot, flags));
     }
@@ -26,6 +27,7 @@ public class GL44 {
                 org.lwjgl.opengl.GL44.glBufferStorage(target, data, flags);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferStorage(target, snapshot, flags));
     }
@@ -37,6 +39,7 @@ public class GL44 {
                 org.lwjgl.opengl.GL44.glBufferStorage(target, size, flags);
             }
         }
+
         getThreadContext().exec.execute(new glBufferStorage(target, size, flags));
     }
 }

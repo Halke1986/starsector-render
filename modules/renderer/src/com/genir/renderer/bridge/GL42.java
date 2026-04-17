@@ -10,6 +10,7 @@ public class GL42 {
                 org.lwjgl.opengl.GL42.glMemoryBarrier(barriers);
             }
         }
+
         getThreadContext().exec.execute(new glMemoryBarrier(barriers));
     }
 
@@ -20,6 +21,7 @@ public class GL42 {
                 org.lwjgl.opengl.GL42.glBindImageTexture(unit, texture, level, layered, layer, access, format);
             }
         }
+
         getThreadContext().exec.execute(new glBindImageTexture(unit, texture, level, layered, layer, access, format));
     }
 
@@ -30,6 +32,7 @@ public class GL42 {
                 org.lwjgl.opengl.GL42.glTexStorage2D(target, levels, internalformat, width, height);
             }
         }
+
         getThreadContext().exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
     }
 }

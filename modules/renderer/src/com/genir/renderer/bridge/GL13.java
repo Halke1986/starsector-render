@@ -13,6 +13,7 @@ public class GL13 {
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glActiveTexture(mode);
         context.exec.execute(new glActiveTexture(mode));

@@ -16,6 +16,7 @@ public class GL43 {
                 return org.lwjgl.opengl.GL43.glGetProgramResourceIndex(program, programInterface, name);
             }
         }
+
         return getThreadContext().exec.get(new glGetProgramResourceIndex(program, programInterface, name));
     }
 
@@ -26,6 +27,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
             }
         }
+
         getThreadContext().exec.execute(new glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding));
     }
 
@@ -36,6 +38,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
             }
         }
+
         getThreadContext().exec.execute(new glDispatchCompute(num_groups_x, num_groups_y, num_groups_z));
     }
 
@@ -46,6 +49,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glDebugMessageCallback(callback);
             }
         }
+
         getThreadContext().exec.execute(new glDebugMessageCallback(callback));
     }
 
@@ -56,6 +60,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glDebugMessageControl(source, type, severity, ids, enabled);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(ids);
         getThreadContext().exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
     }
@@ -67,6 +72,7 @@ public class GL43 {
                 org.lwjgl.opengl.GL43.glInvalidateBufferData(buffer);
             }
         }
+
         getThreadContext().exec.execute(new glInvalidateBufferData(buffer));
     }
 }

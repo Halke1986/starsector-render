@@ -29,6 +29,7 @@ public class GL11 {
                 return getContext(contextId).listManager.glGenLists(range);
             }
         }
+
         final Context context = getThreadContext();
         return context.exec.get(new glGenLists(context.id, range));
     }
@@ -40,6 +41,7 @@ public class GL11 {
                 getContext(contextId).listManager.glNewList(list, mode);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glNewList(context.id, list, mode));
     }
@@ -51,6 +53,7 @@ public class GL11 {
                 getContext(contextId).listManager.glEndList();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glEndList(context.id));
     }
@@ -62,6 +65,7 @@ public class GL11 {
                 getContext(contextId).listManager.glCallList(list);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glCallList(context.id, list));
     }
@@ -76,6 +80,7 @@ public class GL11 {
                 getContext(contextId).vertexInterceptor.glBegin(mode);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glBegin(context.id, mode));
     }
@@ -87,6 +92,7 @@ public class GL11 {
                 getContext(contextId).vertexInterceptor.glEnd();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glEnd(context.id));
     }
@@ -125,6 +131,7 @@ public class GL11 {
                 getContext(contextId).vertexInterceptor.glColor4f(red, green, blue, alpha);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glColor4f(context.id, red, green, blue, alpha));
     }
@@ -156,6 +163,7 @@ public class GL11 {
                 getContext(contextId).vertexInterceptor.glTexCoord4f(s, t, r, q);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glTexCoord4f(context.id, s, t, r, q));
     }
@@ -167,6 +175,7 @@ public class GL11 {
                 getContext(contextId).vertexInterceptor.glNormal3f(nx, ny, nz);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glNormal3f(context.id, nx, ny, nz));
     }
@@ -198,6 +207,7 @@ public class GL11 {
                 getContext(contextId).vertexInterceptor.glVertex3f(x, y, z);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glVertex3f(context.id, x, y, z));
     }
@@ -238,6 +248,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
             }
         }
+
         final Context context = getThreadContext();
         context.clientAttribTracker.glPushClientAttrib(mask);
         context.exec.execute(new glPushClientAttrib(context.id, mask));
@@ -251,6 +262,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPopClientAttrib();
             }
         }
+
         final Context context = getThreadContext();
         context.clientAttribTracker.glPopClientAttrib();
         context.exec.execute(new glPopClientAttrib(context.id));
@@ -287,6 +299,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
             }
         }
+
         final Context context = getThreadContext();
         context.clientAttribTracker.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
         context.exec.execute(new glTexCoordPointer(size, type, stride, pointer_buffer_offset));
@@ -299,6 +312,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
             }
         }
+
         final Context context = getThreadContext();
         context.clientAttribTracker.glColorPointer(size, type, stride, pointer_buffer_offset);
         context.exec.execute(new glColorPointer(size, type, stride, pointer_buffer_offset));
@@ -311,6 +325,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
             }
         }
+
         final Context context = getThreadContext();
         context.clientAttribTracker.glVertexPointer(size, type, stride, pointer_buffer_offset);
         context.exec.execute(new glVertexPointer(size, type, stride, pointer_buffer_offset));
@@ -353,6 +368,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glDrawElements(mode, indices_count, type, indices_buffer_offset);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glDrawElements(context.id, mode, indices_count, type, indices_buffer_offset));
     }
@@ -367,6 +383,7 @@ public class GL11 {
                 getContext(contextId).attribManager.glMatrixMode(mode);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glMatrixMode(mode);
         context.exec.execute(new glMatrixMode(context.id, mode));
@@ -379,6 +396,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glPushMatrix();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glPushMatrix(context.id));
     }
@@ -390,6 +408,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glPopMatrix();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glPopMatrix(context.id));
     }
@@ -401,6 +420,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glLoadIdentity();
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glLoadIdentity(context.id));
     }
@@ -412,6 +432,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glTranslatef(x, y, z);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glTranslatef(context.id, x, y, z));
     }
@@ -423,6 +444,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glRotatef(angle, x, y, z);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glRotatef(context.id, angle, x, y, z));
     }
@@ -434,6 +456,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glScalef(x, y, z);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glScalef(context.id, x, y, z));
     }
@@ -445,6 +468,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glMultMatrix(m);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
         final Context context = getThreadContext();
         context.exec.execute(new glMultMatrix(context.id, snapshot));
@@ -457,6 +481,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glLoadMatrix(m);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(m);
         final Context context = getThreadContext();
         context.exec.execute(new glLoadMatrix(context.id, snapshot));
@@ -469,6 +494,7 @@ public class GL11 {
                 getContext(contextId).transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glOrtho(context.id, left, right, bottom, top, zNear, zFar));
     }
@@ -488,6 +514,7 @@ public class GL11 {
                 }
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glEnable(cap);
         context.exec.execute(new glEnable(context.id, cap));
@@ -505,6 +532,7 @@ public class GL11 {
                 }
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glDisable(cap);
         context.exec.execute(new glDisable(context.id, cap));
@@ -522,6 +550,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glBindTexture(target, texture);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glBindTexture(target, texture);
         context.exec.execute(new glBindTexture(context.id, target, texture));
@@ -535,6 +564,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPushAttrib(mask);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glPushAttrib(mask);
         context.exec.execute(new glPushAttrib(context.id, mask));
@@ -548,6 +578,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glPopAttrib();
         context.exec.execute(new glPopAttrib(context.id));
@@ -571,6 +602,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
             }
         }
+
         getThreadContext().exec.execute(new glColorMask(red, green, blue, alpha));
     }
 
@@ -581,6 +613,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glDepthMask(flag);
             }
         }
+
         getThreadContext().exec.execute(new glDepthMask(flag));
     }
 
@@ -591,6 +624,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
             }
         }
+
         final Context context = getThreadContext();
         context.attribTracker.glViewport(x, y, width, height);
         context.exec.execute(new glViewport(x, y, width, height));
@@ -603,6 +637,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
             }
         }
+
         getThreadContext().exec.execute(new glTexParameteri(target, pname, param));
     }
 
@@ -613,6 +648,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexParameter(target, pname, param);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(param);
         getThreadContext().exec.execute(new glTexParameter(target, pname, snapshot));
     }
@@ -624,6 +660,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
             }
         }
+
         getThreadContext().exec.execute(new glClearColor(red, green, blue, alpha));
     }
 
@@ -634,6 +671,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glClear(mask);
             }
         }
+
         getThreadContext().exec.execute(new glClear(mask));
     }
 
@@ -644,6 +682,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
             }
         }
+
         getThreadContext().exec.execute(new glScissor(x, y, width, height));
     }
 
@@ -654,6 +693,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
             }
         }
+
         getThreadContext().exec.execute(new glStencilFunc(func, ref, mask));
     }
 
@@ -664,6 +704,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glStencilMask(mask);
             }
         }
+
         getThreadContext().exec.execute(new glStencilMask(mask));
     }
 
@@ -674,6 +715,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
             }
         }
+
         getThreadContext().exec.execute(new glStencilOp(fail, zfail, zpass));
     }
 
@@ -684,6 +726,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glClearStencil(s);
             }
         }
+
         getThreadContext().exec.execute(new glClearStencil(s));
     }
 
@@ -694,6 +737,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
             }
         }
+
         getThreadContext().exec.execute(new glAlphaFunc(func, ref));
     }
 
@@ -704,6 +748,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glHint(target, mode);
             }
         }
+
         getThreadContext().exec.execute(new glHint(target, mode));
     }
 
@@ -714,6 +759,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glLineWidth(width);
             }
         }
+
         getThreadContext().exec.execute(new glLineWidth(width));
     }
 
@@ -724,6 +770,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPointSize(size);
             }
         }
+
         getThreadContext().exec.execute(new glPointSize(size));
     }
 
@@ -734,6 +781,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
             }
         }
+
         getThreadContext().exec.execute(new glColorMaterial(face, mode));
     }
 
@@ -744,6 +792,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glShadeModel(mode);
             }
         }
+
         getThreadContext().exec.execute(new glShadeModel(mode));
     }
 
@@ -754,6 +803,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels);
             }
         }
+
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
         getThreadContext().exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
@@ -786,6 +836,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
         getThreadContext().exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
@@ -797,6 +848,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
             }
         }
+
         final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
         getThreadContext().exec.execute(new glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
@@ -808,6 +860,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, pixels);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
         getThreadContext().exec.execute(new glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
     }
@@ -819,6 +872,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glLight(light, pname, params);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(params);
         getThreadContext().exec.execute(new glLight(light, pname, snapshot));
     }
@@ -830,6 +884,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(params);
         getThreadContext().exec.execute(new glMaterial(face, pname, snapshot));
     }
@@ -841,6 +896,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteTextures(texture));
     }
 
@@ -851,6 +907,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glDeleteTextures(textures);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(textures);
         getThreadContext().exec.execute(new glDeleteTextures(snapshot));
     }
@@ -862,6 +919,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
             }
         }
+
         getThreadContext().exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
     }
 
@@ -872,6 +930,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
             }
         }
+
         getThreadContext().exec.execute(new glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height));
     }
 
@@ -882,6 +941,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glEdgeFlag(flag);
             }
         }
+
         getThreadContext().exec.execute(new glEdgeFlag(flag));
     }
 
@@ -892,6 +952,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glCullFace(mode);
             }
         }
+
         getThreadContext().exec.execute(new glCullFace(mode));
     }
 
@@ -902,6 +963,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glDepthFunc(func);
             }
         }
+
         getThreadContext().exec.execute(new glDepthFunc(func));
     }
 
@@ -912,6 +974,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glDepthRange(zNear, zFar);
             }
         }
+
         getThreadContext().exec.execute(new glDepthRange(zNear, zFar));
     }
 
@@ -922,6 +985,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glFrontFace(mode);
             }
         }
+
         getThreadContext().exec.execute(new glFrontFace(mode));
     }
 
@@ -932,6 +996,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glPixelStorei(pname, param);
             }
         }
+
         getThreadContext().exec.execute(new glPixelStorei(pname, param));
     }
 
@@ -942,6 +1007,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glReadBuffer(mode);
             }
         }
+
         getThreadContext().exec.execute(new glReadBuffer(mode));
     }
 
@@ -952,6 +1018,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glTexEnvi(target, pname, param);
             }
         }
+
         getThreadContext().exec.execute(new glTexEnvi(target, pname, param));
     }
 
@@ -991,6 +1058,7 @@ public class GL11 {
                 return org.lwjgl.opengl.GL11.glGetInteger(pname);
             }
         }
+
         return context.exec.get(new glGetInteger(pname));
     }
 
@@ -1016,6 +1084,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glGetInteger(pname, params);
             }
         }
+
         context.exec.wait(new glGetInteger(pname, outBuffer));
     }
 
@@ -1033,6 +1102,7 @@ public class GL11 {
                 return org.lwjgl.opengl.GL11.glGetFloat(pname);
             }
         }
+
         return context.exec.get(new glGetFloat(pname));
     }
 
@@ -1078,6 +1148,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
             }
         }
+
         getThreadContext().exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
@@ -1088,6 +1159,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
             }
         }
+
         getThreadContext().exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
@@ -1098,6 +1170,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
             }
         }
+
         getThreadContext().exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
@@ -1108,6 +1181,7 @@ public class GL11 {
                 return org.lwjgl.opengl.GL11.glGetError();
             }
         }
+
         return getThreadContext().exec.get(new glGetError());
     }
 
@@ -1118,6 +1192,7 @@ public class GL11 {
                 return org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
             }
         }
+
         return getThreadContext().exec.get(new glGetTexLevelParameteri(target, level, pname));
     }
 
@@ -1128,6 +1203,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
             }
         }
+
         getThreadContext().exec.wait(new glGetTexImage(target, level, format, type, pixels));
     }
 
@@ -1138,6 +1214,7 @@ public class GL11 {
                 org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
             }
         }
+
         getThreadContext().exec.wait(new glGetTexImage(target, level, format, type, pixels));
     }
 
@@ -1163,6 +1240,7 @@ public class GL11 {
                 return org.lwjgl.opengl.GL11.glIsEnabled(pname);
             }
         }
+
         return context.exec.get(new glIsEnabled(pname));
     }
 }

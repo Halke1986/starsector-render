@@ -19,6 +19,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glAttachShader(program, shader);
             }
         }
+
         getThreadContext().exec.execute(new glAttachShader(program, shader));
     }
 
@@ -29,6 +30,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glCompileShader(shader);
             }
         }
+
         getThreadContext().exec.execute(new glCompileShader(shader));
     }
 
@@ -39,6 +41,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glCreateProgram();
             }
         }
+
         return getThreadContext().exec.get(new glCreateProgram());
     }
 
@@ -49,6 +52,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glCreateShader(type);
             }
         }
+
         return getThreadContext().exec.get(new glCreateShader(type));
     }
 
@@ -59,6 +63,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glDeleteProgram(program);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteProgram(program));
     }
 
@@ -69,6 +74,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glDeleteShader(shader);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteShader(shader));
     }
 
@@ -79,6 +85,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glGetAttachedShaders(program, count, shaders);
             }
         }
+
         getThreadContext().exec.wait(new glGetAttachedShaders(program, count, shaders));
     }
 
@@ -89,6 +96,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glGetProgramInfoLog(program, length, infoLog);
             }
         }
+
         getThreadContext().exec.wait(new glGetProgramInfoLog(program, length, infoLog));
     }
 
@@ -99,6 +107,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glGetProgramInfoLog(program, maxLength);
             }
         }
+
         return getThreadContext().exec.get(new glGetProgramInfoLog(program, maxLength));
     }
 
@@ -109,6 +118,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glGetShaderInfoLog(shader, length, infoLog);
             }
         }
+
         getThreadContext().exec.wait(new glGetShaderInfoLog(shader, length, infoLog));
     }
 
@@ -119,6 +129,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glGetShaderInfoLog(shader, maxLength);
             }
         }
+
         return getThreadContext().exec.get(new glGetShaderInfoLog(shader, maxLength));
     }
 
@@ -129,6 +140,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glGetShaderi(shader, pname);
             }
         }
+
         return getThreadContext().exec.get(new glGetShaderi(shader, pname));
     }
 
@@ -147,6 +159,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glLinkProgram(program);
             }
         }
+
         final Context context = getThreadContext();
         context.shaderTracker.glLinkProgram(program);
         context.exec.execute(new glLinkProgram(program));
@@ -159,6 +172,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glShaderSource(shader, string);
             }
         }
+
         getThreadContext().exec.execute(new glShaderSource(shader, string));
     }
 
@@ -169,6 +183,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform1f(location, v0);
             }
         }
+
         getThreadContext().exec.execute(new glUniform1f(location, v0));
     }
 
@@ -179,6 +194,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform1i(location, v0);
             }
         }
+
         getThreadContext().exec.execute(new glUniform1i(location, v0));
     }
 
@@ -189,6 +205,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform1(location, values);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(values);
         getThreadContext().exec.execute(new glUniform1(location, snapshot));
     }
@@ -200,6 +217,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform2f(location, v0, v1);
             }
         }
+
         getThreadContext().exec.execute(new glUniform2f(location, v0, v1));
     }
 
@@ -210,6 +228,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform2i(location, v0, v1);
             }
         }
+
         getThreadContext().exec.execute(new glUniform2i(location, v0, v1));
     }
 
@@ -220,6 +239,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform2(location, values);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(values);
         getThreadContext().exec.execute(new glUniform2(location, snapshot));
     }
@@ -231,6 +251,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform3f(location, v0, v1, v2);
             }
         }
+
         getThreadContext().exec.execute(new glUniform3f(location, v0, v1, v2));
     }
 
@@ -241,6 +262,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform3i(location, v0, v1, v2);
             }
         }
+
         getThreadContext().exec.execute(new glUniform3i(location, v0, v1, v2));
     }
 
@@ -251,6 +273,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform3(location, values);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(values);
         getThreadContext().exec.execute(new glUniform3(location, snapshot));
     }
@@ -262,6 +285,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform4f(location, v0, v1, v2, v3);
             }
         }
+
         getThreadContext().exec.execute(new glUniform4f(location, v0, v1, v2, v3));
     }
 
@@ -272,6 +296,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform4i(location, v0, v1, v2, v3);
             }
         }
+
         getThreadContext().exec.execute(new glUniform4i(location, v0, v1, v2, v3));
     }
 
@@ -282,6 +307,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniform4(location, values);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(values);
         getThreadContext().exec.execute(new glUniform4(location, snapshot));
     }
@@ -304,6 +330,7 @@ public class GL20 {
                 }
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glUseProgram(context.id, program));
     }
@@ -315,6 +342,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glValidateProgram(program);
             }
         }
+
         getThreadContext().exec.execute(new glValidateProgram(program));
     }
 
@@ -325,6 +353,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glDetachShader(program, shader);
             }
         }
+
         getThreadContext().exec.execute(new glDetachShader(program, shader));
     }
 
@@ -335,6 +364,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glDisableVertexAttribArray(index);
             }
         }
+
         getThreadContext().exec.execute(new glDisableVertexAttribArray(index));
     }
 
@@ -345,6 +375,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glEnableVertexAttribArray(index);
             }
         }
+
         getThreadContext().exec.execute(new glEnableVertexAttribArray(index));
     }
 
@@ -355,6 +386,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniformMatrix4(location, transpose, matrices);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(matrices);
         getThreadContext().exec.execute(new glUniformMatrix4(location, transpose, snapshot));
     }
@@ -366,6 +398,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glUniformMatrix3(location, transpose, matrices);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(matrices);
         getThreadContext().exec.execute(new glUniformMatrix3(location, transpose, snapshot));
     }
@@ -377,6 +410,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset);
             }
         }
+
         getThreadContext().exec.execute(new glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset));
     }
 
@@ -387,6 +421,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glDrawBuffers(buffers);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(buffers);
         getThreadContext().exec.execute(new glDrawBuffers(snapshot));
     }
@@ -398,6 +433,7 @@ public class GL20 {
                 org.lwjgl.opengl.GL20.glDrawBuffers(buffer);
             }
         }
+
         getThreadContext().exec.execute(new glDrawBuffers(buffer));
     }
 
@@ -408,6 +444,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glGetAttribLocation(program, name);
             }
         }
+
         return getThreadContext().exec.get(new glGetAttribLocation(program, name));
     }
 
@@ -418,6 +455,7 @@ public class GL20 {
                 return org.lwjgl.opengl.GL20.glIsProgram(program);
             }
         }
+
         return getThreadContext().exec.get(new glIsProgram(program));
     }
 }

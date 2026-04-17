@@ -29,6 +29,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glDeleteBuffers(buffer);
             }
         }
+
         getThreadContext().exec.execute(new glDeleteBuffers(buffer));
     }
 
@@ -39,6 +40,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glDeleteBuffers(buffers);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(buffers);
         getThreadContext().exec.execute(new glDeleteBuffers(snapshot));
     }
@@ -50,6 +52,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }
+
         final Context context = getThreadContext();
         context.bufferManager.glBindBuffer(target, buffer);
         context.attribTracker.glBindBuffer(target, buffer);
@@ -63,6 +66,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferData(target, data_size, usage);
             }
         }
+
         getThreadContext().exec.execute(new glBufferData(target, data_size, usage));
     }
 
@@ -73,6 +77,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferData(target, data, usage);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
@@ -84,6 +89,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferData(target, data, usage);
             }
         }
+
         final ByteBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
@@ -95,6 +101,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferData(target, data, usage);
             }
         }
+
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
@@ -106,6 +113,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferData(target, data, usage);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
     }
@@ -117,6 +125,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data);
             }
         }
+
         final FloatBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
@@ -128,6 +137,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data);
             }
         }
+
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
@@ -139,6 +149,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
@@ -150,6 +161,7 @@ public class GL15 {
                 org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data);
             }
         }
+
         final ByteBuffer snapshot = BufferUtil.snapshot(data);
         getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
     }
@@ -169,6 +181,7 @@ public class GL15 {
                 return org.lwjgl.opengl.GL15.glUnmapBuffer(target);
             }
         }
+
         return context.exec.get(new glUnmapBuffer(target));
     }
 }

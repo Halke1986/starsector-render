@@ -17,6 +17,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineIndex(program, shadertype, name);
             }
         }
+
         return getThreadContext().exec.get(new glGetSubroutineIndex(program, shadertype, name));
     }
 
@@ -27,6 +28,7 @@ public class GL40 {
                 return org.lwjgl.opengl.GL40.glGetSubroutineUniformLocation(program, shadertype, name);
             }
         }
+
         return getThreadContext().exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
     }
 
@@ -37,6 +39,7 @@ public class GL40 {
                 org.lwjgl.opengl.GL40.glUniformSubroutinesu(shadertype, indices);
             }
         }
+
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
         getThreadContext().exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
@@ -48,6 +51,7 @@ public class GL40 {
                 org.lwjgl.opengl.GL40.glPatchParameteri(pname, value);
             }
         }
+
         getThreadContext().exec.execute(new glPatchParameteri(pname, value));
     }
 
@@ -58,6 +62,7 @@ public class GL40 {
                 getContext(contextId).attribManager.glBlendEquationi(buf, mode);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glBlendEquationi(context.id, buf, mode));
     }
@@ -69,6 +74,7 @@ public class GL40 {
                 getContext(contextId).attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }
+
         final Context context = getThreadContext();
         context.exec.execute(new glBlendFuncSeparatei(context.id, buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }

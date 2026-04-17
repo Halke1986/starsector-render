@@ -10,6 +10,7 @@ public class GL33 {
                 org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor);
             }
         }
+
         getThreadContext().exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }
