@@ -4,7 +4,6 @@ import com.genir.renderer.Pool;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.stall.StallDetector;
 
-import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -14,9 +13,7 @@ public class Executor {
     private final ListManager listManager;
     private final StallDetector stallDetector;
 
-    private Runnable[] currentFrame = new Runnable[1];
-    private int frameSize = 0;
-    private int maxFrameSize = 1;
+    private Frame currentFrame = new Frame();
     private final Pool framePool = new Pool();
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
@@ -37,13 +34,7 @@ public class Executor {
             return;
         }
 
-        if (currentFrame.length <= frameSize) {
-            maxFrameSize = currentFrame.length * 2;
-            currentFrame = BufferUtil.reallocate(Runnable.class, maxFrameSize, currentFrame);
-        }
-
-        currentFrame[frameSize] = command;
-        frameSize++;
+        currentFrame.add(command);
     }
 
     /**
@@ -95,22 +86,21 @@ public class Executor {
         // of the exception are invalid and must not be executed.
         rethrowAndClearException();
 
-        final Runnable[] commands = currentFrame;
+        final Frame frameToExecute = currentFrame;
         final boolean isMainThread = profiler.mainThread == Thread.currentThread();
 
         // Reuse frame array to avoid excessive heap pressure.
-        currentFrame = (Runnable[]) framePool.get();
-        if (currentFrame == null || currentFrame.length != maxFrameSize) {
-            currentFrame = new Runnable[maxFrameSize];
+        currentFrame = (Frame) framePool.get();
+        if (currentFrame == null) {
+            currentFrame = new Frame();
         }
-        frameSize = 0;
 
         lastFrameFuture = execActual.submit(() -> {
-            executeCommands(commands, isMainThread);
+            executeCommands(frameToExecute, isMainThread);
 
             // Reuse frame array.
-            Arrays.fill(commands, null);
-            framePool.put(commands);
+            frameToExecute.clear();
+            framePool.put(frameToExecute);
         });
     }
 
@@ -143,8 +133,7 @@ public class Executor {
     private void rethrowAndClearException() {
         Throwable t = exception.getAndSet(null);
         if (t != null) {
-            currentFrame = new Runnable[maxFrameSize];
-            frameSize = 0;
+            currentFrame = new Frame();
 
             lastFrameFuture = CompletableFuture.completedFuture(null);
 
@@ -152,7 +141,7 @@ public class Executor {
         }
     }
 
-    private void executeCommands(Runnable[] commands, boolean isMainThread) {
+    private void executeCommands(Frame frame, boolean isMainThread) {
         long start = System.nanoTime();
 
         // Executor is in invalid state. Cancel all scheduled commands.
@@ -162,6 +151,7 @@ public class Executor {
 
         try {
             // Run all scheduled commands.
+            Runnable[] commands = frame.commands;
             for (int i = 0; i < commands.length && commands[i] != null; i++) {
                 Runnable command = commands[i];
                 if (command instanceof Recordable && listManager.isRecording()) {
