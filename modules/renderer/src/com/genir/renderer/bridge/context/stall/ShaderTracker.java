@@ -27,7 +27,7 @@ public class ShaderTracker {
         );
 
         return locations.computeIfAbsent(name.toString(), k ->
-                exec.get(() -> GL20.glGetUniformLocation(program, name))
+                exec.get(context -> GL20.glGetUniformLocation(program, name))
         );
     }
 
@@ -37,7 +37,7 @@ public class ShaderTracker {
         );
 
         return parameters.computeIfAbsent(pname, k ->
-                exec.get(() -> GL20.glGetProgrami(program, pname))
+                exec.get(context -> GL20.glGetProgrami(program, pname))
         );
     }
 }

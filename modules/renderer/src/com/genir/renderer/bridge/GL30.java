@@ -2,18 +2,19 @@ package com.genir.renderer.bridge;
 
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.GLGetter;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.concurrent.Callable;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL30 {
     public static void glGenerateMipmap(int target) {
-        record glGenerateMipmap(int target) implements Runnable {
+        record glGenerateMipmap(int target) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glGenerateMipmap(target);
             }
         }
@@ -22,9 +23,9 @@ public class GL30 {
     }
 
     public static void glGenRenderbuffers(IntBuffer renderbuffers) {
-        record glGenRenderbuffers(IntBuffer renderbuffers) implements Runnable {
+        record glGenRenderbuffers(IntBuffer renderbuffers) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glGenRenderbuffers(renderbuffers);
             }
         }
@@ -33,9 +34,9 @@ public class GL30 {
     }
 
     public static int glGenRenderbuffers() {
-        record glGenRenderbuffers() implements Callable<Integer> {
+        record glGenRenderbuffers() implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL30.glGenRenderbuffers();
             }
         }
@@ -44,9 +45,9 @@ public class GL30 {
     }
 
     public static void glBindRenderbuffer(int target, int renderbuffer) {
-        record glBindRenderbuffer(int target, int renderbuffer) implements Runnable {
+        record glBindRenderbuffer(int target, int renderbuffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glBindRenderbuffer(target, renderbuffer);
             }
         }
@@ -55,9 +56,9 @@ public class GL30 {
     }
 
     public static void glRenderbufferStorage(int target, int internalformat, int width, int height) {
-        record glRenderbufferStorage(int target, int internalformat, int width, int height) implements Runnable {
+        record glRenderbufferStorage(int target, int internalformat, int width, int height) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glRenderbufferStorage(target, internalformat, width, height);
             }
         }
@@ -66,9 +67,9 @@ public class GL30 {
     }
 
     public static int glGenFramebuffers() {
-        record glGenFramebuffers() implements Callable<Integer> {
+        record glGenFramebuffers() implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL30.glGenFramebuffers();
             }
         }
@@ -77,9 +78,9 @@ public class GL30 {
     }
 
     public static void glBindFramebuffer(int target, int framebuffer) {
-        record glBindFramebuffer(int target, int framebuffer) implements Runnable {
+        record glBindFramebuffer(int target, int framebuffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glBindFramebuffer(target, framebuffer);
             }
         }
@@ -90,9 +91,9 @@ public class GL30 {
     }
 
     public static void glDeleteFramebuffers(int framebuffer) {
-        record glDeleteFramebuffers(int framebuffer) implements Runnable {
+        record glDeleteFramebuffers(int framebuffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glDeleteFramebuffers(framebuffer);
             }
         }
@@ -101,9 +102,9 @@ public class GL30 {
     }
 
     public static void glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
-        record glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) implements Runnable {
+        record glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glFramebufferTexture2D(target, attachment, textarget, texture, level);
             }
         }
@@ -112,9 +113,9 @@ public class GL30 {
     }
 
     public static void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
-        record glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) implements Runnable {
+        record glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
             }
         }
@@ -123,9 +124,9 @@ public class GL30 {
     }
 
     public static int glCheckFramebufferStatus(int target) {
-        record glCheckFramebufferStatus(int target) implements Callable<Integer> {
+        record glCheckFramebufferStatus(int target) implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL30.glCheckFramebufferStatus(target);
             }
         }
@@ -134,9 +135,9 @@ public class GL30 {
     }
 
     public static void glBindVertexArray(int array) {
-        record glBindVertexArray(int array) implements Runnable {
+        record glBindVertexArray(int array) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glBindVertexArray(array);
             }
         }
@@ -147,9 +148,9 @@ public class GL30 {
     }
 
     public static void glDeleteVertexArrays(int array) {
-        record glDeleteVertexArrays(int array) implements Runnable {
+        record glDeleteVertexArrays(int array) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glDeleteVertexArrays(array);
             }
         }
@@ -162,9 +163,9 @@ public class GL30 {
     }
 
     public static void glBindBufferBase(int target, int index, int buffer) {
-        record glBindBufferBase(int target, int index, int buffer) implements Runnable {
+        record glBindBufferBase(int target, int index, int buffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glBindBufferBase(target, index, buffer);
             }
         }
@@ -185,9 +186,9 @@ public class GL30 {
         }
 
         // Fall back to OpenGL glMapBufferRange if bufferManager cannot map the buffer.
-        record glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) implements Callable<ByteBuffer> {
+        record glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) implements GLGetter<ByteBuffer> {
             @Override
-            public ByteBuffer call() throws Exception {
+            public ByteBuffer call(Context context) {
                 return org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer);
             }
         }
@@ -196,9 +197,9 @@ public class GL30 {
     }
 
     public static int glGetInteger(int value, int index) {
-        record glGetInteger(int value, int index) implements Callable<Integer> {
+        record glGetInteger(int value, int index) implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL30.glGetInteger(value, index);
             }
         }
@@ -207,9 +208,9 @@ public class GL30 {
     }
 
     public static void glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
-        record glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) implements Runnable {
+        record glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
             }
         }
@@ -218,9 +219,9 @@ public class GL30 {
     }
 
     public static void glDeleteRenderbuffers(int renderbuffer) {
-        record glDeleteRenderbuffers(int renderbuffer) implements Runnable {
+        record glDeleteRenderbuffers(int renderbuffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glDeleteRenderbuffers(renderbuffer);
             }
         }
@@ -229,9 +230,9 @@ public class GL30 {
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) {
-        record glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) implements Runnable {
+        record glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset);
             }
         }
@@ -240,9 +241,9 @@ public class GL30 {
     }
 
     public static void glUniform1ui(int location, int v0) {
-        record glUniform1ui(int location, int v0) implements Runnable {
+        record glUniform1ui(int location, int v0) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glUniform1ui(location, v0);
             }
         }
@@ -251,9 +252,9 @@ public class GL30 {
     }
 
     public static void glUniform2ui(int location, int v0, int v1) {
-        record glUniform2ui(int location, int v0, int v1) implements Runnable {
+        record glUniform2ui(int location, int v0, int v1) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glUniform2ui(location, v0, v1);
             }
         }
@@ -262,9 +263,9 @@ public class GL30 {
     }
 
     public static void glUniform3ui(int location, int v0, int v1, int v2) {
-        record glUniform3ui(int location, int v0, int v1, int v2) implements Runnable {
+        record glUniform3ui(int location, int v0, int v1, int v2) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL30.glUniform3ui(location, v0, v1, v2);
             }
         }

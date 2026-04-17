@@ -1,14 +1,16 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.commands.GLCommand;
+
 import java.util.Arrays;
 
 public class Frame {
-    public Runnable[] commands = new Runnable[1];
+    public GLCommand[] commands = new GLCommand[1];
     public int size = 0;
 
-    public void add(Runnable command) {
+    public void add(GLCommand command) {
         if (commands.length <= size) {
-            commands = BufferUtil.reallocate(Runnable.class, commands.length * 2, commands);
+            commands = BufferUtil.reallocate(GLCommand.class, commands.length * 2, commands);
         }
 
         commands[size] = command;

@@ -8,17 +8,16 @@ public class Context {
     // This is because vanilla may perform additional LWJGL calls
     // after destroying the OpenGL context.
     public boolean active = false;
-    public final int id;
 
     // Server state. Runs on rendering thread.
-    public final ListManager listManager = new ListManager();
+    public final ListManager listManager = new ListManager(this);
     public final AttribManager attribManager = new AttribManager();
     public final TransformManager transformManager = new TransformManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, transformManager);
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
-    public final Executor exec = new Executor(listManager, stallDetector);
+    public final Executor exec = new Executor(this);
     public final StateCache glStateCache = new StateCache();
 
     // Client state. Runs on main thread.
@@ -30,9 +29,6 @@ public class Context {
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
 
-    public Context(int id) {
-        this.id = id;
-    }
 
     public void update() {
         if (active && org.lwjgl.opengl.Display.isCreated()) {

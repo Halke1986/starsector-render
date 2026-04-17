@@ -2,6 +2,8 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.overrides.ProgressBar;
@@ -11,20 +13,18 @@ import org.lwjgl.opengl.Drawable;
 import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 import static com.genir.renderer.debug.Debug.log;
 
 public class Display {
     public static void create(PixelFormat pixel_format) {
-        record create(int contextId, PixelFormat pixel_format) implements Runnable {
+        record create(PixelFormat pixel_format) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 try {
                     org.lwjgl.opengl.Display.create(pixel_format);
-                    getContext(contextId).update();
+                    context.update();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {
@@ -35,13 +35,13 @@ public class Display {
 
         ProgressBar.clear();
         final Context context = ContextManager.createThreadContext();
-        getThreadContext().exec.wait(new create(context.id, pixel_format));
+        getThreadContext().exec.wait(new create(pixel_format));
     }
 
     public static void destroy() {
-        record destroy() implements Runnable {
+        record destroy() implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.Display.destroy();
             }
         }
@@ -52,16 +52,16 @@ public class Display {
     }
 
     public static void update(boolean processMessages) {
-        record update(int contextId, boolean processMessages) implements Runnable {
+        record update(boolean processMessages) implements GLCommand {
             @Override
-            public void run() {
-                getContext(contextId).update();
+            public void run(Context context) {
+                context.update();
                 org.lwjgl.opengl.Display.update(processMessages);
             }
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new update(context.id, processMessages));
+        context.exec.execute(new update(processMessages));
         context.exec.swapFramesAndSync();
 
         Profiler.profiler.update();
@@ -73,10 +73,14 @@ public class Display {
     }
 
     public static DisplayMode[] getAvailableDisplayModes() {
-        record getAvailableDisplayModes() implements Callable<DisplayMode[]> {
+        record getAvailableDisplayModes() implements GLGetter<DisplayMode[]> {
             @Override
-            public DisplayMode[] call() throws Exception {
-                return org.lwjgl.opengl.Display.getAvailableDisplayModes();
+            public DisplayMode[] call(Context context) {
+                try {
+                    return org.lwjgl.opengl.Display.getAvailableDisplayModes();
+                } catch (LWJGLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -84,9 +88,9 @@ public class Display {
     }
 
     public static int setIcon(ByteBuffer[] icons) {
-        record setIcon(ByteBuffer[] icons) implements Callable<Integer> {
+        record setIcon(ByteBuffer[] icons) implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.Display.setIcon(icons);
             }
         }
@@ -95,9 +99,9 @@ public class Display {
     }
 
     public static DisplayMode getDesktopDisplayMode() {
-        record getDesktopDisplayMode() implements Callable<DisplayMode> {
+        record getDesktopDisplayMode() implements GLGetter<DisplayMode> {
             @Override
-            public DisplayMode call() throws Exception {
+            public DisplayMode call(Context context) {
                 return org.lwjgl.opengl.Display.getDesktopDisplayMode();
             }
         }
@@ -106,9 +110,9 @@ public class Display {
     }
 
     public static DisplayMode getDisplayMode() {
-        record getDisplayMode() implements Callable<DisplayMode> {
+        record getDisplayMode() implements GLGetter<DisplayMode> {
             @Override
-            public DisplayMode call() throws Exception {
+            public DisplayMode call(Context context) {
                 return org.lwjgl.opengl.Display.getDisplayMode();
             }
         }
@@ -117,9 +121,9 @@ public class Display {
     }
 
     public static void setTitle(String newTitle) {
-        record setTitle(String newTitle) implements Runnable {
+        record setTitle(String newTitle) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.Display.setTitle(newTitle);
             }
         }
@@ -128,9 +132,9 @@ public class Display {
     }
 
     public static void setVSyncEnabled(boolean sync) {
-        record setVSyncEnabled(boolean sync) implements Runnable {
+        record setVSyncEnabled(boolean sync) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 // Drain OpenGL error queue and log errors. NOTE: As of 0.98a vanilla
                 // ignores OpenGL errors and lets setVSyncEnabled drain the error
                 // queue and throw an exception.
@@ -164,12 +168,12 @@ public class Display {
 
 
     public static void setFullscreen(boolean fullscreen) {
-        record setFullscreen(int contextId, boolean fullscreen) implements Runnable {
+        record setFullscreen(boolean fullscreen) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 try {
                     org.lwjgl.opengl.Display.setFullscreen(fullscreen);
-                    getContext(contextId).update();
+                    context.update();
                 } catch (LWJGLException e) {
                     throw new RuntimeException(e);
                 }
@@ -177,28 +181,28 @@ public class Display {
         }
 
         final Context context = getThreadContext();
-        context.exec.wait(new setFullscreen(context.id, fullscreen));
+        context.exec.wait(new setFullscreen(fullscreen));
     }
 
 
     public static void processMessages() {
-        record processMessages(int contextId) implements Runnable {
+        record processMessages() implements GLCommand {
             @Override
-            public void run() {
-                getContext(contextId).update();
+            public void run(Context context) {
+                context.update();
                 org.lwjgl.opengl.Display.processMessages();
             }
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new processMessages(context.id));
+        context.exec.execute(new processMessages());
         context.exec.swapFramesAndSync();
     }
 
     public static void sync(int fps) {
-        record sync(int fps) implements Runnable {
+        record sync(int fps) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.Display.sync(fps);
             }
         }
@@ -208,9 +212,9 @@ public class Display {
 
 
     public static Drawable getDrawable() {
-        record getDrawable() implements Callable<Drawable> {
+        record getDrawable() implements GLGetter<Drawable> {
             @Override
-            public Drawable call() throws Exception {
+            public Drawable call(Context context) {
                 return org.lwjgl.opengl.Display.getDrawable();
             }
         }

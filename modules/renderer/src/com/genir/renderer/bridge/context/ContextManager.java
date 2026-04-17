@@ -2,7 +2,9 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.debug.Profiler;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * ContextManager manages virtual OpenGL contexts.
@@ -12,14 +14,9 @@ import java.util.*;
  */
 public class ContextManager {
     private static final Map<Thread, Context> contextMap = new HashMap<>();
-    private static final List<Context> contextList = new ArrayList<>();
 
     private static Context mainContext = null;
     private static Thread mainThread = null;
-
-    public static Context getContext(int id) {
-        return contextList.get(id);
-    }
 
     public static Context getThreadContext() {
         // Assume a majority of commands is executed by the main application thread.
@@ -34,10 +31,7 @@ public class ContextManager {
     synchronized private static Context getThreadContextFallback() {
         Context context = contextMap.get(Thread.currentThread());
         if (context == null) {
-            int id = contextList.size();
-            context = new Context(id);
-
-            contextList.add(context);
+            context = new Context();
             contextMap.put(Thread.currentThread(), context);
         }
 
@@ -53,7 +47,6 @@ public class ContextManager {
             if (!context.active) {
                 context.exec.shutdown();
                 it.remove();
-                contextList.set(context.id, null);
             }
         }
 

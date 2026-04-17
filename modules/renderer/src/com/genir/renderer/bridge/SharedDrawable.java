@@ -1,23 +1,26 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.GLGetter;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.Drawable;
 
-import java.util.concurrent.Callable;
-
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class SharedDrawable implements Drawable {
     private final org.lwjgl.opengl.SharedDrawable impl;
 
     public SharedDrawable(Drawable drawable) {
-        record SharedDrawableConstructor(Drawable drawable) implements Callable<org.lwjgl.opengl.SharedDrawable> {
+        record SharedDrawableConstructor(Drawable drawable) implements GLGetter<org.lwjgl.opengl.SharedDrawable> {
             @Override
-            public org.lwjgl.opengl.SharedDrawable call() throws Exception {
-                return new org.lwjgl.opengl.SharedDrawable(drawable);
+            public org.lwjgl.opengl.SharedDrawable call(Context context) {
+                try {
+                    return new org.lwjgl.opengl.SharedDrawable(drawable);
+                } catch (LWJGLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -26,12 +29,12 @@ public class SharedDrawable implements Drawable {
 
     @Override
     public void makeCurrent() {
-        record makeCurrent(int contextId, org.lwjgl.opengl.SharedDrawable impl) implements Runnable {
+        record makeCurrent(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 try {
                     impl.makeCurrent();
-                    getContext(contextId).update();
+                    context.update();
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable t) {
@@ -42,14 +45,14 @@ public class SharedDrawable implements Drawable {
 
         final Context context = getThreadContext();
         context.active = true;
-        context.exec.wait(new makeCurrent(context.id, impl));
+        context.exec.wait(new makeCurrent(impl));
     }
 
     @Override
     public void destroy() {
-        record destroy(org.lwjgl.opengl.SharedDrawable impl) implements Runnable {
+        record destroy(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 impl.destroy();
             }
         }

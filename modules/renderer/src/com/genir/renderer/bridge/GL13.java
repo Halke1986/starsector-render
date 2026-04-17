@@ -2,14 +2,15 @@ package com.genir.renderer.bridge;
 
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.commands.GLCommand;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL13 {
     public static void glActiveTexture(int mode) {
-        record glActiveTexture(int mode) implements Runnable {
+        record glActiveTexture(int mode) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }

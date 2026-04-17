@@ -2,20 +2,20 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.BufferUtil;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.GLGetter;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.concurrent.Callable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {
-        record glAttachShader(int program, int shader) implements Runnable {
+        record glAttachShader(int program, int shader) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glAttachShader(program, shader);
             }
         }
@@ -24,9 +24,9 @@ public class GL20 {
     }
 
     public static void glCompileShader(int shader) {
-        record glCompileShader(int shader) implements Runnable {
+        record glCompileShader(int shader) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glCompileShader(shader);
             }
         }
@@ -35,9 +35,9 @@ public class GL20 {
     }
 
     public static int glCreateProgram() {
-        record glCreateProgram() implements Callable<Integer> {
+        record glCreateProgram() implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL20.glCreateProgram();
             }
         }
@@ -46,9 +46,9 @@ public class GL20 {
     }
 
     public static int glCreateShader(int type) {
-        record glCreateShader(int type) implements Callable<Integer> {
+        record glCreateShader(int type) implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL20.glCreateShader(type);
             }
         }
@@ -57,9 +57,9 @@ public class GL20 {
     }
 
     public static void glDeleteProgram(int program) {
-        record glDeleteProgram(int program) implements Runnable {
+        record glDeleteProgram(int program) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glDeleteProgram(program);
             }
         }
@@ -68,9 +68,9 @@ public class GL20 {
     }
 
     public static void glDeleteShader(int shader) {
-        record glDeleteShader(int shader) implements Runnable {
+        record glDeleteShader(int shader) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glDeleteShader(shader);
             }
         }
@@ -79,9 +79,9 @@ public class GL20 {
     }
 
     public static void glGetAttachedShaders(int program, IntBuffer count, IntBuffer shaders) {
-        record glGetAttachedShaders(int program, IntBuffer count, IntBuffer shaders) implements Runnable {
+        record glGetAttachedShaders(int program, IntBuffer count, IntBuffer shaders) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glGetAttachedShaders(program, count, shaders);
             }
         }
@@ -90,9 +90,9 @@ public class GL20 {
     }
 
     public static void glGetProgramInfoLog(int program, IntBuffer length, ByteBuffer infoLog) {
-        record glGetProgramInfoLog(int program, IntBuffer length, ByteBuffer infoLog) implements Runnable {
+        record glGetProgramInfoLog(int program, IntBuffer length, ByteBuffer infoLog) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glGetProgramInfoLog(program, length, infoLog);
             }
         }
@@ -101,9 +101,9 @@ public class GL20 {
     }
 
     public static String glGetProgramInfoLog(int program, int maxLength) {
-        record glGetProgramInfoLog(int program, int maxLength) implements Callable<String> {
+        record glGetProgramInfoLog(int program, int maxLength) implements GLGetter<String> {
             @Override
-            public String call() throws Exception {
+            public String call(Context context) {
                 return org.lwjgl.opengl.GL20.glGetProgramInfoLog(program, maxLength);
             }
         }
@@ -112,9 +112,9 @@ public class GL20 {
     }
 
     public static void glGetShaderInfoLog(int shader, IntBuffer length, ByteBuffer infoLog) {
-        record glGetShaderInfoLog(int shader, IntBuffer length, ByteBuffer infoLog) implements Runnable {
+        record glGetShaderInfoLog(int shader, IntBuffer length, ByteBuffer infoLog) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glGetShaderInfoLog(shader, length, infoLog);
             }
         }
@@ -123,9 +123,9 @@ public class GL20 {
     }
 
     public static String glGetShaderInfoLog(int shader, int maxLength) {
-        record glGetShaderInfoLog(int shader, int maxLength) implements Callable<String> {
+        record glGetShaderInfoLog(int shader, int maxLength) implements GLGetter<String> {
             @Override
-            public String call() throws Exception {
+            public String call(Context context) {
                 return org.lwjgl.opengl.GL20.glGetShaderInfoLog(shader, maxLength);
             }
         }
@@ -134,9 +134,9 @@ public class GL20 {
     }
 
     public static int glGetShaderi(int shader, int pname) {
-        record glGetShaderi(int shader, int pname) implements Callable<Integer> {
+        record glGetShaderi(int shader, int pname) implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL20.glGetShaderi(shader, pname);
             }
         }
@@ -153,9 +153,9 @@ public class GL20 {
     }
 
     public static void glLinkProgram(int program) {
-        record glLinkProgram(int program) implements Runnable {
+        record glLinkProgram(int program) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glLinkProgram(program);
             }
         }
@@ -166,9 +166,9 @@ public class GL20 {
     }
 
     public static void glShaderSource(int shader, CharSequence string) {
-        record glShaderSource(int shader, CharSequence string) implements Runnable {
+        record glShaderSource(int shader, CharSequence string) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glShaderSource(shader, string);
             }
         }
@@ -177,9 +177,9 @@ public class GL20 {
     }
 
     public static void glUniform1f(int location, float v0) {
-        record glUniform1f(int location, float v0) implements Runnable {
+        record glUniform1f(int location, float v0) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform1f(location, v0);
             }
         }
@@ -188,9 +188,9 @@ public class GL20 {
     }
 
     public static void glUniform1i(int location, int v0) {
-        record glUniform1i(int location, int v0) implements Runnable {
+        record glUniform1i(int location, int v0) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform1i(location, v0);
             }
         }
@@ -199,9 +199,9 @@ public class GL20 {
     }
 
     public static void glUniform1(int location, FloatBuffer values) {
-        record glUniform1(int location, FloatBuffer values) implements Runnable {
+        record glUniform1(int location, FloatBuffer values) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform1(location, values);
             }
         }
@@ -211,9 +211,9 @@ public class GL20 {
     }
 
     public static void glUniform2f(int location, float v0, float v1) {
-        record glUniform2f(int location, float v0, float v1) implements Runnable {
+        record glUniform2f(int location, float v0, float v1) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform2f(location, v0, v1);
             }
         }
@@ -222,9 +222,9 @@ public class GL20 {
     }
 
     public static void glUniform2i(int location, int v0, int v1) {
-        record glUniform2i(int location, int v0, int v1) implements Runnable {
+        record glUniform2i(int location, int v0, int v1) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform2i(location, v0, v1);
             }
         }
@@ -233,9 +233,9 @@ public class GL20 {
     }
 
     public static void glUniform2(int location, FloatBuffer values) {
-        record glUniform2(int location, FloatBuffer values) implements Runnable {
+        record glUniform2(int location, FloatBuffer values) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform2(location, values);
             }
         }
@@ -245,9 +245,9 @@ public class GL20 {
     }
 
     public static void glUniform3f(int location, float v0, float v1, float v2) {
-        record glUniform3f(int location, float v0, float v1, float v2) implements Runnable {
+        record glUniform3f(int location, float v0, float v1, float v2) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform3f(location, v0, v1, v2);
             }
         }
@@ -256,9 +256,9 @@ public class GL20 {
     }
 
     public static void glUniform3i(int location, int v0, int v1, int v2) {
-        record glUniform3i(int location, int v0, int v1, int v2) implements Runnable {
+        record glUniform3i(int location, int v0, int v1, int v2) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform3i(location, v0, v1, v2);
             }
         }
@@ -267,9 +267,9 @@ public class GL20 {
     }
 
     public static void glUniform3(int location, FloatBuffer values) {
-        record glUniform3(int location, FloatBuffer values) implements Runnable {
+        record glUniform3(int location, FloatBuffer values) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform3(location, values);
             }
         }
@@ -279,9 +279,9 @@ public class GL20 {
     }
 
     public static void glUniform4f(int location, float v0, float v1, float v2, float v3) {
-        record glUniform4f(int location, float v0, float v1, float v2, float v3) implements Runnable {
+        record glUniform4f(int location, float v0, float v1, float v2, float v3) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform4f(location, v0, v1, v2, v3);
             }
         }
@@ -290,9 +290,9 @@ public class GL20 {
     }
 
     public static void glUniform4i(int location, int v0, int v1, int v2, int v3) {
-        record glUniform4i(int location, int v0, int v1, int v2, int v3) implements Runnable {
+        record glUniform4i(int location, int v0, int v1, int v2, int v3) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform4i(location, v0, v1, v2, v3);
             }
         }
@@ -301,9 +301,9 @@ public class GL20 {
     }
 
     public static void glUniform4(int location, FloatBuffer values) {
-        record glUniform4(int location, FloatBuffer values) implements Runnable {
+        record glUniform4(int location, FloatBuffer values) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniform4(location, values);
             }
         }
@@ -313,10 +313,9 @@ public class GL20 {
     }
 
     public static void glUseProgram(int program) {
-        record glUseProgram(int contextId, int program) implements Runnable {
+        record glUseProgram(int program) implements GLCommand {
             @Override
-            public void run() {
-                Context context = getContext(contextId);
+            public void run(Context context) {
                 if (program != 0) {
                     // Performing model view transformation on
                     // CPU may interfere with the shader program.
@@ -332,13 +331,13 @@ public class GL20 {
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new glUseProgram(context.id, program));
+        context.exec.execute(new glUseProgram(program));
     }
 
     public static void glValidateProgram(int program) {
-        record glValidateProgram(int program) implements Runnable {
+        record glValidateProgram(int program) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glValidateProgram(program);
             }
         }
@@ -347,9 +346,9 @@ public class GL20 {
     }
 
     public static void glDetachShader(int program, int shader) {
-        record glDetachShader(int program, int shader) implements Runnable {
+        record glDetachShader(int program, int shader) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glDetachShader(program, shader);
             }
         }
@@ -358,9 +357,9 @@ public class GL20 {
     }
 
     public static void glDisableVertexAttribArray(int index) {
-        record glDisableVertexAttribArray(int index) implements Runnable {
+        record glDisableVertexAttribArray(int index) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glDisableVertexAttribArray(index);
             }
         }
@@ -369,9 +368,9 @@ public class GL20 {
     }
 
     public static void glEnableVertexAttribArray(int index) {
-        record glEnableVertexAttribArray(int index) implements Runnable {
+        record glEnableVertexAttribArray(int index) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glEnableVertexAttribArray(index);
             }
         }
@@ -380,9 +379,9 @@ public class GL20 {
     }
 
     public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) {
-        record glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) implements Runnable {
+        record glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniformMatrix4(location, transpose, matrices);
             }
         }
@@ -392,9 +391,9 @@ public class GL20 {
     }
 
     public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) {
-        record glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) implements Runnable {
+        record glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glUniformMatrix3(location, transpose, matrices);
             }
         }
@@ -404,9 +403,9 @@ public class GL20 {
     }
 
     public static void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) {
-        record glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) implements Runnable {
+        record glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset);
             }
         }
@@ -415,9 +414,9 @@ public class GL20 {
     }
 
     public static void glDrawBuffers(IntBuffer buffers) {
-        record glDrawBuffers(IntBuffer buffers) implements Runnable {
+        record glDrawBuffers(IntBuffer buffers) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glDrawBuffers(buffers);
             }
         }
@@ -427,9 +426,9 @@ public class GL20 {
     }
 
     public static void glDrawBuffers(int buffer) {
-        record glDrawBuffers(int buffer) implements Runnable {
+        record glDrawBuffers(int buffer) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 org.lwjgl.opengl.GL20.glDrawBuffers(buffer);
             }
         }
@@ -438,9 +437,9 @@ public class GL20 {
     }
 
     public static int glGetAttribLocation(int program, CharSequence name) {
-        record glGetAttribLocation(int program, CharSequence name) implements Callable<Integer> {
+        record glGetAttribLocation(int program, CharSequence name) implements GLGetter<Integer> {
             @Override
-            public Integer call() throws Exception {
+            public Integer call(Context context) {
                 return org.lwjgl.opengl.GL20.glGetAttribLocation(program, name);
             }
         }
@@ -449,9 +448,9 @@ public class GL20 {
     }
 
     public static boolean glIsProgram(int program) {
-        record glIsProgram(int program) implements Callable<Boolean> {
+        record glIsProgram(int program) implements GLGetter<Boolean> {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call(Context context) {
                 return org.lwjgl.opengl.GL20.glIsProgram(program);
             }
         }

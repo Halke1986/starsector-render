@@ -1,5 +1,7 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.commands.GLCommand;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +10,17 @@ import java.util.Map;
 import static com.genir.renderer.debug.Debug.asert;
 
 public class ListManager {
+    private final Context context;
+
     private int mode = 0;
     private int newListID;
-    private List<Runnable> newList;
+    private List<GLCommand> newList;
 
-    private final Map<Integer, Runnable[]> lists = new HashMap<>();
+    private final Map<Integer, GLCommand[]> lists = new HashMap<>();
+
+    public ListManager(Context context) {
+        this.context = context;
+    }
 
     // NOTE:
     // https://fractalsoftworks.com/forum/index.php?topic=34104.0
@@ -27,12 +35,12 @@ public class ListManager {
         return mode != 0;
     }
 
-    public void record(Runnable command) {
+    public void record(GLCommand command) {
         newList.add(command);
 
         if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
             mode = 0;
-            command.run();
+            command.run(context);
             mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         }
     }
@@ -54,7 +62,7 @@ public class ListManager {
     }
 
     public void glEndList() {
-        lists.put(newListID, newList.toArray(new Runnable[0]));
+        lists.put(newListID, newList.toArray(new GLCommand[0]));
 
         mode = 0;
     }
@@ -62,12 +70,13 @@ public class ListManager {
     public void glCallList(int list) {
         asert(!isRecording());
 
-        Runnable[] listToCall = lists.get(list);
+        GLCommand[] listToCall = lists.get(list);
         if (listToCall != null) {
             // for-each loop over a list is a performance bottleneck, according to a profiler.
             // Simple for loop over an array is much faster.
-            for (int i = 0; i < listToCall.length; i++)
-                listToCall[i].run();
+            for (int i = 0; i < listToCall.length; i++) {
+                listToCall[i].run(context);
+            }
         }
     }
 }

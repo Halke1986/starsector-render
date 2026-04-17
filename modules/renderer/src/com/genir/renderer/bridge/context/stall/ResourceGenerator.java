@@ -32,7 +32,13 @@ public class ResourceGenerator {
 
         // If cache is empty, fall back to generating
         // the resource using an actual OpenGL call.
-        return exec.get(generatorFn);
+        return exec.get(context -> {
+            try {
+                return generatorFn.call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void get(IntBuffer buffer) {

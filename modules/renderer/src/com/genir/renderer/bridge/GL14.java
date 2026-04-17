@@ -1,33 +1,33 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.Recordable;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.Recordable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
-        record glBlendEquation(int contextId, int mode) implements Runnable, Recordable {
+        record glBlendEquation(int mode) implements GLCommand, Recordable {
             @Override
-            public void run() {
-                getContext(contextId).attribManager.glBlendEquation(mode);
+            public void run(Context context) {
+                context.attribManager.glBlendEquation(mode);
             }
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new glBlendEquation(context.id, mode));
+        context.exec.execute(new glBlendEquation(mode));
     }
 
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        record glBlendFuncSeparate(int contextId, int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements Runnable, Recordable {
+        record glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements GLCommand, Recordable {
             @Override
-            public void run() {
-                getContext(contextId).attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+            public void run(Context context) {
+                context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
             }
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new glBlendFuncSeparate(context.id, sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
+        context.exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
     }
 }

@@ -2,16 +2,20 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.Pool;
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.bridge.context.stall.StallDetector;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.GLGetter;
+import com.genir.renderer.bridge.context.commands.Recordable;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Profiler.profiler;
 
 public class Executor {
-    private final ListManager listManager;
-    private final StallDetector stallDetector;
+    private final Context context;
 
     private Frame currentFrame = new Frame();
     private final Pool framePool = new Pool();
@@ -21,15 +25,14 @@ public class Executor {
 
     private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
 
-    public Executor(ListManager listManager, StallDetector stallDetector) {
-        this.listManager = listManager;
-        this.stallDetector = stallDetector;
+    public Executor(Context context) {
+        this.context = context;
     }
 
     /**
      * Queue command for execution.
      */
-    public void execute(Runnable command) {
+    public void execute(GLCommand command) {
         if (command == null) {
             return;
         }
@@ -41,18 +44,11 @@ public class Executor {
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
-    public <T> T get(Callable<T> task) {
+    public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
-        wait(() -> {
-            try {
-                result[0] = task.call();
-            } catch (Throwable t) {
-                // Sneaky throw the exception to avoid an unnecessary
-                // "Cause By" level. The exception will be properly
-                // handled in executeCommands method.
-                sneakyThrow(t);
-            }
-        });
+        wait(context ->
+                result[0] = task.call(context)
+        );
 
         return (T) result[0];
     }
@@ -61,10 +57,10 @@ public class Executor {
      * Execute command and block until it returns.
      * This method stalls the concurrent pipeline.
      */
-    public void wait(Runnable command) {
+    public void wait(GLCommand command) {
         long start = System.nanoTime();
 
-        stallDetector.detectStall();
+        context.stallDetector.detectStall();
 
         execute(command);
         swapFrames();
@@ -151,14 +147,14 @@ public class Executor {
 
         try {
             // Run all scheduled commands.
-            Runnable[] commands = frame.commands;
+            GLCommand[] commands = frame.commands;
             for (int i = 0; i < commands.length && commands[i] != null; i++) {
-                Runnable command = commands[i];
-                if (command instanceof Recordable && listManager.isRecording()) {
+                GLCommand command = commands[i];
+                if (context.listManager.isRecording() && command instanceof Recordable) {
                     // Record the command instead of running it immediately.
-                    listManager.record(command);
+                    context.listManager.record(command);
                 } else {
-                    command.run();
+                    command.run(context);
                 }
             }
 
@@ -180,9 +176,5 @@ public class Executor {
      */
     public boolean isIdle() {
         return lastFrameFuture.isDone();
-    }
-
-    public static <E extends Throwable> void sneakyThrow(Throwable t) throws E {
-        throw (E) t;
     }
 }

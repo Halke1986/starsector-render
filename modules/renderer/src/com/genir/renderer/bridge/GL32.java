@@ -1,19 +1,19 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.GLGetter;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static com.genir.renderer.bridge.context.ContextManager.getContext;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL32 {
     public static long glGetInteger64(int pname) {
-        record glGetInteger64(int pname) implements Callable<Long> {
+        record glGetInteger64(int pname) implements GLGetter<Long> {
             @Override
-            public Long call() {
+            public Long call(Context context) {
                 return org.lwjgl.opengl.GL32.glGetInteger64(pname);
             }
         }
@@ -22,9 +22,9 @@ public class GL32 {
     }
 
     public static long glGetInteger64(int value, int index) {
-        record glGetInteger64(int value, int index) implements Callable<Long> {
+        record glGetInteger64(int value, int index) implements GLGetter<Long> {
             @Override
-            public Long call() {
+            public Long call(Context context) {
                 return org.lwjgl.opengl.GL32.glGetInteger64(value, index);
             }
         }
@@ -33,17 +33,17 @@ public class GL32 {
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
-        record glFenceSync(int contextId, CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements Runnable {
+        record glFenceSync( CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 future.complete(org.lwjgl.opengl.GL32.glFenceSync(condition, flags));
-                getContext(contextId).update();
+                context.update();
             }
         }
 
         final CompletableFuture<org.lwjgl.opengl.GLSync> future = new CompletableFuture<>();
         final Context context = getThreadContext();
-        context.exec.execute(new glFenceSync(context.id, future, condition, flags));
+        context.exec.execute(new glFenceSync(future, condition, flags));
 
         // Execute commands, so other rendering threads waiting for this
         // glSync can proceed and do not deadlock on a get or wait call.
@@ -52,9 +52,9 @@ public class GL32 {
     }
 
     public static void glWaitSync(GLSync sync, int flags, long timeout) {
-        record glWaitSync(GLSync sync, int flags, long timeout) implements Runnable {
+        record glWaitSync(GLSync sync, int flags, long timeout) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 try {
                     // Wait until sync point is created in the detached rendering thread.
                     org.lwjgl.opengl.GLSync impl = sync.future().get();
@@ -71,9 +71,9 @@ public class GL32 {
     }
 
     public static void glDeleteSync(GLSync sync) {
-        record glDeleteSync(GLSync sync) implements Runnable {
+        record glDeleteSync(GLSync sync) implements GLCommand {
             @Override
-            public void run() {
+            public void run(Context context) {
                 try {
                     org.lwjgl.opengl.GLSync impl = sync.future().get();
                     org.lwjgl.opengl.GL32.glDeleteSync(impl);
