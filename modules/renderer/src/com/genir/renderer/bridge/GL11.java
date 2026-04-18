@@ -200,16 +200,27 @@ public class GL11 {
         );
     }
 
-    public static void glVertex3f(float x, float y, float z) {
-        record glVertex3f(float x, float y, float z) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.vertexInterceptor.glVertex3f(x, y, z);
-            }
-        }
+    static class GlVertex3f implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            float x = Float.intBitsToFloat(args[0]);
+            float y = Float.intBitsToFloat(args[1]);
+            float z = Float.intBitsToFloat(args[2]);
 
+            context.vertexInterceptor.glVertex3f(x, y, z);
+        }
+    }
+
+    static GlVertex3f glVertex3fRunnable = new GlVertex3f();
+
+    public static void glVertex3f(float x, float y, float z) {
         final Context context = getThreadContext();
-        context.exec.execute(new glVertex3f(x, y, z));
+        context.exec.execute(
+                glVertex3fRunnable,
+                Float.floatToRawIntBits(x),
+                Float.floatToRawIntBits(y),
+                Float.floatToRawIntBits(z)
+        );
     }
 
     public static void glVertex3d(double x, double y, double z) {

@@ -25,6 +25,8 @@ public class Executor {
 
     private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
 
+    private final int[] commandArgs = new int[16];
+
     public Executor(Context context) {
         this.context = context;
     }
@@ -37,8 +39,39 @@ public class Executor {
             return;
         }
 
-        currentFrame.add(command);
+        Frame frame = currentFrame;
+        frame.add(command);
+
+        frame.ensureAuxDataCapacity(1);
+        frame.args[frame.argsOffset++] = 0;
     }
+
+    public void execute(GLCommand command, int arg1, int arg2, int arg3) {
+        if (command == null) return;
+
+        Frame frame = currentFrame;
+        frame.add(command);
+
+        frame.ensureAuxDataCapacity(4);
+        frame.args[frame.argsOffset++] = 3;
+        frame.args[frame.argsOffset++] = arg1;
+        frame.args[frame.argsOffset++] = arg2;
+        frame.args[frame.argsOffset++] = arg3;
+    }
+
+//    public void execute(GLCommand command, int aux1, int aux2, int aux3, int aux4) {
+//        if (command == null) return;
+//
+//        Frame frame = currentFrame;
+//
+//        frame.ensureAuxDataCapacity(4);
+//        frame.auxData[frame.auxDataOffset++] = aux1;
+//        frame.auxData[frame.auxDataOffset++] = aux2;
+//        frame.auxData[frame.auxDataOffset++] = aux3;
+//        frame.auxData[frame.auxDataOffset++] = aux4;
+//
+//        frame.add(command);
+//    }
 
     /**
      * Execute callable and block until it returns a value.
@@ -63,10 +96,10 @@ public class Executor {
         context.stallDetector.detectStall();
 
         execute(command);
-        swapFrames();
+        Future<?> frameFuture = swapFrames();
 
         try {
-            waitForFrame(lastFrameFuture);
+            waitForFrame(frameFuture);
         } finally {
             if (profiler.mainThread == Thread.currentThread()) {
                 profiler.frame.markStall(start);
@@ -77,7 +110,7 @@ public class Executor {
     /**
      * Execute queued commands.
      */
-    public void swapFrames() {
+    public Future<?> swapFrames() {
         // Assume all commands issued before the producer thread was notified
         // of the exception are invalid and must not be executed.
         rethrowAndClearException();
@@ -91,7 +124,7 @@ public class Executor {
             currentFrame = new Frame();
         }
 
-        lastFrameFuture = execActual.submit(() -> {
+        return execActual.submit(() -> {
             executeCommands(frameToExecute, isMainThread);
 
             // Reuse frame array.
@@ -108,7 +141,7 @@ public class Executor {
     public void swapFramesAndSync() {
         Future<?> prevFrameFuture = lastFrameFuture;
 
-        swapFrames();
+        lastFrameFuture = swapFrames();
 
         waitForFrame(prevFrameFuture);
     }
@@ -146,15 +179,25 @@ public class Executor {
         }
 
         try {
-            // Run all scheduled commands.
             GLCommand[] commands = frame.commands;
+            int[] args = frame.args;
+            int argsOffset = 0;
+
+            // Run all scheduled commands.
             for (int i = 0; i < commands.length && commands[i] != null; i++) {
                 GLCommand command = commands[i];
+
+                // Copy command arguments.
+                int argsSize = args[argsOffset++];
+                for (int j = 0; j < argsSize; j++) {
+                    commandArgs[j] = args[argsOffset++];
+                }
+
                 if (context.listManager.isRecording() && command instanceof Recordable) {
                     // Record the command instead of running it immediately.
-                    context.listManager.record(command);
+                    context.listManager.record(command, commandArgs, argsSize);
                 } else {
-                    command.run(context, null);
+                    command.run(context, commandArgs);
                 }
             }
 
