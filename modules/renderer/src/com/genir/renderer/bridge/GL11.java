@@ -156,16 +156,28 @@ public class GL11 {
         );
     }
 
-    public static void glTexCoord4f(float s, float t, float r, float q) {
-        record glTexCoord4f(float s, float t, float r, float q) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.vertexInterceptor.glTexCoord4f(s, t, r, q);
-            }
-        }
+    static class GlTexCoord4f implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            float s = Float.intBitsToFloat(args[0]);
+            float t = Float.intBitsToFloat(args[1]);
+            float r = Float.intBitsToFloat(args[2]);
+            float q = Float.intBitsToFloat(args[3]);
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glTexCoord4f(s, t, r, q));
+            context.vertexInterceptor.glTexCoord4f(s, t, r, q);
+        }
+    }
+
+    static GlTexCoord4f glTexCoord4fCommand = new GlTexCoord4f();
+
+    public static void glTexCoord4f(float s, float t, float r, float q) {
+        getThreadContext().exec.execute(
+                glTexCoord4fCommand,
+                Float.floatToRawIntBits(s),
+                Float.floatToRawIntBits(t),
+                Float.floatToRawIntBits(r),
+                Float.floatToRawIntBits(q)
+        );
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
@@ -211,12 +223,11 @@ public class GL11 {
         }
     }
 
-    static GlVertex3f glVertex3fRunnable = new GlVertex3f();
+    static GlVertex3f glVertex3fCommand = new GlVertex3f();
 
     public static void glVertex3f(float x, float y, float z) {
-        final Context context = getThreadContext();
-        context.exec.execute(
-                glVertex3fRunnable,
+        getThreadContext().exec.execute(
+                glVertex3fCommand,
                 Float.floatToRawIntBits(x),
                 Float.floatToRawIntBits(y),
                 Float.floatToRawIntBits(z)

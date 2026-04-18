@@ -47,7 +47,9 @@ public class Executor {
     }
 
     public void execute(GLCommand command, int arg1, int arg2, int arg3) {
-        if (command == null) return;
+        if (command == null) {
+            return;
+        }
 
         Frame frame = currentFrame;
         frame.add(command);
@@ -59,19 +61,21 @@ public class Executor {
         frame.args[frame.argsOffset++] = arg3;
     }
 
-//    public void execute(GLCommand command, int aux1, int aux2, int aux3, int aux4) {
-//        if (command == null) return;
-//
-//        Frame frame = currentFrame;
-//
-//        frame.ensureAuxDataCapacity(4);
-//        frame.auxData[frame.auxDataOffset++] = aux1;
-//        frame.auxData[frame.auxDataOffset++] = aux2;
-//        frame.auxData[frame.auxDataOffset++] = aux3;
-//        frame.auxData[frame.auxDataOffset++] = aux4;
-//
-//        frame.add(command);
-//    }
+    public void execute(GLCommand command, int arg1, int arg2, int arg3, int arg4) {
+        if (command == null) {
+            return;
+        }
+
+        Frame frame = currentFrame;
+        frame.add(command);
+
+        frame.ensureAuxDataCapacity(5);
+        frame.args[frame.argsOffset++] = 4;
+        frame.args[frame.argsOffset++] = arg1;
+        frame.args[frame.argsOffset++] = arg2;
+        frame.args[frame.argsOffset++] = arg3;
+        frame.args[frame.argsOffset++] = arg4;
+    }
 
     /**
      * Execute callable and block until it returns a value.
