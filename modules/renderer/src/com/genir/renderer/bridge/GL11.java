@@ -124,16 +124,28 @@ public class GL11 {
         );
     }
 
-    public static void glColor4f(float red, float green, float blue, float alpha) {
-        record glColor4f(float red, float green, float blue, float alpha) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.vertexInterceptor.glColor4f(red, green, blue, alpha);
-            }
-        }
+    static class GlColor4f implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            float red = Float.intBitsToFloat(args[0]);
+            float green = Float.intBitsToFloat(args[1]);
+            float blue = Float.intBitsToFloat(args[2]);
+            float alpha = Float.intBitsToFloat(args[3]);
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glColor4f(red, green, blue, alpha));
+            context.vertexInterceptor.glColor4f(red, green, blue, alpha);
+        }
+    }
+
+    static GlColor4f glColor4fCommand = new GlColor4f();
+
+    public static void glColor4f(float red, float green, float blue, float alpha) {
+        getThreadContext().exec.execute(
+                glColor4fCommand,
+                Float.floatToRawIntBits(red),
+                Float.floatToRawIntBits(green),
+                Float.floatToRawIntBits(blue),
+                Float.floatToRawIntBits(alpha)
+        );
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
