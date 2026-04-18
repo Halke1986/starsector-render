@@ -459,16 +459,26 @@ public class GL11 {
         context.exec.execute(new glLoadIdentity());
     }
 
-    public static void glTranslatef(float x, float y, float z) {
-        record glTranslatef(float x, float y, float z) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.transformManager.glTranslatef(x, y, z);
-            }
-        }
+    static class GlTranslatef implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            float x = Float.intBitsToFloat(args[0]);
+            float y = Float.intBitsToFloat(args[1]);
+            float z = Float.intBitsToFloat(args[2]);
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glTranslatef(x, y, z));
+            context.transformManager.glTranslatef(x, y, z);
+        }
+    }
+
+    static GlTranslatef glTranslatefCommand = new GlTranslatef();
+
+    public static void glTranslatef(float x, float y, float z) {
+        getThreadContext().exec.execute(
+                glTranslatefCommand,
+                Float.floatToRawIntBits(x),
+                Float.floatToRawIntBits(y),
+                Float.floatToRawIntBits(z)
+        );
     }
 
     public static void glRotatef(float angle, float x, float y, float z) {
