@@ -6,5 +6,5 @@ import com.genir.renderer.bridge.context.Context;
  * OpenGL commands that return no value.
  */
 public interface GLCommand {
-    void run(Context context);
+    void run(Context context, int[] args);
 }

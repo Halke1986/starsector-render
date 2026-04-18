@@ -10,7 +10,7 @@ public class GL13 {
     public static void glActiveTexture(int mode) {
         record glActiveTexture(int mode) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }

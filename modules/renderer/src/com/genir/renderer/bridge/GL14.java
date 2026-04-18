@@ -10,7 +10,7 @@ public class GL14 {
     public static void glBlendEquation(int mode) {
         record glBlendEquation(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.glBlendEquation(mode);
             }
         }
@@ -22,7 +22,7 @@ public class GL14 {
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
         record glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
             }
         }

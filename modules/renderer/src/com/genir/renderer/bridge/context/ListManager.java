@@ -40,7 +40,7 @@ public class ListManager {
 
         if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
             mode = 0;
-            command.run(context);
+            command.run(context, null);
             mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         }
     }
@@ -84,7 +84,7 @@ public class ListManager {
             // for-each loop over a list is a performance bottleneck, according to a profiler.
             // Simple for loop over an array is much faster.
             for (int i = 0; i < listToCall.size; i++) {
-                listToCall.commands[i].run(context);
+                listToCall.commands[i].run(context, null);
             }
         }
     }

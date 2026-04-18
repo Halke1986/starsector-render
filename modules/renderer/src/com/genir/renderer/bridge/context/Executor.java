@@ -46,7 +46,7 @@ public class Executor {
      */
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
-        wait(context ->
+        wait((context, args) ->
                 result[0] = task.call(context)
         );
 
@@ -154,7 +154,7 @@ public class Executor {
                     // Record the command instead of running it immediately.
                     context.listManager.record(command);
                 } else {
-                    command.run(context);
+                    command.run(context, null);
                 }
             }
 

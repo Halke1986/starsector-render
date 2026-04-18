@@ -37,7 +37,7 @@ public class GL11 {
     public static void glNewList(int list, int mode) {
         record glNewList(int list, int mode) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.listManager.glNewList(list, mode);
             }
         }
@@ -49,7 +49,7 @@ public class GL11 {
     public static void glEndList() {
         record glEndList() implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.listManager.glEndList();
             }
         }
@@ -61,7 +61,7 @@ public class GL11 {
     public static void glCallList(int list) {
         record glCallList(int list) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.listManager.glCallList(list);
             }
         }
@@ -76,7 +76,7 @@ public class GL11 {
     public static void glBegin(int mode) {
         record glBegin(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.glBegin(mode);
             }
         }
@@ -88,7 +88,7 @@ public class GL11 {
     public static void glEnd() {
         record glEnd() implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.glEnd();
             }
         }
@@ -127,7 +127,7 @@ public class GL11 {
     public static void glColor4f(float red, float green, float blue, float alpha) {
         record glColor4f(float red, float green, float blue, float alpha) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.glColor4f(red, green, blue, alpha);
             }
         }
@@ -159,7 +159,7 @@ public class GL11 {
     public static void glTexCoord4f(float s, float t, float r, float q) {
         record glTexCoord4f(float s, float t, float r, float q) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.glTexCoord4f(s, t, r, q);
             }
         }
@@ -171,7 +171,7 @@ public class GL11 {
     public static void glNormal3f(float nx, float ny, float nz) {
         record glNormal3f(float nx, float ny, float nz) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.glNormal3f(nx, ny, nz);
             }
         }
@@ -203,7 +203,7 @@ public class GL11 {
     public static void glVertex3f(float x, float y, float z) {
         record glVertex3f(float x, float y, float z) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.glVertex3f(x, y, z);
             }
         }
@@ -243,7 +243,7 @@ public class GL11 {
     public static void glPushClientAttrib(int mask) { // NoList
         record glPushClientAttrib(int mask) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
             }
@@ -257,7 +257,7 @@ public class GL11 {
     public static void glPopClientAttrib() { // NoList
         record glPopClientAttrib() implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.vertexInterceptor.arraysTouched();
                 org.lwjgl.opengl.GL11.glPopClientAttrib();
             }
@@ -295,7 +295,7 @@ public class GL11 {
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         record glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
             }
         }
@@ -308,7 +308,7 @@ public class GL11 {
     public static void glColorPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         record glColorPointer(int size, int type, int stride, long pointer_buffer_offset) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
             }
         }
@@ -321,7 +321,7 @@ public class GL11 {
     public static void glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) { // NoList
         record glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
             }
         }
@@ -334,7 +334,7 @@ public class GL11 {
     public static void glDrawArrays(int mode, int first, int count) {
         record glDrawArrays(int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
@@ -348,7 +348,7 @@ public class GL11 {
     public static void glDrawElements(int mode, IntBuffer indices) {
         record glDrawElements(int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
@@ -363,7 +363,7 @@ public class GL11 {
     public static void glDrawElements(int mode, int indices_count, int type, long indices_buffer_offset) {
         record glDrawElements(int mode, int indices_count, int type, long indices_buffer_offset) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.applyDrawAttribs();
                 org.lwjgl.opengl.GL11.glDrawElements(mode, indices_count, type, indices_buffer_offset);
             }
@@ -379,7 +379,7 @@ public class GL11 {
     public static void glMatrixMode(int mode) {
         record glMatrixMode(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.glMatrixMode(mode);
             }
         }
@@ -392,7 +392,7 @@ public class GL11 {
     public static void glPushMatrix() {
         record glPushMatrix() implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glPushMatrix();
             }
         }
@@ -404,7 +404,7 @@ public class GL11 {
     public static void glPopMatrix() {
         record glPopMatrix() implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glPopMatrix();
             }
         }
@@ -416,7 +416,7 @@ public class GL11 {
     public static void glLoadIdentity() {
         record glLoadIdentity() implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glLoadIdentity();
             }
         }
@@ -428,7 +428,7 @@ public class GL11 {
     public static void glTranslatef(float x, float y, float z) {
         record glTranslatef(float x, float y, float z) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glTranslatef(x, y, z);
             }
         }
@@ -440,7 +440,7 @@ public class GL11 {
     public static void glRotatef(float angle, float x, float y, float z) {
         record glRotatef(float angle, float x, float y, float z) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glRotatef(angle, x, y, z);
             }
         }
@@ -452,7 +452,7 @@ public class GL11 {
     public static void glScalef(float x, float y, float z) {
         record glScalef(float x, float y, float z) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glScalef(x, y, z);
             }
         }
@@ -464,7 +464,7 @@ public class GL11 {
     public static void glMultMatrix(FloatBuffer m) {
         record glMultMatrix(FloatBuffer m) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glMultMatrix(m);
             }
         }
@@ -477,7 +477,7 @@ public class GL11 {
     public static void glLoadMatrix(FloatBuffer m) {
         record glLoadMatrix(FloatBuffer m) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glLoadMatrix(m);
             }
         }
@@ -490,7 +490,7 @@ public class GL11 {
     public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
@@ -505,7 +505,7 @@ public class GL11 {
     public static void glEnable(int cap) {
         record glEnable(int cap) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 if (context.attribManager.interceptEnable(cap)) {
                     context.attribManager.glEnable(cap);
                 } else {
@@ -522,7 +522,7 @@ public class GL11 {
     public static void glDisable(int cap) {
         record glDisable(int cap) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 if (context.attribManager.interceptEnable(cap)) {
                     context.attribManager.glDisable(cap);
                 } else {
@@ -543,7 +543,7 @@ public class GL11 {
     public static void glBindTexture(int target, int texture) {
         record glBindTexture(int target, int texture) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.glBindTexture(target, texture);
                 org.lwjgl.opengl.GL11.glBindTexture(target, texture);
             }
@@ -557,7 +557,7 @@ public class GL11 {
     public static void glPushAttrib(int mask) { // NoList
         record glPushAttrib(int mask) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.glPushAttrib(mask);
                 org.lwjgl.opengl.GL11.glPushAttrib(mask);
             }
@@ -571,7 +571,7 @@ public class GL11 {
     public static void glPopAttrib() { // NoList
         record glPopAttrib() implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 context.attribManager.glPopAttrib();
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
@@ -596,7 +596,7 @@ public class GL11 {
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         record glColorMask(boolean red, boolean green, boolean blue, boolean alpha) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
             }
         }
@@ -607,7 +607,7 @@ public class GL11 {
     public static void glDepthMask(boolean flag) {
         record glDepthMask(boolean flag) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glDepthMask(flag);
             }
         }
@@ -618,7 +618,7 @@ public class GL11 {
     public static void glViewport(int x, int y, int width, int height) {
         record glViewport(int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
             }
         }
@@ -631,7 +631,7 @@ public class GL11 {
     public static void glTexParameteri(int target, int pname, int param) {
         record glTexParameteri(int target, int pname, int param) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
             }
         }
@@ -642,7 +642,7 @@ public class GL11 {
     public static void glTexParameter(int target, int pname, FloatBuffer param) {
         record glTexParameter(int target, int pname, FloatBuffer param) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexParameter(target, pname, param);
             }
         }
@@ -654,7 +654,7 @@ public class GL11 {
     public static void glClearColor(float red, float green, float blue, float alpha) {
         record glClearColor(float red, float green, float blue, float alpha) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
             }
         }
@@ -665,7 +665,7 @@ public class GL11 {
     public static void glClear(int mask) {
         record glClear(int mask) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glClear(mask);
             }
         }
@@ -676,7 +676,7 @@ public class GL11 {
     public static void glScissor(int x, int y, int width, int height) {
         record glScissor(int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
             }
         }
@@ -687,7 +687,7 @@ public class GL11 {
     public static void glStencilFunc(int func, int ref, int mask) {
         record glStencilFunc(int func, int ref, int mask) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
             }
         }
@@ -698,7 +698,7 @@ public class GL11 {
     public static void glStencilMask(int mask) {
         record glStencilMask(int mask) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glStencilMask(mask);
             }
         }
@@ -709,7 +709,7 @@ public class GL11 {
     public static void glStencilOp(int fail, int zfail, int zpass) {
         record glStencilOp(int fail, int zfail, int zpass) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
             }
         }
@@ -720,7 +720,7 @@ public class GL11 {
     public static void glClearStencil(int s) {
         record glClearStencil(int s) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glClearStencil(s);
             }
         }
@@ -731,7 +731,7 @@ public class GL11 {
     public static void glAlphaFunc(int func, float ref) {
         record glAlphaFunc(int func, float ref) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
             }
         }
@@ -742,7 +742,7 @@ public class GL11 {
     public static void glHint(int target, int mode) {
         record glHint(int target, int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glHint(target, mode);
             }
         }
@@ -753,7 +753,7 @@ public class GL11 {
     public static void glLineWidth(float width) {
         record glLineWidth(float width) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glLineWidth(width);
             }
         }
@@ -764,7 +764,7 @@ public class GL11 {
     public static void glPointSize(float size) {
         record glPointSize(float size) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glPointSize(size);
             }
         }
@@ -775,7 +775,7 @@ public class GL11 {
     public static void glColorMaterial(int face, int mode) {
         record glColorMaterial(int face, int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
             }
         }
@@ -786,7 +786,7 @@ public class GL11 {
     public static void glShadeModel(int mode) {
         record glShadeModel(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glShadeModel(mode);
             }
         }
@@ -797,7 +797,7 @@ public class GL11 {
     public static void glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) { // NoList
         record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels);
             }
         }
@@ -809,7 +809,7 @@ public class GL11 {
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer snapshot, StackTraceElement[] stack) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 try {
                     org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot);
                 } catch (Throwable t) {
@@ -830,7 +830,7 @@ public class GL11 {
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBuffer pixels) { // NoList
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
             }
         }
@@ -842,7 +842,7 @@ public class GL11 {
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
         record glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
             }
         }
@@ -854,7 +854,7 @@ public class GL11 {
     public static void glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) { // NoList ?
         record glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, pixels);
             }
         }
@@ -866,7 +866,7 @@ public class GL11 {
     public static void glLight(int light, int pname, FloatBuffer params) {
         record glLight(int light, int pname, FloatBuffer params) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glLight(light, pname, params);
             }
         }
@@ -878,7 +878,7 @@ public class GL11 {
     public static void glMaterial(int face, int pname, FloatBuffer params) {
         record glMaterial(int face, int pname, FloatBuffer params) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
             }
         }
@@ -890,7 +890,7 @@ public class GL11 {
     public static void glDeleteTextures(int texture) { // NoList
         record glDeleteTextures(int texture) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }
@@ -901,7 +901,7 @@ public class GL11 {
     public static void glDeleteTextures(IntBuffer textures) { // NoList
         record glDeleteTextures(IntBuffer textures) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glDeleteTextures(textures);
             }
         }
@@ -913,7 +913,7 @@ public class GL11 {
     public static void glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
         record glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
             }
         }
@@ -924,7 +924,7 @@ public class GL11 {
     public static void glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) {
         record glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
             }
         }
@@ -935,7 +935,7 @@ public class GL11 {
     public static void glEdgeFlag(boolean flag) {
         record glEdgeFlag(boolean flag) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glEdgeFlag(flag);
             }
         }
@@ -946,7 +946,7 @@ public class GL11 {
     public static void glCullFace(int mode) {
         record glCullFace(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glCullFace(mode);
             }
         }
@@ -957,7 +957,7 @@ public class GL11 {
     public static void glDepthFunc(int func) {
         record glDepthFunc(int func) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glDepthFunc(func);
             }
         }
@@ -968,7 +968,7 @@ public class GL11 {
     public static void glDepthRange(double zNear, double zFar) {
         record glDepthRange(double zNear, double zFar) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glDepthRange(zNear, zFar);
             }
         }
@@ -979,7 +979,7 @@ public class GL11 {
     public static void glFrontFace(int mode) {
         record glFrontFace(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glFrontFace(mode);
             }
         }
@@ -990,7 +990,7 @@ public class GL11 {
     public static void glPixelStorei(int pname, int param) { // NoList
         record glPixelStorei(int pname, int param) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glPixelStorei(pname, param);
             }
         }
@@ -1001,7 +1001,7 @@ public class GL11 {
     public static void glReadBuffer(int mode) {
         record glReadBuffer(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glReadBuffer(mode);
             }
         }
@@ -1012,7 +1012,7 @@ public class GL11 {
     public static void glTexEnvi(int target, int pname, int param) {
         record glTexEnvi(int target, int pname, int param) implements GLCommand, Recordable {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glTexEnvi(target, pname, param);
             }
         }
@@ -1078,7 +1078,7 @@ public class GL11 {
         // Fallback to blocking GL call.
         record glGetInteger(int pname, IntBuffer params) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glGetInteger(pname, params);
             }
         }
@@ -1142,7 +1142,7 @@ public class GL11 {
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList
         record glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
             }
         }
@@ -1153,7 +1153,7 @@ public class GL11 {
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, IntBuffer pixels) { // NoList
         record glReadPixels(int x, int y, int width, int height, int format, int type, IntBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
             }
         }
@@ -1164,7 +1164,7 @@ public class GL11 {
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) { // NoList
         record glReadPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels);
             }
         }
@@ -1197,7 +1197,7 @@ public class GL11 {
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) { // NoList
         record glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
             }
         }
@@ -1208,7 +1208,7 @@ public class GL11 {
     public static void glGetTexImage(int target, int level, int format, int type, FloatBuffer pixels) { // NoList
         record glGetTexImage(int target, int level, int format, int type, FloatBuffer pixels) implements GLCommand {
             @Override
-            public void run(Context context) {
+            public void run(Context context, int[] args) {
                 org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
             }
         }
