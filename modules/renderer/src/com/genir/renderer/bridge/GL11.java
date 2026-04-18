@@ -431,28 +431,34 @@ public class GL11 {
         context.exec.execute(new glMatrixMode(mode));
     }
 
-    public static void glPushMatrix() {
-        record glPushMatrix() implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.transformManager.glPushMatrix();
-            }
+    static class GlPushMatrix implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            context.transformManager.glPushMatrix();
         }
-
-        final Context context = getThreadContext();
-        context.exec.execute(new glPushMatrix());
     }
 
-    public static void glPopMatrix() {
-        record glPopMatrix() implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.transformManager.glPopMatrix();
-            }
-        }
+    static GlPushMatrix glPushMatrixCommand = new GlPushMatrix();
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glPopMatrix());
+    public static void glPushMatrix() {
+        getThreadContext().exec.execute(
+                glPushMatrixCommand
+        );
+    }
+
+    static class GlPopMatrix implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            context.transformManager.glPopMatrix();
+        }
+    }
+
+    static GlPopMatrix glPopMatrixCommand = new GlPopMatrix();
+
+    public static void glPopMatrix() {
+        getThreadContext().exec.execute(
+                glPopMatrixCommand
+        );
     }
 
     public static void glLoadIdentity() {
