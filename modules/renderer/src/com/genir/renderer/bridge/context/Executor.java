@@ -46,6 +46,19 @@ public class Executor {
         frame.args[frame.argsOffset++] = 0;
     }
 
+    public void execute(GLCommand command, int arg1) {
+        if (command == null) {
+            return;
+        }
+
+        Frame frame = currentFrame;
+        frame.add(command);
+
+        frame.ensureAuxDataCapacity(2);
+        frame.args[frame.argsOffset++] = 1;
+        frame.args[frame.argsOffset++] = arg1;
+    }
+
     public void execute(GLCommand command, int arg1, int arg2, int arg3) {
         if (command == null) {
             return;

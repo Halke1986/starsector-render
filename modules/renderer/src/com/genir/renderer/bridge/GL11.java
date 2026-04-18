@@ -558,38 +558,50 @@ public class GL11 {
     /**
      * Render getContext().
      */
-    public static void glEnable(int cap) {
-        record glEnable(int cap) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                if (context.attribManager.interceptEnable(cap)) {
-                    context.attribManager.glEnable(cap);
-                } else {
-                    org.lwjgl.opengl.GL11.glEnable(cap);
-                }
+    static class GlEnable implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            int cap = args[0];
+            if (context.attribManager.interceptEnable(cap)) {
+                context.attribManager.glEnable(cap);
+            } else {
+                org.lwjgl.opengl.GL11.glEnable(cap);
             }
         }
-
-        final Context context = getThreadContext();
-        context.attribTracker.glEnable(cap);
-        context.exec.execute(new glEnable(cap));
     }
 
-    public static void glDisable(int cap) {
-        record glDisable(int cap) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                if (context.attribManager.interceptEnable(cap)) {
-                    context.attribManager.glDisable(cap);
-                } else {
-                    org.lwjgl.opengl.GL11.glDisable(cap);
-                }
+    static GlEnable glEnableCommand = new GlEnable();
+
+    public static void glEnable(int cap) {
+        final Context context = getThreadContext();
+        context.attribTracker.glEnable(cap);
+        context.exec.execute(
+                glEnableCommand,
+                cap
+        );
+    }
+
+    static class GlDisable implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            int cap = args[0];
+            if (context.attribManager.interceptEnable(cap)) {
+                context.attribManager.glDisable(cap);
+            } else {
+                org.lwjgl.opengl.GL11.glDisable(cap);
             }
         }
+    }
 
+    static GlDisable glDisableCommand = new GlDisable();
+
+    public static void glDisable(int cap) {
         final Context context = getThreadContext();
         context.attribTracker.glDisable(cap);
-        context.exec.execute(new glDisable(cap));
+        context.exec.execute(
+                glDisableCommand,
+                cap
+        );
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
