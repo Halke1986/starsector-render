@@ -73,28 +73,36 @@ public class GL11 {
     /**
      * Draw.
      */
-    public static void glBegin(int mode) {
-        record glBegin(int mode) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.vertexInterceptor.glBegin(mode);
-            }
+    static class GlBegin implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            int mode = args[0];
+            context.vertexInterceptor.glBegin(mode);
         }
-
-        final Context context = getThreadContext();
-        context.exec.execute(new glBegin(mode));
     }
 
-    public static void glEnd() {
-        record glEnd() implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.vertexInterceptor.glEnd();
-            }
-        }
+    static GlBegin glBeginCommand = new GlBegin();
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glEnd());
+    public static void glBegin(int mode) {
+        getThreadContext().exec.execute(
+                glBeginCommand,
+                mode
+        );
+    }
+
+    static class GlEnd implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            context.vertexInterceptor.glEnd();
+        }
+    }
+
+    static GlEnd glEndCommand = new GlEnd();
+
+    public static void glEnd() {
+        getThreadContext().exec.execute(
+                glEndCommand
+        );
     }
 
     public static void glColor3f(float red, float green, float blue) {
