@@ -622,18 +622,26 @@ public class GL11 {
         glBlendFuncSeparate(sfactor, dfactor, sfactor, dfactor);
     }
 
-    public static void glBindTexture(int target, int texture) {
-        record glBindTexture(int target, int texture) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.attribManager.glBindTexture(target, texture);
-                org.lwjgl.opengl.GL11.glBindTexture(target, texture);
-            }
-        }
+    static class GlBindTexture implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            int target = args[0];
+            int texture = args[1];
 
+            context.attribManager.glBindTexture(target, texture);
+            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+        }
+    }
+
+    static GlBindTexture glBindTextureCommand = new GlBindTexture();
+
+    public static void glBindTexture(int target, int texture) {
         final Context context = getThreadContext();
         context.attribTracker.glBindTexture(target, texture);
-        context.exec.execute(new glBindTexture(target, texture));
+        context.exec.execute(glBindTextureCommand,
+                target,
+                texture
+        );
     }
 
     public static void glPushAttrib(int mask) { // NoList
