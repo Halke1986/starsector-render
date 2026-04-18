@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.Pool;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 
 import java.util.HashMap;
