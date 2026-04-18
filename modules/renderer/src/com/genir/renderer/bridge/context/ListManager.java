@@ -1,10 +1,9 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.Pool;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.genir.renderer.debug.Debug.asert;
@@ -14,9 +13,10 @@ public class ListManager {
 
     private int mode = 0;
     private int newListID;
-    private List<GLCommand> newList;
+    private Frame newList;
+    private final Pool framePool = new Pool();
 
-    private final Map<Integer, GLCommand[]> lists = new HashMap<>();
+    private final Map<Integer, Frame> lists = new HashMap<>();
 
     public ListManager(Context context) {
         this.context = context;
@@ -58,11 +58,20 @@ public class ListManager {
         this.newListID = list;
         this.mode = mode;
 
-        newList = new ArrayList<>();
+        newList = (Frame) framePool.get();
+        if (newList == null) {
+            newList = new Frame();
+        }
     }
 
     public void glEndList() {
-        lists.put(newListID, newList.toArray(new GLCommand[0]));
+        Frame oldList = lists.get(newListID);
+        if (oldList != null) {
+            oldList.clear();
+            framePool.put(oldList);
+        }
+
+        lists.put(newListID, newList);
 
         mode = 0;
     }
@@ -70,12 +79,12 @@ public class ListManager {
     public void glCallList(int list) {
         asert(!isRecording());
 
-        GLCommand[] listToCall = lists.get(list);
+        Frame listToCall = lists.get(list);
         if (listToCall != null) {
             // for-each loop over a list is a performance bottleneck, according to a profiler.
             // Simple for loop over an array is much faster.
-            for (int i = 0; i < listToCall.length; i++) {
-                listToCall[i].run(context);
+            for (int i = 0; i < listToCall.size; i++) {
+                listToCall.commands[i].run(context);
             }
         }
     }
