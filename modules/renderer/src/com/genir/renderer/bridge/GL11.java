@@ -481,16 +481,28 @@ public class GL11 {
         );
     }
 
-    public static void glRotatef(float angle, float x, float y, float z) {
-        record glRotatef(float angle, float x, float y, float z) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, int[] args) {
-                context.transformManager.glRotatef(angle, x, y, z);
-            }
-        }
+    static class GlRotatef implements GLCommand, Recordable {
+        @Override
+        public void run(Context context, int[] args) {
+            float angle = Float.intBitsToFloat(args[0]);
+            float x = Float.intBitsToFloat(args[1]);
+            float y = Float.intBitsToFloat(args[2]);
+            float z = Float.intBitsToFloat(args[3]);
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glRotatef(angle, x, y, z));
+            context.transformManager.glRotatef(angle, x, y, z);
+        }
+    }
+
+    static GlRotatef glRotatefCommand = new GlRotatef();
+
+    public static void glRotatef(float angle, float x, float y, float z) {
+        getThreadContext().exec.execute(
+                glRotatefCommand,
+                Float.floatToRawIntBits(angle),
+                Float.floatToRawIntBits(x),
+                Float.floatToRawIntBits(y),
+                Float.floatToRawIntBits(z)
+        );
     }
 
     public static void glScalef(float x, float y, float z) {
