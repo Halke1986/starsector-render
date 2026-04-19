@@ -34,8 +34,8 @@ public class Display {
         }
 
         ProgressBar.clear();
-        final Context context = ContextManager.createThreadContext();
-        getThreadContext().exec.wait(new create(pixel_format));
+        final Context context = ContextManager.createMainContext();
+        context.exec.wait(new create(pixel_format));
     }
 
     public static void destroy() {
@@ -48,7 +48,7 @@ public class Display {
 
         final Context context = getThreadContext();
         context.exec.wait(new destroy());
-        context.active = false;
+        ContextManager.destroyMainContext();
     }
 
     public static void update(boolean processMessages) {

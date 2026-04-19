@@ -3,8 +3,9 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.debug.Profiler;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
+import static com.genir.renderer.debug.Debug.asert;
 
 /**
  * ContextManager manages virtual OpenGL contexts.
@@ -13,50 +14,49 @@ import java.util.Map;
  * allow executing LWJGL commands at all times.
  */
 public class ContextManager {
-    private static final Map<Thread, Context> contextMap = new HashMap<>();
-
-    private static Context mainContext = null;
-    private static Thread mainThread = null;
+    private static Context mainContext = new Context();
+    private static Thread mainThread = Thread.currentThread();
+    private static final Map<Thread, Context> auxContext = new HashMap<>();
 
     public static Context getThreadContext() {
+        if (auxContext.isEmpty()) {
+            return mainContext;
+        }
+
         // Assume a majority of commands is executed by the main application thread.
         // Skip the slow contextMap.computeIfAbsent call for those commands.
         if (Thread.currentThread() == mainThread) {
             return mainContext;
         }
 
-        return getThreadContextFallback();
+        return auxContext.get(Thread.currentThread());
     }
 
-    synchronized private static Context getThreadContextFallback() {
-        Context context = contextMap.get(Thread.currentThread());
-        if (context == null) {
-            context = new Context();
-            contextMap.put(Thread.currentThread(), context);
-        }
-
-        return context;
-    }
-
-    synchronized public static Context createThreadContext() {
-        // Garbage collection. Remove all Context objects not associated with an OpenGL context.
-        for (Iterator<Map.Entry<Thread, Context>> it = contextMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<Thread, Context> entry = it.next();
-
-            Context context = entry.getValue();
-            if (!context.active) {
-                context.exec.shutdown();
-                it.remove();
-            }
-        }
-
-        Context context = getThreadContext();
-        context.active = true;
-
-        mainContext = context;
+    synchronized public static Context createMainContext() {
         mainThread = Thread.currentThread();
-        Profiler.profiler.mainThread = Thread.currentThread();
+        Profiler.profiler.mainThread = mainThread;
+        return mainContext;
+    }
+
+    synchronized public static Context createAuxContext() {
+        asert(auxContext.get(Thread.currentThread()) == null);
+
+        Context context = new Context();
+        auxContext.put(Thread.currentThread(), context);
 
         return context;
+    }
+
+    synchronized public static void destroyMainContext() {
+        mainContext.shutdown();
+
+        // Always have a context ready, because vanilla may perform
+        // additional LWJGL calls after destroying the OpenGL context.
+        mainContext = new Context();
+    }
+
+    synchronized public static void destroyAuxContext() {
+        Context context = auxContext.remove(Thread.currentThread());
+        context.shutdown();
     }
 }

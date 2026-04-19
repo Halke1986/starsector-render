@@ -3,12 +3,6 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.stall.*;
 
 public class Context {
-    // Is this Context object representing an active OpenGL context.
-    // If not, the context is marked for non-immediate deletion.
-    // This is because vanilla may perform additional LWJGL calls
-    // after destroying the OpenGL context.
-    public boolean active = false;
-
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager(this);
     public final AttribManager attribManager = new AttribManager();
@@ -31,7 +25,7 @@ public class Context {
 
 
     public void update() {
-        if (active && org.lwjgl.opengl.Display.isCreated()) {
+        if (org.lwjgl.opengl.Display.isCreated()) {
             stallDetector.update();
             glStateCache.update();
             vertexInterceptor.update();
@@ -39,5 +33,9 @@ public class Context {
             arrayGenerator.update();
             bufferGenerator.update();
         }
+    }
+
+    public void shutdown() {
+        exec.shutdown();
     }
 }

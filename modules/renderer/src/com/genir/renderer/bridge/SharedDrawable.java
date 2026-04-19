@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import org.lwjgl.LWJGLException;
@@ -43,8 +44,7 @@ public class SharedDrawable implements Drawable {
             }
         }
 
-        final Context context = getThreadContext();
-        context.active = true;
+        final Context context = ContextManager.createAuxContext();
         context.exec.wait(new makeCurrent(impl));
     }
 
@@ -57,9 +57,9 @@ public class SharedDrawable implements Drawable {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.wait(new destroy(impl));
-        context.active = false;
+        ContextManager.destroyAuxContext();
     }
 
     @Override
