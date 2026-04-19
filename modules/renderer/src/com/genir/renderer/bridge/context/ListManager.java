@@ -11,9 +11,7 @@ public class ListManager {
     private final Context context;
 
     private int mode = 0;
-    private int newListID;
     private Frame newList;
-    private final Pool framePool = new Pool();
 
     private final Map<Integer, Frame> lists = new HashMap<>();
 
@@ -62,24 +60,13 @@ public class ListManager {
         asert(!isRecording());
         asert(mode == org.lwjgl.opengl.GL11.GL_COMPILE || mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE);
 
-        this.newListID = list;
         this.mode = mode;
 
-        newList = (Frame) framePool.get();
-        if (newList == null) {
-            newList = new Frame();
-        }
+        newList = lists.computeIfAbsent(list, k -> new Frame());
+        newList.clear();
     }
 
     public void glEndList() {
-        Frame oldList = lists.get(newListID);
-        if (oldList != null) {
-            oldList.clear();
-            framePool.put(oldList);
-        }
-
-        lists.put(newListID, newList);
-
         mode = 0;
     }
 
