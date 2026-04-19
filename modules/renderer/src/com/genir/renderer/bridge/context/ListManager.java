@@ -37,7 +37,6 @@ public class ListManager {
     public void record(GLCommand command, int[] args, int argsSize) {
         newList.add(command);
 
-        newList.ensureAuxDataCapacity(argsSize + 1);
         newList.args[newList.argsOffset++] = argsSize;
         for (int j = 0; j < argsSize; j++) {
             newList.args[newList.argsOffset++] = args[j];

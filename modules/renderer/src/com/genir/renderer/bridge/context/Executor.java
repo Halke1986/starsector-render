@@ -41,7 +41,6 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.ensureAuxDataCapacity(1);
         frame.args[frame.argsOffset++] = 0;
     }
 
@@ -53,7 +52,6 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.ensureAuxDataCapacity(2);
         frame.args[frame.argsOffset++] = 1;
         frame.args[frame.argsOffset++] = arg1;
     }
@@ -66,7 +64,6 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.ensureAuxDataCapacity(3);
         frame.args[frame.argsOffset++] = 2;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
@@ -80,7 +77,6 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.ensureAuxDataCapacity(4);
         frame.args[frame.argsOffset++] = 3;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
@@ -95,7 +91,6 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.ensureAuxDataCapacity(5);
         frame.args[frame.argsOffset++] = 4;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
