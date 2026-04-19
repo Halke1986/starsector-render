@@ -1,3 +1,6 @@
+v0.7.0
+
+- Resolved rendering-related frame rate drops affecting multiple users.
 - Profiling events are no longer emitted unless a performance profile is being gathered.
 - Changed profiler shortcut to CTRL + SHIFT + F8.
 - Added support for javaagent. Suggested by President Matt Damon.
