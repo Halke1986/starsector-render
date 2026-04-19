@@ -120,12 +120,11 @@ public class Profiler {
     }
 
     private boolean isKeyPressed() {
-        // CTRL + ALT + F8
         boolean ctrl = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL);
-        boolean alt = Keyboard.isKeyDown(KEY_LMENU) || Keyboard.isKeyDown(KEY_RMENU);
+        boolean shift = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT);
         boolean f8 = Keyboard.isKeyDown(KEY_F8);
 
-        return ctrl && alt && f8;
+        return ctrl && shift && f8;
     }
 
     /**
