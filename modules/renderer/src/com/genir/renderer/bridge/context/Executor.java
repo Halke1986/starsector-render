@@ -17,13 +17,11 @@ public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
+    private Future<Frame> lastFrameFuture = CompletableFuture.completedFuture(new Frame());
+    private final int[] commandArgs = new int[4];
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
     private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
-
-    private Future<Frame> lastFrameFuture = CompletableFuture.completedFuture(new Frame());
-
-    private final int[] commandArgs = new int[16];
 
     public Executor(Context context) {
         this.context = context;
@@ -33,10 +31,6 @@ public class Executor {
      * Queue command for execution.
      */
     public void execute(GLCommand command) {
-        if (command == null) {
-            return;
-        }
-
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -44,10 +38,6 @@ public class Executor {
     }
 
     public void execute(GLCommand command, int arg1) {
-        if (command == null) {
-            return;
-        }
-
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -56,10 +46,6 @@ public class Executor {
     }
 
     public void execute(GLCommand command, int arg1, int arg2) {
-        if (command == null) {
-            return;
-        }
-
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -69,10 +55,6 @@ public class Executor {
     }
 
     public void execute(GLCommand command, int arg1, int arg2, int arg3) {
-        if (command == null) {
-            return;
-        }
-
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -83,10 +65,6 @@ public class Executor {
     }
 
     public void execute(GLCommand command, int arg1, int arg2, int arg3, int arg4) {
-        if (command == null) {
-            return;
-        }
-
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -193,7 +171,7 @@ public class Executor {
             int argsOffset = 0;
 
             // Run all scheduled commands.
-            for (int i = 0; i < commands.length && commands[i] != null; i++) {
+            for (int i = 0; i < frame.commandsSize; i++) {
                 GLCommand command = commands[i];
 
                 // Copy command arguments.
@@ -209,7 +187,6 @@ public class Executor {
                     command.run(context, commandArgs);
                 }
             }
-
         } catch (Throwable t) {
             exception.set(t);
         } finally {

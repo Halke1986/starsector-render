@@ -79,7 +79,7 @@ public class ListManager {
 
             // for-each loop over a list is a performance bottleneck, according to a profiler.
             // Simple for loop over an array is much faster.
-            for (int i = 0; i < listToCall.size; i++) {
+            for (int i = 0; i < listToCall.commandsSize; i++) {
 
                 // Copy command arguments.
                 int argsSize = args[argsOffset++];
