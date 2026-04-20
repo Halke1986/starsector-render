@@ -73,7 +73,7 @@ public class GL11 {
     /**
      * Draw.
      */
-    static class GlBegin implements GLCommand, Recordable {
+    static class GlBegin implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             int mode = args[0];
@@ -90,7 +90,7 @@ public class GL11 {
         );
     }
 
-    static class GlEnd implements GLCommand, Recordable {
+    static class GlEnd implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             context.vertexInterceptor.glEnd();
@@ -132,7 +132,7 @@ public class GL11 {
         );
     }
 
-    static class GlColor4f implements GLCommand, Recordable {
+    static class GlColor4f implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             float red = Float.intBitsToFloat(args[0]);
@@ -176,7 +176,7 @@ public class GL11 {
         );
     }
 
-    static class GlTexCoord4f implements GLCommand, Recordable {
+    static class GlTexCoord4f implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             float s = Float.intBitsToFloat(args[0]);
@@ -232,7 +232,7 @@ public class GL11 {
         );
     }
 
-    static class GlVertex3f implements GLCommand, Recordable {
+    static class GlVertex3f implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             float x = Float.intBitsToFloat(args[0]);
@@ -431,7 +431,7 @@ public class GL11 {
         context.exec.execute(new glMatrixMode(mode));
     }
 
-    static class GlPushMatrix implements GLCommand, Recordable {
+    static class GlPushMatrix implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             context.transformManager.glPushMatrix();
@@ -446,7 +446,7 @@ public class GL11 {
         );
     }
 
-    static class GlPopMatrix implements GLCommand, Recordable {
+    static class GlPopMatrix implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             context.transformManager.glPopMatrix();
@@ -473,7 +473,7 @@ public class GL11 {
         context.exec.execute(new glLoadIdentity());
     }
 
-    static class GlTranslatef implements GLCommand, Recordable {
+    static class GlTranslatef implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             float x = Float.intBitsToFloat(args[0]);
@@ -495,7 +495,7 @@ public class GL11 {
         );
     }
 
-    static class GlRotatef implements GLCommand, Recordable {
+    static class GlRotatef implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             float angle = Float.intBitsToFloat(args[0]);
@@ -572,7 +572,7 @@ public class GL11 {
     /**
      * Render getContext().
      */
-    static class GlEnable implements GLCommand, Recordable {
+    static class GlEnable implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             int cap = args[0];
@@ -595,7 +595,7 @@ public class GL11 {
         );
     }
 
-    static class GlDisable implements GLCommand, Recordable {
+    static class GlDisable implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             int cap = args[0];
@@ -622,7 +622,7 @@ public class GL11 {
         glBlendFuncSeparate(sfactor, dfactor, sfactor, dfactor);
     }
 
-    static class GlBindTexture implements GLCommand, Recordable {
+    static class GlBindTexture implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             int target = args[0];

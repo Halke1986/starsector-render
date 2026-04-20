@@ -19,7 +19,7 @@ public class GL14 {
         context.exec.execute(new glBlendEquation(mode));
     }
 
-    static class GlBlendFuncSeparate implements GLCommand, Recordable {
+    static class GlBlendFuncSeparate implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, int[] args) {
             int sfactorRGB = args[0];
