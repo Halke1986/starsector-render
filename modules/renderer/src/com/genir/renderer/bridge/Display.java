@@ -62,7 +62,7 @@ public class Display {
 
         final Context context = getThreadContext();
         context.exec.execute(new update(processMessages));
-        context.exec.swapFramesAndSync();
+        context.exec.swapFrames();
 
         Profiler.profiler.update();
         SamplerRunner.samplerRunner.update();
@@ -196,7 +196,7 @@ public class Display {
 
         final Context context = getThreadContext();
         context.exec.execute(new processMessages());
-        context.exec.swapFramesAndSync();
+        context.exec.swapFrames();
     }
 
     public static void sync(int fps) {

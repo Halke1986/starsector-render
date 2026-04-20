@@ -17,12 +17,11 @@ public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private final Pool framePool = new Pool();
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
     private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
 
-    private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
+    private Future<Frame> lastFrameFuture = CompletableFuture.completedFuture(new Frame());
 
     private final int[] commandArgs = new int[16];
 
@@ -121,10 +120,13 @@ public class Executor {
         context.stallDetector.detectStall();
 
         execute(command);
-        Future<?> frameFuture = swapFrames();
+        Future<Frame> frameFuture = swapFrames();
 
         try {
-            waitForFrame(frameFuture);
+            // Wait for the command to execute.
+            frameFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         } finally {
             if (profiler.mainThread == Thread.currentThread()) {
                 profiler.frame.markStall(start);
@@ -134,54 +136,36 @@ public class Executor {
 
     /**
      * Execute queued commands.
+     * Wait until PREVIOUS frame is completed. This allows producer
+     * and consumer threads to overlap with maximum flexibility.
      */
-    public Future<?> swapFrames() {
+    public Future<Frame> swapFrames() {
         // Assume all commands issued before the producer thread was notified
         // of the exception are invalid and must not be executed.
         rethrowAndClearException();
 
+        Future<Frame> prevFrameFuture = lastFrameFuture;
+
         final Frame frameToExecute = currentFrame;
         final boolean isMainThread = profiler.mainThread == Thread.currentThread();
 
-        // Reuse frame array to avoid excessive heap pressure.
-        currentFrame = (Frame) framePool.get();
-        if (currentFrame == null) {
-            currentFrame = new Frame();
-        }
-
-        return execActual.submit(() -> {
+        // Execute queued commands.
+        lastFrameFuture = execActual.submit(() -> {
             executeCommands(frameToExecute, isMainThread);
 
-            // Reuse frame array.
+            // Reuse frame object.
             frameToExecute.clear();
-            framePool.put(frameToExecute);
+            return frameToExecute;
         });
-    }
 
-    /**
-     * Execute queued commands.
-     * Wait until PREVIOUS frame is completed. This allows producer
-     * and consumer threads to overlap with maximum flexibility.
-     */
-    public void swapFramesAndSync() {
-        Future<?> prevFrameFuture = lastFrameFuture;
-
-        lastFrameFuture = swapFrames();
-
-        waitForFrame(prevFrameFuture);
-    }
-
-    private void waitForFrame(Future<?> future) {
+        // Wait until previous frame is completed.
         try {
-            future.get();
+            currentFrame = prevFrameFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
 
-        // Rethrow exceptions after finishing the frame
-        // so that the get method can be notified of
-        // a throw in its callable.
-        rethrowAndClearException();
+        return lastFrameFuture;
     }
 
     private void rethrowAndClearException() {
@@ -189,7 +173,7 @@ public class Executor {
         if (t != null) {
             currentFrame = new Frame();
 
-            lastFrameFuture = CompletableFuture.completedFuture(null);
+            lastFrameFuture = CompletableFuture.completedFuture(new Frame());
 
             throw new RuntimeException(t);
         }
