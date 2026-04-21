@@ -114,8 +114,6 @@ public class Executor {
 
     /**
      * Execute queued commands.
-     * Wait until PREVIOUS frame is completed. This allows producer
-     * and consumer threads to overlap with maximum flexibility.
      */
     public Future<FrameResult> swapFrames() {
         // Assume all commands issued before the producer thread was notified
@@ -123,8 +121,7 @@ public class Executor {
         rethrowAndClearException();
 
         Future<FrameResult> frameFuture = lastFrameFuture;
-
-        final Frame frameToExecute = currentFrame;
+        Frame frameToExecute = currentFrame;
 
         // Execute queued commands.
         lastFrameFuture = execActual.submit(() -> {
