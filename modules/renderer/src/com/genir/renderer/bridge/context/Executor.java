@@ -5,19 +5,19 @@ import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.bridge.context.commands.Recordable;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Profiler.profiler;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private Future<Frame> lastFrameFuture = CompletableFuture.completedFuture(new Frame());
+    private Future<FrameResult> lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0));
     private final int[] commandArgs = new int[4];
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
@@ -98,7 +98,7 @@ public class Executor {
         context.stallDetector.detectStall();
 
         execute(command);
-        Future<Frame> frameFuture = swapFrames();
+        Future<FrameResult> frameFuture = swapFrames();
 
         try {
             // Wait for the command to execute.
@@ -117,28 +117,33 @@ public class Executor {
      * Wait until PREVIOUS frame is completed. This allows producer
      * and consumer threads to overlap with maximum flexibility.
      */
-    public Future<Frame> swapFrames() {
+    public Future<FrameResult> swapFrames() {
         // Assume all commands issued before the producer thread was notified
         // of the exception are invalid and must not be executed.
         rethrowAndClearException();
 
-        Future<Frame> prevFrameFuture = lastFrameFuture;
+        Future<FrameResult> frameFuture = lastFrameFuture;
 
         final Frame frameToExecute = currentFrame;
-        final boolean isMainThread = profiler.mainThread == Thread.currentThread();
 
         // Execute queued commands.
         lastFrameFuture = execActual.submit(() -> {
-            executeCommands(frameToExecute, isMainThread);
+            long start = System.nanoTime();
+            executeCommands(frameToExecute);
 
             // Reuse frame object.
             frameToExecute.clear();
-            return frameToExecute;
+            return new FrameResult(frameToExecute, System.nanoTime() - start);
         });
 
         // Wait until previous frame is completed.
         try {
-            currentFrame = prevFrameFuture.get();
+            FrameResult result = frameFuture.get();
+            currentFrame = result.frame;
+
+            if (profiler.mainThread == Thread.currentThread()) {
+                profiler.frame.setRenderWork(result.duration);
+            }
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -151,15 +156,13 @@ public class Executor {
         if (t != null) {
             currentFrame = new Frame();
 
-            lastFrameFuture = CompletableFuture.completedFuture(new Frame());
+            lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0));
 
             throw new RuntimeException(t);
         }
     }
 
-    private void executeCommands(Frame frame, boolean isMainThread) {
-        long start = System.nanoTime();
-
+    private void executeCommands(Frame frame) {
         // Executor is in invalid state. Cancel all scheduled commands.
         if (exception.get() != null) {
             return;
@@ -189,10 +192,6 @@ public class Executor {
             }
         } catch (Throwable t) {
             exception.set(t);
-        } finally {
-            if (isMainThread) {
-                profiler.frame.markRenderWork(start);
-            }
         }
     }
 
@@ -205,5 +204,8 @@ public class Executor {
      */
     public boolean isIdle() {
         return lastFrameFuture.isDone();
+    }
+
+    private record FrameResult(Frame frame, long duration) {
     }
 }
