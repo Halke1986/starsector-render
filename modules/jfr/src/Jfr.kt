@@ -8,8 +8,8 @@ import kotlin.io.path.deleteIfExists
 
 fun main() {
     // --- Hardcoded inputs (adjust as needed) ---
-    val inputJfr = Path.of("profiles/profile-1767315441.jfr")
-    val outputJfr = Path.of("profiles/filtered-1767315441.jfr")
+    val inputJfr = Path.of("profiles/profile-1777131559.jfr")
+    val outputJfr = Path.of("profiles/filtered-1777131559.jfr")
 
     outputJfr.deleteIfExists()
 

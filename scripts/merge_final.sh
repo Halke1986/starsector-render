@@ -5,4 +5,4 @@ mkdir ./jars/final/
 cp ./jars/compile/fr.jar ./jars/final/fr.jar
 
 # Merge overriden methods
-zipmerge -s ./jars/final/fr.jar ./jars/overrides/starfarer_obf.jar ./jars/overrides/fs.common_obf.jar
+zipmerge -s ./jars/final/fr.jar ./jars/overrides/starfarer_obf.jar ./jars/overrides/fs.common_obf.jar ./jars/overrides/starfarer.api.jar
