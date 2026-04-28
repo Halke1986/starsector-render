@@ -18,7 +18,6 @@ public class Executor {
 
     private Frame currentFrame = new Frame();
     private Future<FrameResult> lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0));
-    private final int[] commandArgs = new int[4];
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
     private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
@@ -34,14 +33,14 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.args[frame.argsOffset++] = 0;
+        frame.args[frame.argsOffset++] = 1;
     }
 
     public void execute(GLCommand command, int arg1) {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.args[frame.argsOffset++] = 1;
+        frame.args[frame.argsOffset++] = 2;
         frame.args[frame.argsOffset++] = arg1;
     }
 
@@ -49,7 +48,7 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.args[frame.argsOffset++] = 2;
+        frame.args[frame.argsOffset++] = 3;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
     }
@@ -58,7 +57,7 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.args[frame.argsOffset++] = 3;
+        frame.args[frame.argsOffset++] = 4;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
         frame.args[frame.argsOffset++] = arg3;
@@ -68,7 +67,7 @@ public class Executor {
         Frame frame = currentFrame;
         frame.add(command);
 
-        frame.args[frame.argsOffset++] = 4;
+        frame.args[frame.argsOffset++] = 5;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
         frame.args[frame.argsOffset++] = arg3;
@@ -81,7 +80,7 @@ public class Executor {
      */
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
-        wait((context, args) ->
+        wait((context, args, offset) ->
                 result[0] = task.call(context)
         );
 
@@ -173,19 +172,16 @@ public class Executor {
             // Run all scheduled commands.
             for (int i = 0; i < frame.commandsSize; i++) {
                 GLCommand command = commands[i];
-
-                // Copy command arguments.
-                int argsSize = args[argsOffset++];
-                for (int j = 0; j < argsSize; j++) {
-                    commandArgs[j] = args[argsOffset++];
-                }
+                int argsSize = args[argsOffset];
 
                 if (context.listManager.isRecording() && command instanceof Recordable) {
                     // Record the command instead of running it immediately.
-                    context.listManager.record(command, commandArgs, argsSize);
+                    context.listManager.record(command, args, argsOffset);
                 } else {
-                    command.run(context, commandArgs);
+                    command.run(context, args, argsOffset);
                 }
+
+                argsOffset += argsSize;
             }
         } catch (Throwable t) {
             exception.set(t);

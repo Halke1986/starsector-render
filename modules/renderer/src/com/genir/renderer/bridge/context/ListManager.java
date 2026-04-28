@@ -15,8 +15,6 @@ public class ListManager {
 
     private final Map<Integer, Frame> lists = new HashMap<>();
 
-    private final int[] commandArgs = new int[16];
-
     public ListManager(Context context) {
         this.context = context;
     }
@@ -34,17 +32,17 @@ public class ListManager {
         return mode != 0;
     }
 
-    public void record(GLCommand command, int[] args, int argsSize) {
+    public void record(GLCommand command, int[] args, int argsOffset) {
         newList.add(command);
 
-        newList.args[newList.argsOffset++] = argsSize;
-        for (int j = 0; j < argsSize; j++) {
+        int argsSize = args[argsOffset];
+        for (int j = argsOffset; j < argsOffset + argsSize; j++) {
             newList.args[newList.argsOffset++] = args[j];
         }
 
         if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
             mode = 0;
-            command.run(context, args);
+            command.run(context, args, argsOffset);
             mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
         }
     }
@@ -81,13 +79,9 @@ public class ListManager {
             // Simple for loop over an array is much faster.
             for (int i = 0; i < listToCall.commandsSize; i++) {
 
-                // Copy command arguments.
-                int argsSize = args[argsOffset++];
-                for (int j = 0; j < argsSize; j++) {
-                    commandArgs[j] = args[argsOffset++];
-                }
-
-                listToCall.commands[i].run(context, commandArgs);
+                int argsSize = args[argsOffset];
+                listToCall.commands[i].run(context, args, argsOffset);
+                argsOffset += argsSize;
             }
         }
     }

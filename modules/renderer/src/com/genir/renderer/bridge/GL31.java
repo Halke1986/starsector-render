@@ -14,7 +14,7 @@ public class GL31 {
     public static void glDrawArraysInstanced(int mode, int first, int count, int primcount) {
         record glDrawArraysInstanced(int mode, int first, int count, int primcount) implements GLCommand {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, int[] args, int offset) {
                 context.attribManager.applyDrawAttribs();
                 org.lwjgl.opengl.GL31.glDrawArraysInstanced(mode, first, count, primcount);
             }
@@ -27,7 +27,7 @@ public class GL31 {
     public static void glDrawElementsInstanced(int mode, int indices_count, int type, long indices_buffer_offset, int primcount) {
         record glDrawElementsInstanced(int mode, int indices_count, int type, long indices_buffer_offset, int primcount) implements GLCommand {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, int[] args, int offset) {
                 context.attribManager.applyDrawAttribs();
                 org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices_count, type, indices_buffer_offset, primcount);
             }
@@ -40,7 +40,7 @@ public class GL31 {
     public static void glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) {
         record glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) implements GLCommand {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, int[] args, int offset) {
                 context.attribManager.applyDrawAttribs();
                 org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices, primcount);
             }
@@ -54,7 +54,7 @@ public class GL31 {
     public static void glTexBuffer(int target, int internalformat, int buffer) {
         record glTexBuffer(int target, int internalformat, int buffer) implements GLCommand {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, int[] args, int offset) {
                 org.lwjgl.opengl.GL31.glTexBuffer(target, internalformat, buffer);
             }
         }
@@ -76,7 +76,7 @@ public class GL31 {
     public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {
         record glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) implements GLCommand {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, int[] args, int offset) {
                 org.lwjgl.opengl.GL31.glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
             }
         }
@@ -98,7 +98,7 @@ public class GL31 {
     public static void glCopyBufferSubData(int readtarget, int writetarget, long readoffset, long writeoffset, long size) {
         record glCopyBufferSubData(int readtarget, int writetarget, long readoffset, long writeoffset, long size) implements GLCommand {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, int[] args, int offset) {
                 org.lwjgl.opengl.GL31.glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size);
             }
         }
