@@ -36,7 +36,7 @@ public class Executor {
         frame.args[frame.argsOffset++] = 1;
     }
 
-    public void execute(GLCommand command, int arg1) {
+    public void execute(GLCommand command, float arg1) {
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -44,7 +44,7 @@ public class Executor {
         frame.args[frame.argsOffset++] = arg1;
     }
 
-    public void execute(GLCommand command, int arg1, int arg2) {
+    public void execute(GLCommand command, float arg1, float arg2) {
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -53,7 +53,7 @@ public class Executor {
         frame.args[frame.argsOffset++] = arg2;
     }
 
-    public void execute(GLCommand command, int arg1, int arg2, int arg3) {
+    public void execute(GLCommand command, float arg1, float arg2, float arg3) {
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -63,7 +63,7 @@ public class Executor {
         frame.args[frame.argsOffset++] = arg3;
     }
 
-    public void execute(GLCommand command, int arg1, int arg2, int arg3, int arg4) {
+    public void execute(GLCommand command, float arg1, float arg2, float arg3, float arg4) {
         Frame frame = currentFrame;
         frame.add(command);
 
@@ -166,13 +166,13 @@ public class Executor {
 
         try {
             GLCommand[] commands = frame.commands;
-            int[] args = frame.args;
+            float[] args = frame.args;
             int argsOffset = 0;
 
             // Run all scheduled commands.
             for (int i = 0; i < frame.commandsSize; i++) {
                 GLCommand command = commands[i];
-                int argsSize = args[argsOffset];
+                int argsSize = (int) args[argsOffset];
 
                 if (context.listManager.isRecording() && command instanceof Recordable) {
                     // Record the command instead of running it immediately.

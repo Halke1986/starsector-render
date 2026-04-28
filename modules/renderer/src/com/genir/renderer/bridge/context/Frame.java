@@ -8,7 +8,7 @@ public class Frame {
     public GLCommand[] commands = new GLCommand[1];
     public int commandsSize = 0;
 
-    public int[] args = new int[5];
+    public float[] args = new float[5];
     public int argsOffset = 0;
 
     public void add(GLCommand command) {

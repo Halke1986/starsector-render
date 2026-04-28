@@ -35,7 +35,7 @@ public class GL32 {
     public static GLSync glFenceSync(int condition, int flags) {
         record glFenceSync( CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements GLCommand {
             @Override
-            public void run(Context context, int[] args, int offset) {
+            public void run(Context context, float[] args, int offset) {
                 future.complete(org.lwjgl.opengl.GL32.glFenceSync(condition, flags));
                 context.update();
             }
@@ -54,7 +54,7 @@ public class GL32 {
     public static void glWaitSync(GLSync sync, int flags, long timeout) {
         record glWaitSync(GLSync sync, int flags, long timeout) implements GLCommand {
             @Override
-            public void run(Context context, int[] args, int offset) {
+            public void run(Context context, float[] args, int offset) {
                 try {
                     // Wait until sync point is created in the detached rendering thread.
                     org.lwjgl.opengl.GLSync impl = sync.future().get();
@@ -73,7 +73,7 @@ public class GL32 {
     public static void glDeleteSync(GLSync sync) {
         record glDeleteSync(GLSync sync) implements GLCommand {
             @Override
-            public void run(Context context, int[] args, int offset) {
+            public void run(Context context, float[] args, int offset) {
                 try {
                     org.lwjgl.opengl.GLSync impl = sync.future().get();
                     org.lwjgl.opengl.GL32.glDeleteSync(impl);

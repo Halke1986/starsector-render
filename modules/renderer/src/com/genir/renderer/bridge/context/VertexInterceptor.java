@@ -156,7 +156,7 @@ public class VertexInterceptor {
         cachedVertices++;
     }
 
-    public void commitLayer(Context context, int[] args, int offset) {
+    public void commitLayer(Context context, float[] args, int offset) {
         for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
             FloatBuffer vertexBatch = entry.getValue();
             if (vertexBatch.position() == 0) {
