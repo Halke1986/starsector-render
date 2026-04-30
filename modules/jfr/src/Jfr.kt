@@ -8,8 +8,8 @@ import kotlin.io.path.deleteIfExists
 
 fun main() {
     // --- Hardcoded inputs (adjust as needed) ---
-    val inputJfr = Path.of("profiles/profile-1777131559.jfr")
-    val outputJfr = Path.of("profiles/filtered-1777131559.jfr")
+    val inputJfr = Path.of("profiles/profile-1777497003.jfr")
+    val outputJfr = Path.of("profiles/filtered-1777497003.jfr")
 
     outputJfr.deleteIfExists()
 
@@ -30,22 +30,26 @@ fun filter(e: RecordedEvent): Boolean {
 }
 
 fun filterThread(e: RecordedEvent): Boolean {
-    // Sampled thread.
-    val selectedThreads: List<String> = listOf("Thread-4")
+    val threadBlacklist: List<String> = listOf(
+        "AWT-Windows",
+        "RMI TCP",
+        "Thread-13",
+    )
+
     if (e.hasField("sampledThread")) {
         val sampledThread: RecordedThread? = e.getValue("sampledThread") as? RecordedThread
 
-        if (selectedThreads.contains(sampledThread?.javaName)) {
-            return true
+        if (threadBlacklist.any { sampledThread?.javaName?.startsWith(it) == true }) {
+            return false
         }
     }
 
     // Event thread.
-    if (selectedThreads.contains(e.thread?.javaName)) {
-        return true
+    if (threadBlacklist.any { e.thread?.javaName?.startsWith(it) == true }) {
+        return false
     }
 
-    return false
+    return true
 }
 
 fun filterTime(e: RecordedEvent): Boolean {
