@@ -8,7 +8,6 @@ import com.genir.renderer.bridge.context.commands.Recordable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Profiler.profiler;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -17,10 +16,9 @@ public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private Future<FrameResult> lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0));
+    private Future<FrameResult> lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0, null));
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
-    private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
 
     public Executor(Context context) {
         this.context = context;
@@ -115,76 +113,70 @@ public class Executor {
      * Execute queued commands.
      */
     public Future<FrameResult> swapFrames() {
-        // Assume all commands issued before the producer thread was notified
-        // of the exception are invalid and must not be executed.
-        rethrowAndClearException();
-
-        Future<FrameResult> frameFuture = lastFrameFuture;
+        Future<FrameResult> prevFrameFuture = lastFrameFuture;
         Frame frameToExecute = currentFrame;
 
         // Execute queued commands.
         lastFrameFuture = execActual.submit(() -> {
             long start = System.nanoTime();
-            executeCommands(frameToExecute);
+            Throwable thrown = null;
+
+            try {
+                executeCommands(frameToExecute, prevFrameFuture);
+            } catch (Throwable t) {
+                thrown = t;
+            }
 
             // Reuse frame object.
             frameToExecute.clear();
-            return new FrameResult(frameToExecute, System.nanoTime() - start);
+            return new FrameResult(frameToExecute, System.nanoTime() - start, thrown);
         });
 
         // Wait until previous frame is completed.
+        FrameResult result = null;
         try {
-            FrameResult result = frameFuture.get();
-            currentFrame = result.frame;
-
-            if (profiler.mainThread == Thread.currentThread()) {
-                profiler.frame.setRenderWork(result.duration);
-            }
+            result = prevFrameFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
+        }
+
+        currentFrame = result.frame;
+
+        if (profiler.mainThread == Thread.currentThread()) {
+            profiler.frame.setRenderWork(result.duration);
+        }
+
+        // Rethrow any exception captured during previous frame execution.
+        if (result.thrown != null) {
+            throw new RuntimeException(result.thrown);
         }
 
         return lastFrameFuture;
     }
 
-    private void rethrowAndClearException() {
-        Throwable t = exception.getAndSet(null);
-        if (t != null) {
-            currentFrame = new Frame();
-
-            lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0));
-
-            throw new RuntimeException(t);
-        }
-    }
-
-    private void executeCommands(Frame frame) {
+    private void executeCommands(Frame frame, Future<FrameResult> prevFrameFuture) throws ExecutionException, InterruptedException {
         // Executor is in invalid state. Cancel all scheduled commands.
-        if (exception.get() != null) {
+        if (prevFrameFuture.get().thrown != null) {
             return;
         }
 
-        try {
-            GLCommand[] commands = frame.commands;
-            float[] args = frame.args;
-            int argsOffset = 0;
+        GLCommand[] commands = frame.commands;
+        float[] args = frame.args;
+        int argsOffset = 0;
 
-            // Run all scheduled commands.
-            for (int i = 0; i < frame.commandsSize; i++) {
-                GLCommand command = commands[i];
-                int argsSize = (int) args[argsOffset];
+        // Run all scheduled commands.
+        for (int i = 0; i < frame.commandsSize; i++) {
+            GLCommand command = commands[i];
+            int argsSize = (int) args[argsOffset];
 
-                if (context.listManager.isRecording() && command instanceof Recordable) {
-                    // Record the command instead of running it immediately.
-                    context.listManager.record(command, args, argsOffset);
-                } else {
-                    command.run(context, args, argsOffset);
-                }
-
-                argsOffset += argsSize;
+            if (context.listManager.isRecording() && command instanceof Recordable) {
+                // Record the command instead of running it immediately.
+                context.listManager.record(command, args, argsOffset);
+            } else {
+                command.run(context, args, argsOffset);
             }
-        } catch (Throwable t) {
-            exception.set(t);
+
+            argsOffset += argsSize;
         }
     }
 
@@ -199,6 +191,6 @@ public class Executor {
         return lastFrameFuture.isDone();
     }
 
-    private record FrameResult(Frame frame, long duration) {
+    private record FrameResult(Frame frame, long duration, Throwable thrown) {
     }
 }
