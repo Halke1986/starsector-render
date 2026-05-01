@@ -5,8 +5,6 @@ import org.lwjgl.BufferUtils;
 import java.lang.reflect.Array;
 import java.nio.*;
 
-import static com.genir.renderer.debug.Debug.asert;
-
 public class BufferUtil {
     /**
      * Returns a snapshot copy of the given FloatBuffer, preserving its content and state.
@@ -78,18 +76,13 @@ public class BufferUtil {
         return snapshot;
     }
 
-    public static float[] snapshotArray(ByteBuffer params) {
+    public static byte[] snapshotArray(ByteBuffer params) {
         if (params == null) {
             return null;
         }
 
-        int bytes = params.limit();
-        int floats = bytes / Float.BYTES;
-
-        asert(bytes % Float.BYTES == 0); // TODO handle byte reminder
-
-        float[] snapshot = new float[floats];
-        params.asFloatBuffer().get(0, snapshot, 0, snapshot.length);
+        byte[] snapshot = new byte[params.limit()];
+        params.get(0, snapshot, 0, snapshot.length);
 
         return snapshot;
     }

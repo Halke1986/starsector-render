@@ -7,13 +7,13 @@ import java.nio.FloatBuffer;
 public record ArrayPointer(int size, int type, int stride, Buffer pointer) {
     public ArraySnapshot getSnapshot() {
         if (pointer instanceof ByteBuffer) {
-            float[] snapshot = BufferUtil.snapshotArray((ByteBuffer) pointer);
-            return new ArraySnapshot(size, type, stride, snapshot);
+            byte[] snapshot = BufferUtil.snapshotArray((ByteBuffer) pointer);
+            return new ArraySnapshot(size, type, stride, snapshot.length * Byte.BYTES, snapshot);
         } else if (pointer instanceof FloatBuffer) {
             float[] snapshot = BufferUtil.snapshotArray((FloatBuffer) pointer);
-            return new ArraySnapshot(size, type, stride, snapshot);
+            return new ArraySnapshot(size, type, stride, snapshot.length * Float.BYTES, snapshot);
         } else if (pointer == null) {
-            return new ArraySnapshot(size, type, stride, null); // VBO
+            return new ArraySnapshot(size, type, stride, 0, null); // VBO
         }
 
         return null;
