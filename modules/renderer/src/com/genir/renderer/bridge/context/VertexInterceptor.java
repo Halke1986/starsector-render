@@ -208,12 +208,8 @@ public class VertexInterceptor {
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
             if (vs.snapshot() != null) {
-                if (vertexPointer.capacity() < vs.bytes()) {
-                    vertexPointer = BufferUtils.createByteBuffer(vs.bytes());
-                }
-
-                vs.store(vertexPointer.clear());
-                GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer.flip()); // Legacy
+                vertexPointer = restoreSnapshot(vs, vertexPointer);
+                GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
             }
         } else {
             GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
@@ -225,12 +221,8 @@ public class VertexInterceptor {
             GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
             if (ts.snapshot() != null) {
-                if (texCoordPointer.capacity() < ts.bytes()) {
-                    texCoordPointer = BufferUtils.createByteBuffer(ts.bytes());
-                }
-
-                ts.store(texCoordPointer.clear());
-                GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer.flip()); // Legacy
+                texCoordPointer = restoreSnapshot(ts, texCoordPointer);
+                GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
             }
         } else {
             GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -242,12 +234,8 @@ public class VertexInterceptor {
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
             if (cs.snapshot() != null) {
-                if (colorPointer.capacity() < cs.bytes()) {
-                    colorPointer = BufferUtils.createByteBuffer(cs.bytes());
-                }
-
-                cs.store(colorPointer.clear());
-                GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer.flip()); // Legacy
+                colorPointer = restoreSnapshot(cs, colorPointer);
+                GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
             }
         } else {
             // Define color if GL_COLOR_ARRAY is disabled.
@@ -271,6 +259,15 @@ public class VertexInterceptor {
 
         // Move model transformation back to CPU.
         transformManager.setCPUModelView();
+    }
+
+    private ByteBuffer restoreSnapshot(ArraySnapshot snapshot, ByteBuffer pointer) {
+        if (pointer.capacity() < snapshot.bytes()) {
+            pointer = BufferUtils.createByteBuffer(snapshot.bytes());
+        }
+
+        snapshot.store(pointer.clear());
+        return pointer.flip();
     }
 
     /**
