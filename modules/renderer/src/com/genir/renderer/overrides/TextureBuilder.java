@@ -7,7 +7,9 @@ import proxy.com.fs.graphics.TextureHandler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 
 public class TextureBuilder {
@@ -50,15 +52,14 @@ public class TextureBuilder {
         float[] var12 = new float[256];
         float[] var13 = new float[256];
         float[] var14 = new float[256];
-        int var15 = image.getWidth();
-        int var16 = image.getHeight();
-        Raster var17 = image.getData();
-        int[] var18;
-        int var19;
-        int var20;
-        int var21;
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
+
+        byte[] imageLine = new byte[imageWidth * 4];
 
         TextureData texData = new TextureData();
+
+        byte[] raster = readImageBytes(image);
 
         texData.imageWidth = image.getWidth();
         texData.imageHeight = image.getHeight();
@@ -78,99 +79,146 @@ public class TextureBuilder {
             texData.buffer.position(0);
             texData.buffer.limit(texData.buffer.capacity());
 
-            var18 = new int[4];
+            for (int y = 0; y < imageHeight; ++y) {
+                for (int x = 0; x < imageWidth; ++x) {
+                    int imagePos = ((imageHeight - y - 1) * imageWidth + x) * 4;
+                    int linePos = x * 4;
 
-            for (var19 = 0; var19 < var16; ++var19) {
-                for (var20 = 0; var20 < var15; ++var20) {
-                    var17.getPixel(var20, var16 - var19 - 1, var18);
-                    if (var18[3] != 0) {
-                        var21 = (var19 * texData.width + var20) * 4;
-                        texData.buffer.put(var21 + 0, (byte) var18[0]);
-                        texData.buffer.put(var21 + 1, (byte) var18[1]);
-                        texData.buffer.put(var21 + 2, (byte) var18[2]);
-                        texData.buffer.put(var21 + 3, (byte) var18[3]);
-                        var8 += (float) var18[0];
-                        var9 += (float) var18[1];
-                        var10 += (float) var18[2];
-                        ++var12[var18[0]];
-                        ++var13[var18[1]];
-                        ++var14[var18[2]];
-                        ++var11;
+                    byte a = raster[imagePos + 0];
+                    if (a == 0) {
+                        imageLine[linePos + 0] = 0;
+                        imageLine[linePos + 1] = 0;
+                        imageLine[linePos + 2] = 0;
+                        imageLine[linePos + 3] = 0;
+                        continue;
                     }
+
+                    byte b = raster[imagePos + 1];
+                    byte g = raster[imagePos + 2];
+                    byte r = raster[imagePos + 3];
+
+                    imageLine[linePos + 0] = r;
+                    imageLine[linePos + 1] = g;
+                    imageLine[linePos + 2] = b;
+                    imageLine[linePos + 3] = a;
+
+                    int ri = Byte.toUnsignedInt(r);
+                    int gi = Byte.toUnsignedInt(g);
+                    int bi = Byte.toUnsignedInt(b);
+
+                    var8 += ri;
+                    var9 += gi;
+                    var10 += bi;
+
+                    ++var12[ri];
+                    ++var13[gi];
+                    ++var14[bi];
+
+                    ++var11;
                 }
+
+                int texturePos = y * texData.width * 4;
+                texData.buffer.put(texturePos, imageLine, 0, imageWidth * 4);
             }
         } else {
             texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * 3);
             texData.buffer.position(0);
             texData.buffer.limit(texData.buffer.capacity());
 
-            var18 = new int[3];
+            for (int y = 0; y < imageHeight; ++y) {
+                for (int x = 0; x < imageWidth; ++x) {
+                    int imagePos = ((imageHeight - y - 1) * imageWidth + x) * 3;
+                    int linePos = x * 3;
 
-            for (var19 = 0; var19 < var16; ++var19) {
-                for (var20 = 0; var20 < var15; ++var20) {
-                    var17.getPixel(var20, var16 - var19 - 1, var18);
-                    var21 = (var19 * texData.width + var20) * 3;
-                    texData.buffer.put(var21 + 0, (byte) var18[0]);
-                    texData.buffer.put(var21 + 1, (byte) var18[1]);
-                    texData.buffer.put(var21 + 2, (byte) var18[2]);
-                    var8 += (float) var18[0];
-                    var9 += (float) var18[1];
-                    var10 += (float) var18[2];
-                    if (var18[0] < 256 && var18[1] < 256 && var18[2] < 256) {
-                        ++var12[var18[0]];
-                        ++var13[var18[1]];
-                        ++var14[var18[2]];
-                    }
+                    byte b = raster[imagePos + 0];
+                    byte g = raster[imagePos + 1];
+                    byte r = raster[imagePos + 2];
+
+                    imageLine[linePos + 0] = r;
+                    imageLine[linePos + 1] = g;
+                    imageLine[linePos + 2] = b;
+
+                    int ri = Byte.toUnsignedInt(r);
+                    int gi = Byte.toUnsignedInt(g);
+                    int bi = Byte.toUnsignedInt(b);
+
+                    var8 += ri;
+                    var9 += gi;
+                    var10 += bi;
+
+                    ++var12[ri];
+                    ++var13[gi];
+                    ++var14[bi];
 
                     ++var11;
                 }
+
+                int texturePos = y * texData.width * 3;
+                texData.buffer.put(texturePos, imageLine, 0, imageWidth * 3);
             }
         }
 
         if (var11 > 0.0F) {
             int var22 = (int) (var8 / var11);
-            var19 = (int) (var9 / var11);
-            var20 = (int) (var10 / var11);
+            int y = (int) (var9 / var11);
+            int x = (int) (var10 / var11);
 
-            var19 = Math.min(var19, 255);
-            var20 = Math.min(var20, 255);
+            y = Math.min(y, 255);
+            x = Math.min(x, 255);
             var22 = Math.min(var22, 255);
 
-            var19 = Math.max(var19, 0);
-            var20 = Math.max(var20, 0);
+            y = Math.max(y, 0);
+            x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            texData.color0 = new Color(var22, var19, var20, 255);
+            texData.color0 = new Color(var22, y, x, 255);
             float var23 = 0.5F;
             var22 = (int) method_21184(var12, var11 * var23);
-            var19 = (int) method_21184(var13, var11 * var23);
-            var20 = (int) method_21184(var14, var11 * var23);
+            y = (int) method_21184(var13, var11 * var23);
+            x = (int) method_21184(var14, var11 * var23);
 
-            var19 = Math.min(var19, 255);
-            var20 = Math.min(var20, 255);
+            y = Math.min(y, 255);
+            x = Math.min(x, 255);
             var22 = Math.min(var22, 255);
 
-            var19 = Math.max(var19, 0);
-            var20 = Math.max(var20, 0);
+            y = Math.max(y, 0);
+            x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            texData.color1 = new Color(var22, var19, var20, 255);
+            texData.color1 = new Color(var22, y, x, 255);
             var22 = (int) method_21183(var12, var11);
-            var19 = (int) method_21183(var13, var11);
-            var20 = (int) method_21184(var14, var11);
+            y = (int) method_21183(var13, var11);
+            x = (int) method_21184(var14, var11);
 
-            var19 = Math.min(var19, 255);
-            var20 = Math.min(var20, 255);
+            y = Math.min(y, 255);
+            x = Math.min(x, 255);
             var22 = Math.min(var22, 255);
 
-            var19 = Math.max(var19, 0);
-            var20 = Math.max(var20, 0);
+            y = Math.max(y, 0);
+            x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            texData.color2 = new Color(var22, var19, var20, 255);
+            texData.color2 = new Color(var22, y, x, 255);
         }
 
         return texData;
+    }
+
+    private static byte[] readImageBytes(BufferedImage image) {
+        DataBuffer rasterDataBuffer = image.getData().getDataBuffer();
+
+        if (rasterDataBuffer instanceof DataBufferByte byteBuffer) {
+            return byteBuffer.getData();
+        } else if (rasterDataBuffer instanceof DataBufferInt intBuffer) {
+            int[] ints = intBuffer.getData();
+
+            ByteBuffer buffer = ByteBuffer.allocate(ints.length * 4);
+            buffer.asIntBuffer().put(ints);
+
+            return buffer.array();
+        } else {
+            throw new RuntimeException("unsupported image buffer type");
+        }
     }
 
     private static float method_21183(float[] var1, float var2) {
