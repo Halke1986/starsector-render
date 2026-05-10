@@ -6,11 +6,9 @@ import org.lwjgl.opengl.GL14;
 import proxy.com.fs.graphics.TextureHandler;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
+import java.awt.image.*;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class TextureBuilder {
     public static TextureHandler commitTexture(String path, TextureData texData) {
@@ -74,88 +72,54 @@ public class TextureBuilder {
             texData.height *= 2;
         }
 
-        if (image.getColorModel().hasAlpha()) {
-            texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * 4);
-            texData.buffer.position(0);
-            texData.buffer.limit(texData.buffer.capacity());
+        int channels = image.getColorModel().hasAlpha() ? 4 : 3;
 
-            for (int y = 0; y < imageHeight; ++y) {
-                for (int x = 0; x < imageWidth; ++x) {
-                    int imagePos = ((imageHeight - y - 1) * imageWidth + x) * 4;
-                    int linePos = x * 4;
+        texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * channels);
+        texData.buffer.position(0);
+        texData.buffer.limit(texData.buffer.capacity());
 
-                    byte a = raster[imagePos + 0];
+        for (int y = 0; y < imageHeight; ++y) {
+            Arrays.fill(imageLine, (byte) 0);
+
+            for (int x = 0; x < imageWidth; ++x) {
+                int imagePos = ((imageHeight - y - 1) * imageWidth + x) * channels;
+
+                byte a = 0;
+                if (channels == 4) {
+                    a = raster[imagePos++];
                     if (a == 0) {
-                        imageLine[linePos + 0] = 0;
-                        imageLine[linePos + 1] = 0;
-                        imageLine[linePos + 2] = 0;
-                        imageLine[linePos + 3] = 0;
                         continue;
                     }
+                }
+                byte b = raster[imagePos++];
+                byte g = raster[imagePos++];
+                byte r = raster[imagePos];
 
-                    byte b = raster[imagePos + 1];
-                    byte g = raster[imagePos + 2];
-                    byte r = raster[imagePos + 3];
-
-                    imageLine[linePos + 0] = r;
-                    imageLine[linePos + 1] = g;
-                    imageLine[linePos + 2] = b;
+                int linePos = x * channels;
+                imageLine[linePos + 0] = r;
+                imageLine[linePos + 1] = g;
+                imageLine[linePos + 2] = b;
+                if (channels == 4) {
                     imageLine[linePos + 3] = a;
-
-                    int ri = Byte.toUnsignedInt(r);
-                    int gi = Byte.toUnsignedInt(g);
-                    int bi = Byte.toUnsignedInt(b);
-
-                    var8 += ri;
-                    var9 += gi;
-                    var10 += bi;
-
-                    ++var12[ri];
-                    ++var13[gi];
-                    ++var14[bi];
-
-                    ++var11;
                 }
 
-                int texturePos = y * texData.width * 4;
-                texData.buffer.put(texturePos, imageLine, 0, imageWidth * 4);
+                int ri = Byte.toUnsignedInt(r);
+                int gi = Byte.toUnsignedInt(g);
+                int bi = Byte.toUnsignedInt(b);
+
+                var8 += ri;
+                var9 += gi;
+                var10 += bi;
+
+                ++var12[ri];
+                ++var13[gi];
+                ++var14[bi];
+
+                ++var11;
             }
-        } else {
-            texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * 3);
-            texData.buffer.position(0);
-            texData.buffer.limit(texData.buffer.capacity());
 
-            for (int y = 0; y < imageHeight; ++y) {
-                for (int x = 0; x < imageWidth; ++x) {
-                    int imagePos = ((imageHeight - y - 1) * imageWidth + x) * 3;
-                    int linePos = x * 3;
-
-                    byte b = raster[imagePos + 0];
-                    byte g = raster[imagePos + 1];
-                    byte r = raster[imagePos + 2];
-
-                    imageLine[linePos + 0] = r;
-                    imageLine[linePos + 1] = g;
-                    imageLine[linePos + 2] = b;
-
-                    int ri = Byte.toUnsignedInt(r);
-                    int gi = Byte.toUnsignedInt(g);
-                    int bi = Byte.toUnsignedInt(b);
-
-                    var8 += ri;
-                    var9 += gi;
-                    var10 += bi;
-
-                    ++var12[ri];
-                    ++var13[gi];
-                    ++var14[bi];
-
-                    ++var11;
-                }
-
-                int texturePos = y * texData.width * 3;
-                texData.buffer.put(texturePos, imageLine, 0, imageWidth * 3);
-            }
+            int texturePos = y * texData.width * channels;
+            texData.buffer.put(texturePos, imageLine, 0, imageWidth * channels);
         }
 
         if (var11 > 0.0F) {
@@ -205,7 +169,8 @@ public class TextureBuilder {
     }
 
     private static byte[] readImageBytes(BufferedImage image) {
-        DataBuffer rasterDataBuffer = image.getData().getDataBuffer();
+        Raster raster = image.getData();
+        DataBuffer rasterDataBuffer = raster.getDataBuffer();
 
         if (rasterDataBuffer instanceof DataBufferByte byteBuffer) {
             return byteBuffer.getData();
