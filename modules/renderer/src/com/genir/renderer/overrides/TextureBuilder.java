@@ -6,9 +6,10 @@ import org.lwjgl.opengl.GL14;
 import proxy.com.fs.graphics.TextureHandler;
 
 import java.awt.*;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+
+import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
     public static TextureHandler commitTexture(String path, TextureData texData) {
@@ -42,87 +43,164 @@ public class TextureBuilder {
         return texture;
     }
 
-    public static TextureData analyzeImage(BufferedImage image) {
-        float var8 = 0.0F;
-        float var9 = 0.0F;
-        float var10 = 0.0F;
-        float var11 = 0.0F;
-        float[] var12 = new float[256];
-        float[] var13 = new float[256];
-        float[] var14 = new float[256];
-        int imageWidth = image.getWidth();
-        int imageHeight = image.getHeight();
-
-        byte[] imageLine = new byte[imageWidth * 4];
-
+    public static TextureData readAndAnalyzeImage(BufferedImage image) {
+        ImageAnalyzer analyzer = new ImageAnalyzer();
         TextureData texData = new TextureData();
-
-        byte[] raster = readImageBytes(image);
 
         texData.imageWidth = image.getWidth();
         texData.imageHeight = image.getHeight();
         texData.hasAlpha = image.getColorModel().hasAlpha();
 
         // Calculate image width and height.
-        while (texData.width < image.getWidth()) {
-            texData.width *= 2;
-        }
-
-        while (texData.height < image.getHeight()) {
-            texData.height *= 2;
-        }
+        while (texData.width < image.getWidth()) texData.width *= 2;
+        while (texData.height < image.getHeight()) texData.height *= 2;
 
         int channels = image.getColorModel().hasAlpha() ? 4 : 3;
+        int imageType = image.getType();
 
         texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * channels);
         texData.buffer.position(0);
         texData.buffer.limit(texData.buffer.capacity());
 
-        for (int y = 0; y < imageHeight; ++y) {
-            Arrays.fill(imageLine, (byte) 0);
-
-            for (int x = 0; x < imageWidth; ++x) {
-                int imagePos = ((imageHeight - y - 1) * imageWidth + x) * channels;
-
-                byte a = 0;
-                if (channels == 4) {
-                    a = raster[imagePos++];
-                    if (a == 0) {
-                        continue;
-                    }
-                }
-                byte b = raster[imagePos++];
-                byte g = raster[imagePos++];
-                byte r = raster[imagePos];
-
-                int linePos = x * channels;
-                imageLine[linePos + 0] = r;
-                imageLine[linePos + 1] = g;
-                imageLine[linePos + 2] = b;
-                if (channels == 4) {
-                    imageLine[linePos + 3] = a;
-                }
-
-                int ri = Byte.toUnsignedInt(r);
-                int gi = Byte.toUnsignedInt(g);
-                int bi = Byte.toUnsignedInt(b);
-
-                var8 += ri;
-                var9 += gi;
-                var10 += bi;
-
-                ++var12[ri];
-                ++var13[gi];
-                ++var14[bi];
-
-                ++var11;
-            }
-
-            int texturePos = y * texData.width * channels;
-            texData.buffer.put(texturePos, imageLine, 0, imageWidth * channels);
+        Object lineObject = null;
+        byte[] line = null;
+        if (imageType == TYPE_INT_RGB || imageType == TYPE_INT_ARGB) {
+            line = new byte[image.getWidth() * channels];
         }
 
-        if (var11 > 0.0F) {
+        for (int y = 0; y < image.getHeight(); ++y) {
+            // Read line object.
+            int lineNumber = image.getMinY() + (image.getHeight() - y - 1);
+            lineObject = image.getRaster().getDataElements(image.getMinX(), lineNumber, image.getWidth(), 1, lineObject);
+
+            int[] ints;
+
+            byte r = 0;
+            byte g = 0;
+            byte b = 0;
+            byte a = 0;
+
+            switch (imageType) {
+                case TYPE_INT_RGB:
+                    ints = (int[]) lineObject;
+                    for (int x = 0; x < image.getWidth(); ++x) {
+                        int pixel = ints[x];
+
+                        r = (byte) (pixel >> 16 & 0xFF);
+                        g = (byte) (pixel >> 8 & 0xFF);
+                        b = (byte) (pixel & 0xFF);
+
+                        int writePos = x * 3;
+
+                        line[writePos + 0] = r;
+                        line[writePos + 1] = g;
+                        line[writePos + 2] = b;
+                    }
+
+                    break;
+                case TYPE_INT_ARGB:
+                    ints = (int[]) lineObject;
+                    for (int x = 0; x < image.getWidth(); ++x) {
+                        int pixel = ints[x];
+
+                        a = (byte) (pixel >> 24 & 0xFF);
+                        r = (byte) (pixel >> 16 & 0xFF);
+                        g = (byte) (pixel >> 8 & 0xFF);
+                        b = (byte) (pixel & 0xFF);
+
+                        int writePos = x * 4;
+
+                        line[writePos + 0] = r;
+                        line[writePos + 1] = g;
+                        line[writePos + 2] = b;
+                        line[writePos + 3] = a;
+                    }
+
+                    break;
+                case TYPE_3BYTE_BGR:
+                    line = (byte[]) lineObject;
+                    for (int x = 0; x < image.getWidth(); ++x) {
+                        int readPos = x * 3;
+
+                        r = line[readPos + 0];
+                        g = line[readPos + 1];
+                        b = line[readPos + 2];
+                    }
+
+                    break;
+                case TYPE_4BYTE_ABGR:
+                    line = (byte[]) lineObject;
+                    for (int x = 0; x < image.getWidth(); ++x) {
+                        int readPos = x * 4;
+
+                        r = line[readPos + 0];
+                        g = line[readPos + 1];
+                        b = line[readPos + 2];
+                        a = line[readPos + 3];
+                    }
+
+                    break;
+                default:
+                    throw new RuntimeException("unsupported image buffer type");
+            }
+
+            if (channels == 3 || a != 0) {
+                analyzer.addPixed(r, g, b);
+            }
+
+            texData.buffer.put(y * texData.width * channels, line, 0, line.length);
+        }
+
+        analyzer.analyzeImage(texData);
+
+        return texData;
+    }
+
+    public static class TextureData {
+        ByteBuffer buffer = null;
+
+        int imageWidth;
+        int imageHeight;
+        boolean hasAlpha;
+
+        int width = 1;
+        int height = 1;
+
+        Color color0 = Color.white;
+        Color color1 = Color.white;
+        Color color2 = Color.white;
+    }
+
+    private static class ImageAnalyzer {
+        private float var8 = 0.0F;
+        private float var9 = 0.0F;
+        private float var10 = 0.0F;
+        private float var11 = 0.0F;
+        private final float[] var12 = new float[256];
+        private final float[] var13 = new float[256];
+        private final float[] var14 = new float[256];
+
+        void addPixed(byte r, byte g, byte b) {
+            int ri = Byte.toUnsignedInt(r);
+            int gi = Byte.toUnsignedInt(g);
+            int bi = Byte.toUnsignedInt(b);
+
+            var8 += ri;
+            var9 += gi;
+            var10 += bi;
+
+            ++var12[ri];
+            ++var13[gi];
+            ++var14[bi];
+
+            ++var11;
+        }
+
+        void analyzeImage(TextureData texData) {
+            if (var11 <= 0.0F) {
+                return;
+            }
+
             int var22 = (int) (var8 / var11);
             int y = (int) (var9 / var11);
             int x = (int) (var10 / var11);
@@ -165,75 +243,40 @@ public class TextureBuilder {
             texData.color2 = new Color(var22, y, x, 255);
         }
 
-        return texData;
-    }
+        private float method_21183(float[] var1, float var2) {
+            float var3 = 0.0F;
+            float var4 = var2 * 0.5F;
 
-    private static byte[] readImageBytes(BufferedImage image) {
-        Raster raster = image.getData();
-        DataBuffer rasterDataBuffer = raster.getDataBuffer();
-
-        if (rasterDataBuffer instanceof DataBufferByte byteBuffer) {
-            return byteBuffer.getData();
-        } else if (rasterDataBuffer instanceof DataBufferInt intBuffer) {
-            int[] ints = intBuffer.getData();
-
-            ByteBuffer buffer = ByteBuffer.allocate(ints.length * 4);
-            buffer.asIntBuffer().put(ints);
-
-            return buffer.array();
-        } else {
-            throw new RuntimeException("unsupported image buffer type");
-        }
-    }
-
-    private static float method_21183(float[] var1, float var2) {
-        float var3 = 0.0F;
-        float var4 = var2 * 0.5F;
-
-        for (int var5 = 0; var5 <= 255; ++var5) {
-            float var6 = var1[var5];
-            var3 += var6;
-            if (var3 >= var4) {
-                return (float) var5;
-            }
-        }
-
-        return 0.0F;
-    }
-
-    private static float method_21184(float[] var1, float var2) {
-        float var3 = 0.0F;
-        float var4 = 0.0F;
-
-        for (int var5 = 255; var5 >= 0; --var5) {
-            float var6 = var1[var5];
-            float var7 = var6;
-            if (var3 + var6 >= var2) {
-                var7 = var2 - var3;
+            for (int var5 = 0; var5 <= 255; ++var5) {
+                float var6 = var1[var5];
+                var3 += var6;
+                if (var3 >= var4) {
+                    return (float) var5;
+                }
             }
 
-            var3 += var7;
-            var4 += (float) var5 * var7;
-            if (var3 >= var2) {
-                break;
-            }
+            return 0.0F;
         }
 
-        return var3 > 0.0F ? var4 / var3 : 0.0F;
-    }
+        private float method_21184(float[] var1, float var2) {
+            float var3 = 0.0F;
+            float var4 = 0.0F;
 
-    public static class TextureData {
-        ByteBuffer buffer = null;
+            for (int var5 = 255; var5 >= 0; --var5) {
+                float var6 = var1[var5];
+                float var7 = var6;
+                if (var3 + var6 >= var2) {
+                    var7 = var2 - var3;
+                }
 
-        int imageWidth;
-        int imageHeight;
-        boolean hasAlpha;
+                var3 += var7;
+                var4 += (float) var5 * var7;
+                if (var3 >= var2) {
+                    break;
+                }
+            }
 
-        int width = 1;
-        int height = 1;
-
-        Color color0 = Color.white;
-        Color color1 = Color.white;
-        Color color2 = Color.white;
+            return var3 > 0.0F ? var4 / var3 : 0.0F;
+        }
     }
 }

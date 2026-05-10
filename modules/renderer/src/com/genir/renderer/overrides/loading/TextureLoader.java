@@ -59,7 +59,7 @@ public class TextureLoader {
                 image = new AlphaAdder().TextureTransformer_apply(image);
             }
 
-            TextureBuilder.TextureData texData = TextureBuilder.analyzeImage(image);
+            TextureBuilder.TextureData texData = TextureBuilder.readAndAnalyzeImage(image);
 
             mainThreadWaitGroup.incrementAndGet();
             ResourceLoader.mainThreadQueue.add(() -> {
