@@ -7,6 +7,7 @@ import proxy.com.fs.graphics.TextureHandler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.nio.ByteBuffer;
 
 import static java.awt.image.BufferedImage.*;
@@ -56,11 +57,27 @@ public class TextureBuilder {
         while (texData.height < image.getHeight()) texData.height *= 2;
 
         int channels = image.getColorModel().hasAlpha() ? 4 : 3;
-        int imageType = image.getType();
 
         texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * channels);
         texData.buffer.position(0);
         texData.buffer.limit(texData.buffer.capacity());
+
+        switch (image.getType()) {
+            case TYPE_INT_RGB, TYPE_INT_ARGB, TYPE_3BYTE_BGR, TYPE_4BYTE_ABGR:
+                readOptimized(image, texData, analyzer);
+                break;
+            default:
+                readFallback(image, texData, analyzer);
+        }
+
+        analyzer.analyzeImage(texData);
+
+        return texData;
+    }
+
+    private static void readOptimized(BufferedImage image, TextureData texData, ImageAnalyzer analyzer) {
+        int channels = image.getColorModel().hasAlpha() ? 4 : 3;
+        int imageType = image.getType();
 
         Object lineObject = null;
         byte[] line = null;
@@ -97,6 +114,7 @@ public class TextureBuilder {
                         line[writePos + 2] = b;
                     }
 
+                    analyzer.addPixel(r, g, b);
                     break;
                 case TYPE_INT_ARGB:
                     ints = (int[]) lineObject;
@@ -116,6 +134,7 @@ public class TextureBuilder {
                         line[writePos + 3] = a;
                     }
 
+                    analyzer.addPixel(r, g, b, a);
                     break;
                 case TYPE_3BYTE_BGR:
                     line = (byte[]) lineObject;
@@ -127,6 +146,7 @@ public class TextureBuilder {
                         b = line[readPos + 2];
                     }
 
+                    analyzer.addPixel(r, g, b);
                     break;
                 case TYPE_4BYTE_ABGR:
                     line = (byte[]) lineObject;
@@ -139,21 +159,43 @@ public class TextureBuilder {
                         a = line[readPos + 3];
                     }
 
+                    analyzer.addPixel(r, g, b, a);
                     break;
-                default:
-                    throw new RuntimeException("unsupported image buffer type");
-            }
-
-            if (channels == 3 || a != 0) {
-                analyzer.addPixed(r, g, b);
             }
 
             texData.buffer.put(y * texData.width * channels, line, 0, line.length);
         }
+    }
 
-        analyzer.analyzeImage(texData);
+    private static void readFallback(BufferedImage image, TextureData texData, ImageAnalyzer analyzer) {
+        Raster raster = image.getData();
 
-        return texData;
+        int channels = image.getColorModel().hasAlpha() ? 4 : 3;
+        int[] pixels = new int[4];
+
+        for (int y = 0; y < image.getHeight(); ++y) {
+            for (int x = 0; x < image.getWidth(); ++x) {
+                raster.getPixel(x, image.getHeight() - y - 1, pixels);
+
+                byte r = (byte) pixels[0];
+                byte g = (byte) pixels[1];
+                byte b = (byte) pixels[2];
+                byte a = (byte) pixels[3];
+
+                int writePos = (y * texData.width + x) * channels;
+
+                texData.buffer.put(writePos + 0, r);
+                texData.buffer.put(writePos + 1, g);
+                texData.buffer.put(writePos + 2, b);
+                if (channels == 4) {
+                    texData.buffer.put(writePos + 3, a);
+                }
+
+                if (channels == 3 || a != 0) {
+                    analyzer.addPixel(r, g, b);
+                }
+            }
+        }
     }
 
     public static class TextureData {
@@ -180,7 +222,13 @@ public class TextureBuilder {
         private final float[] var13 = new float[256];
         private final float[] var14 = new float[256];
 
-        void addPixed(byte r, byte g, byte b) {
+        void addPixel(byte r, byte g, byte b, byte a) {
+            if (a != 0) {
+                addPixel(r, g, b);
+            }
+        }
+
+        void addPixel(byte r, byte g, byte b) {
             int ri = Byte.toUnsignedInt(r);
             int gi = Byte.toUnsignedInt(g);
             int bi = Byte.toUnsignedInt(b);
