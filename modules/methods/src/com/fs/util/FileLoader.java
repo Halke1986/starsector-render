@@ -1,20 +1,18 @@
 package com.fs.util;
 
-import com.genir.renderer.overrides.loading.FileLoader;
-import proxy.com.fs.util.ResourceLoader;
 import proxy.com.fs.util.container.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class FileUtils {
+public class FileLoader {
     // MODIFIED
     // $FF: renamed from: new (java.lang.String) java.util.List
-    public List<Pair<ResourceLoader.ResourceLocation, InputStream>> FileUtils_loadInputStreams(String var1) throws IOException {
-        return FileLoader.loadInputStreams(var1);
+    public List<Pair<proxy.com.fs.util.FileLoader.ResourceLocation, InputStream>> FileLoader_loadInputStreams(String var1) throws IOException {
+        return com.genir.renderer.overrides.loading.FileLoader.loadInputStreams(var1);
     }
-    // .method public FileUtils_loadInputStreams : (Ljava/lang/String;)Ljava/util/List;
+    // .method public FileLoader_loadInputStreams : (Ljava/lang/String;)Ljava/util/List;
     //    .code stack 1 locals 2
     //L0:     aload_1
     //L1:     invokestatic Method com/genir/renderer/overrides/loading/FileLoader loadInputStreams (Ljava/lang/String;)Ljava/util/List;
@@ -34,10 +32,10 @@ public class FileUtils {
 
     // MODIFIED
     // $FF: renamed from: Ó00000 (java.lang.String, boolean) java.io.InputStream
-    public InputStream FileUtils_loadInputStream(String var1, boolean var2) throws IOException {
-        return FileLoader.loadInputStream(var1, var2);
+    public InputStream FileLoader_loadInputStream(String var1, boolean var2) throws IOException {
+        return com.genir.renderer.overrides.loading.FileLoader.loadInputStream(var1, var2);
     }
-    //.method public FileUtils_loadInputStream : (Ljava/lang/String;Z)Ljava/io/InputStream;
+    //.method public FileLoader_loadInputStream : (Ljava/lang/String;Z)Ljava/io/InputStream;
     //    .code stack 2 locals 3
     //L0:     aload_1
     //L1:     iload_2

@@ -151,7 +151,7 @@ L6:
     .end code 
 .end method 
 
-.method public FileUtils_loadInputStream : (Ljava/lang/String;Z)Ljava/io/InputStream;
+.method public FileLoader_loadInputStream : (Ljava/lang/String;Z)Ljava/io/InputStream;
     .code stack 2 locals 3
 L0:     aload_1
 L1:     iload_2
@@ -168,7 +168,153 @@ L6:
         .end localvariabletable
     .end code
     .exceptions java/io/IOException
-.end method 
+.end method
+
+.method public synchronized FileLoader_loadInputStream_vanilla : (Ljava/lang/String;Z)Ljava/io/InputStream;
+    .exceptions java/io/IOException
+    .code stack 5 locals 8
+L0:     aload_0
+L1:     getfield Field com/fs/util/C String Ljava/lang/String;
+L4:     astore_3
+L5:     aload_0
+L6:     aconst_null
+L7:     putfield Field com/fs/util/C String Ljava/lang/String;
+L10:    getstatic Field com/fs/util/C 'super' Z
+L13:    ifeq L22
+L16:    iconst_0
+L17:    istore_2
+L18:    iconst_0
+L19:    putstatic Field com/fs/util/C 'super' Z
+
+        .stack append Object java/lang/String
+L22:    ldc ''
+L24:    astore 4
+L26:    aload_0
+L27:    getfield Field com/fs/util/C 'Ò00000' Ljava/util/List;
+L30:    invokeinterface InterfaceMethod java/util/List iterator ()Ljava/util/Iterator; 1
+L35:    astore 6
+L37:    goto L209
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Integer Object java/lang/String Object java/lang/String Top Object java/util/Iterator
+            stack
+        .end stack
+L40:    aload 6
+L42:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
+L47:    checkcast com/fs/util/C$Oo
+L50:    astore 5
+L52:    iload_2
+L53:    ifne L67
+L56:    aload 5
+L58:    getfield Field com/fs/util/C$Oo String Z
+L61:    ifeq L67
+L64:    goto L209
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Integer Object java/lang/String Object java/lang/String Object com/fs/util/C$Oo Object java/util/Iterator
+            stack
+        .end stack
+L67:    invokestatic Method com/fs/util/C o00000 ()[I
+L70:    aload 5
+L72:    getfield Field com/fs/util/C$Oo 'super' Lcom/fs/util/C$o;
+L75:    invokevirtual Method com/fs/util/C$o ordinal ()I
+L78:    iaload
+L79:    tableswitch 1
+            L132
+            L104
+            L107
+            default : L162
+
+
+        .stack same
+L104:   goto L162
+
+        .stack same
+L107:   new java/lang/StringBuilder
+L110:   dup
+L111:   aload 4
+L113:   invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String;
+L116:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L119:   ldc 'CLASSPATH,'
+L121:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L124:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L127:   astore 4
+L129:   goto L162
+
+        .stack same
+L132:   new java/lang/StringBuilder
+L135:   dup
+L136:   aload 4
+L138:   invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String;
+L141:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L144:   aload 5
+L146:   getfield Field com/fs/util/C$Oo 'Ó00000' Ljava/lang/String;
+L149:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L152:   ldc ','
+L154:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L157:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L160:   astore 4
+
+        .stack same
+L162:   aload_3
+L163:   ifnull L192
+L166:   aload 5
+L168:   getfield Field com/fs/util/C$Oo 'super' Lcom/fs/util/C$o;
+L171:   getstatic Field com/fs/util/C$o 'Ô00000' Lcom/fs/util/C$o;
+L174:   if_acmpne L209
+L177:   aload 5
+L179:   getfield Field com/fs/util/C$Oo 'Ó00000' Ljava/lang/String;
+L182:   aload_3
+L183:   invokevirtual Method java/lang/String endsWith (Ljava/lang/String;)Z
+L186:   ifne L192
+L189:   goto L209
+
+        .stack same
+L192:   aload_0
+L193:   aload_1
+L194:   aload 5
+L196:   invokevirtual Method com/fs/util/C 'Ô00000' (Ljava/lang/String;Lcom/fs/util/C$Oo;)Ljava/io/InputStream;
+L199:   astore 7
+L201:   aload 7
+L203:   ifnull L209
+L206:   aload 7
+L208:   areturn
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Integer Object java/lang/String Object java/lang/String Top Object java/util/Iterator
+            stack
+        .end stack
+L209:   aload 6
+L211:   invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1
+L216:   ifne L40
+L219:   aload 4
+L221:   iconst_0
+L222:   aload 4
+L224:   invokevirtual Method java/lang/String length ()I
+L227:   iconst_1
+L228:   isub
+L229:   invokevirtual Method java/lang/String substring (II)Ljava/lang/String;
+L232:   astore 4
+L234:   new java/lang/RuntimeException
+L237:   dup
+L238:   new java/lang/StringBuilder
+L241:   dup
+L242:   ldc 'Error loading ['
+L244:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L247:   aload_1
+L248:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L251:   ldc '] resource, not found in ['
+L253:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L256:   aload 4
+L258:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L261:   ldc ']'
+L263:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L266:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L269:   invokespecial Method java/lang/RuntimeException <init> (Ljava/lang/String;)V
+L272:   athrow
+L273:
+    .end code
+.end method
 
 .method public synchronized new : (Ljava/lang/String;Z)J 
     .exceptions java/io/IOException 
@@ -285,7 +431,7 @@ L107:
     .end code 
 .end method 
 
-.method public FileUtils_loadInputStreams : (Ljava/lang/String;)Ljava/util/List;
+.method public FileLoader_loadInputStreams : (Ljava/lang/String;)Ljava/util/List;
     .code stack 1 locals 2
 L0:     aload_1
 L1:     invokestatic Method com/genir/renderer/overrides/loading/FileLoader loadInputStreams (Ljava/lang/String;)Ljava/util/List;
@@ -301,6 +447,178 @@ L5:
     .end code
     .exceptions java/io/IOException
     .signature (Ljava/lang/String;)Ljava/util/List<Lcom/fs/starfarer/api/util/Pair<Lproxy/com/fs/util/ResourceLoader$ResourceLocation;Ljava/io/InputStream;>;>;
+.end method
+
+.method public synchronized FileLoader_loadInputStreams_vanilla : (Ljava/lang/String;)Ljava/util/List;
+    .exceptions java/io/IOException
+    .signature (Ljava/lang/String;)Ljava/util/List<Lcom/fs/util/container/Pair<Lcom/fs/util/C$Oo;Ljava/io/InputStream;>;>;
+    .code stack 5 locals 10
+L0:     new java/util/ArrayList
+L3:     dup
+L4:     invokespecial Method java/util/ArrayList <init> ()V
+L7:     astore_2
+L8:     ldc ''
+L10:    astore_3
+L11:    iconst_0
+L12:    istore 4
+L14:    aload_0
+L15:    getfield Field com/fs/util/C 'Ò00000' Ljava/util/List;
+L18:    invokeinterface InterfaceMethod java/util/List iterator ()Ljava/util/Iterator; 1
+L23:    astore 6
+L25:    goto L235
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Object java/util/List Object java/lang/String Integer Top Object java/util/Iterator
+            stack
+        .end stack
+L28:    aload 6
+L30:    invokeinterface InterfaceMethod java/util/Iterator next ()Ljava/lang/Object; 1
+L35:    checkcast com/fs/util/C$Oo
+L38:    astore 5
+L40:    iconst_0
+L41:    istore 7
+L43:    invokestatic Method com/fs/util/C o00000 ()[I
+L46:    aload 5
+L48:    getfield Field com/fs/util/C$Oo 'super' Lcom/fs/util/C$o;
+L51:    invokevirtual Method com/fs/util/C$o ordinal ()I
+L54:    iaload
+L55:    tableswitch 1
+            L112
+            L80
+            L86
+            default : L140
+
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Object java/util/List Object java/lang/String Integer Object com/fs/util/C$Oo Object java/util/Iterator Integer
+            stack
+        .end stack
+L80:    iconst_1
+L81:    istore 7
+L83:    goto L140
+
+        .stack same
+L86:    iconst_1
+L87:    istore 7
+L89:    new java/lang/StringBuilder
+L92:    dup
+L93:    aload_3
+L94:    invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String;
+L97:    invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L100:   ldc 'CLASSPATH,'
+L102:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L105:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L108:   astore_3
+L109:   goto L140
+
+        .stack same
+L112:   new java/lang/StringBuilder
+L115:   dup
+L116:   aload_3
+L117:   invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String;
+L120:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L123:   aload 5
+L125:   getfield Field com/fs/util/C$Oo 'Ó00000' Ljava/lang/String;
+L128:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L131:   ldc ','
+L133:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L136:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L139:   astore_3
+
+        .stack same
+L140:   aload_0
+L141:   aload_1
+L142:   aload 5
+L144:   invokevirtual Method com/fs/util/C 'Ô00000' (Ljava/lang/String;Lcom/fs/util/C$Oo;)Ljava/io/InputStream;
+L147:   astore 8
+L149:   aload 8
+L151:   ifnull L235
+L154:   iload 7
+L156:   ifeq L164
+L159:   iload 4
+L161:   ifne L235
+
+        .stack append Object java/io/InputStream
+L164:   iload 7
+L166:   ifeq L172
+L169:   iconst_1
+L170:   istore 4
+
+        .stack same
+L172:   aload_1
+L173:   astore 9
+L175:   aload 5
+L177:   getfield Field com/fs/util/C$Oo 'Ó00000' Ljava/lang/String;
+L180:   ifnull L212
+L183:   new java/lang/StringBuilder
+L186:   dup
+L187:   aload 5
+L189:   getfield Field com/fs/util/C$Oo 'Ó00000' Ljava/lang/String;
+L192:   invokestatic Method java/lang/String valueOf (Ljava/lang/Object;)Ljava/lang/String;
+L195:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L198:   ldc '/'
+L200:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L203:   aload_1
+L204:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L207:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L210:   astore 9
+
+        .stack append Object java/lang/String
+L212:   aload 8
+L214:   ifnull L235
+L217:   aload_2
+L218:   new com/fs/util/container/Pair
+L221:   dup
+L222:   aload 5
+L224:   aload 8
+L226:   invokespecial Method com/fs/util/container/Pair <init> (Ljava/lang/Object;Ljava/lang/Object;)V
+L229:   invokeinterface InterfaceMethod java/util/List add (Ljava/lang/Object;)Z 2
+L234:   pop
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Object java/util/List Object java/lang/String Integer Top Object java/util/Iterator
+            stack
+        .end stack
+L235:   aload 6
+L237:   invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1
+L242:   ifne L28
+L245:   aload_2
+L246:   invokeinterface InterfaceMethod java/util/List isEmpty ()Z 1
+L251:   ifne L256
+L254:   aload_2
+L255:   areturn
+
+        .stack full
+            locals Object com/fs/util/C Object java/lang/String Object java/util/List Object java/lang/String Integer
+            stack
+        .end stack
+L256:   aload_3
+L257:   iconst_0
+L258:   aload_3
+L259:   invokevirtual Method java/lang/String length ()I
+L262:   iconst_1
+L263:   isub
+L264:   invokevirtual Method java/lang/String substring (II)Ljava/lang/String;
+L267:   astore_3
+L268:   new java/lang/RuntimeException
+L271:   dup
+L272:   new java/lang/StringBuilder
+L275:   dup
+L276:   ldc 'Error loading ['
+L278:   invokespecial Method java/lang/StringBuilder <init> (Ljava/lang/String;)V
+L281:   aload_1
+L282:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L285:   ldc '] resource, not found in ['
+L287:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L290:   aload_3
+L291:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L294:   ldc ']'
+L296:   invokevirtual Method java/lang/StringBuilder append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+L299:   invokevirtual Method java/lang/StringBuilder toString ()Ljava/lang/String;
+L302:   invokespecial Method java/lang/RuntimeException <init> (Ljava/lang/String;)V
+L305:   athrow
+L306:
+    .end code
 .end method
 
 .method public synchronized o00000 : (Ljava/lang/String;Ljava/lang/String;Z)Ljava/util/List; 

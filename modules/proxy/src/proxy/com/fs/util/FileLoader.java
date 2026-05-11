@@ -1,17 +1,30 @@
 package proxy.com.fs.util;
 
+import proxy.com.fs.util.container.Pair;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 // $FF: renamed from: com.fs.util.C
-public class ResourceLoader {
+public class FileLoader {
     // $FF: renamed from: String java.lang.String
     public String ResourceLoader_locationFilter;
 
     // $FF: renamed from: super boolean
     public static boolean ResourceLoader_withoutMods = false;
 
+
+    public List<Pair<ResourceLocation, InputStream>> FileLoader_loadInputStreams_vanilla(String var1) throws IOException {
+        return null;
+    }
+
+    public InputStream FileLoader_loadInputStream_vanilla(String var1, boolean var2) throws IOException {
+        return null;
+    }
+
     // $FF: renamed from: Ó00000 () com.fs.util.C
-    public static ResourceLoader ResourceLoader_getInstance() {
+    public static FileLoader ResourceLoader_getInstance() {
         return null;
     }
 
