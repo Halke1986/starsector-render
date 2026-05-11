@@ -3,6 +3,7 @@ package com.genir.renderer.overrides;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.debug.SamplerRunner;
+import com.genir.renderer.overrides.loading.FileLoader;
 
 import java.util.Objects;
 
@@ -38,7 +39,7 @@ public class CombatEngine {
         if (!GameState.gameInitialized) {
             GameState.gameInitialized = true;
             getThreadContext().stallDetector.enableDetection();
-            FileUtils.closeFileRepository();
+            FileLoader.closeFileRepository();
             unlockParticleLimit();
 
             if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
