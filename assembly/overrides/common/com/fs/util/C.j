@@ -129,7 +129,7 @@ L5:
     .end code 
 .end method 
 
-.method public synchronized 'Ô00000' : (Ljava/lang/String;)Ljava/io/InputStream; 
+.method public 'Ô00000' : (Ljava/lang/String;)Ljava/io/InputStream;
     .exceptions java/io/IOException 
     .code stack 3 locals 2 
 L0:     aload_0 
