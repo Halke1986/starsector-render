@@ -24,6 +24,7 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             newTransform("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
             newTransform("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
+            newTransform("proxy/com/fs/starfarer/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
 
             // Obfuscated classes
             newTransform("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -78,6 +79,8 @@ public class ObfTransformations {
             newTransform("TextureTransformer_apply", "o00000"),
             newTransform("TextureHandler_setStringID", "Ò00000"),
             newTransform("DeploymentManager_pickReinforcement", "o00000"),
+            newTransform("LoadingUtils_filesWithExtensionInDirectory", "super"),
+            newTransform("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

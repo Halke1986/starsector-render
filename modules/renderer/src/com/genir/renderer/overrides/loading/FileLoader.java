@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import static proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla;
+
 public class FileLoader {
     private static FileLoaderFast fastLoader = null;
 
@@ -28,6 +30,24 @@ public class FileLoader {
 
         proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
         return loaderInstance.FileLoader_loadInputStreams_vanilla(path);
+    }
+
+    public static List<String> filesWithExtensionInDirectory(String dir, String extension) {
+        if (fastLoader != null) {
+            return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
+        }
+
+        List<String> files = proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
+        return files;
+    }
+
+    public static List<String> filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
+        if (fastLoader != null) {
+            return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
+        }
+
+        List<String> files = LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
+        return files;
     }
 
     public static void enterFastMode() {
