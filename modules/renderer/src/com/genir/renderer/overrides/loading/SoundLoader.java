@@ -29,6 +29,20 @@ public class SoundLoader {
     }
 
     private static void loadSound(String path) {
+        // Check prerequisites.
+        SoundStore soundStore = SoundStore.SoundStore_getInstance(); // TODO save instance, make synchronized
+        if (!soundStore.getIsOpenALInitialized2()) {
+            return;
+        } else if (!soundStore.SoundStore_getIsInitialized()) {
+            throw new RuntimeException("Can't load sounds until SoundStore is init(). Use the container init() method.");
+        }
+
+        // Sound already loaded.
+        if (soundStore.getTrackMap().get(path) != null) {
+            return;
+        }
+
+        // Load sound bytes.
         byte[] bytes;
         try {
             bytes = FileRepository.FileRepository_loadSound(path);
@@ -43,9 +57,9 @@ public class SoundLoader {
         boolean unsupported = false;
         try {
             if (extension.equals("ogg")) {
-                loadOgg(path, stream);
+                loadOgg(path, stream, soundStore);
             } else if (extension.equals("wav")) {
-                loadWav(path, stream);
+                loadWav(path, stream, soundStore);
             } else {
                 unsupported = true;
             }
@@ -62,13 +76,11 @@ public class SoundLoader {
         ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
     }
 
-    private static void loadOgg(String path, InputStream stream) throws IOException {
-        SoundStore soundStore = SoundStore.SoundStore_getInstance();
+    private static void loadOgg(String path, InputStream stream, SoundStore soundStore) throws IOException {
         soundStore.SoundStore_loadOgg(path, stream);
     }
 
-    private static void loadWav(String path, InputStream stream) throws IOException {
-        SoundStore soundStore = SoundStore.SoundStore_getInstance();
+    private static void loadWav(String path, InputStream stream, SoundStore soundStore) throws IOException {
         soundStore.SoundStore_loadWav(path, stream);
     }
 }

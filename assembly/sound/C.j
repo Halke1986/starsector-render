@@ -2287,7 +2287,39 @@ L1:     getfield Field sound/C 'ÒO0000' Z
 L4:     ireturn 
 L5:     
     .end code 
-.end method 
+.end method
+
+.method public getIsOpenALInitialized2 : ()Z
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     getfield Field sound/SoundStore SoundStore_isOpenALInitialized2 Z
+L4:     ireturn
+L5:
+        .linenumbertable
+            L0 15
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lsound/SoundStore; from L0 to L5
+        .end localvariabletable
+    .end code
+.end method
+
+.method public getTrackMap : ()Ljava/util/HashMap;
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     getfield Field sound/SoundStore SoundStore_trackMap Ljava/util/HashMap;
+L4:     areturn
+L5:
+        .linenumbertable
+            L0 20
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lsound/SoundStore; from L0 to L5
+        .end localvariabletable
+    .end code
+    .signature ()Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/Integer;>;
+.end method
+
 .innerclasses 
     sound/C$1 [0] [0] 
     sound/C$o sound/C o public static 

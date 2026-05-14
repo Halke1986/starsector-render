@@ -42,6 +42,7 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
             newTransform("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
             newTransform("proxy/sound/SoundStore", "sound/C"),
+            newTransform("sound/SoundStore", "sound/C"), // Methods repo duplicate
             newTransform("proxy/sound/Track", "sound/O0OO"),
 
             // Obfuscated methods
@@ -82,9 +83,12 @@ public class ObfTransformations {
             newTransform("SoundStore_getInstance", "ö00000"),
             newTransform("SoundStore_loadOgg", "o00000"),
             newTransform("SoundStore_loadWav", "Ò00000"),
+            newTransform("SoundStore_getIsInitialized", "o00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
-            newTransform("ScriptStore_javaSourceClassLoader", "ø00000")
+            newTransform("ScriptStore_javaSourceClassLoader", "ø00000"),
+            newTransform("SoundStore_isOpenALInitialized2", "Ö00000"),
+            newTransform("SoundStore_trackMap", "OO0000")
     );
 }
