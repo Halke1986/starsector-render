@@ -11,11 +11,6 @@ public class SoundStore {
         return null;
     }
 
-    // $FF: renamed from: o00000 (java.lang.String, java.io.InputStream) sound.O0OO
-    public Track SoundStore_loadOgg(String var1, InputStream var2) throws IOException {
-        return null;
-    }
-
     // $FF: renamed from: Ò00000 (java.lang.String, java.io.InputStream) sound.O0OO
     public Track SoundStore_loadWav(String var1, InputStream var2) throws IOException {
         return null;

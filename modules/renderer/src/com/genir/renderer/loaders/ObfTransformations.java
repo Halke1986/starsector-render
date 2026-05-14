@@ -44,6 +44,8 @@ public class ObfTransformations {
             newTransform("proxy/sound/SoundStore", "sound/C"),
             newTransform("sound/SoundStore", "sound/C"), // Methods repo duplicate
             newTransform("proxy/sound/Track", "sound/O0OO"),
+            newTransform("proxy/sound/SoundBuffer", "sound/G"),
+            newTransform("proxy/sound/OggLoader", "sound/O0oO"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -81,14 +83,17 @@ public class ObfTransformations {
             newTransform("TextureHandler_setStringID", "Ò00000"),
             newTransform("DeploymentManager_pickReinforcement", "o00000"),
             newTransform("SoundStore_getInstance", "ö00000"),
-            newTransform("SoundStore_loadOgg", "o00000"),
             newTransform("SoundStore_loadWav", "Ò00000"),
             newTransform("SoundStore_getIsInitialized", "o00000"),
+            newTransform("OggLoader_load", "super"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
             newTransform("ScriptStore_javaSourceClassLoader", "ø00000"),
             newTransform("SoundStore_isOpenALInitialized2", "Ö00000"),
-            newTransform("SoundStore_trackMap", "OO0000")
+            newTransform("SoundStore_trackMap", "OO0000"),
+            newTransform("SoundBuffer_buffer", "Object"),
+            newTransform("SoundBuffer_freq", "Ò00000"),
+            newTransform("SoundBuffer_channels", "o00000")
     );
 }
