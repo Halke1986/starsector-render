@@ -60,6 +60,8 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
             // Vanilla throws a RuntimeException when a class fails to load.
             throw new RuntimeException("Error while loading script [" + className + "]", e);
         }
+
+//        System.out.println("Loaded Script: [" + className + "]");
     }
 
     public static void runScriptLoadingThread() {

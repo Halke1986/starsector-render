@@ -26,7 +26,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            6, "FR-Resource-Loader-Worker", new ExceptionHandler());
+            4, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 

@@ -103,6 +103,8 @@ public class SoundLoader {
         // Submit empty job to main thread to progress the loading bar.
         mainThreadWaitGroup.incrementAndGet();
         ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
+
+        System.out.println("Loaded Sound: [" + path + "]");
     }
 
     private static void loadOgg(String path, InputStream stream, SoundStore soundStore) throws IOException {

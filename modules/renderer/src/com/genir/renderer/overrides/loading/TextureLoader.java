@@ -74,6 +74,8 @@ public class TextureLoader {
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
         }
+
+//        System.out.println("Loaded Image: [" + path + "]");
     }
 
     private static void defineTexture(String name, String path, TextureBuilder.TextureData texData) {
