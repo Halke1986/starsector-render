@@ -1,6 +1,4 @@
-rm -rf ./jars/overrides/
-mkdir -p ./jars/overrides/
+rm -rf ./jars/assembly/
+mkdir -p ./jars/assembly/
 
-python ../../../Krakatau/assemble.py -out ./jars/overrides/fs.common_obf.jar -r ./assembly/overrides/common/
-python ../../../Krakatau/assemble.py -out ./jars/overrides/starfarer.api.jar -r ./assembly/overrides/api/
-python ../../../Krakatau/assemble.py -out ./jars/overrides/starfarer_obf.jar -r ./assembly/overrides/starfarer/
+python ../../../Krakatau/assemble.py -out ./jars/assembly/overrides.jar -r ./assembly/

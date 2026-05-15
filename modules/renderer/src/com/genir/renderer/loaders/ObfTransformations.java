@@ -19,7 +19,6 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem", "com/fs/starfarer/renderers/damage/ExplosionParticleSystem"),
             newTransform("proxy/com/fs/starfarer/settings/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
             newTransform("proxy/com/fs/util/container/repo/ObjectRepository", "com/fs/util/container/repo/ObjectRepository"),
-            newTransform("proxy/sound/Sound", "sound/Sound"),
             newTransform("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             newTransform("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             newTransform("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
@@ -43,6 +42,11 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
             newTransform("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
             newTransform("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
+            newTransform("proxy/sound/SoundStore", "sound/C"),
+            newTransform("sound/SoundStore", "sound/C"), // Methods repo duplicate
+            newTransform("proxy/sound/Track", "sound/O0OO"),
+            newTransform("proxy/sound/SoundBuffer", "sound/G"),
+            newTransform("proxy/sound/OggLoader", "sound/O0oO"),
 
             // Obfuscated methods
             newTransform("FileRepository_loadImage", "o00000"),
@@ -79,11 +83,20 @@ public class ObfTransformations {
             newTransform("TextureTransformer_apply", "o00000"),
             newTransform("TextureHandler_setStringID", "Ò00000"),
             newTransform("DeploymentManager_pickReinforcement", "o00000"),
+            newTransform("SoundStore_getInstance", "ö00000"),
+            newTransform("SoundStore_loadWav", "Ò00000"),
+            newTransform("SoundStore_getIsInitialized", "o00000"),
+            newTransform("OggLoader_load", "super"),
             newTransform("LoadingUtils_filesWithExtensionInDirectory", "super"),
             newTransform("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
-            newTransform("ScriptStore_javaSourceClassLoader", "ø00000")
+            newTransform("ScriptStore_javaSourceClassLoader", "ø00000"),
+            newTransform("SoundStore_isOpenALInitialized2", "Ö00000"),
+            newTransform("SoundStore_trackMap", "OO0000"),
+            newTransform("SoundBuffer_buffer", "Object"),
+            newTransform("SoundBuffer_freq", "Ò00000"),
+            newTransform("SoundBuffer_channels", "o00000")
     );
 }
