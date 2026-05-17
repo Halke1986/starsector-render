@@ -30,7 +30,7 @@ L5:
 .method public static main : ([Ljava/lang/String;)V 
     .exceptions java/lang/Throwable 
     .code stack 5 locals 23
-        invokestatic Method com/genir/renderer/overrides/loading/FileLoader enterFastMode ()V
+        invokestatic Method com/genir/renderer/overrides/loading/FileLoader initResourceLoading ()V
 L0:     ldc 'localeOverride' 
 L2:     invokestatic Method com/fs/starfarer/settings/StarfarerSettings null (Ljava/lang/String;)Ljava/lang/String; 
 L5:     astore_1 

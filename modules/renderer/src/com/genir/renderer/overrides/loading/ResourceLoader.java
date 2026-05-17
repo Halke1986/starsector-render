@@ -91,7 +91,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         awaitTermination(mainThreadExec);
         awaitTermination(workers);
 
-        FileLoader.exitFastMode();
+        FileLoader.initModLoading();
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;
