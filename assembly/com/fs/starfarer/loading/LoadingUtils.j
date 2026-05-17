@@ -298,18 +298,21 @@ L177:
     .end code 
 .end method 
 
-.method public static 'super' : (Ljava/lang/String;)Ljava/lang/String; 
-    .exceptions java/io/IOException 
-    .code stack 1 locals 2 
-L0:     aload_0 
-L1:     invokestatic Method com/fs/starfarer/loading/LoadingUtils void (Ljava/lang/String;)Ljava/io/InputStream; 
-L4:     astore_1 
-L5:     aload_1 
-L6:     invokestatic Method com/fs/starfarer/loading/LoadingUtils 'super' (Ljava/io/InputStream;)Ljava/lang/String; 
-L9:     areturn 
-L10:    
-    .end code 
-.end method 
+.method public static LoadingUtils_readPathAsString : (Ljava/lang/String;)Ljava/lang/String;
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     invokestatic Method com/genir/renderer/overrides/loading/FileLoader readPathAsString (Ljava/lang/String;)Ljava/lang/String;
+L4:     areturn
+L5:
+        .linenumbertable
+            L0 11
+        .end linenumbertable
+        .localvariabletable
+            0 is var0 Ljava/lang/String; from L0 to L5
+        .end localvariabletable
+    .end code
+    .exceptions java/io/IOException
+.end method
 
 .method public static 'Ò00000' : (Ljava/io/InputStream;)Ljava/lang/String; 
     .exceptions java/io/IOException 
@@ -509,76 +512,21 @@ L45:
     .end code 
 .end method 
 
-.method public static 'super' : (Ljava/io/InputStream;)Ljava/lang/String; 
-    .exceptions java/io/IOException 
-    .code stack 7 locals 5 
-L0:     ldc 1048576 
-L2:     newarray byte 
-L4:     astore_1 
-L5:     new java/lang/StringBuffer 
-L8:     dup 
-L9:     invokespecial Method java/lang/StringBuffer <init> ()V 
-L12:    astore_2 
-        .catch java/io/UnsupportedEncodingException from L13 to L46 using L49 
-        .catch [0] from L13 to L50 using L57 
-L13:    iconst_0 
-L14:    istore_3 
-L15:    goto L35 
-
-        .stack append Object [B Object java/lang/StringBuffer Integer 
-L18:    aload_2 
-L19:    new java/lang/String 
-L22:    dup 
-L23:    aload_1 
-L24:    iconst_0 
-L25:    iload_3 
-L26:    ldc 'UTF-8' 
-L28:    invokespecial Method java/lang/String <init> ([BIILjava/lang/String;)V 
-L31:    invokevirtual Method java/lang/StringBuffer append (Ljava/lang/String;)Ljava/lang/StringBuffer; 
-L34:    pop 
-
-        .stack same 
-L35:    aload_0 
-L36:    aload_1 
-L37:    invokevirtual Method java/io/InputStream read ([B)I 
-L40:    dup 
-L41:    istore_3 
-L42:    iconst_m1 
-L43:    if_icmpne L18 
-L46:    goto L66 
-
-        .stack full 
-            locals Object java/io/InputStream Object [B Object java/lang/StringBuffer 
-            stack Object java/io/UnsupportedEncodingException 
-        .end stack 
-L49:    astore_3 
-L50:    aload_0 
-L51:    invokevirtual Method java/io/InputStream close ()V 
-L54:    goto L70 
-
-        .stack stack_1 Object java/lang/Throwable 
-L57:    astore 4 
-L59:    aload_0 
-L60:    invokevirtual Method java/io/InputStream close ()V 
-L63:    aload 4 
-L65:    athrow 
-
-        .stack same 
-L66:    aload_0 
-L67:    invokevirtual Method java/io/InputStream close ()V 
-
-        .stack same 
-L70:    aload_2 
-L71:    invokevirtual Method java/lang/StringBuffer toString ()Ljava/lang/String; 
-L74:    ldc_w '\\r' 
-L77:    ldc_w '' 
-L80:    invokevirtual Method java/lang/String replaceAll (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; 
-L83:    astore_3 
-L84:    aload_3 
-L85:    areturn 
-L86:    
-    .end code 
-.end method 
+.method public static LoadingUtils_readStreamAsString : (Ljava/io/InputStream;)Ljava/lang/String;
+    .code stack 1 locals 1
+L0:     aload_0
+L1:     invokestatic Method com/genir/renderer/overrides/loading/FileLoader readStreamAsString (Ljava/io/InputStream;)Ljava/lang/String;
+L4:     areturn
+L5:
+        .linenumbertable
+            L0 16
+        .end linenumbertable
+        .localvariabletable
+            0 is var0 Ljava/io/InputStream; from L0 to L5
+        .end localvariabletable
+    .end code
+    .exceptions java/io/IOException
+.end method
 
 .method public static 'Õ00000' : (Ljava/lang/String;)Ljava/lang/String; 
     .exceptions java/io/IOException 

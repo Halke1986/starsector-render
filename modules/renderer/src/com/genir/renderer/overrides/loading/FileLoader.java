@@ -5,6 +5,7 @@ import proxy.com.fs.util.container.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla;
@@ -66,6 +67,42 @@ public class FileLoader {
         return files;
     }
 
+    public static String readPathAsString(String path) throws IOException {
+        return readStreamAsString(loadInputStream(path, true));
+    }
+
+    public static String readStreamAsString(InputStream stream) throws IOException {
+        if (stream instanceof CachedStringInputStream cachedString) {
+            return cachedString.getString();
+        }
+
+        return readStringVanilla(stream);
+    }
+
+    /**
+     * Vasnilla implementaion of string reading.
+     * The implementation is lenient and will ignore invalid UTF-8 characters.
+     */
+    public static String readStringVanilla(InputStream var0) throws IOException {
+        byte[] var1 = new byte[1048576];
+        StringBuffer var2 = new StringBuffer();
+
+        try {
+            boolean var3 = false;
+
+            int var9;
+            while ((var9 = var0.read(var1)) != -1) {
+                var2.append(new String(var1, 0, var9, "UTF-8"));
+            }
+        } catch (UnsupportedEncodingException var7) {
+        } finally {
+            var0.close();
+        }
+
+        String var10 = var2.toString().replaceAll("\\r", "");
+        return var10;
+    }
+
     /**
      * Resource loading is the multi-threaded phase where game assets are loaded. It requires the most optimization.
      */
@@ -76,6 +113,10 @@ public class FileLoader {
         fastLoader = new FileLoaderFast(locations);
     }
 
+    /**
+     * Mod loading is the single-threaded phase where mods are initialized. It requires the IO optimization,
+     * but uses more features than vanilla resource loading.
+     */
     public static void initModLoading() {
         isModLoading = true;
     }

@@ -89,6 +89,8 @@ public class ObfTransformations {
             newTransform("OggLoader_load", "super"),
             newTransform("LoadingUtils_filesWithExtensionInDirectory", "super"),
             newTransform("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
+            newTransform("LoadingUtils_readStreamAsString", "super"),
+            newTransform("LoadingUtils_readPathAsString", "super"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),

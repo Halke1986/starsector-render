@@ -1,16 +1,19 @@
 package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.loading.CachedStringInputStream.CacheableFile;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
 import proxy.com.fs.util.container.Pair;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
     private final List<ResourceLocation> allLocations;
-    private final Map<String, List<File>> cachedFiles = new HashMap<>();
+    private final Map<String, List<CacheableFile>> cachedFiles = new HashMap<>();
     private final String pwd = System.getProperty("user.dir");
 
     public FileLoaderFast(List<ResourceLocation> locations) {
@@ -67,11 +70,11 @@ public class FileLoaderFast {
                     continue;
                 }
 
-                List<File> knownFiles = cachedFiles.computeIfAbsent(
+                List<CacheableFile> knownFiles = cachedFiles.computeIfAbsent(
                         fileName, k -> new ArrayList<>()
                 );
 
-                knownFiles.add(file);
+                knownFiles.add(new CacheableFile(file));
             }
         }
     }
@@ -191,10 +194,10 @@ public class FileLoaderFast {
         path = normalizePath(path);
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
-        List<File> knownResources = cachedFiles.get(path);
+        List<CacheableFile> knownResources = cachedFiles.get(path);
 
         if (knownResources != null) {
-            for (File knownResource : knownResources) {
+            for (CacheableFile knownResource : knownResources) {
                 // Check if resource matches any of the locations.
                 for (ResourceLocation location : locations) {
                     String locationType = location.ResourceLocation_type.toString();
@@ -202,8 +205,9 @@ public class FileLoaderFast {
                         continue;
                     }
 
-                    if (locationType.equals("ABSOLUTE_AND_CWD") || knownResource.getPath().startsWith(location.ResourceLocation_path)) {
-                        BufferedInputStream stream = new BufferedInputStream(new FileInputStream(knownResource));
+                    File file = knownResource.file;
+                    if (locationType.equals("ABSOLUTE_AND_CWD") || file.getPath().startsWith(location.ResourceLocation_path)) {
+                        InputStream stream = new CachedStringInputStream(knownResource);
                         resources.add(new Pair<>(location, stream));
                         if (findFirst) {
                             return resources;
@@ -234,14 +238,14 @@ public class FileLoaderFast {
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean absoultePath) {
         dir = normalizePath(dir);
-        List<File> knownResources = cachedFiles.get(dir);
+        List<CacheableFile> knownResources = cachedFiles.get(dir);
         if (knownResources == null) {
             return new ArrayList<>();
         }
 
         Set<String> foundFiles = new HashSet<>();
-        for (File location : knownResources) {
-            File[] files = location.listFiles();
+        for (CacheableFile knownResource : knownResources) {
+            File[] files = knownResource.file.listFiles();
 
             for (File file : files) {
                 String fileName = file.getName();
