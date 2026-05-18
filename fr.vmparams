@@ -35,8 +35,6 @@
 
 -Xlog:async
 
--Dlog4j.configuration=file:log4j.properties
-
 -Djava.library.path=native\\windows
 -Djava.system.class.loader=com.genir.renderer.loaders.AppClassLoader
 -Djava.util.Arrays.useLegacyMergeSort=true

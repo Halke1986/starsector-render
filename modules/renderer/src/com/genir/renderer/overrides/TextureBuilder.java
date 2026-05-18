@@ -21,9 +21,9 @@ public class TextureBuilder {
         texture.TextureHandler_setImageHeight(texData.imageHeight);
         texture.TextureHandler_setHeight(texData.height);
         texture.TextureHandler_setWidth(texData.width);
-        texture.TextureHandler_serColor0(texData.color0);
-        texture.TextureHandler_serColor1(texData.color1);
-        texture.TextureHandler_serColor2(texData.color2);
+        texture.TextureHandler_setColor0(texData.color0);
+        texture.TextureHandler_setColor1(texData.color1);
+        texture.TextureHandler_setColor2(texData.color2);
 
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         com.genir.renderer.bridge.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
@@ -70,7 +70,7 @@ public class TextureBuilder {
                 readFallback(image, texData, analyzer);
         }
 
-        analyzer.analyzeImage(texData);
+        analyzer.calculateAverageColor(texData);
 
         return texData;
     }
@@ -92,74 +92,92 @@ public class TextureBuilder {
 
             int[] ints;
 
-            byte r = 0;
-            byte g = 0;
-            byte b = 0;
-            byte a = 0;
+            byte r;
+            byte g;
+            byte b;
+            byte a;
 
             switch (imageType) {
                 case TYPE_INT_RGB:
                     ints = (int[]) lineObject;
                     for (int x = 0; x < image.getWidth(); ++x) {
+                        // Read pixel.
                         int pixel = ints[x];
-
                         r = (byte) (pixel >> 16 & 0xFF);
                         g = (byte) (pixel >> 8 & 0xFF);
                         b = (byte) (pixel & 0xFF);
 
+                        // Write pixel.
                         int writePos = x * 3;
-
                         line[writePos + 0] = r;
                         line[writePos + 1] = g;
                         line[writePos + 2] = b;
+
+                        analyzer.addPixel(r, g, b);
                     }
 
-                    analyzer.addPixel(r, g, b);
                     break;
                 case TYPE_INT_ARGB:
                     ints = (int[]) lineObject;
                     for (int x = 0; x < image.getWidth(); ++x) {
+                        // Read pixel.
                         int pixel = ints[x];
-
                         a = (byte) (pixel >> 24 & 0xFF);
                         r = (byte) (pixel >> 16 & 0xFF);
                         g = (byte) (pixel >> 8 & 0xFF);
                         b = (byte) (pixel & 0xFF);
 
                         int writePos = x * 4;
+                        if (a == 0) {
+                            // Clear pixel.
+                            line[writePos + 0] = 0;
+                            line[writePos + 1] = 0;
+                            line[writePos + 2] = 0;
+                        } else {
+                            // Write pixel.
+                            line[writePos + 0] = r;
+                            line[writePos + 1] = g;
+                            line[writePos + 2] = b;
+                            line[writePos + 3] = a;
 
-                        line[writePos + 0] = r;
-                        line[writePos + 1] = g;
-                        line[writePos + 2] = b;
-                        line[writePos + 3] = a;
+                            analyzer.addPixel(r, g, b);
+                        }
                     }
 
-                    analyzer.addPixel(r, g, b, a);
                     break;
                 case TYPE_3BYTE_BGR:
                     line = (byte[]) lineObject;
                     for (int x = 0; x < image.getWidth(); ++x) {
+                        // Read pixel.
                         int readPos = x * 3;
-
                         r = line[readPos + 0];
                         g = line[readPos + 1];
                         b = line[readPos + 2];
+
+                        analyzer.addPixel(r, g, b);
                     }
 
-                    analyzer.addPixel(r, g, b);
                     break;
                 case TYPE_4BYTE_ABGR:
                     line = (byte[]) lineObject;
                     for (int x = 0; x < image.getWidth(); ++x) {
+                        // Read pixel.
                         int readPos = x * 4;
-
                         r = line[readPos + 0];
                         g = line[readPos + 1];
                         b = line[readPos + 2];
                         a = line[readPos + 3];
+
+                        if (a == 0) {
+                            // Clear pixel.
+                            line[readPos + 0] = 0;
+                            line[readPos + 1] = 0;
+                            line[readPos + 2] = 0;
+                        } else {
+                            analyzer.addPixel(r, g, b);
+                        }
                     }
 
-                    analyzer.addPixel(r, g, b, a);
                     break;
             }
 
@@ -174,26 +192,50 @@ public class TextureBuilder {
         int[] pixels = new int[4];
 
         for (int y = 0; y < image.getHeight(); ++y) {
-            for (int x = 0; x < image.getWidth(); ++x) {
-                raster.getPixel(x, image.getHeight() - y - 1, pixels);
+            switch (channels) {
+                case 3:
+                    for (int x = 0; x < image.getWidth(); ++x) {
+                        // Read pixel.
+                        raster.getPixel(x, image.getHeight() - y - 1, pixels);
+                        byte r = (byte) pixels[0];
+                        byte g = (byte) pixels[1];
+                        byte b = (byte) pixels[2];
 
-                byte r = (byte) pixels[0];
-                byte g = (byte) pixels[1];
-                byte b = (byte) pixels[2];
-                byte a = (byte) pixels[3];
+                        // Write pixel.
+                        int writePos = (y * texData.width + x) * channels;
+                        texData.buffer.put(writePos + 0, r);
+                        texData.buffer.put(writePos + 1, g);
+                        texData.buffer.put(writePos + 2, b);
 
-                int writePos = (y * texData.width + x) * channels;
+                        analyzer.addPixel(r, g, b);
+                    }
 
-                texData.buffer.put(writePos + 0, r);
-                texData.buffer.put(writePos + 1, g);
-                texData.buffer.put(writePos + 2, b);
-                if (channels == 4) {
-                    texData.buffer.put(writePos + 3, a);
-                }
+                    break;
+                case 4:
+                    for (int x = 0; x < image.getWidth(); ++x) {
+                        // Read pixel.
+                        raster.getPixel(x, image.getHeight() - y - 1, pixels);
+                        byte r = (byte) pixels[0];
+                        byte g = (byte) pixels[1];
+                        byte b = (byte) pixels[2];
+                        byte a = (byte) pixels[3];
 
-                if (channels == 3 || a != 0) {
-                    analyzer.addPixel(r, g, b);
-                }
+                        if (a == 0) {
+                            // Clear pixel.
+                            continue;
+                        }
+
+                        // Write pixel.
+                        int writePos = (y * texData.width + x) * channels;
+                        texData.buffer.put(writePos + 0, r);
+                        texData.buffer.put(writePos + 1, g);
+                        texData.buffer.put(writePos + 2, b);
+                        texData.buffer.put(writePos + 3, a);
+
+                        analyzer.addPixel(r, g, b);
+                    }
+
+                    break;
             }
         }
     }
@@ -222,12 +264,6 @@ public class TextureBuilder {
         private final float[] var13 = new float[256];
         private final float[] var14 = new float[256];
 
-        void addPixel(byte r, byte g, byte b, byte a) {
-            if (a != 0) {
-                addPixel(r, g, b);
-            }
-        }
-
         void addPixel(byte r, byte g, byte b) {
             int ri = Byte.toUnsignedInt(r);
             int gi = Byte.toUnsignedInt(g);
@@ -244,7 +280,7 @@ public class TextureBuilder {
             ++var11;
         }
 
-        void analyzeImage(TextureData texData) {
+        void calculateAverageColor(TextureData texData) {
             if (var11 <= 0.0F) {
                 return;
             }

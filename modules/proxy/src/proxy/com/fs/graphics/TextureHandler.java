@@ -34,15 +34,15 @@ public class TextureHandler {
     }
 
     // $FF: renamed from: o00000 (java.awt.Color) void
-    public void TextureHandler_serColor1(Color var1) {
+    public void TextureHandler_setColor1(Color var1) {
     }
 
     // $FF: renamed from: Object (java.awt.Color) void
-    public void TextureHandler_serColor0(Color var1) {
+    public void TextureHandler_setColor0(Color var1) {
     }
 
     // $FF: renamed from: Ò00000 (java.awt.Color) void
-    public void TextureHandler_serColor2(Color var1) {
+    public void TextureHandler_setColor2(Color var1) {
     }
 
     // $FF: renamed from: Ò00000 (java.lang.String) void
