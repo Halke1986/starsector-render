@@ -1117,6 +1117,7 @@ public class GL11 {
         final Context context = getThreadContext();
 
         switch (pname) {
+            // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
                 return context.attribTracker.getTextureBindingID();
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
@@ -1140,6 +1141,7 @@ public class GL11 {
                 }
         }
 
+        // Fallback to blocking GL call.
         record glGetInteger(int pname) implements GLGetter<Integer> {
             @Override
             public Integer call(Context context) {
@@ -1156,6 +1158,7 @@ public class GL11 {
 
         // Return a cached value.
         switch (pname) {
+            // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_VIEWPORT:
                 AttribState.Viewport viewport = context.attribTracker.getViewport();
                 putIfPossible(outBuffer, viewport.x());
@@ -1176,14 +1179,49 @@ public class GL11 {
         context.exec.wait(new glGetInteger(pname, outBuffer));
     }
 
+    public static String glGetString(int name) { // NoList
+        final Context context = getThreadContext();
+
+        switch (name) {
+            case org.lwjgl.opengl.GL11.GL_EXTENSIONS:
+                String extensions = context.glStateCache.getGlStringExtensions();
+
+                // Disable vanilla usage of VBOs. When VBO array draws are recorded
+                // in a display list, they cause visual glitches. Correct handling of
+                // VBOs inside display lists is possible, but complicated and offers
+                // no performance benefits.
+                return extensions.replace("GL_ARB_vertex_buffer_object", "");
+
+            case org.lwjgl.opengl.GL11.GL_VENDOR:
+            case org.lwjgl.opengl.GL11.GL_RENDERER:
+            case org.lwjgl.opengl.GL11.GL_VERSION:
+                String cached = context.glStateCache.getOtherString(name);
+                if (cached != null) {
+                    return cached;
+                }
+        }
+
+        // Fallback to blocking GL call.
+        record glGetString(int name) implements GLGetter<String> {
+            @Override
+            public String call(Context context) {
+                return org.lwjgl.opengl.GL11.glGetString(name);
+            }
+        }
+
+        return context.exec.get(new glGetString(name));
+    }
+
     public static float glGetFloat(int pname) { // NoList
         final Context context = getThreadContext();
 
         switch (pname) {
+            // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_LINE_WIDTH:
                 return context.attribTracker.getLineWidth();
         }
 
+        // Fallback to blocking GL call.
         record glGetFloat(int pname) implements GLGetter<Float> {
             @Override
             public Float call(Context context) {
@@ -1202,32 +1240,6 @@ public class GL11 {
         return getThreadContext().texGenerator.get();
     }
 
-    public static String glGetString(int name) { // NoList
-        final Context context = getThreadContext();
-        String result;
-
-        if (name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
-            result = context.glStateCache.getGlStringExtensions();
-        } else {
-            record glGetString(int name) implements GLGetter<String> {
-                @Override
-                public String call(Context context) {
-                    return org.lwjgl.opengl.GL11.glGetString(name);
-                }
-            }
-            result = context.exec.get(new glGetString(name));
-        }
-
-        // Disable vanilla usage of VBOs. When VBO array draws are recorded
-        // in a display list, they cause visual glitches. Correct handling of
-        // VBOs inside display lists is possible, but complicated and offers
-        // no performance benefits.
-        if (name == org.lwjgl.opengl.GL11.GL_EXTENSIONS) {
-            return result.replace("GL_ARB_vertex_buffer_object", "");
-        }
-
-        return result;
-    }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) { // NoList
         record glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) implements GLCommand {
