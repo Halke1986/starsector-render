@@ -11,6 +11,7 @@ public class ObfTransformations {
             newTransform("proxy/com/fs/graphics/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
             newTransform("proxy/com/fs/graphics/LayeredRenderable", "com/fs/graphics/LayeredRenderable"),
             newTransform("proxy/com/fs/graphics/Sprite", "com/fs/graphics/Sprite"),
+            newTransform("proxy/com/fs/graphics/TextureLoader", "com/fs/graphics/TextureLoader"),
             newTransform("proxy/com/fs/starfarer/combat/entities/CustomCombatEntity", "com/fs/starfarer/combat/entities/CustomCombatEntity"),
             newTransform("proxy/com/fs/starfarer/combat/CombatViewport", "com/fs/starfarer/combat/CombatViewport"),
             newTransform("proxy/com/fs/starfarer/loading/scripts/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
@@ -78,6 +79,7 @@ public class ObfTransformations {
             newTransform("TextureTransformer_apply", "o00000"),
             newTransform("TextureHandler_setStringID", "Ò00000"),
             newTransform("DeploymentManager_pickReinforcement", "o00000"),
+            newTransform("TextureLoader_loadTexture", "o00000"),
 
             // Obfuscated fields
             newTransform("ScriptStore_objectRepository", "Õ00000"),
