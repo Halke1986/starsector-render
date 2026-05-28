@@ -120,15 +120,26 @@ public class Executor {
         lastFrameFuture = execActual.submit(() -> {
             long start = System.nanoTime();
             Throwable thrown = null;
+            boolean frameWasCleared = false;
 
             try {
-                executeCommands(frameToExecute, prevFrameFuture);
+                // Run scheduled commands only if the Executor is in a valid state.
+                if (prevFrameFuture.get().thrown == null) {
+                    executeCommands(frameToExecute, prevFrameFuture);
+
+                    // Assume executeCommands clears the command array.
+                    frameToExecute.clearWithoutNulling();
+                    frameWasCleared = true;
+                }
             } catch (Throwable t) {
                 thrown = t;
+            } finally {
+                // Reuse the frame object.
+                if (!frameWasCleared) {
+                    frameToExecute.clear();
+                }
             }
 
-            // Reuse frame object.
-            frameToExecute.clear();
             return new FrameResult(frameToExecute, System.nanoTime() - start, thrown);
         });
 
@@ -155,11 +166,6 @@ public class Executor {
     }
 
     private void executeCommands(Frame frame, Future<FrameResult> prevFrameFuture) throws ExecutionException, InterruptedException {
-        // Executor is in invalid state. Cancel all scheduled commands.
-        if (prevFrameFuture.get().thrown != null) {
-            return;
-        }
-
         GLCommand[] commands = frame.commands;
         float[] args = frame.args;
         int argsOffset = 0;
@@ -167,6 +173,7 @@ public class Executor {
         // Run all scheduled commands.
         for (int i = 0; i < frame.commandsSize; i++) {
             GLCommand command = commands[i];
+            commands[i] = null;
             int argsSize = (int) args[argsOffset];
 
             if (context.listManager.isRecording() && command instanceof Recordable) {

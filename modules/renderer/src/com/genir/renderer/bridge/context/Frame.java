@@ -23,6 +23,10 @@ public class Frame {
 
     public void clear() {
         Arrays.fill(commands, null);
+        clearWithoutNulling();
+    }
+
+    public void clearWithoutNulling() {
         commandsSize = 0;
         argsOffset = 0;
     }
