@@ -125,7 +125,7 @@ public class Executor {
             try {
                 // Run scheduled commands only if the Executor is in a valid state.
                 if (prevFrameFuture.get().thrown == null) {
-                    executeCommands(frameToExecute, prevFrameFuture);
+                    executeCommands(frameToExecute);
 
                     // Assume executeCommands clears the command array.
                     frameToExecute.clearWithoutNulling();
@@ -165,7 +165,7 @@ public class Executor {
         return lastFrameFuture;
     }
 
-    private void executeCommands(Frame frame, Future<FrameResult> prevFrameFuture) throws ExecutionException, InterruptedException {
+    private void executeCommands(Frame frame) {
         GLCommand[] commands = frame.commands;
         float[] args = frame.args;
         int argsOffset = 0;
