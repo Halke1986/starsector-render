@@ -1,4 +1,5 @@
 - Fixed an Asynchronous pipeline stall that could crash the game when using Console Commands. Reported by WonkerBonker.
+- Improved rendering performance.
 
 v0.7.0
 
