@@ -16,7 +16,7 @@ public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private Future<FrameResult> lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0, null));
+    private Future<SwapResult> lastSwapFuture = completedFuture(new SwapResult(new Frame(), 0, null));
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
@@ -95,11 +95,11 @@ public class Executor {
         context.stallDetector.detectStall();
 
         execute(command);
-        Future<FrameResult> frameFuture = swapFrames();
+        Future<SwapResult> swapFuture = swapFrames();
 
         try {
             // Wait for the command to execute.
-            frameFuture.get();
+            swapFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         } finally {
@@ -112,19 +112,19 @@ public class Executor {
     /**
      * Execute queued commands.
      */
-    public Future<FrameResult> swapFrames() {
-        Future<FrameResult> prevFrameFuture = lastFrameFuture;
+    public Future<SwapResult> swapFrames() {
+        Future<SwapResult> prevSwapFuture = lastSwapFuture;
         Frame frameToExecute = currentFrame;
 
         // Execute queued commands.
-        lastFrameFuture = execActual.submit(() -> {
+        lastSwapFuture = execActual.submit(() -> {
             long start = System.nanoTime();
             Throwable thrown = null;
             boolean frameWasCleared = false;
 
             try {
                 // Run scheduled commands only if the Executor is in a valid state.
-                if (prevFrameFuture.get().thrown == null) {
+                if (prevSwapFuture.get().thrown == null) {
                     executeCommands(frameToExecute);
 
                     // Assume executeCommands clears the command array.
@@ -140,13 +140,13 @@ public class Executor {
                 }
             }
 
-            return new FrameResult(frameToExecute, System.nanoTime() - start, thrown);
+            return new SwapResult(frameToExecute, System.nanoTime() - start, thrown);
         });
 
         // Wait until previous frame is completed.
-        FrameResult result = null;
+        SwapResult result = null;
         try {
-            result = prevFrameFuture.get();
+            result = prevSwapFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -162,7 +162,7 @@ public class Executor {
             throw new RuntimeException(result.thrown);
         }
 
-        return lastFrameFuture;
+        return lastSwapFuture;
     }
 
     private void executeCommands(Frame frame) {
@@ -195,9 +195,9 @@ public class Executor {
      * Returns true if no commands are being executed.
      */
     public boolean isIdle() {
-        return lastFrameFuture.isDone();
+        return lastSwapFuture.isDone();
     }
 
-    private record FrameResult(Frame frame, long duration, Throwable thrown) {
+    private record SwapResult(Frame frame, long duration, Throwable thrown) {
     }
 }
