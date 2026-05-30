@@ -103,7 +103,7 @@ public class CombatEngine {
 
     private static void renderLayer(String layer) {
         final Context context = getThreadContext();
-        context.exec.execute((ctx, args) -> ctx.vertexInterceptor.setReorderDraw(true));
+        context.exec.execute((ctx, args, offset) -> ctx.vertexInterceptor.setReorderDraw(true));
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -123,9 +123,9 @@ public class CombatEngine {
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
 
-        context.exec.execute((ctx, args) -> {
+        context.exec.execute((ctx, args, offset) -> {
             ctx.vertexInterceptor.setReorderDraw(false);
-            ctx.vertexInterceptor.commitLayer(ctx, args);
+            ctx.vertexInterceptor.commitLayer(ctx, args, offset);
         });
     }
 }

@@ -5,26 +5,20 @@ import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.bridge.context.commands.Recordable;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Profiler.profiler;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private final Pool framePool = new Pool();
+    private Future<FrameResult> lastFrameFuture = completedFuture(new FrameResult(new Frame(), 0, null));
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
-    private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
-
-    private Future<?> lastFrameFuture = CompletableFuture.completedFuture(null);
-
-    private final int[] commandArgs = new int[16];
 
     public Executor(Context context) {
         this.context = context;
@@ -34,64 +28,44 @@ public class Executor {
      * Queue command for execution.
      */
     public void execute(GLCommand command) {
-        if (command == null) {
-            return;
-        }
-
-        Frame frame = currentFrame;
-        frame.add(command);
-
-        frame.args[frame.argsOffset++] = 0;
-    }
-
-    public void execute(GLCommand command, int arg1) {
-        if (command == null) {
-            return;
-        }
-
         Frame frame = currentFrame;
         frame.add(command);
 
         frame.args[frame.argsOffset++] = 1;
-        frame.args[frame.argsOffset++] = arg1;
     }
 
-    public void execute(GLCommand command, int arg1, int arg2) {
-        if (command == null) {
-            return;
-        }
-
+    public void execute(GLCommand command, float arg1) {
         Frame frame = currentFrame;
         frame.add(command);
 
         frame.args[frame.argsOffset++] = 2;
         frame.args[frame.argsOffset++] = arg1;
-        frame.args[frame.argsOffset++] = arg2;
     }
 
-    public void execute(GLCommand command, int arg1, int arg2, int arg3) {
-        if (command == null) {
-            return;
-        }
-
+    public void execute(GLCommand command, float arg1, float arg2) {
         Frame frame = currentFrame;
         frame.add(command);
 
         frame.args[frame.argsOffset++] = 3;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
-        frame.args[frame.argsOffset++] = arg3;
     }
 
-    public void execute(GLCommand command, int arg1, int arg2, int arg3, int arg4) {
-        if (command == null) {
-            return;
-        }
-
+    public void execute(GLCommand command, float arg1, float arg2, float arg3) {
         Frame frame = currentFrame;
         frame.add(command);
 
         frame.args[frame.argsOffset++] = 4;
+        frame.args[frame.argsOffset++] = arg1;
+        frame.args[frame.argsOffset++] = arg2;
+        frame.args[frame.argsOffset++] = arg3;
+    }
+
+    public void execute(GLCommand command, float arg1, float arg2, float arg3, float arg4) {
+        Frame frame = currentFrame;
+        frame.add(command);
+
+        frame.args[frame.argsOffset++] = 5;
         frame.args[frame.argsOffset++] = arg1;
         frame.args[frame.argsOffset++] = arg2;
         frame.args[frame.argsOffset++] = arg3;
@@ -104,7 +78,7 @@ public class Executor {
      */
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
-        wait((context, args) ->
+        wait((context, args, offset) ->
                 result[0] = task.call(context)
         );
 
@@ -121,10 +95,13 @@ public class Executor {
         context.stallDetector.detectStall();
 
         execute(command);
-        Future<?> frameFuture = swapFrames();
+        Future<FrameResult> frameFuture = swapFrames();
 
         try {
-            waitForFrame(frameFuture);
+            // Wait for the command to execute.
+            frameFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         } finally {
             if (profiler.mainThread == Thread.currentThread()) {
                 profiler.frame.markStall(start);
@@ -135,103 +112,71 @@ public class Executor {
     /**
      * Execute queued commands.
      */
-    public Future<?> swapFrames() {
-        // Assume all commands issued before the producer thread was notified
-        // of the exception are invalid and must not be executed.
-        rethrowAndClearException();
+    public Future<FrameResult> swapFrames() {
+        Future<FrameResult> prevFrameFuture = lastFrameFuture;
+        Frame frameToExecute = currentFrame;
 
-        final Frame frameToExecute = currentFrame;
-        final boolean isMainThread = profiler.mainThread == Thread.currentThread();
+        // Execute queued commands.
+        lastFrameFuture = execActual.submit(() -> {
+            long start = System.nanoTime();
+            Throwable thrown = null;
 
-        // Reuse frame array to avoid excessive heap pressure.
-        currentFrame = (Frame) framePool.get();
-        if (currentFrame == null) {
-            currentFrame = new Frame();
-        }
+            try {
+                executeCommands(frameToExecute, prevFrameFuture);
+            } catch (Throwable t) {
+                thrown = t;
+            }
 
-        return execActual.submit(() -> {
-            executeCommands(frameToExecute, isMainThread);
-
-            // Reuse frame array.
+            // Reuse frame object.
             frameToExecute.clear();
-            framePool.put(frameToExecute);
+            return new FrameResult(frameToExecute, System.nanoTime() - start, thrown);
         });
-    }
 
-    /**
-     * Execute queued commands.
-     * Wait until PREVIOUS frame is completed. This allows producer
-     * and consumer threads to overlap with maximum flexibility.
-     */
-    public void swapFramesAndSync() {
-        Future<?> prevFrameFuture = lastFrameFuture;
-
-        lastFrameFuture = swapFrames();
-
-        waitForFrame(prevFrameFuture);
-    }
-
-    private void waitForFrame(Future<?> future) {
+        // Wait until previous frame is completed.
+        FrameResult result = null;
         try {
-            future.get();
+            result = prevFrameFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
 
-        // Rethrow exceptions after finishing the frame
-        // so that the get method can be notified of
-        // a throw in its callable.
-        rethrowAndClearException();
-    }
+        currentFrame = result.frame;
 
-    private void rethrowAndClearException() {
-        Throwable t = exception.getAndSet(null);
-        if (t != null) {
-            currentFrame = new Frame();
-
-            lastFrameFuture = CompletableFuture.completedFuture(null);
-
-            throw new RuntimeException(t);
+        if (profiler.mainThread == Thread.currentThread()) {
+            profiler.frame.setRenderWork(result.duration);
         }
+
+        // Rethrow any exception captured during previous frame execution.
+        if (result.thrown != null) {
+            throw new RuntimeException(result.thrown);
+        }
+
+        return lastFrameFuture;
     }
 
-    private void executeCommands(Frame frame, boolean isMainThread) {
-        long start = System.nanoTime();
-
+    private void executeCommands(Frame frame, Future<FrameResult> prevFrameFuture) throws ExecutionException, InterruptedException {
         // Executor is in invalid state. Cancel all scheduled commands.
-        if (exception.get() != null) {
+        if (prevFrameFuture.get().thrown != null) {
             return;
         }
 
-        try {
-            GLCommand[] commands = frame.commands;
-            int[] args = frame.args;
-            int argsOffset = 0;
+        GLCommand[] commands = frame.commands;
+        float[] args = frame.args;
+        int argsOffset = 0;
 
-            // Run all scheduled commands.
-            for (int i = 0; i < commands.length && commands[i] != null; i++) {
-                GLCommand command = commands[i];
+        // Run all scheduled commands.
+        for (int i = 0; i < frame.commandsSize; i++) {
+            GLCommand command = commands[i];
+            int argsSize = (int) args[argsOffset];
 
-                // Copy command arguments.
-                int argsSize = args[argsOffset++];
-                for (int j = 0; j < argsSize; j++) {
-                    commandArgs[j] = args[argsOffset++];
-                }
-
-                if (context.listManager.isRecording() && command instanceof Recordable) {
-                    // Record the command instead of running it immediately.
-                    context.listManager.record(command, commandArgs, argsSize);
-                } else {
-                    command.run(context, commandArgs);
-                }
+            if (context.listManager.isRecording() && command instanceof Recordable) {
+                // Record the command instead of running it immediately.
+                context.listManager.record(command, args, argsOffset);
+            } else {
+                command.run(context, args, argsOffset);
             }
 
-        } catch (Throwable t) {
-            exception.set(t);
-        } finally {
-            if (isMainThread) {
-                profiler.frame.markRenderWork(start);
-            }
+            argsOffset += argsSize;
         }
     }
 
@@ -244,5 +189,8 @@ public class Executor {
      */
     public boolean isIdle() {
         return lastFrameFuture.isDone();
+    }
+
+    private record FrameResult(Frame frame, long duration, Throwable thrown) {
     }
 }

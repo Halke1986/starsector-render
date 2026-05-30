@@ -172,8 +172,8 @@ public class Profiler {
             syncStart = System.nanoTime();
         }
 
-        public void markRenderWork(long start) {
-            renderSum += System.nanoTime() - start;
+        public void setRenderWork(long duration) {
+            renderSum = duration;
         }
 
         public void markStall(long start) {

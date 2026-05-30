@@ -22,11 +22,11 @@ public class LayeredRenderer {
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (isSwarm(entity)) {
-                context.exec.execute((ctx, args) -> ctx.vertexInterceptor.setReorderDraw(true));
+                context.exec.execute((ctx, args, offset) -> ctx.vertexInterceptor.setReorderDraw(true));
 
                 entity.render(layer, viewport);
 
-                context.exec.execute((ctx, args) -> ctx.vertexInterceptor.setReorderDraw(false));
+                context.exec.execute((ctx, args, offset) -> ctx.vertexInterceptor.setReorderDraw(false));
             } else {
                 entity.render(layer, viewport);
             }

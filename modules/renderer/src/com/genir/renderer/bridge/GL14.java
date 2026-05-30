@@ -10,7 +10,7 @@ public class GL14 {
     public static void glBlendEquation(int mode) {
         record glBlendEquation(int mode) implements GLCommand, Recordable {
             @Override
-            public void run(Context context, int[] args) {
+            public void run(Context context, float[] args, int offset) {
                 context.attribManager.glBlendEquation(mode);
             }
         }
@@ -19,13 +19,13 @@ public class GL14 {
         context.exec.execute(new glBlendEquation(mode));
     }
 
-    static class GlBlendFuncSeparate implements GLCommand, Recordable {
+    static class GlBlendFuncSeparate implements GLCommand, Recordable { // Heap optimized
         @Override
-        public void run(Context context, int[] args) {
-            int sfactorRGB = args[0];
-            int dfactorRGB = args[1];
-            int sfactorAlpha = args[2];
-            int dfactorAlpha = args[3];
+        public void run(Context context, float[] args, int offset) {
+            int sfactorRGB = Float.floatToRawIntBits(args[offset + 1]);
+            int dfactorRGB = Float.floatToRawIntBits(args[offset + 2]);
+            int sfactorAlpha = Float.floatToRawIntBits(args[offset + 3]);
+            int dfactorAlpha = Float.floatToRawIntBits(args[offset + 4]);
 
             context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
         }
@@ -36,10 +36,10 @@ public class GL14 {
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
         getThreadContext().exec.execute(
                 glBlendFuncSeparateCommand,
-                sfactorRGB,
-                dfactorRGB,
-                sfactorAlpha,
-                dfactorAlpha
+                Float.intBitsToFloat(sfactorRGB),
+                Float.intBitsToFloat(dfactorRGB),
+                Float.intBitsToFloat(sfactorAlpha),
+                Float.intBitsToFloat(dfactorAlpha)
         );
     }
 }
