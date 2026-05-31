@@ -12,5 +12,14 @@
     <orderEntry type="library" name="starfarer.api" level="project" />
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="module" module-name="proxy" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../starsector-core/lwjgl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

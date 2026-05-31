@@ -1,6 +1,7 @@
 - Fixed an Asynchronous pipeline stall that could crash the game when using Console Commands. Reported by WonkerBonker.
 - Improved rendering performance.
 - Added additional metrics to the performance profile.
+- Fixed a hotkey conflict that caused asset reloads when toggling the performance profile while Starsector devmode was enabled.
 
 v0.7.0
 
