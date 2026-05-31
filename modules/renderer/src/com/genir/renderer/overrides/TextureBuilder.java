@@ -11,6 +11,9 @@ import java.awt.image.Raster;
 import java.nio.ByteBuffer;
 
 public class TextureBuilder {
+    /**
+     * Commit texture to GPU and return a TextureHandler.
+     */
     public static TextureHandler commitTexture(String path, TextureData texData) {
         final TextureHandler texture = new TextureHandler(GL11.GL_TEXTURE_2D, com.genir.renderer.bridge.GL11.glGenTextures(), path);
 
