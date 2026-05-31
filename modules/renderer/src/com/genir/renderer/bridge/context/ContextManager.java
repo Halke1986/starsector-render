@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.debug.Profiler;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +12,7 @@ import static com.genir.renderer.debug.Debug.asert;
  * allow executing LWJGL commands at all times.
  */
 public class ContextManager {
-    private static Context mainContext = new Context();
+    private static Context mainContext = new Context(true);
     private static Thread mainThread = Thread.currentThread();
     private static final Map<Thread, Context> auxContext = new HashMap<>();
 
@@ -34,14 +32,13 @@ public class ContextManager {
 
     synchronized public static Context createMainContext() {
         mainThread = Thread.currentThread();
-        Profiler.profiler.mainThread = mainThread;
         return mainContext;
     }
 
     synchronized public static Context createAuxContext() {
         asert(auxContext.get(Thread.currentThread()) == null);
 
-        Context context = new Context();
+        Context context = new Context(false);
         auxContext.put(Thread.currentThread(), context);
 
         return context;
@@ -52,7 +49,7 @@ public class ContextManager {
 
         // Always have a context ready, because vanilla may perform
         // additional LWJGL calls after destroying the OpenGL context.
-        mainContext = new Context();
+        mainContext = new Context(true);
     }
 
     synchronized public static void destroyAuxContext() {

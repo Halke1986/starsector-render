@@ -4,8 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
-import com.genir.renderer.debug.Profiler;
-import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -56,16 +54,19 @@ public class Display {
             @Override
             public void run(Context context, float[] args, int offset) {
                 context.update();
+
+                long start = System.nanoTime();
                 org.lwjgl.opengl.Display.update(processMessages);
+
+                if (context.renderingProfilerFrame != null) {
+                    context.renderingProfilerFrame.addNSwapTime(System.nanoTime() - start);
+                }
             }
         }
 
         final Context context = getThreadContext();
         context.exec.execute(new update(processMessages));
         context.exec.swapFrames();
-
-        Profiler.profiler.update();
-        SamplerRunner.samplerRunner.update();
     }
 
     public static void update() {

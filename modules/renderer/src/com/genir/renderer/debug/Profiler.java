@@ -12,29 +12,32 @@ import static org.lwjgl.input.Keyboard.*;
 public class Profiler {
     public static final Profiler profiler = new Profiler();
 
-    public final Frame frame = new Frame();
-    public Thread mainThread = null;
-
     private Recording recording = null;
     private boolean wasKeyPressed = false;
+    private int frameID = 0;
 
-    public void update() {
+    public Frame update() {
         if (!org.lwjgl.input.Keyboard.isCreated()) {
-            return;
+            return null;
         }
 
         boolean isKeyPressed = isKeyPressed();
         boolean isActionPerformed = isKeyPressed && !wasKeyPressed;
         wasKeyPressed = isKeyPressed;
 
-        if (!isActionPerformed) {
-            return;
+        if (isActionPerformed) {
+            if (recording == null) {
+                startProfiler("");
+            } else {
+                stopProfiler();
+                frameID = 0;
+            }
         }
 
-        if (recording == null) {
-            startProfiler("");
+        if (isProfiling()) {
+            return new Frame(frameID++);
         } else {
-            stopProfiler();
+            return null;
         }
     }
 
@@ -131,37 +134,20 @@ public class Profiler {
      * Custom frame progress metrics.
      */
     public static class Frame {
+        private final long id;
         private long frameStart = 0;
         private long swapStart = 0;
         private long syncStart = 0;
         private long renderSum = 0;
         private long stallSum = 0;
+        private long nSwapSum = 0;
+
+        public Frame(int id) {
+            this.id = id;
+        }
 
         public void beginFrame() {
-            if (!profiler.isProfiling()) {
-                frameStart = System.nanoTime();
-                return;
-            }
-
-            long nextFrameStart = System.nanoTime();
-
-            var e = new FrameMark();
-
-            // Main thread.
-            e.sim__ = swapStart - frameStart;
-            e.swap_ = syncStart - swapStart;
-            e.sync_ = nextFrameStart - syncStart;
-            e.frame = e.sim__ + e.swap_ + e.sync_;
-            e.stall = stallSum;
-
-            // Rendering thread.
-            e.rendr = renderSum;
-
-            e.commit();
-
-            renderSum = 0;
-            stallSum = 0;
-            frameStart = nextFrameStart;
+            frameStart = System.nanoTime();
         }
 
         public void beginSwap() {
@@ -172,22 +158,50 @@ public class Profiler {
             syncStart = System.nanoTime();
         }
 
-        public void setRenderWork(long duration) {
-            renderSum = duration;
+        public void addRenderTime(long duration) {
+            renderSum += duration;
         }
 
-        public void markStall(long start) {
-            stallSum += System.nanoTime() - start;
+        public void addStallTime(long duration) {
+            stallSum += duration;
+        }
+
+        public void addNSwapTime(long duration) {
+            nSwapSum += duration;
+        }
+
+        public void commit() {
+            if (!profiler.isProfiling()) {
+                return;
+            }
+
+            var e = new FrameMark();
+            e.id = id;
+
+            // Main thread.
+            e.sim__ = swapStart - frameStart;
+            e.swap_ = syncStart - swapStart;
+            e.sync_ = System.nanoTime() - syncStart;
+            e.frame = e.sim__ + e.swap_ + e.sync_;
+            e.stall = stallSum;
+
+            // Rendering thread.
+            e.rendr = renderSum;
+            e.nswap = nSwapSum;
+
+            e.commit();
         }
     }
 
     @Name("app.FrameMark")
     public static class FrameMark extends Event {
+        public long id;
         public long frame; // Total frame duration.
         public long sim__; // Game engine update.
         public long swap_; // Wait for render thread.
         public long sync_; // Idle while waiting for next frame.
         public long stall;
         public long rendr; // Rendering thread work time.
+        public long nswap; // OpenGL buffer swap.
     }
 }

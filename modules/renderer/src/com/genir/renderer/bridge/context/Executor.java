@@ -9,14 +9,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import static com.genir.renderer.debug.Profiler.profiler;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private Future<SwapResult> lastSwapFuture = completedFuture(new SwapResult(new Frame(), 0, null));
+    private Future<SwapResult> lastSwapFuture = completedFuture(new SwapResult(new Frame(), null));
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
@@ -103,8 +102,8 @@ public class Executor {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         } finally {
-            if (profiler.mainThread == Thread.currentThread()) {
-                profiler.frame.markStall(start);
+            if (context.mainProfilerFrame != null) {
+                context.mainProfilerFrame.addStallTime(System.nanoTime() - start);
             }
         }
     }
@@ -113,8 +112,8 @@ public class Executor {
      * Execute queued commands.
      */
     public Future<SwapResult> swapFrames() {
-        Future<SwapResult> prevSwapFuture = lastSwapFuture;
-        Frame frameToExecute = currentFrame;
+        final Future<SwapResult> prevSwapFuture = lastSwapFuture;
+        final Frame frameToExecute = currentFrame;
 
         // Execute queued commands.
         lastSwapFuture = execActual.submit(() -> {
@@ -134,13 +133,18 @@ public class Executor {
             } catch (Throwable t) {
                 thrown = t;
             } finally {
-                // Reuse the frame object.
+                // Clear the frame object before reuse.
                 if (!frameWasCleared) {
                     frameToExecute.clear();
                 }
             }
 
-            return new SwapResult(frameToExecute, System.nanoTime() - start, thrown);
+            // Profile render work.
+            if (context.renderingProfilerFrame != null) {
+                context.renderingProfilerFrame.addRenderTime(System.nanoTime() - start);
+            }
+
+            return new SwapResult(frameToExecute, thrown);
         });
 
         // Wait until previous frame is completed.
@@ -151,11 +155,8 @@ public class Executor {
             throw new RuntimeException(e);
         }
 
+        // Reuse the frame object.
         currentFrame = result.frame;
-
-        if (profiler.mainThread == Thread.currentThread()) {
-            profiler.frame.setRenderWork(result.duration);
-        }
 
         // Rethrow any exception captured during previous frame execution.
         if (result.thrown != null) {
@@ -198,6 +199,6 @@ public class Executor {
         return lastSwapFuture.isDone();
     }
 
-    private record SwapResult(Frame frame, long duration, Throwable thrown) {
+    private record SwapResult(Frame frame, Throwable thrown) {
     }
 }

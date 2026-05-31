@@ -1,8 +1,13 @@
 package com.genir.renderer.overrides;
 
 import com.genir.renderer.bridge.Display;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
+import com.genir.renderer.debug.SamplerRunner;
 import proxy.com.fs.starfarer.settings.StarfarerSettings;
+
+import static com.genir.renderer.debug.Debug.asert;
 
 public class Sync {
     static long prevUpdateTimestamp = 0;
@@ -10,14 +15,37 @@ public class Sync {
     public static void sleep(long ignored) {
     }
 
+    /**
+     * Main application state update.
+     */
     public static void syncAndUpdate(boolean processMessages) {
-        Profiler.profiler.frame.beginSwap();
+        Context context = ContextManager.getThreadContext();
+        asert(context.isMain);
+
+        if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginSwap();
         Display.update(processMessages);
 
-        Profiler.profiler.frame.beginSync();
+        if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginSync();
         sync(0);
 
-        Profiler.profiler.frame.beginFrame();
+        // Conclude the current animation frame.
+        if (context.mainProfilerFrame != null) context.mainProfilerFrame.commit();
+
+        SamplerRunner.samplerRunner.update();
+        final Profiler.Frame nextProfilerFrame = Profiler.profiler.update();
+
+        // The simulation normally runs one frame ahead of rendering, unless
+        // there is spare CPU capacity. To record concurrent simulation and
+        // rendering profiles under a single event, the rendering thread
+        // receives the profile collector before the simulation thread.
+        context.mainProfilerFrame = context.nextProfilerFrame;
+        context.nextProfilerFrame = nextProfilerFrame;
+        context.exec.execute((ctx, args, offset) ->
+                ctx.renderingProfilerFrame = nextProfilerFrame
+        );
+
+        // Mark the beginning of the next animation frame.
+        if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginFrame();
     }
 
     /**
