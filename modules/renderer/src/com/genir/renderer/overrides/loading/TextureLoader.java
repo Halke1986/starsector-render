@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.TextureBuilder;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -28,26 +29,35 @@ public class TextureLoader {
     }
 
     private static void queueImage(String type, String path, boolean optional) {
-        if (path != null && !path.isEmpty() && !knownImages.contains(path)) {
-            knownImages.add(path);
-
-            mainThreadWaitGroup.incrementAndGet();
-            ResourceLoader.workers.execute(() -> {
-                try {
-                    loadTextureAsync(type, path);
-                } catch (Throwable e) {
-                    if (optional) {
-                        knownImages.remove(path);
-                    } else {
-                        ResourceLoader.setException(e);
-                    }
-                } finally {
-                    mainThreadWaitGroup.decrementAndGet();
-                }
-            });
+        // Starsector will call `queueImage` when performing devMode asset reload.
+        // The call is spurious and should be ignored.
+        if (GameState.gameInitialized) {
+            return;
         }
+
+        if (path == null || path.isEmpty() || !knownImages.add(path)) {
+            return;
+        }
+
+        mainThreadWaitGroup.incrementAndGet();
+        ResourceLoader.workers.execute(() -> {
+            try {
+                loadTextureAsync(type, path);
+            } catch (Throwable e) {
+                if (optional) {
+                    knownImages.remove(path);
+                } else {
+                    ResourceLoader.setException(e);
+                }
+            } finally {
+                mainThreadWaitGroup.decrementAndGet();
+            }
+        });
     }
 
+    /**
+     * Texture loading during multi-threaded resource loading phase.
+     */
     private static void loadTextureAsync(String type, String path) {
         try {
             logger.info("Loading image [" + path + "]");
@@ -78,6 +88,9 @@ public class TextureLoader {
         }
     }
 
+    /**
+     * Texture loading during single-threaded gameplay phase.
+     */
     public static TextureHandler loadTexture(Object delegate, TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
         // Delegate uncommon cases to vanilla.
         if (target != null || var3 != GL11.GL_TEXTURE_2D || var4 != GL11.GL_RGBA || var5 != GL11.GL_LINEAR || var6 != GL11.GL_LINEAR || generateSubImage) {
