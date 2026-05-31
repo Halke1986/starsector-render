@@ -45,7 +45,7 @@ public class TextureBuilder {
         return texture;
     }
 
-    public static TextureData analyzeImage(BufferedImage image) {
+    public static TextureData readAndAnalyzeImage(BufferedImage image) {
         float var8 = 0.0F;
         float var9 = 0.0F;
         float var10 = 0.0F;
