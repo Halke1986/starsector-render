@@ -1,3 +1,5 @@
+- Fixed rendering regressions that caused performance degradation when using BoxUtil. Reported by multiple users.
+
 v0.7.1b
 
 - Fixed an Asynchronous pipeline stall that could crash the game when using Console Commands. Reported by WonkerBonker.

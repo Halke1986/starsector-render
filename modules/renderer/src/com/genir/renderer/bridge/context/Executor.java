@@ -8,6 +8,7 @@ import com.genir.renderer.bridge.context.commands.Recordable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -15,7 +16,10 @@ public class Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
-    private Future<SwapResult> lastSwapFuture = completedFuture(new SwapResult(new Frame(), null));
+    private final Pool framePool = new Pool();
+
+    private Future<?> currentSwapFuture = completedFuture(null);
+    private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
@@ -94,13 +98,11 @@ public class Executor {
         context.stallDetector.detectStall();
 
         execute(command);
-        Future<SwapResult> swapFuture = swapFrames();
+        swapFrames();
 
         try {
             // Wait for the command to execute.
-            swapFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            waitForFrame(currentSwapFuture);
         } finally {
             if (context.mainProfilerFrame != null) {
                 context.mainProfilerFrame.addStallTime(System.nanoTime() - start);
@@ -110,60 +112,80 @@ public class Executor {
 
     /**
      * Execute queued commands.
+     * Wait until PREVIOUS frame is completed. This allows producer
+     * and consumer threads to overlap with maximum flexibility.
      */
-    public Future<SwapResult> swapFrames() {
-        final Future<SwapResult> prevSwapFuture = lastSwapFuture;
+    public void swapFramesAndSync() {
+        Future<?> prevSwapFuture = currentSwapFuture;
+
+        swapFrames();
+
+        waitForFrame(prevSwapFuture);
+    }
+
+    /**
+     * Execute queued commands.
+     */
+    public void swapFrames() {
+        // Assume all commands issued before the producer thread was notified
+        // of the exception are invalid and must not be executed.
+        rethrowAndClearException();
+
         final Frame frameToExecute = currentFrame;
 
+        // Reuse the frame array to avoid excessive heap pressure.
+        currentFrame = (Frame) framePool.get();
+        if (currentFrame == null) {
+            currentFrame = new Frame();
+        }
+
         // Execute queued commands.
-        lastSwapFuture = execActual.submit(() -> {
+        currentSwapFuture = execActual.submit(() -> {
             long start = System.nanoTime();
-            Throwable thrown = null;
-            boolean frameWasCleared = false;
 
             try {
-                // Run scheduled commands only if the Executor is in a valid state.
-                if (prevSwapFuture.get().thrown == null) {
-                    executeCommands(frameToExecute);
-
-                    // Assume executeCommands clears the command array.
-                    frameToExecute.clearWithoutNulling();
-                    frameWasCleared = true;
+                // Executor is in invalid state. Cancel all scheduled commands.
+                if (exception.get() != null) {
+                    return;
                 }
+
+                executeCommands(frameToExecute);
+
+                // Assume executeCommands clears the command array.
+                frameToExecute.clearWithoutNulling();
+                framePool.put(frameToExecute);
             } catch (Throwable t) {
-                thrown = t;
+                exception.set(t);
             } finally {
-                // Clear the frame object before reuse.
-                if (!frameWasCleared) {
-                    frameToExecute.clear();
+                // Profile render work.
+                if (context.renderingProfilerFrame != null) {
+                    context.renderingProfilerFrame.addRenderTime(System.nanoTime() - start);
                 }
             }
-
-            // Profile render work.
-            if (context.renderingProfilerFrame != null) {
-                context.renderingProfilerFrame.addRenderTime(System.nanoTime() - start);
-            }
-
-            return new SwapResult(frameToExecute, thrown);
         });
+    }
 
-        // Wait until previous frame is completed.
-        SwapResult result = null;
+    private void waitForFrame(Future<?> future) {
         try {
-            result = prevSwapFuture.get();
+            future.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
 
-        // Reuse the frame object.
-        currentFrame = result.frame;
+        // Rethrow exceptions after finishing the frame
+        // so that the get method can be notified of
+        // a throw in its callable.
+        rethrowAndClearException();
+    }
 
-        // Rethrow any exception captured during previous frame execution.
-        if (result.thrown != null) {
-            throw new RuntimeException(result.thrown);
+    private void rethrowAndClearException() {
+        Throwable t = exception.getAndSet(null);
+        if (t != null) {
+            currentFrame = new Frame();
+            currentSwapFuture = completedFuture(null);
+
+            throw new RuntimeException(t);
         }
-
-        return lastSwapFuture;
     }
 
     private void executeCommands(Frame frame) {
@@ -196,9 +218,6 @@ public class Executor {
      * Returns true if no commands are being executed.
      */
     public boolean isIdle() {
-        return lastSwapFuture.isDone();
-    }
-
-    private record SwapResult(Frame frame, Throwable thrown) {
+        return currentSwapFuture.isDone();
     }
 }
