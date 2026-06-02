@@ -6,23 +6,6 @@ import java.lang.reflect.Array;
 import java.nio.*;
 
 public class BufferUtil {
-    /**
-     * Returns a snapshot copy of the given FloatBuffer, preserving its content and state.
-     */
-    public static FloatBuffer snapshot(FloatBuffer params) {
-        if (params == null) {
-            return null;
-        }
-
-        FloatBuffer snapshot = BufferUtils.createFloatBuffer(params.capacity());
-        snapshot.put(0, params, 0, params.limit());
-
-        snapshot.position(params.position());
-        snapshot.limit(params.limit());
-
-        return snapshot;
-    }
-
     public static ByteBuffer snapshot(ByteBuffer params) {
         if (params == null) {
             return null;

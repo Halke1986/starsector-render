@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.context.commands.Releasable;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.bridge.context.commands.Recordable;
@@ -204,6 +205,9 @@ public class Executor {
                 context.listManager.record(command, args, argsOffset);
             } else {
                 command.run(context, args, argsOffset);
+                if (command instanceof Releasable releasable) {
+                    releasable.release();
+                }
             }
 
             argsOffset += argsSize;

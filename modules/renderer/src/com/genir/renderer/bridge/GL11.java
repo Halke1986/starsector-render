@@ -1,8 +1,10 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferUtil;
 import com.genir.renderer.bridge.context.ClientAttribTracker;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.commands.Releasable;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.bridge.context.commands.Recordable;
@@ -374,11 +376,16 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        record glDrawArrays(int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable {
+        record glDrawArrays(int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+            }
+
+            @Override
+            public void release() {
+                snapshot.release();
             }
         }
 
@@ -388,11 +395,16 @@ public class GL11 {
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        record glDrawElements(int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable {
+        record glDrawElements(int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+            }
+
+            @Override
+            public void release() {
+                snapshot.release();
             }
         }
 
@@ -532,28 +544,38 @@ public class GL11 {
     }
 
     public static void glMultMatrix(FloatBuffer m) {
-        record glMultMatrix(FloatBuffer m) implements GLCommand, Recordable {
+        record glMultMatrix(FloatBufferSnapshot m) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
-                context.transformManager.glMultMatrix(m);
+                context.transformManager.glMultMatrix(m.buffer);
+            }
+
+            @Override
+            public void release() {
+                m.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(m);
         final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(m);
         context.exec.execute(new glMultMatrix(snapshot));
     }
 
     public static void glLoadMatrix(FloatBuffer m) {
-        record glLoadMatrix(FloatBuffer m) implements GLCommand, Recordable {
+        record glLoadMatrix(FloatBufferSnapshot m) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
-                context.transformManager.glLoadMatrix(m);
+                context.transformManager.glLoadMatrix(m.buffer);
+            }
+
+            @Override
+            public void release() {
+                m.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(m);
         final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(m);
         context.exec.execute(new glLoadMatrix(snapshot));
     }
 
@@ -730,15 +752,21 @@ public class GL11 {
     }
 
     public static void glTexParameter(int target, int pname, FloatBuffer param) {
-        record glTexParameter(int target, int pname, FloatBuffer param) implements GLCommand, Recordable {
+        record glTexParameter(int target, int pname, FloatBufferSnapshot param) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glTexParameter(target, pname, param);
+                org.lwjgl.opengl.GL11.glTexParameter(target, pname, param.buffer);
+            }
+
+            @Override
+            public void release() {
+                param.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(param);
-        getThreadContext().exec.execute(new glTexParameter(target, pname, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(param);
+        context.exec.execute(new glTexParameter(target, pname, snapshot));
     }
 
     public static void glClearColor(float red, float green, float blue, float alpha) {
@@ -918,15 +946,17 @@ public class GL11 {
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBuffer pixels) { // NoList
-        record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBuffer pixels) implements GLCommand {
+        record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+                org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
+                pixels.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
-        getThreadContext().exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
@@ -942,39 +972,53 @@ public class GL11 {
     }
 
     public static void glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) { // NoList ?
-        record glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) implements GLCommand {
+        record glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+                org.lwjgl.opengl.GL11.glTexSubImage1D(target, level, xoffset, width, format, type, pixels.buffer);
+                pixels.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(pixels);
-        getThreadContext().exec.execute(new glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.exec.execute(new glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
     }
 
     public static void glLight(int light, int pname, FloatBuffer params) {
-        record glLight(int light, int pname, FloatBuffer params) implements GLCommand, Recordable {
+        record glLight(int light, int pname, FloatBufferSnapshot params) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glLight(light, pname, params);
+                org.lwjgl.opengl.GL11.glLight(light, pname, params.buffer);
+            }
+
+            @Override
+            public void release() {
+                params.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(params);
-        getThreadContext().exec.execute(new glLight(light, pname, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(params);
+        context.exec.execute(new glLight(light, pname, snapshot));
     }
 
     public static void glMaterial(int face, int pname, FloatBuffer params) {
-        record glMaterial(int face, int pname, FloatBuffer params) implements GLCommand, Recordable {
+        record glMaterial(int face, int pname, FloatBufferSnapshot params) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
+                org.lwjgl.opengl.GL11.glMaterial(face, pname, params.buffer);
+            }
+
+            @Override
+            public void release() {
+                params.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(params);
-        getThreadContext().exec.execute(new glMaterial(face, pname, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(params);
+        context.exec.execute(new glMaterial(face, pname, snapshot));
     }
 
     public static void glDeleteTextures(int texture) { // NoList

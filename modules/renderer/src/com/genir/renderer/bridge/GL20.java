@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferUtil;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.commands.GLCommand;
@@ -199,15 +200,17 @@ public class GL20 {
     }
 
     public static void glUniform1(int location, FloatBuffer values) {
-        record glUniform1(int location, FloatBuffer values) implements GLCommand {
+        record glUniform1(int location, FloatBufferSnapshot values) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glUniform1(location, values);
+                org.lwjgl.opengl.GL20.glUniform1(location, values.buffer);
+                values.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(values);
-        getThreadContext().exec.execute(new glUniform1(location, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        context.exec.execute(new glUniform1(location, snapshot));
     }
 
     public static void glUniform2f(int location, float v0, float v1) {
@@ -233,15 +236,17 @@ public class GL20 {
     }
 
     public static void glUniform2(int location, FloatBuffer values) {
-        record glUniform2(int location, FloatBuffer values) implements GLCommand {
+        record glUniform2(int location, FloatBufferSnapshot values) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glUniform2(location, values);
+                org.lwjgl.opengl.GL20.glUniform2(location, values.buffer);
+                values.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(values);
-        getThreadContext().exec.execute(new glUniform2(location, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        context.exec.execute(new glUniform2(location, snapshot));
     }
 
     public static void glUniform3f(int location, float v0, float v1, float v2) {
@@ -267,15 +272,17 @@ public class GL20 {
     }
 
     public static void glUniform3(int location, FloatBuffer values) {
-        record glUniform3(int location, FloatBuffer values) implements GLCommand {
+        record glUniform3(int location, FloatBufferSnapshot values) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glUniform3(location, values);
+                org.lwjgl.opengl.GL20.glUniform3(location, values.buffer);
+                values.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(values);
-        getThreadContext().exec.execute(new glUniform3(location, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        context.exec.execute(new glUniform3(location, snapshot));
     }
 
     public static void glUniform4f(int location, float v0, float v1, float v2, float v3) {
@@ -301,15 +308,17 @@ public class GL20 {
     }
 
     public static void glUniform4(int location, FloatBuffer values) {
-        record glUniform4(int location, FloatBuffer values) implements GLCommand {
+        record glUniform4(int location, FloatBufferSnapshot values) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glUniform4(location, values);
+                org.lwjgl.opengl.GL20.glUniform4(location, values.buffer);
+                values.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(values);
-        getThreadContext().exec.execute(new glUniform4(location, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        context.exec.execute(new glUniform4(location, snapshot));
     }
 
     public static void glUseProgram(int program) {
@@ -379,27 +388,31 @@ public class GL20 {
     }
 
     public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) {
-        record glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) implements GLCommand {
+        record glUniformMatrix4(int location, boolean transpose, FloatBufferSnapshot matrices) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glUniformMatrix4(location, transpose, matrices);
+                org.lwjgl.opengl.GL20.glUniformMatrix4(location, transpose, matrices.buffer);
+                matrices.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(matrices);
-        getThreadContext().exec.execute(new glUniformMatrix4(location, transpose, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(matrices);
+        context.exec.execute(new glUniformMatrix4(location, transpose, snapshot));
     }
 
     public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) {
-        record glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) implements GLCommand {
+        record glUniformMatrix3(int location, boolean transpose, FloatBufferSnapshot matrices) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glUniformMatrix3(location, transpose, matrices);
+                org.lwjgl.opengl.GL20.glUniformMatrix3(location, transpose, matrices.buffer);
+                matrices.release();
             }
         }
 
-        final FloatBuffer snapshot = BufferUtil.snapshot(matrices);
-        getThreadContext().exec.execute(new glUniformMatrix3(location, transpose, snapshot));
+        final Context context = getThreadContext();
+        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(matrices);
+        context.exec.execute(new glUniformMatrix3(location, transpose, snapshot));
     }
 
     public static void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) {
