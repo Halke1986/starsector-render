@@ -1,6 +1,8 @@
 package com.genir.renderer.bridge;
 
+import com.genir.renderer.bridge.context.BufferPool;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
+import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferUtil;
 import com.genir.renderer.bridge.context.ClientAttribTracker;
 import com.genir.renderer.bridge.context.Context;
@@ -913,36 +915,33 @@ public class GL11 {
     }
 
     public static void glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) { // NoList
-        record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) implements GLCommand {
+        record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels);
+                org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels.buffer);
+                pixels.release();
             }
         }
 
-        final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        getThreadContext().exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
+        final Context context = getThreadContext();
+        final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer pixels) { // NoList
-        record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBuffer snapshot, StackTraceElement[] stack) implements GLCommand {
+        record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                try {
-                    org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot);
-                } catch (Throwable t) {
-                    RuntimeException e = new RuntimeException(this.toString(), t);
-                    e.setStackTrace(stack);
-
-                    throw e;
-                }
+                org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
+                pixels.release();
             }
         }
 
-        final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
+        final Context context = getThreadContext();
+        final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
         final StackTraceElement[] stack = new Exception().getStackTrace();
 
-        getThreadContext().exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot, stack));
+        context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
     public static void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBuffer pixels) { // NoList
@@ -960,15 +959,17 @@ public class GL11 {
     }
 
     public static void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) { // NoList ?
-        record glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBuffer pixels) implements GLCommand {
+        record glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+                org.lwjgl.opengl.GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels.buffer);
+                pixels.release();
             }
         }
 
-        final ByteBuffer snapshot = BufferUtil.snapshot(pixels);
-        getThreadContext().exec.execute(new glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
+        final Context context = getThreadContext();
+        final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.exec.execute(new glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
 
     public static void glTexSubImage1D(int target, int level, int xoffset, int width, int format, int type, FloatBuffer pixels) { // NoList ?

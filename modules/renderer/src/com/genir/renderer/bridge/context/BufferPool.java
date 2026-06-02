@@ -26,11 +26,11 @@ public class BufferPool {
         int idx = poolIdx(bytes);
         List<ByteBuffer> list = pool[idx];
 
-        System.out.println(ret + " " + miss + " " + hit);
+//        System.out.println(ret + " " + miss + " " + hit);
 
         if (list.isEmpty()) {
             miss++;
-            return ByteBuffer.allocateDirect((1 << idx) >> 1).order(ByteOrder.nativeOrder());
+            return ByteBuffer.allocateDirect(1 << idx).order(ByteOrder.nativeOrder());
         }
 
         hit++;
@@ -41,7 +41,7 @@ public class BufferPool {
         if (x <= 0) {
             return 0;
         }
-        return 32 - Integer.numberOfLeadingZeros(x - 1) + 1;
+        return 32 - Integer.numberOfLeadingZeros(x - 1);
     }
 
     public synchronized FloatBufferSnapshot snapshot(FloatBuffer params) {
@@ -55,20 +55,46 @@ public class BufferPool {
         return new FloatBufferSnapshot(buffer, mem, this);
     }
 
+    public synchronized ByteBufferSnapshot snapshot(ByteBuffer params) {
+        ByteBuffer mem = getMem(params.capacity() * Byte.BYTES);
+        ByteBuffer buffer = mem.slice(0, params.capacity());
+
+        buffer.put(0, params, 0, params.limit());
+        buffer.position(params.position());
+        buffer.limit(params.limit());
+
+        return new ByteBufferSnapshot(buffer, mem, this);
+    }
+
     private synchronized void release(ByteBuffer mem) {
         ret++;
         pool[poolIdx(mem.capacity())].add(mem);
     }
 
-    public static class FloatBufferSnapshot implements Releasable {
+    public static class FloatBufferSnapshot extends BufferSnapshot {
         public final FloatBuffer buffer;
 
+        FloatBufferSnapshot(FloatBuffer buffer, ByteBuffer mem, BufferPool parent) {
+            super(mem, parent);
+            this.buffer = buffer;
+        }
+    }
+
+    public static class ByteBufferSnapshot extends BufferSnapshot {
+        public final ByteBuffer buffer;
+
+        ByteBufferSnapshot(ByteBuffer buffer, ByteBuffer mem, BufferPool parent) {
+            super(mem, parent);
+            this.buffer = buffer;
+        }
+    }
+
+    public static class BufferSnapshot implements Releasable {
         private final ByteBuffer mem;
         private final BufferPool parent;
         private final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
 
-        FloatBufferSnapshot(FloatBuffer buffer, ByteBuffer mem, BufferPool parent) {
-            this.buffer = buffer;
+        BufferSnapshot(ByteBuffer mem, BufferPool parent) {
             this.mem = mem;
             this.parent = parent;
         }

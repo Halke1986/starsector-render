@@ -6,20 +6,6 @@ import java.lang.reflect.Array;
 import java.nio.*;
 
 public class BufferUtil {
-    public static ByteBuffer snapshot(ByteBuffer params) {
-        if (params == null) {
-            return null;
-        }
-
-        ByteBuffer snapshot = BufferUtils.createByteBuffer(params.capacity());
-        snapshot.put(0, params, 0, params.limit());
-
-        snapshot.position(params.position());
-        snapshot.limit(params.limit());
-
-        return snapshot;
-    }
-
     public static IntBuffer snapshot(IntBuffer params) {
         if (params == null) {
             return null;
@@ -44,28 +30,6 @@ public class BufferUtil {
 
         snapshot.position(params.position());
         snapshot.limit(params.limit());
-
-        return snapshot;
-    }
-
-    public static float[] snapshotArray(FloatBuffer params) {
-        if (params == null) {
-            return null;
-        }
-
-        float[] snapshot = new float[params.limit()];
-        params.get(0, snapshot, 0, snapshot.length);
-
-        return snapshot;
-    }
-
-    public static byte[] snapshotArray(ByteBuffer params) {
-        if (params == null) {
-            return null;
-        }
-
-        byte[] snapshot = new byte[params.limit()];
-        params.get(0, snapshot, 0, snapshot.length);
 
         return snapshot;
     }
