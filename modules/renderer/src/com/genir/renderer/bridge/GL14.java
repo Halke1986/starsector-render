@@ -11,6 +11,11 @@ public class GL14 {
         record glBlendEquation(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.attribManager.glBlendEquation(mode);
             }
         }
@@ -22,6 +27,11 @@ public class GL14 {
     static class GlBlendFuncSeparate implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             int sfactorRGB = Float.floatToRawIntBits(args[offset + 1]);
             int dfactorRGB = Float.floatToRawIntBits(args[offset + 2]);
             int sfactorAlpha = Float.floatToRawIntBits(args[offset + 3]);

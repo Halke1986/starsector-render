@@ -76,6 +76,11 @@ public class GL11 {
     static class GlBegin implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             int mode = Float.floatToRawIntBits(args[offset + 1]);
             context.vertexInterceptor.glBegin(mode);
         }
@@ -93,6 +98,11 @@ public class GL11 {
     static class GlEnd implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             context.vertexInterceptor.glEnd();
         }
     }
@@ -135,6 +145,11 @@ public class GL11 {
     static class GlColor4f implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             float red = args[offset + 1];
             float green = args[offset + 2];
             float blue = args[offset + 3];
@@ -179,6 +194,11 @@ public class GL11 {
     static class GlTexCoord4f implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             float s = args[offset + 1];
             float t = args[offset + 2];
             float r = args[offset + 3];
@@ -204,6 +224,11 @@ public class GL11 {
         record glNormal3f(float nx, float ny, float nz) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.vertexInterceptor.glNormal3f(nx, ny, nz);
             }
         }
@@ -235,6 +260,11 @@ public class GL11 {
     static class GlVertex3f implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             float x = args[offset + 1];
             float y = args[offset + 2];
             float z = args[offset + 3];
@@ -377,6 +407,11 @@ public class GL11 {
         record glDrawArrays(int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
@@ -391,6 +426,11 @@ public class GL11 {
         record glDrawElements(int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
             }
@@ -406,6 +446,11 @@ public class GL11 {
         record glDrawElements(int mode, int indices_count, int type, long indices_buffer_offset) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.attribManager.applyDrawAttribs();
                 org.lwjgl.opengl.GL11.glDrawElements(mode, indices_count, type, indices_buffer_offset);
             }
@@ -422,6 +467,11 @@ public class GL11 {
         record glMatrixMode(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.attribManager.glMatrixMode(mode);
             }
         }
@@ -434,6 +484,11 @@ public class GL11 {
     static class GlPushMatrix implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             context.transformManager.glPushMatrix();
         }
     }
@@ -449,6 +504,11 @@ public class GL11 {
     static class GlPopMatrix implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             context.transformManager.glPopMatrix();
         }
     }
@@ -465,6 +525,11 @@ public class GL11 {
         record glLoadIdentity() implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.transformManager.glLoadIdentity();
             }
         }
@@ -476,6 +541,11 @@ public class GL11 {
     static class GlTranslatef implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             float x = args[offset + 1];
             float y = args[offset + 2];
             float z = args[offset + 3];
@@ -498,6 +568,11 @@ public class GL11 {
     static class GlRotatef implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             float angle = args[offset + 1];
             float x = args[offset + 2];
             float y = args[offset + 3];
@@ -523,6 +598,11 @@ public class GL11 {
         record glScalef(float x, float y, float z) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.transformManager.glScalef(x, y, z);
             }
         }
@@ -535,6 +615,11 @@ public class GL11 {
         record glMultMatrix(FloatBuffer m) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.transformManager.glMultMatrix(m);
             }
         }
@@ -548,6 +633,11 @@ public class GL11 {
         record glLoadMatrix(FloatBuffer m) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.transformManager.glLoadMatrix(m);
             }
         }
@@ -561,6 +651,11 @@ public class GL11 {
         record glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 context.transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
@@ -575,6 +670,11 @@ public class GL11 {
     static class GlEnable implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             int cap = Float.floatToRawIntBits(args[offset + 1]);
             if (context.attribManager.interceptEnable(cap)) {
                 context.attribManager.glEnable(cap);
@@ -598,6 +698,11 @@ public class GL11 {
     static class GlDisable implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             int cap = Float.floatToRawIntBits(args[offset + 1]);
             if (context.attribManager.interceptEnable(cap)) {
                 context.attribManager.glDisable(cap);
@@ -625,6 +730,11 @@ public class GL11 {
     static class GlBindTexture implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
+            if (context.listManager.isRecording()){
+                context.listManager.record(this, args, offset);
+                return;
+            }
+
             int target = Float.floatToRawIntBits(args[offset + 1]);
             int texture = Float.floatToRawIntBits(args[offset + 2]);
 
@@ -687,6 +797,11 @@ public class GL11 {
         record glColorMask(boolean red, boolean green, boolean blue, boolean alpha) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glColorMask(red, green, blue, alpha);
             }
         }
@@ -698,6 +813,11 @@ public class GL11 {
         record glDepthMask(boolean flag) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glDepthMask(flag);
             }
         }
@@ -709,6 +829,11 @@ public class GL11 {
         record glViewport(int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glViewport(x, y, width, height);
             }
         }
@@ -722,6 +847,11 @@ public class GL11 {
         record glTexParameteri(int target, int pname, int param) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glTexParameteri(target, pname, param);
             }
         }
@@ -733,6 +863,11 @@ public class GL11 {
         record glTexParameter(int target, int pname, FloatBuffer param) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glTexParameter(target, pname, param);
             }
         }
@@ -745,6 +880,11 @@ public class GL11 {
         record glClearColor(float red, float green, float blue, float alpha) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glClearColor(red, green, blue, alpha);
             }
         }
@@ -756,6 +896,11 @@ public class GL11 {
         record glClear(int mask) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glClear(mask);
             }
         }
@@ -767,6 +912,11 @@ public class GL11 {
         record glScissor(int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glScissor(x, y, width, height);
             }
         }
@@ -778,6 +928,11 @@ public class GL11 {
         record glStencilFunc(int func, int ref, int mask) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
             }
         }
@@ -789,6 +944,11 @@ public class GL11 {
         record glStencilMask(int mask) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glStencilMask(mask);
             }
         }
@@ -800,6 +960,11 @@ public class GL11 {
         record glStencilOp(int fail, int zfail, int zpass) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glStencilOp(fail, zfail, zpass);
             }
         }
@@ -811,6 +976,11 @@ public class GL11 {
         record glClearStencil(int s) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glClearStencil(s);
             }
         }
@@ -822,6 +992,11 @@ public class GL11 {
         record glAlphaFunc(int func, float ref) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glAlphaFunc(func, ref);
             }
         }
@@ -833,6 +1008,11 @@ public class GL11 {
         record glHint(int target, int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glHint(target, mode);
             }
         }
@@ -844,6 +1024,11 @@ public class GL11 {
         record glLineWidth(float width) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glLineWidth(width);
             }
         }
@@ -855,6 +1040,11 @@ public class GL11 {
         record glPointSize(float size) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glPointSize(size);
             }
         }
@@ -866,6 +1056,11 @@ public class GL11 {
         record glColorMaterial(int face, int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glColorMaterial(face, mode);
             }
         }
@@ -877,6 +1072,11 @@ public class GL11 {
         record glShadeModel(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glShadeModel(mode);
             }
         }
@@ -957,6 +1157,11 @@ public class GL11 {
         record glLight(int light, int pname, FloatBuffer params) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glLight(light, pname, params);
             }
         }
@@ -969,6 +1174,11 @@ public class GL11 {
         record glMaterial(int face, int pname, FloatBuffer params) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glMaterial(face, pname, params);
             }
         }
@@ -1004,6 +1214,11 @@ public class GL11 {
         record glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
             }
         }
@@ -1015,6 +1230,11 @@ public class GL11 {
         record glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
             }
         }
@@ -1026,6 +1246,11 @@ public class GL11 {
         record glEdgeFlag(boolean flag) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glEdgeFlag(flag);
             }
         }
@@ -1037,6 +1262,11 @@ public class GL11 {
         record glCullFace(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glCullFace(mode);
             }
         }
@@ -1048,6 +1278,11 @@ public class GL11 {
         record glDepthFunc(int func) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glDepthFunc(func);
             }
         }
@@ -1059,6 +1294,11 @@ public class GL11 {
         record glDepthRange(double zNear, double zFar) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glDepthRange(zNear, zFar);
             }
         }
@@ -1070,6 +1310,11 @@ public class GL11 {
         record glFrontFace(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glFrontFace(mode);
             }
         }
@@ -1092,6 +1337,11 @@ public class GL11 {
         record glReadBuffer(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glReadBuffer(mode);
             }
         }
@@ -1103,6 +1353,11 @@ public class GL11 {
         record glTexEnvi(int target, int pname, int param) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
+                if (context.listManager.isRecording()){
+                    context.listManager.record(this, args, offset);
+                    return;
+                }
+
                 org.lwjgl.opengl.GL11.glTexEnvi(target, pname, param);
             }
         }
