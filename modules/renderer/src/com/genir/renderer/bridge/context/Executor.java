@@ -200,15 +200,7 @@ public class Executor {
             commands[i] = null;
             int argsSize = (int) args[argsOffset];
 
-            if (context.listManager.isRecording() && command instanceof Recordable) {
-                // Record the command instead of running it immediately.
-                context.listManager.record(command, args, argsOffset);
-            } else {
-                command.run(context, args, argsOffset);
-                if (command instanceof Releasable releasable) {
-                    releasable.release();
-                }
-            }
+            command.run(context, args, argsOffset);
 
             argsOffset += argsSize;
         }
