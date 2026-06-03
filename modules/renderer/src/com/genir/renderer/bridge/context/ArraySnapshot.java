@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 
 public record ArraySnapshot(int size, int type, int stride, int bytes, Object snapshot) implements Releasable {
     public void store(ByteBuffer buffer) {
-        if (snapshot instanceof byte[]) {
-            buffer.put((byte[]) snapshot);
+        if (snapshot instanceof BufferPool.ByteBufferSnapshot bytePointer) {
+            buffer.put(bytePointer.buffer);
         } else if (snapshot instanceof BufferPool.FloatBufferSnapshot floatPointer) {
             buffer.asFloatBuffer().put(floatPointer.buffer);
         } else if (snapshot == null) {
