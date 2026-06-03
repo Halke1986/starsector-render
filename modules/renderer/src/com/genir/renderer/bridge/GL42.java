@@ -14,7 +14,8 @@ public class GL42 {
             }
         }
 
-        getThreadContext().exec.execute(new glMemoryBarrier(barriers));
+        final Context context = getThreadContext();
+        context.exec.execute(new glMemoryBarrier(barriers));
     }
 
     public static void glBindImageTexture(int unit, int texture, int level, boolean layered, int layer, int access, int format) {
@@ -25,7 +26,8 @@ public class GL42 {
             }
         }
 
-        getThreadContext().exec.execute(new glBindImageTexture(unit, texture, level, layered, layer, access, format));
+        final Context context = getThreadContext();
+        context.exec.execute(new glBindImageTexture(unit, texture, level, layered, layer, access, format));
     }
 
     public static void glTexStorage2D(int target, int levels, int internalformat, int width, int height) {
@@ -36,6 +38,7 @@ public class GL42 {
             }
         }
 
-        getThreadContext().exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
+        final Context context = getThreadContext();
+        context.exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
     }
 }

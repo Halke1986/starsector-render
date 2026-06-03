@@ -47,6 +47,7 @@ public class GL44 {
             }
         }
 
-        getThreadContext().exec.execute(new glBufferStorage(target, size, flags));
+        final Context context = getThreadContext();
+        context.exec.execute(new glBufferStorage(target, size, flags));
     }
 }

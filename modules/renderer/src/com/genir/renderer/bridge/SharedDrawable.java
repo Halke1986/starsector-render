@@ -25,7 +25,8 @@ public class SharedDrawable implements Drawable {
             }
         }
 
-        impl = getThreadContext().exec.get(new SharedDrawableConstructor(drawable));
+        final Context context = getThreadContext();
+        impl = context.exec.get(new SharedDrawableConstructor(drawable));
     }
 
     @Override

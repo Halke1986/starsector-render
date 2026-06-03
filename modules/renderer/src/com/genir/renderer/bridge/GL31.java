@@ -59,7 +59,8 @@ public class GL31 {
             }
         }
 
-        getThreadContext().exec.execute(new glTexBuffer(target, internalformat, buffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glTexBuffer(target, internalformat, buffer));
     }
 
     public static int glGetUniformBlockIndex(int program, CharSequence uniformBlockName) {
@@ -70,7 +71,8 @@ public class GL31 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetUniformBlockIndex(program, uniformBlockName));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetUniformBlockIndex(program, uniformBlockName));
     }
 
     public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {
@@ -81,7 +83,8 @@ public class GL31 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding));
     }
 
     public static int glGetActiveUniformBlocki(int program, int uniformBlockIndex, int pname) {
@@ -92,7 +95,8 @@ public class GL31 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetActiveUniformBlocki(program, uniformBlockIndex, pname));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetActiveUniformBlocki(program, uniformBlockIndex, pname));
     }
 
     public static void glCopyBufferSubData(int readtarget, int writetarget, long readoffset, long writeoffset, long size) {
@@ -103,6 +107,7 @@ public class GL31 {
             }
         }
 
-        getThreadContext().exec.execute(new glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size));
+        final Context context = getThreadContext();
+        context.exec.execute(new glCopyBufferSubData(readtarget, writetarget, readoffset, writeoffset, size));
     }
 }

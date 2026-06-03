@@ -34,7 +34,8 @@ public class GL15 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteBuffers(buffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteBuffers(buffer));
     }
 
     public static void glDeleteBuffers(IntBuffer buffers) {
@@ -45,8 +46,9 @@ public class GL15 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(buffers);
-        getThreadContext().exec.execute(new glDeleteBuffers(snapshot));
+        context.exec.execute(new glDeleteBuffers(snapshot));
     }
 
     public static void glBindBuffer(int target, int buffer) {
@@ -71,7 +73,8 @@ public class GL15 {
             }
         }
 
-        getThreadContext().exec.execute(new glBufferData(target, data_size, usage));
+        final Context context = getThreadContext();
+        context.exec.execute(new glBufferData(target, data_size, usage));
     }
 
     public static void glBufferData(int target, FloatBuffer data, int usage) {
@@ -110,8 +113,9 @@ public class GL15 {
             }
         }
 
+        final Context context = getThreadContext();
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
-        getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
+        context.exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferData(int target, IntBuffer data, int usage) {
@@ -122,8 +126,9 @@ public class GL15 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(data);
-        getThreadContext().exec.execute(new glBufferData(target, snapshot, usage));
+        context.exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferSubData(int target, long offset, FloatBuffer data) {
@@ -148,8 +153,9 @@ public class GL15 {
             }
         }
 
+        final Context context = getThreadContext();
         final ShortBuffer snapshot = BufferUtil.snapshot(data);
-        getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
+        context.exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static void glBufferSubData(int target, long offset, IntBuffer data) {
@@ -160,8 +166,9 @@ public class GL15 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(data);
-        getThreadContext().exec.execute(new glBufferSubData(target, offset, snapshot));
+        context.exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static void glBufferSubData(int target, long offset, ByteBuffer data) {

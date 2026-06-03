@@ -14,6 +14,7 @@ public class GL33 {
             }
         }
 
-        getThreadContext().exec.execute(new glVertexAttribDivisor(index, divisor));
+        final Context context = getThreadContext();
+        context.exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }

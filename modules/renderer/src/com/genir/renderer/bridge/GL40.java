@@ -18,7 +18,8 @@ public class GL40 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetSubroutineIndex(program, shadertype, name));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetSubroutineIndex(program, shadertype, name));
     }
 
     public static int glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) {
@@ -29,7 +30,8 @@ public class GL40 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
     }
 
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
@@ -40,8 +42,9 @@ public class GL40 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(indices);
-        getThreadContext().exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
+        context.exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
 
     public static void glPatchParameteri(int pname, int value) {
@@ -52,7 +55,8 @@ public class GL40 {
             }
         }
 
-        getThreadContext().exec.execute(new glPatchParameteri(pname, value));
+        final Context context = getThreadContext();
+        context.exec.execute(new glPatchParameteri(pname, value));
     }
 
     public static void glBlendEquationi(int buf, int mode) {

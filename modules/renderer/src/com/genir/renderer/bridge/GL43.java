@@ -19,7 +19,8 @@ public class GL43 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetProgramResourceIndex(program, programInterface, name));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetProgramResourceIndex(program, programInterface, name));
     }
 
     public static void glShaderStorageBlockBinding(int program, int storageBlockIndex, int storageBlockBinding) {
@@ -30,7 +31,8 @@ public class GL43 {
             }
         }
 
-        getThreadContext().exec.execute(new glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding));
+        final Context context = getThreadContext();
+        context.exec.execute(new glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding));
     }
 
     public static void glDispatchCompute(int num_groups_x, int num_groups_y, int num_groups_z) {
@@ -41,7 +43,8 @@ public class GL43 {
             }
         }
 
-        getThreadContext().exec.execute(new glDispatchCompute(num_groups_x, num_groups_y, num_groups_z));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDispatchCompute(num_groups_x, num_groups_y, num_groups_z));
     }
 
     public static void glDebugMessageCallback(KHRDebugCallback callback) {
@@ -52,7 +55,8 @@ public class GL43 {
             }
         }
 
-        getThreadContext().exec.execute(new glDebugMessageCallback(callback));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDebugMessageCallback(callback));
     }
 
     public static void glDebugMessageControl(int source, int type, int severity, IntBuffer ids, boolean enabled) {
@@ -63,8 +67,9 @@ public class GL43 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(ids);
-        getThreadContext().exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
+        context.exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
     }
 
     public static void glInvalidateBufferData(int buffer) {
@@ -75,6 +80,7 @@ public class GL43 {
             }
         }
 
-        getThreadContext().exec.execute(new glInvalidateBufferData(buffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glInvalidateBufferData(buffer));
     }
 }

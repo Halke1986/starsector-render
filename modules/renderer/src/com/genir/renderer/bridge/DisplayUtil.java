@@ -20,7 +20,8 @@ public class DisplayUtil {
             }
         }
 
-        return getThreadContext().exec.get(new getAvailableDisplayModes(minWidth, minHeight, maxWidth, maxHeight, minBPP, maxBPP, minFreq, maxFreq));
+        final Context context = getThreadContext();
+        return context.exec.get(new getAvailableDisplayModes(minWidth, minHeight, maxWidth, maxHeight, minBPP, maxBPP, minFreq, maxFreq));
     }
 
     public static DisplayMode setDisplayMode(DisplayMode[] dm, String[] param) {
@@ -35,6 +36,7 @@ public class DisplayUtil {
             }
         }
 
-        return getThreadContext().exec.get(new setDisplayMode(dm, param));
+        final Context context = getThreadContext();
+        return context.exec.get(new setDisplayMode(dm, param));
     }
 }

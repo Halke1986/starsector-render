@@ -18,7 +18,8 @@ public class GL32 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetInteger64(pname));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetInteger64(pname));
     }
 
     public static long glGetInteger64(int value, int index) {
@@ -29,7 +30,8 @@ public class GL32 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetInteger64(value, index));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetInteger64(value, index));
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
@@ -67,7 +69,8 @@ public class GL32 {
             }
         }
 
-        getThreadContext().exec.execute(new glWaitSync(sync, flags, timeout));
+        final Context context = getThreadContext();
+        context.exec.execute(new glWaitSync(sync, flags, timeout));
     }
 
     public static void glDeleteSync(GLSync sync) {
@@ -83,6 +86,7 @@ public class GL32 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteSync(sync));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteSync(sync));
     }
 }

@@ -19,7 +19,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glGenerateMipmap(target));
+        final Context context = getThreadContext();
+        context.exec.execute(new glGenerateMipmap(target));
     }
 
     public static void glGenRenderbuffers(IntBuffer renderbuffers) {
@@ -30,7 +31,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.wait(new glGenRenderbuffers(renderbuffers));
+        final Context context = getThreadContext();
+        context.exec.wait(new glGenRenderbuffers(renderbuffers));
     }
 
     public static int glGenRenderbuffers() {
@@ -41,7 +43,8 @@ public class GL30 {
             }
         }
 
-        return getThreadContext().exec.get(new glGenRenderbuffers());
+        final Context context = getThreadContext();
+        return context.exec.get(new glGenRenderbuffers());
     }
 
     public static void glBindRenderbuffer(int target, int renderbuffer) {
@@ -52,7 +55,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glBindRenderbuffer(target, renderbuffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glBindRenderbuffer(target, renderbuffer));
     }
 
     public static void glRenderbufferStorage(int target, int internalformat, int width, int height) {
@@ -63,7 +67,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glRenderbufferStorage(target, internalformat, width, height));
+        final Context context = getThreadContext();
+        context.exec.execute(new glRenderbufferStorage(target, internalformat, width, height));
     }
 
     public static int glGenFramebuffers() {
@@ -74,7 +79,8 @@ public class GL30 {
             }
         }
 
-        return getThreadContext().exec.get(new glGenFramebuffers());
+        final Context context = getThreadContext();
+        return context.exec.get(new glGenFramebuffers());
     }
 
     public static void glBindFramebuffer(int target, int framebuffer) {
@@ -98,7 +104,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteFramebuffers(framebuffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteFramebuffers(framebuffer));
     }
 
     public static void glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
@@ -109,7 +116,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glFramebufferTexture2D(target, attachment, textarget, texture, level));
+        final Context context = getThreadContext();
+        context.exec.execute(new glFramebufferTexture2D(target, attachment, textarget, texture, level));
     }
 
     public static void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
@@ -120,7 +128,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer));
     }
 
     public static int glCheckFramebufferStatus(int target) {
@@ -131,7 +140,8 @@ public class GL30 {
             }
         }
 
-        return getThreadContext().exec.get(new glCheckFramebufferStatus(target));
+        final Context context = getThreadContext();
+        return context.exec.get(new glCheckFramebufferStatus(target));
     }
 
     public static void glBindVertexArray(int array) {
@@ -155,7 +165,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteVertexArrays(array));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteVertexArrays(array));
     }
 
     public static int glGenVertexArrays() {
@@ -170,7 +181,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glBindBufferBase(target, index, buffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glBindBufferBase(target, index, buffer));
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
@@ -204,7 +216,8 @@ public class GL30 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetInteger(value, index));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetInteger(value, index));
     }
 
     public static void glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
@@ -215,7 +228,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
+        final Context context = getThreadContext();
+        context.exec.execute(new glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
     }
 
     public static void glDeleteRenderbuffers(int renderbuffer) {
@@ -226,7 +240,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteRenderbuffers(renderbuffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteRenderbuffers(renderbuffer));
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) {
@@ -237,7 +252,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset));
+        final Context context = getThreadContext();
+        context.exec.execute(new glVertexAttribIPointer(index, size, type, stride, buffer_buffer_offset));
     }
 
     public static void glUniform1ui(int location, int v0) {
@@ -248,7 +264,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform1ui(location, v0));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform1ui(location, v0));
     }
 
     public static void glUniform2ui(int location, int v0, int v1) {
@@ -259,7 +276,8 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform2ui(location, v0, v1));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform2ui(location, v0, v1));
     }
 
     public static void glUniform3ui(int location, int v0, int v1, int v2) {
@@ -270,6 +288,7 @@ public class GL30 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform3ui(location, v0, v1, v2));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform3ui(location, v0, v1, v2));
     }
 }

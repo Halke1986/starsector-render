@@ -21,7 +21,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glAttachShader(program, shader));
+        final Context context = getThreadContext();
+        context.exec.execute(new glAttachShader(program, shader));
     }
 
     public static void glCompileShader(int shader) {
@@ -32,7 +33,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glCompileShader(shader));
+        final Context context = getThreadContext();
+        context.exec.execute(new glCompileShader(shader));
     }
 
     public static int glCreateProgram() {
@@ -43,7 +45,8 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glCreateProgram());
+        final Context context = getThreadContext();
+        return context.exec.get(new glCreateProgram());
     }
 
     public static int glCreateShader(int type) {
@@ -54,7 +57,8 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glCreateShader(type));
+        final Context context = getThreadContext();
+        return context.exec.get(new glCreateShader(type));
     }
 
     public static void glDeleteProgram(int program) {
@@ -65,7 +69,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteProgram(program));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteProgram(program));
     }
 
     public static void glDeleteShader(int shader) {
@@ -76,7 +81,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteShader(shader));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteShader(shader));
     }
 
     public static void glGetAttachedShaders(int program, IntBuffer count, IntBuffer shaders) {
@@ -87,7 +93,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.wait(new glGetAttachedShaders(program, count, shaders));
+        final Context context = getThreadContext();
+        context.exec.wait(new glGetAttachedShaders(program, count, shaders));
     }
 
     public static void glGetProgramInfoLog(int program, IntBuffer length, ByteBuffer infoLog) {
@@ -98,7 +105,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.wait(new glGetProgramInfoLog(program, length, infoLog));
+        final Context context = getThreadContext();
+        context.exec.wait(new glGetProgramInfoLog(program, length, infoLog));
     }
 
     public static String glGetProgramInfoLog(int program, int maxLength) {
@@ -109,7 +117,8 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetProgramInfoLog(program, maxLength));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetProgramInfoLog(program, maxLength));
     }
 
     public static void glGetShaderInfoLog(int shader, IntBuffer length, ByteBuffer infoLog) {
@@ -120,7 +129,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.wait(new glGetShaderInfoLog(shader, length, infoLog));
+        final Context context = getThreadContext();
+        context.exec.wait(new glGetShaderInfoLog(shader, length, infoLog));
     }
 
     public static String glGetShaderInfoLog(int shader, int maxLength) {
@@ -131,7 +141,8 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetShaderInfoLog(shader, maxLength));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetShaderInfoLog(shader, maxLength));
     }
 
     public static int glGetShaderi(int shader, int pname) {
@@ -142,7 +153,8 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetShaderi(shader, pname));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetShaderi(shader, pname));
     }
 
     public static int glGetUniformLocation(int program, CharSequence name) {
@@ -174,7 +186,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glShaderSource(shader, string));
+        final Context context = getThreadContext();
+        context.exec.execute(new glShaderSource(shader, string));
     }
 
     public static void glUniform1f(int location, float v0) {
@@ -185,7 +198,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform1f(location, v0));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform1f(location, v0));
     }
 
     public static void glUniform1i(int location, int v0) {
@@ -196,7 +210,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform1i(location, v0));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform1i(location, v0));
     }
 
     public static void glUniform1(int location, FloatBuffer values) {
@@ -221,7 +236,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform2f(location, v0, v1));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform2f(location, v0, v1));
     }
 
     public static void glUniform2i(int location, int v0, int v1) {
@@ -232,7 +248,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform2i(location, v0, v1));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform2i(location, v0, v1));
     }
 
     public static void glUniform2(int location, FloatBuffer values) {
@@ -257,7 +274,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform3f(location, v0, v1, v2));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform3f(location, v0, v1, v2));
     }
 
     public static void glUniform3i(int location, int v0, int v1, int v2) {
@@ -268,7 +286,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform3i(location, v0, v1, v2));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform3i(location, v0, v1, v2));
     }
 
     public static void glUniform3(int location, FloatBuffer values) {
@@ -293,7 +312,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform4f(location, v0, v1, v2, v3));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform4f(location, v0, v1, v2, v3));
     }
 
     public static void glUniform4i(int location, int v0, int v1, int v2, int v3) {
@@ -304,7 +324,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glUniform4i(location, v0, v1, v2, v3));
+        final Context context = getThreadContext();
+        context.exec.execute(new glUniform4i(location, v0, v1, v2, v3));
     }
 
     public static void glUniform4(int location, FloatBuffer values) {
@@ -351,7 +372,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glValidateProgram(program));
+        final Context context = getThreadContext();
+        context.exec.execute(new glValidateProgram(program));
     }
 
     public static void glDetachShader(int program, int shader) {
@@ -362,7 +384,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glDetachShader(program, shader));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDetachShader(program, shader));
     }
 
     public static void glDisableVertexAttribArray(int index) {
@@ -373,7 +396,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glDisableVertexAttribArray(index));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDisableVertexAttribArray(index));
     }
 
     public static void glEnableVertexAttribArray(int index) {
@@ -384,7 +408,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glEnableVertexAttribArray(index));
+        final Context context = getThreadContext();
+        context.exec.execute(new glEnableVertexAttribArray(index));
     }
 
     public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) {
@@ -423,7 +448,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset));
+        final Context context = getThreadContext();
+        context.exec.execute(new glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset));
     }
 
     public static void glDrawBuffers(IntBuffer buffers) {
@@ -434,8 +460,9 @@ public class GL20 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(buffers);
-        getThreadContext().exec.execute(new glDrawBuffers(snapshot));
+        context.exec.execute(new glDrawBuffers(snapshot));
     }
 
     public static void glDrawBuffers(int buffer) {
@@ -446,7 +473,8 @@ public class GL20 {
             }
         }
 
-        getThreadContext().exec.execute(new glDrawBuffers(buffer));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDrawBuffers(buffer));
     }
 
     public static int glGetAttribLocation(int program, CharSequence name) {
@@ -457,7 +485,8 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetAttribLocation(program, name));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetAttribLocation(program, name));
     }
 
     public static boolean glIsProgram(int program) {
@@ -468,6 +497,7 @@ public class GL20 {
             }
         }
 
-        return getThreadContext().exec.get(new glIsProgram(program));
+        final Context context = getThreadContext();
+        return context.exec.get(new glIsProgram(program));
     }
 }

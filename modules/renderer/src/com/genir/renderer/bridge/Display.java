@@ -85,7 +85,8 @@ public class Display {
             }
         }
 
-        return getThreadContext().exec.get(new getAvailableDisplayModes());
+        final Context context = getThreadContext();
+        return context.exec.get(new getAvailableDisplayModes());
     }
 
     public static int setIcon(ByteBuffer[] icons) {
@@ -96,7 +97,8 @@ public class Display {
             }
         }
 
-        return getThreadContext().exec.get(new setIcon(icons));
+        final Context context = getThreadContext();
+        return context.exec.get(new setIcon(icons));
     }
 
     public static DisplayMode getDesktopDisplayMode() {
@@ -107,7 +109,8 @@ public class Display {
             }
         }
 
-        return getThreadContext().exec.get(new getDesktopDisplayMode());
+        final Context context = getThreadContext();
+        return context.exec.get(new getDesktopDisplayMode());
     }
 
     public static DisplayMode getDisplayMode() {
@@ -118,7 +121,8 @@ public class Display {
             }
         }
 
-        return getThreadContext().exec.get(new getDisplayMode());
+        final Context context = getThreadContext();
+        return context.exec.get(new getDisplayMode());
     }
 
     public static void setTitle(String newTitle) {
@@ -129,7 +133,8 @@ public class Display {
             }
         }
 
-        getThreadContext().exec.wait(new setTitle(newTitle));
+        final Context context = getThreadContext();
+        context.exec.wait(new setTitle(newTitle));
     }
 
     public static void setVSyncEnabled(boolean sync) {
@@ -164,7 +169,8 @@ public class Display {
             }
         }
 
-        getThreadContext().exec.wait(new setVSyncEnabled(sync));
+        final Context context = getThreadContext();
+        context.exec.wait(new setVSyncEnabled(sync));
     }
 
 
@@ -208,7 +214,8 @@ public class Display {
             }
         }
 
-        getThreadContext().exec.execute(new sync(fps));
+        final Context context = getThreadContext();
+        context.exec.execute(new sync(fps));
     }
 
 
@@ -220,7 +227,8 @@ public class Display {
             }
         }
 
-        return getThreadContext().exec.get(new getDrawable());
+        final Context context = getThreadContext();
+        return context.exec.get(new getDrawable());
     }
 
     //**********************************************************************

@@ -866,7 +866,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glColorMask(red, green, blue, alpha));
+        final Context context = getThreadContext();
+        context.exec.execute(new glColorMask(red, green, blue, alpha));
     }
 
     public static void glDepthMask(boolean flag) {
@@ -883,7 +884,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glDepthMask(flag));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDepthMask(flag));
     }
 
     public static void glViewport(int x, int y, int width, int height) {
@@ -919,7 +921,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glTexParameteri(target, pname, param));
+        final Context context = getThreadContext();
+        context.exec.execute(new glTexParameteri(target, pname, param));
     }
 
     public static void glTexParameter(int target, int pname, FloatBuffer param) {
@@ -964,7 +967,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glClearColor(red, green, blue, alpha));
+        final Context context = getThreadContext();
+        context.exec.execute(new glClearColor(red, green, blue, alpha));
     }
 
     public static void glClear(int mask) {
@@ -981,7 +985,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glClear(mask));
+        final Context context = getThreadContext();
+        context.exec.execute(new glClear(mask));
     }
 
     public static void glScissor(int x, int y, int width, int height) {
@@ -998,7 +1003,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glScissor(x, y, width, height));
+        final Context context = getThreadContext();
+        context.exec.execute(new glScissor(x, y, width, height));
     }
 
     public static void glStencilFunc(int func, int ref, int mask) {
@@ -1015,7 +1021,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glStencilFunc(func, ref, mask));
+        final Context context = getThreadContext();
+        context.exec.execute(new glStencilFunc(func, ref, mask));
     }
 
     public static void glStencilMask(int mask) {
@@ -1032,7 +1039,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glStencilMask(mask));
+        final Context context = getThreadContext();
+        context.exec.execute(new glStencilMask(mask));
     }
 
     public static void glStencilOp(int fail, int zfail, int zpass) {
@@ -1049,7 +1057,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glStencilOp(fail, zfail, zpass));
+        final Context context = getThreadContext();
+        context.exec.execute(new glStencilOp(fail, zfail, zpass));
     }
 
     public static void glClearStencil(int s) {
@@ -1066,7 +1075,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glClearStencil(s));
+        final Context context = getThreadContext();
+        context.exec.execute(new glClearStencil(s));
     }
 
     public static void glAlphaFunc(int func, float ref) {
@@ -1083,7 +1093,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glAlphaFunc(func, ref));
+        final Context context = getThreadContext();
+        context.exec.execute(new glAlphaFunc(func, ref));
     }
 
     public static void glHint(int target, int mode) {
@@ -1100,7 +1111,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glHint(target, mode));
+        final Context context = getThreadContext();
+        context.exec.execute(new glHint(target, mode));
     }
 
     public static void glLineWidth(float width) {
@@ -1117,7 +1129,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glLineWidth(width));
+        final Context context = getThreadContext();
+        context.exec.execute(new glLineWidth(width));
     }
 
     public static void glPointSize(float size) {
@@ -1134,7 +1147,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glPointSize(size));
+        final Context context = getThreadContext();
+        context.exec.execute(new glPointSize(size));
     }
 
     public static void glColorMaterial(int face, int mode) {
@@ -1151,7 +1165,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glColorMaterial(face, mode));
+        final Context context = getThreadContext();
+        context.exec.execute(new glColorMaterial(face, mode));
     }
 
     public static void glShadeModel(int mode) {
@@ -1168,7 +1183,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glShadeModel(mode));
+        final Context context = getThreadContext();
+        context.exec.execute(new glShadeModel(mode));
     }
 
     public static void glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBuffer pixels) {
@@ -1307,7 +1323,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glDeleteTextures(texture));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDeleteTextures(texture));
     }
 
     public static void glDeleteTextures(IntBuffer textures) {
@@ -1318,8 +1335,9 @@ public class GL11 {
             }
         }
 
+        final Context context = getThreadContext();
         final IntBuffer snapshot = BufferUtil.snapshot(textures);
-        getThreadContext().exec.execute(new glDeleteTextures(snapshot));
+        context.exec.execute(new glDeleteTextures(snapshot));
     }
 
     public static void glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
@@ -1336,7 +1354,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
+        final Context context = getThreadContext();
+        context.exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
     }
 
     public static void glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) {
@@ -1353,7 +1372,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height));
+        final Context context = getThreadContext();
+        context.exec.execute(new glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height));
     }
 
     public static void glEdgeFlag(boolean flag) {
@@ -1370,7 +1390,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glEdgeFlag(flag));
+        final Context context = getThreadContext();
+        context.exec.execute(new glEdgeFlag(flag));
     }
 
     public static void glCullFace(int mode) {
@@ -1387,7 +1408,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glCullFace(mode));
+        final Context context = getThreadContext();
+        context.exec.execute(new glCullFace(mode));
     }
 
     public static void glDepthFunc(int func) {
@@ -1404,7 +1426,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glDepthFunc(func));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDepthFunc(func));
     }
 
     public static void glDepthRange(double zNear, double zFar) {
@@ -1421,7 +1444,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glDepthRange(zNear, zFar));
+        final Context context = getThreadContext();
+        context.exec.execute(new glDepthRange(zNear, zFar));
     }
 
     public static void glFrontFace(int mode) {
@@ -1438,7 +1462,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glFrontFace(mode));
+        final Context context = getThreadContext();
+        context.exec.execute(new glFrontFace(mode));
     }
 
     public static void glPixelStorei(int pname, int param) {
@@ -1449,7 +1474,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glPixelStorei(pname, param));
+        final Context context = getThreadContext();
+        context.exec.execute(new glPixelStorei(pname, param));
     }
 
     public static void glReadBuffer(int mode) {
@@ -1466,7 +1492,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glReadBuffer(mode));
+        final Context context = getThreadContext();
+        context.exec.execute(new glReadBuffer(mode));
     }
 
     public static void glTexEnvi(int target, int pname, int param) {
@@ -1483,7 +1510,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.execute(new glTexEnvi(target, pname, param));
+        final Context context = getThreadContext();
+        context.exec.execute(new glTexEnvi(target, pname, param));
     }
 
     /**
@@ -1625,7 +1653,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
+        final Context context = getThreadContext();
+        context.exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, IntBuffer pixels) {
@@ -1636,7 +1665,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
+        final Context context = getThreadContext();
+        context.exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) {
@@ -1647,7 +1677,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
+        final Context context = getThreadContext();
+        context.exec.wait(new glReadPixels(x, y, width, height, format, type, pixels));
     }
 
     public static int glGetError() {
@@ -1658,7 +1689,8 @@ public class GL11 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetError());
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetError());
     }
 
     public static int glGetTexLevelParameteri(int target, int level, int pname) {
@@ -1669,7 +1701,8 @@ public class GL11 {
             }
         }
 
-        return getThreadContext().exec.get(new glGetTexLevelParameteri(target, level, pname));
+        final Context context = getThreadContext();
+        return context.exec.get(new glGetTexLevelParameteri(target, level, pname));
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) {
@@ -1680,7 +1713,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.wait(new glGetTexImage(target, level, format, type, pixels));
+        final Context context = getThreadContext();
+        context.exec.wait(new glGetTexImage(target, level, format, type, pixels));
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, FloatBuffer pixels) {
@@ -1691,7 +1725,8 @@ public class GL11 {
             }
         }
 
-        getThreadContext().exec.wait(new glGetTexImage(target, level, format, type, pixels));
+        final Context context = getThreadContext();
+        context.exec.wait(new glGetTexImage(target, level, format, type, pixels));
     }
 
     public static boolean glIsEnabled(int pname) {
