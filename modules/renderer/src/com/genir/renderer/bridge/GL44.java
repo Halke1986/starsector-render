@@ -14,7 +14,7 @@ public class GL44 {
     public static void glBufferStorage(int target, ByteBuffer data, int flags) {
         record glBufferStorage(int target, ByteBufferSnapshot data, int flags) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL44.glBufferStorage(target, data.buffer, flags);
                 data.release();
             }
@@ -28,7 +28,7 @@ public class GL44 {
     public static void glBufferStorage(int target, FloatBuffer data, int flags) {
         record glBufferStorage(int target, FloatBufferSnapshot data, int flags) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL44.glBufferStorage(target, data.buffer, flags);
                 data.release();
             }
@@ -42,7 +42,7 @@ public class GL44 {
     public static void glBufferStorage(int target, long size, int flags) {
         record glBufferStorage(int target, long size, int flags) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL44.glBufferStorage(target, size, flags);
             }
         }

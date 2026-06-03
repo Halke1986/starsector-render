@@ -9,7 +9,7 @@ public class GL33 {
     public static void glVertexAttribDivisor(int index, int divisor) {
         record glVertexAttribDivisor(int index, int divisor) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor);
             }
         }

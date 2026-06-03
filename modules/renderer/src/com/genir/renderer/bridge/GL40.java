@@ -37,7 +37,7 @@ public class GL40 {
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
         record glUniformSubroutinesu(int shadertype, IntBufferSnapshot indices) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL40.glUniformSubroutinesu(shadertype, indices.buffer);
                 indices.release();
             }
@@ -51,7 +51,7 @@ public class GL40 {
     public static void glPatchParameteri(int pname, int value) {
         record glPatchParameteri(int pname, int value) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL40.glPatchParameteri(pname, value);
             }
         }
@@ -63,7 +63,7 @@ public class GL40 {
     public static void glBlendEquationi(int buf, int mode) {
         record glBlendEquationi(int buf, int mode) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glBlendEquationi(buf, mode);
             }
         }
@@ -75,7 +75,7 @@ public class GL40 {
     public static void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
         record glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
             }
         }

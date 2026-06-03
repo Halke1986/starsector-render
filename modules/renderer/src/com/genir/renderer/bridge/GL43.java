@@ -26,7 +26,7 @@ public class GL43 {
     public static void glShaderStorageBlockBinding(int program, int storageBlockIndex, int storageBlockBinding) {
         record glShaderStorageBlockBinding(int program, int storageBlockIndex, int storageBlockBinding) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL43.glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
             }
         }
@@ -38,7 +38,7 @@ public class GL43 {
     public static void glDispatchCompute(int num_groups_x, int num_groups_y, int num_groups_z) {
         record glDispatchCompute(int num_groups_x, int num_groups_y, int num_groups_z) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL43.glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
             }
         }
@@ -50,7 +50,7 @@ public class GL43 {
     public static void glDebugMessageCallback(KHRDebugCallback callback) {
         record glDebugMessageCallback(KHRDebugCallback callback) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL43.glDebugMessageCallback(callback);
             }
         }
@@ -62,7 +62,7 @@ public class GL43 {
     public static void glDebugMessageControl(int source, int type, int severity, IntBuffer ids, boolean enabled) {
         record glDebugMessageControl(int source, int type, int severity, IntBufferSnapshot ids, boolean enabled) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL43.glDebugMessageControl(source, type, severity, ids.buffer, enabled);
                 ids.release();
             }
@@ -76,7 +76,7 @@ public class GL43 {
     public static void glInvalidateBufferData(int buffer) {
         record glInvalidateBufferData(int buffer) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.GL43.glInvalidateBufferData(buffer);
             }
         }
