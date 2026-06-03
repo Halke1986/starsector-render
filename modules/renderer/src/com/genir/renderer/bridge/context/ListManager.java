@@ -47,8 +47,13 @@ public class ListManager {
 
         if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
             mode = 0;
-            command.run(context, args, argsOffset);
-            mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
+            isReplay = true;
+            try {
+                command.run(context, args, argsOffset);
+            } finally {
+                mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
+                isReplay = false;
+            }
         }
     }
 

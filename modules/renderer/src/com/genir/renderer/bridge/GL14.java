@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ListManager;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.Recordable;
 
@@ -11,8 +12,9 @@ public class GL14 {
         record glBlendEquation(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int offset) {
-                if (context.listManager.isRecording()) {
-                    context.listManager.record(this, args, offset);
+                ListManager listManager = context.listManager;
+                if (listManager.isRecording()) {
+                    listManager.record(this, args, offset);
                     return;
                 }
 
@@ -27,8 +29,9 @@ public class GL14 {
     static class GlBlendFuncSeparate implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int offset) {
-            if (context.listManager.isRecording()) {
-                context.listManager.record(this, args, offset);
+            ListManager listManager = context.listManager;
+            if (listManager.isRecording()) {
+                listManager.record(this, args, offset);
                 return;
             }
 
