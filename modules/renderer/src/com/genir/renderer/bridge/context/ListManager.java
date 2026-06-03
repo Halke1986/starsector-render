@@ -14,6 +14,7 @@ public class ListManager {
     private Frame newList;
 
     private final Map<Integer, Frame> lists = new HashMap<>();
+    private boolean isReplay = false;
 
     public ListManager(Context context) {
         this.context = context;
@@ -30,6 +31,10 @@ public class ListManager {
 
     public boolean isRecording() {
         return mode != 0;
+    }
+
+    public boolean isReplaying() {
+        return isReplay;
     }
 
     public void record(GLCommand command, float[] args, int argsOffset) {
@@ -69,19 +74,24 @@ public class ListManager {
 
     public void glCallList(int list) {
         asert(!isRecording());
+        isReplay = true;
 
-        Frame listToCall = lists.get(list);
-        if (listToCall != null) {
-            float[] args = listToCall.args;
-            int argsOffset = 0;
+        try {
+            Frame listToCall = lists.get(list);
+            if (listToCall != null) {
+                float[] args = listToCall.args;
+                int argsOffset = 0;
 
-            // for-each loop over a list is a performance bottleneck, according to a profiler.
-            // Simple for loop over an array is much faster.
-            for (int i = 0; i < listToCall.commandsSize; i++) {
-                int argsSize = (int) args[argsOffset];
-                listToCall.commands[i].run(context, args, argsOffset);
-                argsOffset += argsSize;
+                // for-each loop over a list is a performance bottleneck, according to a profiler.
+                // Simple for loop over an array is much faster.
+                for (int i = 0; i < listToCall.commandsSize; i++) {
+                    int argsSize = (int) args[argsOffset];
+                    listToCall.commands[i].run(context, args, argsOffset);
+                    argsOffset += argsSize;
+                }
             }
+        } finally {
+            isReplay = false;
         }
     }
 }

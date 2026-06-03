@@ -33,7 +33,7 @@ public class GL32 {
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
-        record glFenceSync( CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements GLCommand {
+        record glFenceSync(CompletableFuture<org.lwjgl.opengl.GLSync> future, int condition, int flags) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
                 future.complete(org.lwjgl.opengl.GL32.glFenceSync(condition, flags));
