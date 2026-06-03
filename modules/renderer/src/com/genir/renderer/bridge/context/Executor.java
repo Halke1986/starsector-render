@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.context.commands.Releasable;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.bridge.context.commands.Recordable;

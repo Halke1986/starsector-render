@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.commands.Releasable;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;
@@ -8,15 +9,21 @@ import java.util.Stack;
 import static com.genir.renderer.debug.Debug.asert;
 
 public class ClientAttribTracker {
+    private final BufferPool bufferPool;
+
     public final Snapshot expected = new Snapshot();
 
     private final Stack<Snapshot> expectedStack = new Stack<>();
 
+    ClientAttribTracker(BufferPool bufferPool) {
+        this.bufferPool = bufferPool;
+    }
+
     public ArrayPointersSnapshot makeArrayPointersSnapshot() {
         return new ArrayPointersSnapshot(
-                expected.enableVertexArray ? expected.vertexPointer.getSnapshot() : null,
-                expected.enableTexCoordArray ? expected.texCoordPointer.getSnapshot() : null,
-                expected.enableColorArray ? expected.colorPointer.getSnapshot() : null);
+                expected.enableVertexArray ? expected.vertexPointer.getSnapshot(bufferPool) : null,
+                expected.enableTexCoordArray ? expected.texCoordPointer.getSnapshot(bufferPool) : null,
+                expected.enableColorArray ? expected.colorPointer.getSnapshot(bufferPool) : null);
     }
 
     public void glEnableClientState(int cap) {
@@ -128,7 +135,13 @@ public class ClientAttribTracker {
         }
     }
 
-    public record ArrayPointersSnapshot(ArraySnapshot vertex, ArraySnapshot texCoord, ArraySnapshot color) {
+    public record ArrayPointersSnapshot(ArraySnapshot vertex, ArraySnapshot texCoord, ArraySnapshot color) implements Releasable {
+        @Override
+        public void release() {
+            if (vertex != null) vertex.release();
+            if (texCoord != null) texCoord.release();
+            if (color != null) color.release();
+        }
     }
 }
 

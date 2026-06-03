@@ -1,8 +1,7 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.commands.Releasable;
 import com.genir.renderer.bridge.context.commands.GLCommand;
-
-import java.util.Arrays;
 
 public class Frame {
     public GLCommand[] commands = new GLCommand[1];
@@ -22,7 +21,13 @@ public class Frame {
     }
 
     public void clear() {
-        Arrays.fill(commands, null);
+        for (int i = 0; i < commandsSize; i++) {
+            if (commands[i] instanceof Releasable releasable) {
+                releasable.release();
+            }
+            commands[i] = null;
+        }
+
         clearWithoutNulling();
     }
 

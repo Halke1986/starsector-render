@@ -24,9 +24,10 @@ public class Context {
     public final StallDetector stallDetector = new StallDetector();
     public final Executor exec = new Executor(this);
     public final StateCache glStateCache = new StateCache();
+    public final BufferPool bufferPool = new BufferPool();
 
     // Client state. Runs on main thread.
-    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker();
+    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool);
     public final AttribTracker attribTracker = new AttribTracker();
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
