@@ -32,7 +32,7 @@ public class SharedDrawable implements Drawable {
     public void makeCurrent() {
         record makeCurrent(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 try {
                     impl.makeCurrent();
                     context.update();
@@ -52,7 +52,7 @@ public class SharedDrawable implements Drawable {
     public void destroy() {
         record destroy(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
             @Override
-            public void run(Context context, float[] args, int offset) {
+            public void run(Context context, float[] args, int argsOffset) {
                 impl.destroy();
             }
         }
