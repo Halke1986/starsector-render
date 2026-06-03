@@ -35,6 +35,10 @@ public class BufferPool {
     }
 
     public synchronized FloatBufferSnapshot snapshot(FloatBuffer params) {
+        if (params == null) {
+            return new FloatBufferSnapshot(null, null, null);
+        }
+
         ByteBuffer mem = getMem(params.capacity() * Float.BYTES);
         FloatBuffer buffer = mem.asFloatBuffer().slice(0, params.capacity());
 
@@ -46,6 +50,10 @@ public class BufferPool {
     }
 
     public synchronized ByteBufferSnapshot snapshot(ByteBuffer params) {
+        if (params == null) {
+            return new ByteBufferSnapshot(null, null, null);
+        }
+
         ByteBuffer mem = getMem(params.capacity() * Byte.BYTES);
         ByteBuffer buffer = mem.slice(0, params.capacity());
 
@@ -57,6 +65,10 @@ public class BufferPool {
     }
 
     public synchronized IntBufferSnapshot snapshot(IntBuffer params) {
+        if (params == null) {
+            return new IntBufferSnapshot(null, null, null);
+        }
+
         ByteBuffer mem = getMem(params.capacity() * Integer.BYTES);
         IntBuffer buffer = mem.asIntBuffer().slice(0, params.capacity());
 
@@ -68,6 +80,10 @@ public class BufferPool {
     }
 
     public synchronized ShortBufferSnapshot snapshot(ShortBuffer params) {
+        if (params == null) {
+            return new ShortBufferSnapshot(null, null, null);
+        }
+
         ByteBuffer mem = getMem(params.capacity() * Short.BYTES);
         ShortBuffer buffer = mem.asShortBuffer().slice(0, params.capacity());
 
@@ -130,7 +146,7 @@ public class BufferPool {
 
         @Override
         public void release() {
-            if (alreadyCleaned.compareAndSet(false, true)) {
+            if (mem != null && alreadyCleaned.compareAndSet(false, true)) {
                 parent.release(mem);
             }
         }

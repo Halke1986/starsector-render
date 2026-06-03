@@ -1216,8 +1216,6 @@ public class GL11 {
 
         final Context context = getThreadContext();
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        final StackTraceElement[] stack = new Exception().getStackTrace();
-
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
