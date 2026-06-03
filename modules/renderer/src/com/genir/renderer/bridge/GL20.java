@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
-import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
@@ -453,15 +453,16 @@ public class GL20 {
     }
 
     public static void glDrawBuffers(IntBuffer buffers) {
-        record glDrawBuffers(IntBuffer buffers) implements GLCommand {
+        record glDrawBuffers(IntBufferSnapshot buffers) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL20.glDrawBuffers(buffers);
+                org.lwjgl.opengl.GL20.glDrawBuffers(buffers.buffer);
+                buffers.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(buffers);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(buffers);
         context.exec.execute(new glDrawBuffers(snapshot));
     }
 

@@ -21,17 +21,6 @@ public class Frame {
     }
 
     public void clear() {
-        for (int i = 0; i < commandsSize; i++) {
-            if (commands[i] instanceof Releasable releasable) {
-                releasable.release();
-            }
-            commands[i] = null;
-        }
-
-        clearWithoutNulling();
-    }
-
-    public void clearWithoutNulling() {
         commandsSize = 0;
         argsOffset = 0;
     }

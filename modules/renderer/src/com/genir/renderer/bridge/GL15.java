@@ -1,9 +1,9 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.context.BufferPool;
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
-import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
+import com.genir.renderer.bridge.context.BufferPool.ShortBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
@@ -39,15 +39,16 @@ public class GL15 {
     }
 
     public static void glDeleteBuffers(IntBuffer buffers) {
-        record glDeleteBuffers(IntBuffer buffers) implements GLCommand {
+        record glDeleteBuffers(IntBufferSnapshot buffers) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL15.glDeleteBuffers(buffers);
+                org.lwjgl.opengl.GL15.glDeleteBuffers(buffers.buffer);
+                buffers.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(buffers);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(buffers);
         context.exec.execute(new glDeleteBuffers(snapshot));
     }
 
@@ -106,28 +107,30 @@ public class GL15 {
     }
 
     public static void glBufferData(int target, ShortBuffer data, int usage) {
-        record glBufferData(int target, ShortBuffer data, int usage) implements GLCommand {
+        record glBufferData(int target, ShortBufferSnapshot data, int usage) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL15.glBufferData(target, data, usage);
+                org.lwjgl.opengl.GL15.glBufferData(target, data.buffer, usage);
+                data.release();
             }
         }
 
         final Context context = getThreadContext();
-        final ShortBuffer snapshot = BufferUtil.snapshot(data);
+        final ShortBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.exec.execute(new glBufferData(target, snapshot, usage));
     }
 
     public static void glBufferData(int target, IntBuffer data, int usage) {
-        record glBufferData(int target, IntBuffer data, int usage) implements GLCommand {
+        record glBufferData(int target, IntBufferSnapshot data, int usage) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL15.glBufferData(target, data, usage);
+                org.lwjgl.opengl.GL15.glBufferData(target, data.buffer, usage);
+                data.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(data);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.exec.execute(new glBufferData(target, snapshot, usage));
     }
 
@@ -146,28 +149,30 @@ public class GL15 {
     }
 
     public static void glBufferSubData(int target, long offset, ShortBuffer data) {
-        record glBufferSubData(int target, long offset, ShortBuffer data) implements GLCommand {
+        record glBufferSubData(int target, long offset, ShortBufferSnapshot data) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data);
+                org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data.buffer);
+                data.release();
             }
         }
 
         final Context context = getThreadContext();
-        final ShortBuffer snapshot = BufferUtil.snapshot(data);
+        final ShortBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 
     public static void glBufferSubData(int target, long offset, IntBuffer data) {
-        record glBufferSubData(int target, long offset, IntBuffer data) implements GLCommand {
+        record glBufferSubData(int target, long offset, IntBufferSnapshot data) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data);
+                org.lwjgl.opengl.GL15.glBufferSubData(target, offset, data.buffer);
+                data.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(data);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.exec.execute(new glBufferSubData(target, offset, snapshot));
     }
 

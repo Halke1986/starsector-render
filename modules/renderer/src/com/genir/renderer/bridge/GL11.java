@@ -1,12 +1,15 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.context.*;
-import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
-import com.genir.renderer.bridge.context.commands.Releasable;
+import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
+import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
+import com.genir.renderer.bridge.context.ClientAttribTracker;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ListManager;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
 import com.genir.renderer.bridge.context.commands.Recordable;
+import com.genir.renderer.bridge.context.commands.Releasable;
 import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
@@ -440,7 +443,7 @@ public class GL11 {
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        record glDrawElements(int mode, IntBuffer indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable, Releasable {
+        record glDrawElements(int mode, IntBufferSnapshot indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand, Recordable, Releasable {
             @Override
             public void run(Context context, float[] args, int offset) {
                 ListManager listManager = context.listManager;
@@ -449,7 +452,7 @@ public class GL11 {
                     return;
                 }
 
-                Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices);
+                Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices.buffer);
                 context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
 
                 if (!listManager.isReplaying()) {
@@ -459,12 +462,13 @@ public class GL11 {
 
             @Override
             public void release() {
+                indices.release();
                 snapshot.release();
             }
         }
 
-        final IntBuffer indicesSnapshot = BufferUtil.snapshot(indices);
         final Context context = getThreadContext();
+        final IntBufferSnapshot indicesSnapshot = context.bufferPool.snapshot(indices);
         final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawElements(mode, indicesSnapshot, snapshot));
     }
@@ -1328,15 +1332,16 @@ public class GL11 {
     }
 
     public static void glDeleteTextures(IntBuffer textures) {
-        record glDeleteTextures(IntBuffer textures) implements GLCommand {
+        record glDeleteTextures(IntBufferSnapshot textures) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL11.glDeleteTextures(textures);
+                org.lwjgl.opengl.GL11.glDeleteTextures(textures.buffer);
+                textures.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(textures);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(textures);
         context.exec.execute(new glDeleteTextures(snapshot));
     }
 

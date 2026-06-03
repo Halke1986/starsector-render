@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
@@ -60,15 +60,16 @@ public class GL43 {
     }
 
     public static void glDebugMessageControl(int source, int type, int severity, IntBuffer ids, boolean enabled) {
-        record glDebugMessageControl(int source, int type, int severity, IntBuffer ids, boolean enabled) implements GLCommand {
+        record glDebugMessageControl(int source, int type, int severity, IntBufferSnapshot ids, boolean enabled) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL43.glDebugMessageControl(source, type, severity, ids, enabled);
+                org.lwjgl.opengl.GL43.glDebugMessageControl(source, type, severity, ids.buffer, enabled);
+                ids.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(ids);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(ids);
         context.exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
     }
 

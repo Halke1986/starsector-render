@@ -2,19 +2,13 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.commands.Releasable;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.nio.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BufferPool {
     private final List<ByteBuffer>[] pool = new List[32];
-
-    private int hit = 0;
-    private int miss = 0;
-    private int ret = 0;
 
     public BufferPool() {
         for (int i = 0; i < pool.length; i++) {
@@ -26,14 +20,10 @@ public class BufferPool {
         int idx = poolIdx(bytes);
         List<ByteBuffer> list = pool[idx];
 
-//        System.out.println(ret + " " + miss + " " + hit);
-
         if (list.isEmpty()) {
-            miss++;
             return ByteBuffer.allocateDirect(1 << idx).order(ByteOrder.nativeOrder());
         }
 
-        hit++;
         return list.remove(list.size() - 1);
     }
 
@@ -66,8 +56,29 @@ public class BufferPool {
         return new ByteBufferSnapshot(buffer, mem, this);
     }
 
+    public synchronized IntBufferSnapshot snapshot(IntBuffer params) {
+        ByteBuffer mem = getMem(params.capacity() * Integer.BYTES);
+        IntBuffer buffer = mem.asIntBuffer().slice(0, params.capacity());
+
+        buffer.put(0, params, 0, params.limit());
+        buffer.position(params.position());
+        buffer.limit(params.limit());
+
+        return new IntBufferSnapshot(buffer, mem, this);
+    }
+
+    public synchronized ShortBufferSnapshot snapshot(ShortBuffer params) {
+        ByteBuffer mem = getMem(params.capacity() * Short.BYTES);
+        ShortBuffer buffer = mem.asShortBuffer().slice(0, params.capacity());
+
+        buffer.put(0, params, 0, params.limit());
+        buffer.position(params.position());
+        buffer.limit(params.limit());
+
+        return new ShortBufferSnapshot(buffer, mem, this);
+    }
+
     private synchronized void release(ByteBuffer mem) {
-        ret++;
         pool[poolIdx(mem.capacity())].add(mem);
     }
 
@@ -84,6 +95,24 @@ public class BufferPool {
         public final ByteBuffer buffer;
 
         ByteBufferSnapshot(ByteBuffer buffer, ByteBuffer mem, BufferPool parent) {
+            super(mem, parent);
+            this.buffer = buffer;
+        }
+    }
+
+    public static class IntBufferSnapshot extends BufferSnapshot {
+        public final IntBuffer buffer;
+
+        IntBufferSnapshot(IntBuffer buffer, ByteBuffer mem, BufferPool parent) {
+            super(mem, parent);
+            this.buffer = buffer;
+        }
+    }
+
+    public static class ShortBufferSnapshot extends BufferSnapshot {
+        public final ShortBuffer buffer;
+
+        ShortBufferSnapshot(ShortBuffer buffer, ByteBuffer mem, BufferPool parent) {
             super(mem, parent);
             this.buffer = buffer;
         }

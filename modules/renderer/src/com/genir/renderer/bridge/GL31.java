@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
 
-import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
@@ -38,16 +38,17 @@ public class GL31 {
     }
 
     public static void glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) {
-        record glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) implements GLCommand {
+        record glDrawElementsInstanced(int mode, IntBufferSnapshot indices, int primcount) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
                 context.attribManager.applyDrawAttribs();
-                org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices, primcount);
+                org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, indices.buffer, primcount);
+                indices.release();
             }
         }
 
-        final IntBuffer snapshot = BufferUtil.snapshot(indices);
         final Context context = getThreadContext();
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(indices);
         context.exec.execute(new glDrawElementsInstanced(mode, snapshot, primcount));
     }
 

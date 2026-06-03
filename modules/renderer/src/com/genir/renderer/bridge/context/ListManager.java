@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.commands.Releasable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +71,14 @@ public class ListManager {
         this.mode = mode;
 
         newList = lists.computeIfAbsent(list, k -> new Frame());
+
+        // Release any resources allocated by the old list.
+        for (int i = 0; i < newList.commandsSize; i++) {
+            if (newList.commands[i] instanceof Releasable releasable) {
+                releasable.release();
+            }
+        }
+
         newList.clear();
     }
 

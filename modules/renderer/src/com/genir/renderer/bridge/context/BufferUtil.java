@@ -3,37 +3,11 @@ package com.genir.renderer.bridge.context;
 import org.lwjgl.BufferUtils;
 
 import java.lang.reflect.Array;
-import java.nio.*;
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class BufferUtil {
-    public static IntBuffer snapshot(IntBuffer params) {
-        if (params == null) {
-            return null;
-        }
-
-        IntBuffer snapshot = BufferUtils.createIntBuffer(params.capacity());
-        snapshot.put(0, params, 0, params.limit());
-
-        snapshot.position(params.position());
-        snapshot.limit(params.limit());
-
-        return snapshot;
-    }
-
-    public static ShortBuffer snapshot(ShortBuffer params) {
-        if (params == null) {
-            return null;
-        }
-
-        ShortBuffer snapshot = BufferUtils.createShortBuffer(params.capacity());
-        snapshot.put(0, params, 0, params.limit());
-
-        snapshot.position(params.position());
-        snapshot.limit(params.limit());
-
-        return snapshot;
-    }
-
     public static FloatBuffer reallocate(int size, FloatBuffer old) {
         FloatBuffer n = BufferUtils.createFloatBuffer(size);
 

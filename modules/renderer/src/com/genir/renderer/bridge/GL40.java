@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge;
 
-import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
@@ -35,15 +35,16 @@ public class GL40 {
     }
 
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
-        record glUniformSubroutinesu(int shadertype, IntBuffer indices) implements GLCommand {
+        record glUniformSubroutinesu(int shadertype, IntBufferSnapshot indices) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int offset) {
-                org.lwjgl.opengl.GL40.glUniformSubroutinesu(shadertype, indices);
+                org.lwjgl.opengl.GL40.glUniformSubroutinesu(shadertype, indices.buffer);
+                indices.release();
             }
         }
 
         final Context context = getThreadContext();
-        final IntBuffer snapshot = BufferUtil.snapshot(indices);
+        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(indices);
         context.exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
 

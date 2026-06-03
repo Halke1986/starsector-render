@@ -1,10 +1,8 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.bridge.context.commands.Releasable;
 import com.genir.renderer.bridge.context.commands.GLCommand;
 import com.genir.renderer.bridge.context.commands.GLGetter;
-import com.genir.renderer.bridge.context.commands.Recordable;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -152,8 +150,8 @@ public class Executor {
 
                 executeCommands(frameToExecute);
 
-                // Assume executeCommands clears the command array.
-                frameToExecute.clearWithoutNulling();
+                // Return the frame object for reuse.
+                frameToExecute.clear();
                 framePool.put(frameToExecute);
             } catch (Throwable t) {
                 exception.set(t);
@@ -197,7 +195,6 @@ public class Executor {
         // Run all scheduled commands.
         for (int i = 0; i < frame.commandsSize; i++) {
             GLCommand command = commands[i];
-            commands[i] = null;
             int argsSize = (int) args[argsOffset];
 
             command.run(context, args, argsOffset);
