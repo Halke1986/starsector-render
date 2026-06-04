@@ -1,5 +1,8 @@
+v0.7.2
+
 - Fixed rendering regressions that caused performance degradation when using BoxUtil. Reported by multiple users.
 - Fixed rendering regressions that caused visual errors when using GL15 methods.
+- Improved rendering performance.
 
 v0.7.1b
 
