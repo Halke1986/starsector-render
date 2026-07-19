@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.GL14.glBlendFuncSeparate;
+import static com.genir.renderer.bridge.commands.GL14.glBlendFuncSeparate;
 import static com.genir.renderer.bridge.context.BufferUtil.putIfPossible;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 

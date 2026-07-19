@@ -1,6 +1,6 @@
 package com.genir.renderer.overrides;
 
-import com.genir.renderer.bridge.Display;
+import com.genir.renderer.bridge.commands.Display;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;

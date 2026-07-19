@@ -1,22 +1,20 @@
-package com.genir.renderer.bridge;
-
+package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
-public class GL13 {
-    public static void glActiveTexture(int mode) {
-        record glActiveTexture(int mode) implements GLCommand {
+public class GL33 {
+    public static void glVertexAttribDivisor(int index, int divisor) {
+        record glVertexAttribDivisor(int index, int divisor) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL13.glActiveTexture(mode);
+                org.lwjgl.opengl.GL33.glVertexAttribDivisor(index, divisor);
             }
         }
 
         final Context context = getThreadContext();
-        context.attribTracker.glActiveTexture(mode);
-        context.exec.execute(new glActiveTexture(mode));
+        context.exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }

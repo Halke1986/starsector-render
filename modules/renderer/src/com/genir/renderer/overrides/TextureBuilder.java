@@ -15,7 +15,7 @@ public class TextureBuilder {
      * Commit texture to GPU and return a TextureHandler.
      */
     public static TextureHandler commitTexture(String path, TextureData texData) {
-        final TextureHandler texture = new TextureHandler(GL11.GL_TEXTURE_2D, com.genir.renderer.bridge.GL11.glGenTextures(), path);
+        final TextureHandler texture = new TextureHandler(GL11.GL_TEXTURE_2D, com.genir.renderer.bridge.commands.GL11.glGenTextures(), path);
 
         texture.TextureHandler_setPath(path);
         texture.TextureHandler_setImageWidth(texData.imageWidth);
@@ -27,21 +27,21 @@ public class TextureBuilder {
         texture.TextureHandler_serColor2(texData.color2);
 
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
-        com.genir.renderer.bridge.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
-            com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-            com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
         } else {
-            com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-            com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            com.genir.renderer.bridge.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
         }
 
-        com.genir.renderer.bridge.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        com.genir.renderer.bridge.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
+        com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+        com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
 
         return texture;
     }

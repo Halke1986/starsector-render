@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge;
+package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;

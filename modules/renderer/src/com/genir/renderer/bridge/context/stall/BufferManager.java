@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.genir.renderer.bridge.GL15.glBufferSubData;
+import static com.genir.renderer.bridge.commands.GL15.glBufferSubData;
 
 /**
  * BufferManager avoids the stalls of GL30.glMapBufferRange by
