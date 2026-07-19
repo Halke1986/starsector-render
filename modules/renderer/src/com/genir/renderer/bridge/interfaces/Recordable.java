@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.context.interfaces;
+package com.genir.renderer.bridge.interfaces;
 
 /**
  * OpenGL commands that can be recorded in a display list.

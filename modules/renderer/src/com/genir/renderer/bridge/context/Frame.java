@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.context.interfaces.GLCommand;
+import com.genir.renderer.bridge.interfaces.GLCommand;
 
 public class Frame {
     public GLCommand[] commands = new GLCommand[1];

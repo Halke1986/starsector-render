@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.context.interfaces;
+package com.genir.renderer.bridge.interfaces;
 
 /**
  * Objects that can be released for reuse.
