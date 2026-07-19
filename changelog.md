@@ -1,3 +1,5 @@
+- Fixed visual errors when rendering damage decals. Reported by wing.
+
 v0.7.2
 
 - Fixed rendering regressions that caused performance degradation when using BoxUtil. Reported by multiple users.
