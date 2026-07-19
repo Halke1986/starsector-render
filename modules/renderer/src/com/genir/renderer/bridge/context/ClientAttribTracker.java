@@ -1,6 +1,6 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.context.commands.Releasable;
+import com.genir.renderer.bridge.context.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;

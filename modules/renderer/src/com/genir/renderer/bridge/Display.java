@@ -2,8 +2,8 @@ package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.commands.GLCommand;
-import com.genir.renderer.bridge.context.commands.GLGetter;
+import com.genir.renderer.bridge.context.interfaces.GLCommand;
+import com.genir.renderer.bridge.context.interfaces.GLGetter;
 import com.genir.renderer.overrides.ProgressBar;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;

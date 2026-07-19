@@ -2,7 +2,7 @@ package com.genir.renderer.bridge;
 
 
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.interfaces.GLCommand;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 

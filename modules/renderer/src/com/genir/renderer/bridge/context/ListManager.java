@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.context.commands.GLCommand;
-import com.genir.renderer.bridge.context.commands.Releasable;
+import com.genir.renderer.bridge.context.interfaces.GLCommand;
+import com.genir.renderer.bridge.context.interfaces.Releasable;
 
 import java.util.HashMap;
 import java.util.Map;

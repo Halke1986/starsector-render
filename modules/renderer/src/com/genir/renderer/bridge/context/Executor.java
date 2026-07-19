@@ -1,8 +1,8 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.bridge.context.commands.GLCommand;
-import com.genir.renderer.bridge.context.commands.GLGetter;
+import com.genir.renderer.bridge.context.interfaces.GLCommand;
+import com.genir.renderer.bridge.context.interfaces.GLGetter;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

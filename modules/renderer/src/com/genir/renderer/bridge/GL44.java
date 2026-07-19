@@ -3,7 +3,7 @@ package com.genir.renderer.bridge;
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.commands.GLCommand;
+import com.genir.renderer.bridge.context.interfaces.GLCommand;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge;
 
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.commands.GLGetter;
+import com.genir.renderer.bridge.context.interfaces.GLGetter;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 

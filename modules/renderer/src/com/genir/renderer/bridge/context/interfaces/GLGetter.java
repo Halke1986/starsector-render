@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.context.commands;
+package com.genir.renderer.bridge.context.interfaces;
 
 import com.genir.renderer.bridge.context.Context;
 
