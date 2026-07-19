@@ -20,8 +20,8 @@ public class AppClassLoader extends ClassLoader {
     private final List<ClassConstantTransformer> lwjglTransformers = List.of(
             new ClassConstantTransformer(Arrays.asList(
                     // Replace OpenGL calls.
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/GL14")
+                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
+                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14")
             ))
     );
 
@@ -41,18 +41,18 @@ public class AppClassLoader extends ClassLoader {
     private final List<ClassConstantTransformer> starfarerTransformers = List.of(
             new ClassConstantTransformer(Arrays.asList(
                     // Replace OpenGL calls.
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/GL11"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/GL14"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/Display"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/GLContext"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/util/Display", "com/genir/renderer/bridge/DisplayUtil"),
+                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
+                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14"),
+                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display"),
+                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"),
+                    ClassConstantTransformer.newTransform("org/lwjgl/util/Display", "com/genir/renderer/bridge/commands/DisplayUtil"),
 
                     // Replace class loader for loading scripts.
                     ClassConstantTransformer.newTransform("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
             )),
             new ClassConstantTransformer(List.of(
-                    // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/DisplayMode transform caused by a false positive match.
-                    ClassConstantTransformer.newTransform("com/genir/renderer/bridge/DisplayMode", "org/lwjgl/opengl/DisplayMode")
+                    // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/commands/DisplayMode transform caused by a false positive match.
+                    ClassConstantTransformer.newTransform("com/genir/renderer/bridge/commands/DisplayMode", "org/lwjgl/opengl/DisplayMode")
             )),
             // Obfuscate assembled overrides.
             new ClassConstantTransformer(ObfTransformations.transformations)
