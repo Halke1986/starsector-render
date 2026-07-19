@@ -165,15 +165,24 @@ public class AppClassLoader extends ClassLoader {
         }
     }
 
-    private static class JavaAgentLoader extends URLClassLoader {
+    private class JavaAgentLoader extends URLClassLoader {
         public JavaAgentLoader(URL[] urls, ClassLoader parent) {
             super(urls, parent);
         }
 
+        @Override
         public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            if (AppClassLoader.this.selectTransformer(name) != null) {
+                Class<?> c = AppClassLoader.this.loadClass(name, false);
+                if (resolve) {
+                    resolveClass(c);
+                }
+                return c;
+            }
             return super.loadClass(name, resolve);
         }
 
+        @Override
         public void addURL(URL url) {
             super.addURL(url);
         }

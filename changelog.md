@@ -1,4 +1,5 @@
 - Fixed visual errors when rendering damage decals. Reported by wing.
+- Added support for PatchLib. Incompatibility reported by Lukas04.
 
 v0.7.2
 
