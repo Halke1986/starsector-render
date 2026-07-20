@@ -1,3 +1,5 @@
+- Fixed an asynchronous pipeline stall crash when using Red Stripe Knight. Reported by FM-Boy and White Steel.
+
 v0.7.3
 
 - Fixed visual errors when rendering damage decals. Reported by wing.

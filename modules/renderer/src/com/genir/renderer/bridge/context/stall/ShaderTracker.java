@@ -17,6 +17,7 @@ public class ShaderTracker {
     }
 
     public void glLinkProgram(int program) {
+        // Clean previous program data.
         uniformLocations.remove(program);
         programParameters.remove(program);
     }

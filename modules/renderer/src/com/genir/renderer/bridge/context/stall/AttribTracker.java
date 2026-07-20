@@ -5,18 +5,20 @@ import java.util.Stack;
 /**
  * Tracks the state of OpenGL attributes as they would appear to the client
  * if operations were executed eagerly. Instead, operations are deferred
- * to a separate thread and performed lazily. The rendering thread must ensure
- * that when the client issues an OpenGL call that depends on the current
- * state, the thread’s state is synchronized with what the client observes
- * through AttribTracker.
+ * to a separate thread and performed lazily.
+ * <p>
+ * The rendering thread must ensure that when the client issues an OpenGL
+ * call that depends on the current state, the thread’s state is synchronized
+ * with what the client observes through AttribTracker.
  */
 public class AttribTracker {
     private final AttribState state = new AttribState();
-    private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
+    private final Stack<AttribState.Snapshot> stateStack = new Stack<>();
 
     // Values not being a part of attributes stack.
     private int framebufferBinding = 0;
     private int vertexArrayBinding = 0;
+    private int currentProgram = 0;
 
     public boolean getEnableStencilTest() {
         return state.enableStencilTest;
@@ -70,6 +72,10 @@ public class AttribTracker {
         return state.viewport;
     }
 
+    public int getCurrentProgram() {
+        return currentProgram;
+    }
+
     //
     // GL calls.
     //
@@ -78,16 +84,16 @@ public class AttribTracker {
         // Save expected state.
         AttribState stateSnapshot = new AttribState();
         stateSnapshot.overwriteWith(state, mask);
-        expectedStack.push(new AttribState.Snapshot(stateSnapshot, mask));
+        stateStack.push(new AttribState.Snapshot(stateSnapshot, mask));
     }
 
     public void glPopAttrib() {
         // GL_STACK_UNDERFLOW
-        if (expectedStack.isEmpty()) {
+        if (stateStack.isEmpty()) {
             return;
         }
 
-        AttribState.Snapshot snapshot = expectedStack.pop();
+        AttribState.Snapshot snapshot = stateStack.pop();
         state.overwriteWith(snapshot.state(), snapshot.attribMask());
     }
 
@@ -129,5 +135,9 @@ public class AttribTracker {
 
     public void glViewport(int x, int y, int width, int height) {
         state.glViewport(x, y, width, height);
+    }
+
+    public void glUseProgram(int program) {
+        currentProgram = program;
     }
 }

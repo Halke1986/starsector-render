@@ -1533,6 +1533,8 @@ public class GL11 {
                 return context.attribTracker.getActiveTexture();
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
                 return context.attribTracker.getArrayBufferBinding();
+            case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
+                return context.attribTracker.getCurrentProgram();
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
                 return context.attribTracker.getFramebufferBinding();
             case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
