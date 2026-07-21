@@ -251,14 +251,14 @@ public class VertexInterceptor {
         // into model space, since the model matrix can change every time the array is drawn.
         // Applying the transformation on the GPU avoids repeatedly un-packing the array,
         // transforming vertices on the CPU, and re-packing the data for each draw call.
-        transformManager.setGPUModelView();
+        transformManager.setGPUMode();
 
         // Draw.
         attribManager.applyDrawAttribs();
         drawArraysCommand.run();
 
         // Move model transformation back to CPU.
-        transformManager.setCPUModelView();
+        transformManager.setCPUMode();
     }
 
     private ByteBuffer restoreSnapshot(ArraySnapshot snapshot, ByteBuffer pointer) {

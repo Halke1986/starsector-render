@@ -11,7 +11,7 @@ public class TransformManager {
     private final MatrixStack modelView = new MatrixStack();
 
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-    private boolean cpuModelView = true;
+    private boolean cpuMode = true;
     private final Matrix4f identity = new Matrix4f();
 
     public TransformManager(AttribManager attribManager) {
@@ -19,8 +19,8 @@ public class TransformManager {
         this.identity.setIdentity();
     }
 
-    public void setCPUModelView() {
-        if (cpuModelView) {
+    public void setCPUMode() {
+        if (cpuMode) {
             return;
         }
 
@@ -28,11 +28,11 @@ public class TransformManager {
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
 
-        cpuModelView = true;
+        cpuMode = true;
     }
 
-    public void setGPUModelView() {
-        if (!cpuModelView) {
+    public void setGPUMode() {
+        if (!cpuMode) {
             return;
         }
 
@@ -41,11 +41,11 @@ public class TransformManager {
         modelView.getMatrix().storeTranspose(matrixBuffer.clear());
         GL11.glMultMatrix(matrixBuffer.flip());
 
-        cpuModelView = false;
+        cpuMode = false;
     }
 
     public Matrix4f getCPUModelView() {
-        if (cpuModelView) {
+        if (cpuMode) {
             return modelView.getMatrix();
         }
 
@@ -151,7 +151,9 @@ public class TransformManager {
         }
     }
 
+    // Should the matrix operation be delegated to GPU instead of simulated on CPU.
+    // Only GL_MODELVIEW transformations are simulated on CPU.
     private boolean shouldDelegate() {
-        return attribManager.getMatrixMode() != GL11.GL_MODELVIEW || !cpuModelView;
+        return attribManager.getMatrixMode() != GL11.GL_MODELVIEW || !cpuMode;
     }
 }

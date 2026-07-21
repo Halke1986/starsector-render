@@ -50,6 +50,9 @@ public class AttribManager {
         return ctx;
     }
 
+    // Set server-side attributes required by the bridge, which may be
+    // different from attributes selected by the client.
+    // TODO sync client-side attrib tracker?
     public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
         if (actual.enableAlphaTest) {
             actual.enableAlphaTest = false;
@@ -100,6 +103,7 @@ public class AttribManager {
         }
     }
 
+    // Apply server-side attributes selected by the client.
     public void applyDrawAttribs() {
         applyStencil();
         applyAlpha();
@@ -108,7 +112,7 @@ public class AttribManager {
         applyLighting();
     }
 
-    // Apply matrix mode selected by client.
+    // Apply matrix mode selected by the client.
     public void applyMatrixMode() {
         if (actual.matrixMode != expected.matrixMode) {
             actual.matrixMode = expected.matrixMode;
