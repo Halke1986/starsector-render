@@ -3,8 +3,6 @@ package com.genir.renderer.loaders;
 import org.codehaus.janino.JavaSourceClassLoader;
 import proxy.com.fs.starfarer.loading.JavaSourceFinder;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,31 +26,16 @@ public class MultiThreadedJaninoClassLoader extends ClassLoader {
     }
 
     @Override
-    public InputStream getResourceAsStream(String internalName) {
-        InputStream stream = getParent().getResourceAsStream(internalName);
-        if (stream != null) {
-            return stream;
-        }
-
-        // Return local transformed class.
-        try {
-            return new ByteArrayInputStream(findBytecode(internalName));
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    // Return local class bytecode.
-    public byte[] findBytecode(String internalName) throws ClassNotFoundException {
-        return compilers.get().getBytecode(ClassName.binary(internalName));
-    }
-
-    @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         // All compiled classes are defined by MultiThreadedJaninoClassLoader,
         // not the individual Janino instances.
         byte[] bytecode = findBytecode(ClassName.internal(name));
         return defineClass(name, bytecode, 0, bytecode.length);
+    }
+
+    // Return local class bytecode.
+    private byte[] findBytecode(String internalName) throws ClassNotFoundException {
+        return compilers.get().getBytecode(ClassName.binary(internalName));
     }
 
     // A wrapper around Janino ClassLoader that makes bytecode generation accessible.

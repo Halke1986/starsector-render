@@ -104,38 +104,31 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
 
-        // Do not transform bootstrap classes.
-        if (loader == null) {
+        // Do not transform bootstrap and platform classes.
+        if (loader == null || loader == ClassLoader.getPlatformClassLoader()) {
             return null;
         }
 
-        // Do not transform platform classes.
-        if (loader == ClassLoader.getPlatformClassLoader()) {
-            return null;
-        }
-
-        if (loader != ClassLoader.getSystemClassLoader() && loader != this.getClass().getClassLoader()) {
-            int x = 0;
-        }
-
-        String name = ClassName.binary(binaryOrInternalName);
-        if (name.startsWith("org.lwjgl.util.glu.")) {
-            return lwjglTransformers;
-        } else if (name.startsWith("com.thoughtworks.xstream.")) {
-            return xstreamTransformers;
-        } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
-            return starfarerTransformers;
-        } else if (name.startsWith("com.genir.renderer.agent.")) {
-            return null;
-        } else if (name.startsWith("com.genir.renderer.")) {
-            return obfTransformers;
-        }
-
+        // Transform selected core game classes.
         if (loader == ClassLoader.getSystemClassLoader() || loader == this.getClass().getClassLoader()) {
-            // Do not transform this class.
-            return null;
+            String name = ClassName.binary(binaryOrInternalName);
+
+            if (name.startsWith("org.lwjgl.util.glu.")) {
+                return lwjglTransformers;
+            } else if (name.startsWith("com.thoughtworks.xstream.")) {
+                return xstreamTransformers;
+            } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
+                return starfarerTransformers;
+            } else if (name.startsWith("com.genir.renderer.agent.")) {
+                return null;
+            } else if (name.startsWith("com.genir.renderer.")) {
+                return obfTransformers;
+            } else {
+                return null;
+            }
         }
 
+        // Assume classes loaded by loaders other than system loaders are scripts.
         return scriptTransformers;
     }
 }
