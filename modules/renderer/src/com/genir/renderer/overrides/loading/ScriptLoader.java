@@ -2,13 +2,13 @@ package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
 import com.genir.renderer.loaders.MultiThreadedJaninoClassLoader;
-import com.genir.renderer.loaders.ScriptClassLoader;
 import org.apache.log4j.Logger;
 import proxy.com.fs.starfarer.loading.scripts.ScriptStore;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +128,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         }
 
         ClassLoader secureLoader = ScriptStore.ScriptStore_getSecureClassLoader();
-        ClassLoader jarLoader = new ScriptClassLoader(urls.toArray(new URL[0]), secureLoader);
+        ClassLoader jarLoader = new URLClassLoader(urls.toArray(new URL[0]), secureLoader);
         ClassLoader sourceLoader = new MultiThreadedJaninoClassLoader(jarLoader);
 
         ScriptStore.ScriptStore_javaSourceClassLoader = sourceLoader;
