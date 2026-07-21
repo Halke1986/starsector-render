@@ -1,4 +1,6 @@
-- Fixed an asynchronous pipeline stall crash when using Red Stripe Knight. Reported by FM-Boy and White Steel.
+v0.7.4
+
+- Fixed an asynchronous pipeline stall crash when using Red Stripe Knight. Reported by FM-Boy, White Steel and TTagaï.
 
 v0.7.3
 
