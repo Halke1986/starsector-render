@@ -13,50 +13,50 @@ import java.util.List;
 public class AppClassLoader extends ClassLoader {
     private JavaAgentLoader javaAgentLoader = null;
 
-    private final List<ClassConstantTransformer> obfTransformers = List.of(
-            new ClassConstantTransformer(ObfTransformations.transformations)
-    );
+//    private final List<ClassConstantTransformer> obfTransformers = List.of(
+//            new ClassConstantTransformer(ObfTransformations.transformations)
+//    );
+//
+//    private final List<ClassConstantTransformer> lwjglTransformers = List.of(
+//            new ClassConstantTransformer(Arrays.asList(
+//                    // Replace OpenGL calls.
+//                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
+//                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14")
+//            ))
+//    );
+//
+//    private final List<ClassConstantTransformer> xstreamTransformers = List.of(
+//            new ClassConstantTransformer(List.of(
+//                    // Use memory-optimized Path implementation
+//                    ClassConstantTransformer.newTransform("com/thoughtworks/xstream/io/path/Path", "com/genir/renderer/overrides/xstream/Path")
+//            )),
+//            new ClassConstantTransformer(Arrays.asList(
+//                    // Fix transforms caused by a false positive match.
+//                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTracker", "com/thoughtworks/xstream/io/path/PathTracker"),
+//                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTrackingReader", "com/thoughtworks/xstream/io/path/PathTrackingReader"),
+//                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTrackingWriter", "com/thoughtworks/xstream/io/path/PathTrackingWriter")
+//            ))
+//    );
 
-    private final List<ClassConstantTransformer> lwjglTransformers = List.of(
-            new ClassConstantTransformer(Arrays.asList(
-                    // Replace OpenGL calls.
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14")
-            ))
-    );
-
-    private final List<ClassConstantTransformer> xstreamTransformers = List.of(
-            new ClassConstantTransformer(List.of(
-                    // Use memory-optimized Path implementation
-                    ClassConstantTransformer.newTransform("com/thoughtworks/xstream/io/path/Path", "com/genir/renderer/overrides/xstream/Path")
-            )),
-            new ClassConstantTransformer(Arrays.asList(
-                    // Fix transforms caused by a false positive match.
-                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTracker", "com/thoughtworks/xstream/io/path/PathTracker"),
-                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTrackingReader", "com/thoughtworks/xstream/io/path/PathTrackingReader"),
-                    ClassConstantTransformer.newTransform("com/genir/renderer/overrides/xstream/PathTrackingWriter", "com/thoughtworks/xstream/io/path/PathTrackingWriter")
-            ))
-    );
-
-    private final List<ClassConstantTransformer> starfarerTransformers = List.of(
-            new ClassConstantTransformer(Arrays.asList(
-                    // Replace OpenGL calls.
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"),
-                    ClassConstantTransformer.newTransform("org/lwjgl/util/Display", "com/genir/renderer/bridge/commands/DisplayUtil"),
-
-                    // Replace class loader for loading scripts.
-                    ClassConstantTransformer.newTransform("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
-            )),
-            new ClassConstantTransformer(List.of(
-                    // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/commands/DisplayMode transform caused by a false positive match.
-                    ClassConstantTransformer.newTransform("com/genir/renderer/bridge/commands/DisplayMode", "org/lwjgl/opengl/DisplayMode")
-            )),
-            // Obfuscate assembled overrides.
-            new ClassConstantTransformer(ObfTransformations.transformations)
-    );
+//    private final List<ClassConstantTransformer> starfarerTransformers = List.of(
+//            new ClassConstantTransformer(Arrays.asList(
+//                    // Replace OpenGL calls.
+//                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
+//                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14"),
+//                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display"),
+//                    ClassConstantTransformer.newTransform("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"),
+//                    ClassConstantTransformer.newTransform("org/lwjgl/util/Display", "com/genir/renderer/bridge/commands/DisplayUtil"),
+//
+//                    // Replace class loader for loading scripts.
+//                    ClassConstantTransformer.newTransform("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
+//            )),
+//            new ClassConstantTransformer(List.of(
+//                    // Fix org/lwjgl/util/Display -> com/genir/renderer/bridge/commands/DisplayMode transform caused by a false positive match.
+//                    ClassConstantTransformer.newTransform("com/genir/renderer/bridge/commands/DisplayMode", "org/lwjgl/opengl/DisplayMode")
+//            )),
+//            // Obfuscate assembled overrides.
+//            new ClassConstantTransformer(ObfTransformations.transformations)
+//    );
 
     public AppClassLoader(ClassLoader parent) {
         super(parent);
@@ -134,18 +134,12 @@ public class AppClassLoader extends ClassLoader {
     }
 
     private List<ClassConstantTransformer> selectTransformer(String binaryOrInternalName) {
-        String name = ClassName.binary(binaryOrInternalName);
-        if (name.startsWith("org.lwjgl.util.glu.")) {
-            return lwjglTransformers;
-        } else if (name.startsWith("com.thoughtworks.xstream.")) {
-            return xstreamTransformers;
-        } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
-            return starfarerTransformers;
-        } else if (name.startsWith("com.genir.renderer.agent.")) {
-            return null;
-        } else if (name.startsWith("com.genir.renderer.")) {
-            return obfTransformers;
-        }
+//        String name = ClassName.binary(binaryOrInternalName);
+//        if (name.startsWith("org.lwjgl.util.glu.")) {
+//            return lwjglTransformers;
+//        } else if (name.startsWith("com.thoughtworks.xstream.")) {
+//            return xstreamTransformers;
+//        }
 
         // Do not intercept this class.
         return null;
