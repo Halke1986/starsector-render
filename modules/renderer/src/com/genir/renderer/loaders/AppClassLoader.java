@@ -141,6 +141,8 @@ public class AppClassLoader extends ClassLoader {
             return xstreamTransformers;
         } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformers;
+        } else if (name.startsWith("com.genir.renderer.agent.")) {
+            return null;
         } else if (name.startsWith("com.genir.renderer.")) {
             return obfTransformers;
         }
