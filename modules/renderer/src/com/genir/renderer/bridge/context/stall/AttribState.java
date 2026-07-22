@@ -8,13 +8,34 @@ import org.lwjgl.opengl.GL15;
 import java.util.HashMap;
 import java.util.Map;
 
+// reference:
+// https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glPushAttrib.xml
 public class AttribState {
+    // GL_CLIENT_VERTEX_ARRAY_BIT
+    public int arrayBufferBinding = 0;
+
+    // GL_COLOR_BUFFER_BIT
+    public boolean enableAlphaTest = false;   // GL11.GL_ALPHA_TEST, also GL_ENABLE_BIT
+    public boolean enableBlend = false;       // GL11.GL_BLEND, also GL_ENABLE_BIT
+    public int blendEquation = GL14.GL_FUNC_ADD;
+    public BlendFactors blend = new BlendFactors();
+    public Map<Integer, BlendFactors> blendi = null;
+    public Map<Integer, Integer> blendEquationi = null;
+
     // GL_ENABLE_BIT
-    public boolean enableStencilTest = false; // GL11.GL_STENCIL_TEST
-    public boolean enableAlphaTest = false;   // GL11.GL_ALPHA_TEST
     public boolean enableTexture2D = false;   // GL11.GL_TEXTURE_2D
-    public boolean enableBlend = false;       // GL11.GL_BLEND
-    public boolean enableLighting = false;    // GL11.GL_LIGHTING
+
+    // GL_LIGHTING_BIT
+    public boolean enableLighting = false;    // GL11.GL_LIGHTING, also GL_ENABLE_BIT
+
+    // GL_LINE_BIT
+    public float lineWidth = 1;
+
+    // GL_SCISSOR_BIT
+    public boolean enableScissorTest = false; // GL11.GL_SCISSOR_TEST, also GL_ENABLE_BIT
+
+    // GL_STENCIL_BUFFER_BIT
+    public boolean enableStencilTest = false; // GL11.GL_STENCIL_TEST, also GL_ENABLE_BIT
 
     // GL_TEXTURE_BIT
     public int textureTarget = 0;
@@ -23,18 +44,6 @@ public class AttribState {
 
     // GL_TRANSFORM_BIT
     public int matrixMode = GL11.GL_MODELVIEW;
-
-    // GL_LINE_BIT
-    public float lineWidth = 1;
-
-    // GL_CLIENT_VERTEX_ARRAY_BIT
-    public int arrayBufferBinding = 0;
-
-    // GL_COLOR_BUFFER_BIT
-    public int blendEquation = GL14.GL_FUNC_ADD;
-    public BlendFactors blend = new BlendFactors();
-    public Map<Integer, BlendFactors> blendi = null;
-    public Map<Integer, Integer> blendEquationi = null;
 
     // GL_VIEWPORT_BIT
     public Viewport viewport = new Viewport(0, 0, 0, 0);
@@ -173,6 +182,10 @@ public class AttribState {
         if ((attribMask & GL11.GL_VIEWPORT_BIT) != 0) {
             viewport = source.viewport;
         }
+
+        if ((attribMask & GL11.GL_LIGHTING_BIT) != 0) {
+            enableLighting = source.enableLighting;
+        }
     }
 
     private void overwriteEnableBit(AttribState source) {
@@ -190,8 +203,11 @@ public class AttribState {
     }
 
     private void overwriteColorBufferBit(AttribState source) {
-        blend.overwriteWith(source.blend);
+        enableAlphaTest = source.enableAlphaTest;
+        enableBlend = source.enableBlend;
         blendEquation = source.blendEquation;
+
+        blend.overwriteWith(source.blend);
 
         if (source.blendi != null) {
             if (blendi == null) {
