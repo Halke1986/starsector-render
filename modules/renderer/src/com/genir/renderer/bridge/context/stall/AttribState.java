@@ -143,6 +143,9 @@ public class AttribState {
             case GL11.GL_LIGHTING:
                 enableLighting = value;
                 break;
+            case GL11.GL_SCISSOR_TEST:
+                enableScissorTest = value;
+                break;
         }
     }
 
@@ -186,6 +189,10 @@ public class AttribState {
         if ((attribMask & GL11.GL_LIGHTING_BIT) != 0) {
             enableLighting = source.enableLighting;
         }
+
+        if ((attribMask & GL11.GL_SCISSOR_BIT) != 0) {
+            enableScissorTest = source.enableScissorTest;
+        }
     }
 
     private void overwriteEnableBit(AttribState source) {
@@ -194,6 +201,7 @@ public class AttribState {
         enableTexture2D = source.enableTexture2D;
         enableBlend = source.enableBlend;
         enableLighting = source.enableLighting;
+        enableScissorTest = source.enableScissorTest;
     }
 
     private void overwriteTextureBit(AttribState source) {

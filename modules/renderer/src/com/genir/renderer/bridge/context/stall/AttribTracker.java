@@ -76,6 +76,10 @@ public class AttribTracker {
         return currentProgram;
     }
 
+    public boolean getEnableScissorTest() {
+        return state.enableScissorTest;
+    }
+
     //
     // GL calls.
     //

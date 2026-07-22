@@ -1748,6 +1748,8 @@ public class GL11 {
                 return context.attribTracker.getEnableBlend();
             case org.lwjgl.opengl.GL11.GL_LIGHTING:
                 return context.attribTracker.getEnableLighting();
+            case org.lwjgl.opengl.GL11.GL_SCISSOR_TEST:
+                return context.attribTracker.getEnableScissorTest();
         }
 
         record glIsEnabled(int pname) implements GLGetter<Boolean> {
