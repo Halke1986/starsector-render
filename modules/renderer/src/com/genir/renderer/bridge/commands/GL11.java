@@ -6,11 +6,11 @@ import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.ClientAttribTracker;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ListManager;
+import com.genir.renderer.bridge.context.stall.AttribState;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.bridge.interfaces.Recordable;
 import com.genir.renderer.bridge.interfaces.Releasable;
-import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -508,8 +508,23 @@ public class GL11 {
             }
         }
 
+        record glMatrixModeClient(int mode) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.attribTracker.glMatrixMode(mode);
+            }
+        }
+
         final Context context = getThreadContext();
-        context.attribTracker.glMatrixMode(mode);
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = 1;
+            listManager.record(new glMatrixModeClient(mode), args, 0);
+        } else {
+            context.attribTracker.glMatrixMode(mode);
+        }
+
         context.exec.execute(new glMatrixMode(mode));
     }
 
@@ -744,11 +759,30 @@ public class GL11 {
         }
     }
 
+    static class GlEnableClient implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            int cap = Float.floatToRawIntBits(args[argsOffset + 1]);
+            context.attribTracker.glEnable(cap);
+        }
+    }
+
     static GlEnable glEnableCommand = new GlEnable();
+    static GlEnableClient glEnableClientCommand = new GlEnableClient();
 
     public static void glEnable(int cap) {
         final Context context = getThreadContext();
-        context.attribTracker.glEnable(cap);
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = 2;
+            args[1] = Float.intBitsToFloat(cap);
+            listManager.record(glEnableClientCommand, args, 0);
+        } else {
+            context.attribTracker.glEnable(cap);
+        }
+
         context.exec.execute(
                 glEnableCommand,
                 Float.intBitsToFloat(cap)
@@ -773,11 +807,31 @@ public class GL11 {
         }
     }
 
+    static class GlDisableClient implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            int cap = Float.floatToRawIntBits(args[argsOffset + 1]);
+            context.attribTracker.glDisable(cap);
+        }
+    }
+
     static GlDisable glDisableCommand = new GlDisable();
+    static GlDisableClient glDisableClientCommand = new GlDisableClient();
 
     public static void glDisable(int cap) {
         final Context context = getThreadContext();
         context.attribTracker.glDisable(cap);
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = 2;
+            args[1] = Float.intBitsToFloat(cap);
+            listManager.record(glDisableClientCommand, args, 0);
+        } else {
+            context.attribTracker.glDisable(cap);
+        }
+
         context.exec.execute(
                 glDisableCommand,
                 Float.intBitsToFloat(cap)
@@ -805,11 +859,33 @@ public class GL11 {
         }
     }
 
+    static class GlBindTextureClient implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            int target = Float.floatToRawIntBits(args[argsOffset + 1]);
+            int texture = Float.floatToRawIntBits(args[argsOffset + 2]);
+
+            context.attribTracker.glBindTexture(target, texture);
+        }
+    }
+
     static GlBindTexture glBindTextureCommand = new GlBindTexture();
+    static GlBindTextureClient glBindTextureClientCommand = new GlBindTextureClient();
 
     public static void glBindTexture(int target, int texture) {
         final Context context = getThreadContext();
-        context.attribTracker.glBindTexture(target, texture);
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = 3;
+            args[1] = Float.intBitsToFloat(target);
+            args[2] = Float.intBitsToFloat(texture);
+            listManager.record(glBindTextureClientCommand, args, 0);
+        } else {
+            context.attribTracker.glBindTexture(target, texture);
+        }
+
         context.exec.execute(glBindTextureCommand,
                 Float.intBitsToFloat(target),
                 Float.intBitsToFloat(texture)
@@ -906,6 +982,11 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            int q = 0;
+        }
+
         context.attribTracker.glViewport(x, y, width, height);
         context.exec.execute(new glViewport(x, y, width, height));
     }

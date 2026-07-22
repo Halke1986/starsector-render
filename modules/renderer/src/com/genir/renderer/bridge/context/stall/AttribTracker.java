@@ -101,15 +101,15 @@ public class AttribTracker {
         state.overwriteWith(snapshot.state(), snapshot.attribMask());
     }
 
-    public void glEnable(int cap) { // TODO LIST
+    public void glEnable(int cap) {
         state.glEnable(cap);
     }
 
-    public void glDisable(int cap) { // TODO LIST
+    public void glDisable(int cap) {
         state.glDisable(cap);
     }
 
-    public void glBindTexture(int target, int texture) { // TODO LIST
+    public void glBindTexture(int target, int texture) {
         state.glBindTexture(target, texture);
     }
 
@@ -117,7 +117,7 @@ public class AttribTracker {
         state.glActiveTexture(mode);
     }
 
-    public void glMatrixMode(int mode) { // TODO LIST
+    public void glMatrixMode(int mode) {
         state.glMatrixMode(mode);
     }
 
