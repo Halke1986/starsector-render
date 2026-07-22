@@ -981,10 +981,21 @@ public class GL11 {
             }
         }
 
+        record glViewportClient(int x, int y, int width, int height) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.attribTracker.glViewport(x, y, width, height);
+            }
+        }
+
         final Context context = getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            int q = 0;
+            float[] args = context.commandArgs;
+            args[0] = 1;
+            listManager.record(new glViewportClient(x, y, width, height), args, 0);
+        } else {
+            context.attribTracker.glViewport(x, y, width, height);
         }
 
         context.attribTracker.glViewport(x, y, width, height);
