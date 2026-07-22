@@ -27,17 +27,13 @@ public class GL11 {
      * Lists.
      */
     public static int glGenLists(int range) {
-        record glGenLists(int range) implements GLGetter<Integer> {
-            @Override
-            public Integer call(Context context) {
-                return context.listManager.glGenLists(range);
-            }
-        }
-
+        // Let the client-side list manager handle list block allocation.
+        // The returned value is relevant only to the client.
         final Context context = getThreadContext();
-        return context.exec.get(new glGenLists(range));
+        return context.clientListManager.glGenLists(range);
     }
 
+    // Start recording a display list.
     public static void glNewList(int list, int mode) {
         record glNewList(int list, int mode) implements GLCommand {
             @Override
@@ -47,6 +43,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        context.clientListManager.glNewList(list, mode);
         context.exec.execute(new glNewList(list, mode));
     }
 
@@ -59,6 +56,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        context.clientListManager.glEndList();
         context.exec.execute(new glEndList());
     }
 
@@ -71,6 +69,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        context.clientListManager.glCallList(list);
         context.exec.execute(new glCallList(list));
     }
 
