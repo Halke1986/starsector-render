@@ -137,7 +137,7 @@ public class AttribTracker {
         vertexArrayBinding = array;
     }
 
-    public void glViewport(int x, int y, int width, int height) { // TODO LIST
+    public void glViewport(int x, int y, int width, int height) {
         state.glViewport(x, y, width, height);
     }
 
