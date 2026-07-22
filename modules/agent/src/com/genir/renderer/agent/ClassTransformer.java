@@ -34,6 +34,8 @@ public class ClassTransformer implements ClassFileTransformer {
     );
 
     private final List<ConstantTransformer> starfarerTransformers = List.of(
+            new ConstantTransformer(IllegalTransformations.transformations),
+
             new ConstantTransformer(Arrays.asList(
                     // Replace OpenGL calls.
                     newTransform("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11"),
@@ -117,7 +119,7 @@ public class ClassTransformer implements ClassFileTransformer {
                 return lwjglTransformers;
             } else if (name.startsWith("com.thoughtworks.xstream.")) {
                 return xstreamTransformers;
-            } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
+            } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
                 return starfarerTransformers;
             } else if (name.startsWith("com.genir.renderer.agent.")) {
                 return null;
