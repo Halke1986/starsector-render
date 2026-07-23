@@ -42,6 +42,8 @@ public class ObfTransformations {
             entry("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
             entry("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
             entry("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
+            entry("proxy/com/fs/starfarer/combat/collision/Bounds", "com/fs/starfarer/combat/E/o0OO"),
+            entry("proxy/com/fs/starfarer/combat/collision/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
 
             // Obfuscated methods
             entry("FileRepository_loadImage", "o00000"),
