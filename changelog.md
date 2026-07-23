@@ -1,4 +1,5 @@
 - Fixed an asynchronous pipeline stall crash when calling glIsEnabled(GL_SCISSOR_TEST). Reported by mamick.
+- Fixed entity flicker after game load.
 
 v0.7.4
 
