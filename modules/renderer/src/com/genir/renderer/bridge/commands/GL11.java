@@ -24,9 +24,12 @@ import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL11 {
     /**
-     * Lists.
+     * Display lists.
+     * <p>
+     * Display-list methods are renamed by appending the {@code _restricted} suffix.
+     * This restricts access to display lists to selected code.
      */
-    public static int glGenLists(int range) {
+    public static int glGenLists_restricted(int range) {
         // Let the client-side list manager handle list block allocation.
         // The returned value is relevant only to the client.
         final Context context = getThreadContext();
@@ -34,7 +37,7 @@ public class GL11 {
     }
 
     // Start recording a display list.
-    public static void glNewList(int list, int mode) {
+    public static void glNewList_restricted(int list, int mode) {
         record glNewList(int list, int mode) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
@@ -47,7 +50,7 @@ public class GL11 {
         context.exec.execute(new glNewList(list, mode));
     }
 
-    public static void glEndList() {
+    public static void glEndList_restricted() {
         record glEndList() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
@@ -60,7 +63,7 @@ public class GL11 {
         context.exec.execute(new glEndList());
     }
 
-    public static void glCallList(int list) {
+    public static void glCallList_restricted(int list) {
         record glCallList(int list) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {

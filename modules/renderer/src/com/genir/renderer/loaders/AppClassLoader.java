@@ -29,6 +29,14 @@ public class AppClassLoader extends ClassLoader {
                     "org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader"
             ),
 
+            // Allow vanilla access to OpenGL display lists.
+            Map.of(
+                    "glGenLists", "glGenLists_restricted",
+                    "glNewList", "glNewList_restricted",
+                    "glEndList", "glEndList_restricted",
+                    "glCallList", "glCallList_restricted"
+            ),
+
             // Obfuscate assembled overrides.
             ObfTransformations.transformations
     );
