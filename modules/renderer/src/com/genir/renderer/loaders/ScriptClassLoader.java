@@ -6,12 +6,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
-import java.util.List;
 
 public class ScriptClassLoader extends URLClassLoader {
-    private final List<ClassConstantTransformer> transformers = List.of(
-            new ClassConstantTransformer(ScriptTransformations.transformations)
-    );
+    private final ConstantTransformer scriptTransformer = new ConstantTransformer(ScriptTransformations.transformations);
 
     public ScriptClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
@@ -46,7 +43,7 @@ public class ScriptClassLoader extends URLClassLoader {
 
         try {
             byte[] originalBytes = stream.readAllBytes();
-            return ClassTransformer.transformBytes(internalName, originalBytes, transformers);
+            return ClassTransformer.transformBytes(internalName, originalBytes, scriptTransformer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,16 +1,12 @@
 package com.genir.renderer.loaders;
 
-import java.util.List;
-
 public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
     static {
         // Marks this class loader type as parallel-capable
         registerAsParallelCapable();
     }
 
-    private final List<ClassConstantTransformer> transformers = List.of(
-            new ClassConstantTransformer(ScriptTransformations.transformations)
-    );
+    private final ConstantTransformer scriptTransformer = new ConstantTransformer(ScriptTransformations.transformations);
 
     public SourceClassLoader(ClassLoader parent) {
         super(parent);
@@ -19,6 +15,6 @@ public class SourceClassLoader extends MultiThreadedJaninoClassLoader {
     @Override
     public byte[] findBytecode(String internalName) throws ClassNotFoundException {
         byte[] originalBytes = super.findBytecode(internalName);
-        return ClassTransformer.transformBytes(internalName, originalBytes, transformers);
+        return ClassTransformer.transformBytes(internalName, originalBytes, scriptTransformer);
     }
 }
