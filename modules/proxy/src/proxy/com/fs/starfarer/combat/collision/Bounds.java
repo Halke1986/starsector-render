@@ -7,6 +7,7 @@ import java.util.List;
 // $FF: renamed from: com.fs.starfarer.combat.E.o0OO
 public class Bounds {
     public List<Segment> origSegments;
+    public Object cachedPolygons;
 
     // $FF: renamed from: com.fs.starfarer.combat.E.o0OO.o
     public static class Segment {

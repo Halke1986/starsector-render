@@ -10,26 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tesselation {
-    private static int hit = 0;
-    private static int miss = 0;
-
-//    private static final Map<List<Vector2f>, Polygon> tesselationCache = new HashMap<>();
-
     public static void renderAsPolygon(Bounds bounds, float r, float g, float b) {
-        List<Vector2f> vertices = getBoundVertices(bounds);
-//        Polygon polygon = tesselationCache.get(vertices);
+        if (bounds.cachedPolygons == null) {
+            List<Vector2f> vertices = getBoundVertices(bounds);
+            bounds.cachedPolygons = tesselateBounds(vertices);
+        }
 
-//        if (polygon == null) {
-        List<Polygon> polygons = tesselateBounds(vertices);
-
-//            tesselationCache.put(cloneVertices(vertices), polygon);
-
-        miss++;
-//        } else {
-//            hit++;
-//        }
-
-        renderPolygons(polygons);
+        renderPolygons((List<Polygon>) bounds.cachedPolygons);
     }
 
     public static List<Vector2f> getBoundVertices(Bounds bounds) {
@@ -42,16 +29,6 @@ public class Tesselation {
 
         return vertices;
     }
-
-//    private static List<Vector2f> cloneVertices(List<Vector2f> vertices) {
-//        List<Vector2f> cloned = new ArrayList<>(vertices.size());
-//
-//        for (Vector2f vertex : vertices) {
-//            cloned.add(new Vector2f(vertex));
-//        }
-//
-//        return cloned;
-//    }
 
     private static List<Polygon> tesselateBounds(List<Vector2f> vertices) {
         GLUtessellator tesselator = GLU.gluNewTess();
