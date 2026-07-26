@@ -137,7 +137,7 @@ public class AppClassLoader extends ClassLoader {
             return lwjglTransformer;
         } else if (name.startsWith("com.thoughtworks.xstream.")) {
             return xstreamTransformer;
-        } else if (name.startsWith("com.fs.") || name.startsWith("zzz.com.fs.")) {
+        } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformer;
         } else if (name.startsWith("com.genir.renderer.")) {
             return obfTransformer;

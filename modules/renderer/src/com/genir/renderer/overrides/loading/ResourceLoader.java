@@ -27,14 +27,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            3, "FR-Resource-Loader-Worker", new ExceptionHandler());
-
-    // Sound loading, despite vanilla implementation, is inherently non-parallelizable.
-    // NOTE: SpecStore.SpecStore_init call order is modified in assembly so that sound loading runs earlier.
-    // This gives the non-parallelizable sound loading more time to complete, reducing the chance of the main
-    // thread waiting.
-    public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
-            1, "FR-Sound-Loader", new ExceptionHandler());
+            4, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final Bar barAnimation = new Bar();
 
@@ -44,6 +37,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         mainThreadWaitGroup.incrementAndGet();
         mainThreadExec.execute(() -> {
             try {
+                // Bulk of the resource loading is performed in this call.
                 SpecStore.SpecStore_init(state);
 
                 // Most sprites were already optionally queued in
@@ -57,7 +51,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             }
         });
 
-        // Run commands on main thread, as it was an Executor.
+        // Run commands on main thread, as if it was an Executor.
         do {
             try {
                 Runnable r = mainThreadQueue.poll(333, TimeUnit.MILLISECONDS);
@@ -81,11 +75,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             // Interrupt workers.
             mainThreadExec.shutdownNow();
             workers.shutdownNow();
-            soundWorkers.shutdownNow();
 
             awaitTermination(mainThreadExec);
             awaitTermination(workers);
-            awaitTermination(soundWorkers);
 
             if (t instanceof Exception e) {
                 throw e;
@@ -96,11 +88,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         mainThreadExec.shutdown();
         workers.shutdown();
-        soundWorkers.shutdown();
 
         awaitTermination(mainThreadExec);
         awaitTermination(workers);
-        awaitTermination(soundWorkers);
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;

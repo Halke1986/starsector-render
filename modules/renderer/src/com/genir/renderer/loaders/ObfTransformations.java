@@ -19,7 +19,6 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem", "com/fs/starfarer/renderers/damage/ExplosionParticleSystem"),
             entry("proxy/com/fs/starfarer/settings/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
             entry("proxy/com/fs/util/container/repo/ObjectRepository", "com/fs/util/container/repo/ObjectRepository"),
-            entry("proxy/sound/Sound", "sound/Sound"),
             entry("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             entry("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             entry("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
@@ -44,6 +43,11 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
             entry("proxy/com/fs/starfarer/combat/collision/Bounds", "com/fs/starfarer/combat/E/o0OO"),
             entry("proxy/com/fs/starfarer/combat/collision/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
+            entry("proxy/sound/SoundStore", "sound/C"),
+            entry("sound/SoundStore", "sound/C"), // Methods repo duplicate
+            entry("proxy/sound/Track", "sound/O0OO"),
+            entry("proxy/sound/SoundBuffer", "sound/G"),
+            entry("proxy/sound/OggLoader", "sound/O0oO"),
 
             // Obfuscated methods
             entry("FileRepository_loadImage", "o00000"),
@@ -81,9 +85,18 @@ public class ObfTransformations {
             entry("TextureHandler_setStringID", "Ò00000"),
             entry("DeploymentManager_pickReinforcement", "o00000"),
             entry("TextureLoader_loadTexture", "o00000"),
+            entry("SoundStore_getInstance", "ö00000"),
+            entry("SoundStore_loadWav", "Ò00000"),
+            entry("SoundStore_getIsInitialized", "o00000"),
+            entry("OggLoader_load", "super"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),
-            entry("ScriptStore_javaSourceClassLoader", "ø00000")
+            entry("ScriptStore_javaSourceClassLoader", "ø00000"),
+            entry("SoundStore_isOpenALInitialized2", "Ö00000"),
+            entry("SoundStore_trackMap", "OO0000"),
+            entry("SoundBuffer_buffer", "Object"),
+            entry("SoundBuffer_freq", "Ò00000"),
+            entry("SoundBuffer_channels", "o00000")
     );
 }
