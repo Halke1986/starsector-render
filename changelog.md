@@ -1,3 +1,5 @@
+- Optimized game startup time.
+
 v0.7.5
 
 - Fixed an asynchronous pipeline stall crash when calling glIsEnabled(GL_SCISSOR_TEST). Reported by mamick.
