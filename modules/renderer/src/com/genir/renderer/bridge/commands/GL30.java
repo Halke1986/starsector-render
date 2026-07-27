@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge.commands;
 
-
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;

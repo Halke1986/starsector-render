@@ -1855,4 +1855,16 @@ public class GL11 {
 
         return context.exec.get(new glIsEnabled(pname));
     }
+
+    public static boolean glIsTexture(int texture) {
+        record glIsTexture(int texture) implements GLGetter<Boolean> {
+            @Override
+            public Boolean call(Context context) {
+                return org.lwjgl.opengl.GL11.glIsTexture(texture);
+            }
+        }
+
+        final Context context = getThreadContext();
+        return context.exec.get(new glIsTexture(texture));
+    }
 }
