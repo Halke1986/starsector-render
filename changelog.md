@@ -1,3 +1,5 @@
+v0.7.6
+
 - Optimized game startup time.
 - Added support for VRAM Optimizer.
 
