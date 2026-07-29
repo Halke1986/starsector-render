@@ -349,13 +349,13 @@ public class GL20 {
                 if (program != 0) {
                     // Performing model view transformation on
                     // CPU may interfere with the shader program.
-                    context.transformManager.setGPUModelView();
+                    context.transformManager.setGPUMode();
                 }
 
                 org.lwjgl.opengl.GL20.glUseProgram(program);
 
                 if (program == 0) {
-                    context.transformManager.setCPUModelView();
+                    context.transformManager.setCPUMode();
                 }
             }
         }

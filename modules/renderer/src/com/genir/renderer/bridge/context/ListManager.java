@@ -27,7 +27,7 @@ public class ListManager {
     // Vanilla GLListManager allocates a block of 1024 display lists (ideally) in the Starsector Launcher
     // and then continues to use them throughout the game. However, the OpenGL context is destroyed and
     // recreated between the Launcher and the main game. After that, the new context no longer has those
-    // lists allocated, yet GLListManager still assumes it does.
+    // lists allocated, yet Starsector GLListManager still assumes it does.
     private static int allocatedListsNumber = 0;
 
     public boolean isRecording() {

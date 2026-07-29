@@ -43,7 +43,6 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
             entry("proxy/com/fs/starfarer/combat/collision/Bounds", "com/fs/starfarer/combat/E/o0OO"),
             entry("proxy/com/fs/starfarer/combat/collision/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
-            entry("proxy/sound/Sound", "sound/Sound"), // TODO
             entry("proxy/sound/SoundStore", "sound/C"),
             entry("sound/SoundStore", "sound/C"), // Methods repo duplicate
             entry("proxy/sound/Track", "sound/O0OO"),
@@ -79,9 +78,9 @@ public class ObfTransformations {
             entry("TextureHandler_setWidth", "Object"),
             entry("TextureHandler_setImageHeight", "o00000"),
             entry("TextureHandler_setImageWidth", "Ò00000"),
-            entry("TextureHandler_serColor1", "o00000"),
-            entry("TextureHandler_serColor0", "Object"),
-            entry("TextureHandler_serColor2", "Ò00000"),
+            entry("TextureHandler_setColor1", "o00000"),
+            entry("TextureHandler_setColor0", "Object"),
+            entry("TextureHandler_setColor2", "Ò00000"),
             entry("TextureTransformer_apply", "o00000"),
             entry("TextureHandler_setStringID", "Ò00000"),
             entry("DeploymentManager_pickReinforcement", "o00000"),

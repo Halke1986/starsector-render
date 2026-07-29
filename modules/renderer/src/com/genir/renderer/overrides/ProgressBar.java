@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 /**
  * ProgressBar override fixes background flicker when saving/loading the game.
@@ -39,12 +40,14 @@ public class ProgressBar {
         w = Display.getWidth();
         h = Display.getHeight();
 
+        // Read screen pixels.
         final ByteBuffer pixels = BufferUtils.createByteBuffer(w * h * 4);
         final int readBufferState = com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_READ_BUFFER);
         com.genir.renderer.bridge.commands.GL11.glReadBuffer(GL11.GL_FRONT);
         com.genir.renderer.bridge.commands.GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
         com.genir.renderer.bridge.commands.GL11.glReadBuffer(readBufferState);
 
+        // Allocate and define texture.
         texID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 
@@ -67,6 +70,10 @@ public class ProgressBar {
     }
 
     private static void drawBackground() {
+        // Save viewport and matrix mode.
+        final int matrixMode = com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+        final IntBuffer viewport = BufferUtils.createIntBuffer(16);
+        com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
         com.genir.renderer.bridge.commands.GL11.glViewport(0, 0, w, h);
 
         com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -97,5 +104,10 @@ public class ProgressBar {
 
         com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_PROJECTION);
         com.genir.renderer.bridge.commands.GL11.glPopMatrix();
+
+        // Restore viewport and matrix mode.
+        viewport.limit(4);
+        com.genir.renderer.bridge.commands.GL11.glViewport(viewport.get(), viewport.get(), viewport.get(), viewport.get());
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(matrixMode);
     }
 }

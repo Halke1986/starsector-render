@@ -25,12 +25,12 @@ public class ClassTransformer implements ClassFileTransformer {
             ),
 
             // Allow vanilla access to OpenGL display lists.
-//            Map.of(
-//                    "glGenLists", "glGenLists_restricted",
-//                    "glNewList", "glNewList_restricted",
-//                    "glEndList", "glEndList_restricted",
-//                    "glCallList", "glCallList_restricted"
-//            ),
+            Map.of(
+                    "glGenLists", "glGenLists_restricted",
+                    "glNewList", "glNewList_restricted",
+                    "glEndList", "glEndList_restricted",
+                    "glCallList", "glCallList_restricted"
+            ),
 
             // Obfuscate assembled overrides.
             ObfTransformations.transformations,
@@ -81,25 +81,24 @@ public class ClassTransformer implements ClassFileTransformer {
         }
 
         // Transform selected core game classes.
-        if (loader == ClassLoader.getSystemClassLoader() || loader == this.getClass().getClassLoader()) {
-            String name = ClassName.binary(binaryOrInternalName);
-
-            if (name.startsWith("org.lwjgl.util.glu.")) {
-                return lwjglTransformer;
-            } else if (name.startsWith("com.thoughtworks.xstream.")) {
-                return xstreamTransformer;
-            } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
-                return starfarerTransformer;
-            } else if (name.startsWith("com.genir.renderer.agent.")) {
-                return null;
-            } else if (name.startsWith("com.genir.renderer.")) {
-                return obfTransformer;
-            } else {
-                return null;
-            }
+        String name = ClassName.binary(binaryOrInternalName);
+        if (name.startsWith("org.lwjgl.util.glu.")) {
+            return lwjglTransformer;
+        } else if (name.startsWith("com.thoughtworks.xstream.")) {
+            return xstreamTransformer;
+        } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
+            return starfarerTransformer;
+        } else if (name.startsWith("com.genir.renderer.agent.")) {
+            return null;
+        } else if (name.startsWith("com.genir.renderer.")) {
+            return obfTransformer;
         }
 
         // Assume classes loaded by loaders other than system loaders are scripts.
-        return scriptTransformer;
+        if (loader != ClassLoader.getSystemClassLoader() && loader != this.getClass().getClassLoader()) {
+            return scriptTransformer;
+        }
+
+        return null;
     }
 }

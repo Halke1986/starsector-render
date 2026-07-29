@@ -1,3 +1,16 @@
+- Fixed a regression causing increased VRAM usage. Reported by MidnightLight.
+
+v0.7.6
+
+- Optimized game startup time.
+- Added support for VRAM Optimizer.
+
+v0.7.5
+
+- Fixed an asynchronous pipeline stall crash when calling glIsEnabled(GL_SCISSOR_TEST). Reported by mamick.
+- Fixed entity flicker after game load.
+- Improved combat rendering performance by caching tesselation results.
+
 v0.7.4
 
 - Fixed an asynchronous pipeline stall crash when using Red Stripe Knight. Reported by FM-Boy, White Steel and TTagaï.

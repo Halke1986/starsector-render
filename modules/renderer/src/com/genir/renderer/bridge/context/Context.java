@@ -27,6 +27,8 @@ public class Context {
     public final BufferPool bufferPool = new BufferPool();
 
     // Client state. Runs on main thread.
+    public final float[] commandArgs = new float[4];
+    public final ListManager clientListManager = new ListManager(this);
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool);
     public final AttribTracker attribTracker = new AttribTracker();
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
