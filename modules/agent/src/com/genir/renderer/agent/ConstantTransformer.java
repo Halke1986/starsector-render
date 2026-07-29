@@ -1,21 +1,13 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
 package com.genir.renderer.agent;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ConstantTransformer {
-    @SuppressWarnings("unchecked")
-    private static final Class<? extends List<?>> STATIC_ARRAY_LIST_TYPE =
-            (Class<? extends List<?>>) Arrays.asList(true, false).getClass();
-
     private static final int CONSTANT_Utf8 = 1;
     private static final int CONSTANT_Integer = 3;
     private static final int CONSTANT_Float = 4;
@@ -34,81 +26,104 @@ public class ConstantTransformer {
     private static final int CONSTANT_Module = 19;
     private static final int CONSTANT_Package = 20;
 
-    private final List<Transform> transforms;
+    private final Map<byte[], byte[]> transforms;
+    private final int minTransformLen;
+    private final int maxTransformLen;
 
-    public ConstantTransformer(List<Transform> transforms) {
-        this.transforms = sortTransforms(transforms.getClass() == STATIC_ARRAY_LIST_TYPE ? transforms : new ArrayList<>(transforms));
+    @SafeVarargs
+    public ConstantTransformer(Map<String, String>... strTransforms) {
+        this(mergeMaps(strTransforms));
     }
 
-    public static Transform newTransform(String from, String to) {
-        return new Transform(from, to);
+    @SafeVarargs
+    private static Map<String, String> mergeMaps(Map<String, String>... strTransforms) {
+        Map<String, String> mergedMap = new HashMap<String, String>();
+
+        for (Map<String, String> map : strTransforms) {
+            mergedMap.putAll(map);
+        }
+
+        return mergedMap;
+    }
+
+    public ConstantTransformer(Map<String, String> strTransforms) {
+        int minTransformLen = Integer.MAX_VALUE;
+        int maxTransformLen = 0;
+        Map<byte[], byte[]> transforms = new TreeMap<>(Arrays::compareUnsigned);
+
+        for (Map.Entry<String, String> entry : strTransforms.entrySet()) {
+            byte[] from = entry.getKey().getBytes(StandardCharsets.UTF_8);
+            byte[] to = entry.getValue().getBytes(StandardCharsets.UTF_8);
+
+            transforms.put(from, to);
+
+            minTransformLen = Math.min(minTransformLen, from.length);
+            maxTransformLen = Math.max(maxTransformLen, from.length);
+        }
+
+        this.transforms = transforms;
+        this.minTransformLen = minTransformLen;
+        this.maxTransformLen = maxTransformLen;
     }
 
     private static int readUnsignedShort(byte[] buf, int offset) {
         return ((buf[offset] & 0xFF) << 8) | (buf[offset + 1] & 0xFF);
     }
 
-    private static int indexOf(byte[] src, byte[] tgt, int fromIndex, int toIndex) {
-        int srcCount = Math.min(src.length, toIndex);
-        int tgtCount = tgt.length;
-        byte first = tgt[0];
-        int max = (srcCount - tgtCount);
-        for (int i = fromIndex; i <= max; i++) {
-            // Look for first byte.
-            if (src[i] != first) {
-                while (++i <= max && src[i] != first) /*continue*/ ;
-            }
-            // Found first byte, now look at the rest of the sequence
-            if (i <= max) {
-                int j = i + 1;
-                int end = j + tgtCount - 1;
-                for (int k = 1;
-                     j < end && src[j] == tgt[k];
-                     j++, k++) /*continue*/
-                    ;
-                if (j == end) {
-                    // Found whole sequence.
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
     public byte[] apply(byte[] data) {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
+
             int cpCount = readUnsignedShort(data, 8);
-            int entrySize, currentOffset = 10;
+            int currentOffset = 10;
             int lastIdx = 0;
-            for (int i = 1; i < cpCount; i++) {
+
+            for (int constIdx = 1; constIdx < cpCount; constIdx++) {
+                int entrySize;
+
                 // https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.4
                 switch (data[currentOffset]) {
                     case CONSTANT_Utf8:
                         int len = readUnsignedShort(data, currentOffset + 1);
+                        int fromIdx = currentOffset + 3;
+                        int toIdx = fromIdx + len;
                         entrySize = 3 + len;
-                        int fromIdx = currentOffset + 3, toIdx = fromIdx + len;
-                        for (Transform transform : transforms) {
-                            int match = indexOf(data, transform.fromBytes, fromIdx, toIdx);
-                            if (match != -1) {
-                                byte[] newBytes;
-                                if (match == 0 && len == transform.fromBytes.length) {
-                                    newBytes = transform.toBytes;
-                                } else {
-                                    newBytes = new String(data, fromIdx, len, StandardCharsets.UTF_8)
-                                            .replace(transform.from, transform.to).getBytes(StandardCharsets.UTF_8);
-                                }
 
-                                int newLen = newBytes.length;
-                                out.write(data, lastIdx, currentOffset + 1 - lastIdx);
-                                out.write((newLen >> 8) & 0xFF);
-                                out.write(newLen & 0xFF);
-                                out.write(newBytes);
-                                lastIdx = toIdx;
-                                break;
+                        // No match, based on length.
+                        if (len < minTransformLen) {
+                            break;
+                        }
+
+                        // Attempt to transform the entire constant.
+                        byte[] oldBytes = Arrays.copyOfRange(data, fromIdx, toIdx);
+                        byte[] newBytes = transforms.get(oldBytes);
+
+                        // Fallback to interpreting the constant as a
+                        // method signature and transforming it type by type.
+                        if (newBytes == null) {
+                            DescriptorTransformer dt = new DescriptorTransformer(data, fromIdx, toIdx);
+                            ByteArrayOutputStream newBytesStream = dt.transformMethodSignature();
+
+                            if (newBytesStream != null) {
+                                newBytes = newBytesStream.toByteArray();
                             }
                         }
+
+                        if (newBytes == null) {
+                            break;
+                        }
+
+                        int newLen = newBytes.length;
+
+                        out.write(data, lastIdx, currentOffset + 1 - lastIdx);
+                        out.write((newLen >> 8) & 0xFF);
+                        out.write(newLen & 0xFF);
+                        out.write(newBytes);
+
+                        lastIdx = toIdx;
+
                         break;
+
                     case CONSTANT_Integer:
                     case CONSTANT_Float:
                     case CONSTANT_NameAndType:
@@ -122,7 +137,7 @@ public class ConstantTransformer {
                     case CONSTANT_Long:
                     case CONSTANT_Double:
                         entrySize = 9;
-                        i++;
+                        constIdx++;
                         break;
                     case CONSTANT_Class:
                     case CONSTANT_String:
@@ -137,63 +152,147 @@ public class ConstantTransformer {
                     default:
                         throw new RuntimeException("Unknown constant tag " + data[currentOffset]);
                 }
+
                 currentOffset += entrySize;
             }
 
             out.write(data, lastIdx, data.length - lastIdx);
             return out.toByteArray();
-        } catch (IOException e) {
-            throw new AssertionError("unreachable", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Sorts the transforms from the longest to shortest 'from' string.
-     * This prevents transformation shadowing, e.g., where "package/ShipCommand"
-     * is matched by the shorter "package/Ship" transform.
-     */
-    private List<Transform> sortTransforms(List<Transform> transforms) {
-        transforms.sort(Comparator.comparingInt(t ->
-                -t.from.length())
-        );
-        return transforms;
-    }
+    private class DescriptorTransformer {
+        private final byte[] data;
 
-    public static class Transform {
-        final String from;
+        private final int dataStart;
+        private final int dataEnd;
 
-        final byte[] fromBytes;
+        private int entryStart;
+        private ByteArrayOutputStream out = null;
 
-        final String to;
+        DescriptorTransformer(byte[] data, int dataStart, int dataEnd) {
+            this.data = data;
 
-        final byte[] toBytes;
+            this.dataStart = dataStart;
+            this.dataEnd = dataEnd;
 
-        Transform(String from, String to) {
-            this.from = Objects.requireNonNull(from);
-            this.fromBytes = from.getBytes(StandardCharsets.UTF_8);
-            this.to = Objects.requireNonNull(to);
-            this.toBytes = to.getBytes(StandardCharsets.UTF_8);
+            this.entryStart = dataStart;
         }
 
-        @Override
-        public String toString() {
-            return "Transform{" +
-                    "from='" + from + '\'' +
-                    ", to='" + to + '\'' +
-                    '}';
+        ByteArrayOutputStream transformMethodSignature() {
+            int idx = dataStart;
+
+            if (idx >= dataEnd) {
+                return null;
+            }
+
+            // Transform parameters.
+            if (data[idx] == '(') {
+                idx = transformTypeSignatures(idx + 1);
+            }
+
+            // Transform return type.
+            transformTypeSignatures(idx);
+
+            // Write remaining untransformed data.
+            if (out != null) {
+                out.write(data, this.entryStart, dataEnd - this.entryStart);
+            }
+
+            return out;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Transform transform = (Transform) o;
-            return from.equals(transform.from) && to.equals(transform.to);
+        private int transformTypeSignatures(int idx) {
+            while (idx < dataEnd) {
+                switch (data[idx]) {
+                    // Basic types.
+                    case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z', 'V' -> {
+                        idx++;
+                    }
+
+                    // Array.
+                    case '[' -> {
+                        idx++;
+                    }
+
+                    // Reference type.
+                    case 'L' -> {
+                        idx = transformTypeSignature(idx + 1);
+                    }
+
+                    // Empty method param list.
+                    case ')' -> {
+                        return idx + 1;
+                    }
+
+                    // Not a descriptor.
+                    default -> {
+                        return dataEnd;
+                    }
+                }
+            }
+
+            // End of descriptor.
+            return dataEnd;
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(from, to);
+        private int transformTypeSignature(int idx) {
+            int start = idx;
+
+            while (idx < dataEnd) {
+                switch (data[idx]) {
+                    // Generic type.
+                    case '<' -> {
+                        transformTypeName(start, idx);
+
+                        idx = transformTypeSignatures(idx + 1);
+
+                        // Assume skipping '>;'
+                        return idx + 2;
+                    }
+
+                    // Name end.
+                    case ';' -> {
+                        transformTypeName(start, idx);
+                        return idx + 1;
+                    }
+
+                    // Name continues.
+                    default -> {
+                        idx++;
+                    }
+                }
+            }
+
+            // Unexpected end of descriptor.
+            return dataEnd;
+        }
+
+        void transformTypeName(int nameStart, int nameEnd) {
+            int len = nameEnd - nameStart;
+            if (len < minTransformLen || len > maxTransformLen) {
+                return;
+            }
+
+            byte[] oldBytes = Arrays.copyOfRange(data, nameStart, nameEnd);
+            byte[] newBytes = transforms.get(oldBytes);
+            if (newBytes == null) {
+                return;
+            }
+
+            // Allocate output buffer on first match.
+            if (out == null) {
+                out = new ByteArrayOutputStream((dataEnd - dataStart) * 2);
+            }
+
+            // Write unchanged bytes in front of the name.
+            out.write(data, this.entryStart, nameStart - this.entryStart);
+            this.entryStart = nameEnd;
+
+            // Write the transformed name.
+            out.write(newBytes, 0, newBytes.length);
         }
     }
 }

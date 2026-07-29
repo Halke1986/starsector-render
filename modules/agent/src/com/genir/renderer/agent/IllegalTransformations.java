@@ -1,14 +1,12 @@
 package com.genir.renderer.agent;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.genir.renderer.agent.ConstantTransformer.newTransform;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IllegalTransformations {
-    public final static List<ConstantTransformer.Transform> transformations = makeTransformations();
+    public final static Map<String, String> transformations = makeTransformations();
 
-    static List<ConstantTransformer.Transform> makeTransformations() {
+    static Map<String, String> makeTransformations() {
         String[] symbols = {
                 "class",
                 "do",
@@ -30,14 +28,14 @@ public class IllegalTransformations {
                 "while"
         };
 
-        List<ConstantTransformer.Transform> transformations = new ArrayList<>();
+        Map<String, String> transformations = new HashMap<>();
 
         for (String s1 : symbols) {
             for (String s2 : symbols) {
-                transformations.add(newTransform(
+                transformations.put(
                         s1 + "." + s2,
                         s1 + "_" + s2
-                ));
+                );
             }
         }
 
