@@ -50,9 +50,7 @@ public class VertexInterceptor {
     private ByteBuffer vertexPointer = BufferUtils.createByteBuffer(0);
     private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
 
-    public VertexInterceptor(
-            AttribManager attribManager,
-            TransformManager transformManager) {
+    public VertexInterceptor(AttribManager attribManager, TransformManager transformManager) {
         this.attribManager = attribManager;
         this.transformManager = transformManager;
     }
@@ -280,12 +278,24 @@ public class VertexInterceptor {
     private void drawLine(int mode, int count) {
         final int LINE_STRIDE = VERTEX_SIZE + COLOR_SIZE;
 
-        prepareDefaultVertexPointer(count);
+        int capacityRequired = count * LINE_STRIDE;
+        if (defaultVertexPointer.capacity() < capacityRequired) {
+            defaultVertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
+        }
+
+        // Compress the data by skipping texCoord and normal sections.
+        defaultVertexPointer.clear();
         for (int i = 0; i < count; i++) {
             defaultVertexPointer.put(vertexScratchpad, i * STRIDE, LINE_STRIDE);
         }
 
         arraysTouched();
+
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+
+        GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 
         GL11.glVertexPointer(VERTEX_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(0));
         GL11.glColorPointer(COLOR_SIZE, LINE_STRIDE * Float.BYTES, defaultVertexPointer.position(VERTEX_SIZE));
@@ -322,15 +332,15 @@ public class VertexInterceptor {
     private void registerDefaultVertexPointer() {
         FloatBuffer p = defaultVertexPointer;
 
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
         GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
-        GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(p.position() + VERTEX_SIZE));
-        GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(p.position() + COLOR_SIZE));
-        GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(p.position() + TEX_SIZE));
+        GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
+        GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+        GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
 
         shouldRegisterArrays = false;
     }
