@@ -39,6 +39,7 @@ public class TextureBuilder {
             com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
         }
 
+        com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
 
         return texture;
@@ -53,8 +54,8 @@ public class TextureBuilder {
         texData.hasAlpha = image.getColorModel().hasAlpha();
 
         // Calculate image width and height.
-        while (texData.width < image.getWidth()) texData.width *= 2;
-        while (texData.height < image.getHeight()) texData.height *= 2;
+        texData.width = image.getWidth();
+        texData.height = image.getHeight();
 
         int channels = image.getColorModel().hasAlpha() ? 4 : 3;
 

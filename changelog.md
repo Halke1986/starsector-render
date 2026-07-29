@@ -1,3 +1,5 @@
+- Fixed a regression causing increased VRAM usage. Reported by MidnightLight.
+
 v0.7.6
 
 - Optimized game startup time.
