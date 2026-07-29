@@ -71,7 +71,10 @@ public class TextureBuilder {
                 readFallback(image, texData, analyzer);
         }
 
-        analyzer.calculateAverageColor(texData);
+        Color[] colors = analyzer.calculateAverageColor();
+        texData.color0 = colors[0];
+        texData.color1 = colors[1];
+        texData.color2 = colors[2];
 
         return texData;
     }
@@ -261,6 +264,7 @@ public class TextureBuilder {
         private float var9 = 0.0F;
         private float var10 = 0.0F;
         private float var11 = 0.0F;
+
         private final float[] var12 = new float[256];
         private final float[] var13 = new float[256];
         private final float[] var14 = new float[256];
@@ -281,9 +285,9 @@ public class TextureBuilder {
             ++var11;
         }
 
-        void calculateAverageColor(TextureData texData) {
+        Color[] calculateAverageColor() {
             if (var11 <= 0.0F) {
-                return;
+                return new Color[]{Color.white, Color.white, Color.white};
             }
 
             int var22 = (int) (var8 / var11);
@@ -298,7 +302,7 @@ public class TextureBuilder {
             x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            texData.color0 = new Color(var22, y, x, 255);
+            Color color0 = new Color(var22, y, x, 255);
             float var23 = 0.5F;
             var22 = (int) method_21184(var12, var11 * var23);
             y = (int) method_21184(var13, var11 * var23);
@@ -312,7 +316,7 @@ public class TextureBuilder {
             x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            texData.color1 = new Color(var22, y, x, 255);
+            Color color1 = new Color(var22, y, x, 255);
             var22 = (int) method_21183(var12, var11);
             y = (int) method_21183(var13, var11);
             x = (int) method_21184(var14, var11);
@@ -325,7 +329,9 @@ public class TextureBuilder {
             x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            texData.color2 = new Color(var22, y, x, 255);
+            Color color2 = new Color(var22, y, x, 255);
+
+            return new Color[]{color0, color1, color2};
         }
 
         private float method_21183(float[] var1, float var2) {
