@@ -1,17 +1,30 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModPlugin;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
+import com.fs.starfarer.api.impl.campaign.procgen.MarkovNames;
+import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamManager;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.Display;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
+import proxy.com.fs.graphics.particle.SmoothParticle;
+import proxy.com.fs.graphics.util.Fps;
+import proxy.com.fs.starfarer.util.ScreenshotUtil;
+import proxy.com.fs.starfarer.Version;
+import proxy.com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
 import proxy.com.fs.starfarer.loading.SpecStore;
 import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
+import proxy.com.fs.starfarer.renderers.AtmosphereRenderer;
+import proxy.com.fs.starfarer.renderers.ShipArrowRenderer;
+import proxy.com.fs.starfarer.settings.StarfarerSettings;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
+import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
@@ -29,6 +43,41 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             4, "FR-Resource-Loader-Worker", new ExceptionHandler());
 
     private static final ProgressBar barAnimation = new ProgressBar();
+
+    public static void init(Object stateObject, Map var1) throws Exception {
+        var state = (proxy.com.fs.starfarer.loading.ResourceLoaderState) stateObject;
+
+        try {
+            // init_vanilla will call 'initSpecStore'.
+            // initSpecStore throws an exception to skip
+            // the middle section of vanilla init.
+            state.init_vanilla(var1);
+        } catch (SkipVanillaInitEpilogue expected) {
+        }
+
+        // Run skipped vanilla ResourceLoader init epilogue.
+        initEpilogue();
+    }
+
+    private static void initEpilogue() throws Exception {
+        // Script loading thread is started in 'init_vanilla'.
+        joinScriptLoadingThread();
+
+        MarkovNames.loadIfNeeded();
+        for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
+            mod.onApplicationLoad();
+        }
+
+        ImpactSound.ImpactSound_init();
+        new Version();
+        new SmoothParticle(Color.BLACK, 10.0F);
+        new Fps();
+        AtmosphereRenderer.AtmosphereRenderer_init();
+        ScreenshotUtil.ScreenshotUtil_init();
+        ShipArrowRenderer.ShipArrowRenderer_init();
+        SlipstreamManager.validateConfigs();
+        Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
+    }
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
@@ -98,6 +147,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             Display.update();
             Thread.sleep(10);
         }
+
+        // Skip a redundant section of vanilla resource loading.
+        throw new SkipVanillaInitEpilogue();
     }
 
     public static void loadResource(String type, String path) {
@@ -196,5 +248,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         public void uncaughtException(Thread t, Throwable e) {
             setException(e);
         }
+    }
+
+    private static class SkipVanillaInitEpilogue extends RuntimeException {
     }
 }

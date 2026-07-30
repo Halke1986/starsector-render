@@ -36,6 +36,13 @@ public class IllegalTransformations {
                         s1 + "." + s2,
                         s1 + "_" + s2
                 );
+
+                for (String s3 : symbols) {
+                    transformations.put(
+                            s1 + "." + s2 + "$" + s3,
+                            s1 + "_" + s2 + "$" + s3
+                    );
+                }
             }
         }
 

@@ -90,7 +90,26 @@ L4:
     .end code 
 .end method 
 
-.method public init : (Ljava/util/Map;)V 
+.method public init : (Ljava/util/Map;)V
+    .code stack 2 locals 2
+L0:     aload_0
+L1:     aload_1
+L2:     invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader init (Ljava/lang/Object;Ljava/util/Map;)V
+L5:     return
+L6:
+        .linenumbertable
+            L0 35
+            L5 36
+        .end linenumbertable
+        .localvariabletable
+            0 is this Lcom/fs/starfarer/loading/ResourceLoaderState; from L0 to L6
+            1 is var1 Ljava/util/Map; from L0 to L6
+        .end localvariabletable
+    .end code
+    .exceptions java/lang/Exception
+.end method
+
+.method public init_vanilla : (Ljava/util/Map;)V
     .exceptions java/lang/Exception 
     .code stack 7 locals 17 
 L0:     iconst_0 
@@ -904,8 +923,7 @@ L1714:  fdiv
 L1715:  invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState renderProgress (F)V 
 L1718:  aload_0 
 L1719:  invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader initSpecStore (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
-        goto L2482
-L1722:  aload_0 
+L1722:  aload_0
 L1723:  fconst_2 
 L1724:  aload_0 
 L1725:  getfield Field com/fs/starfarer/loading/ResourceLoaderState totalWeight I 

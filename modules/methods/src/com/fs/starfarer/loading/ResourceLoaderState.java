@@ -6,19 +6,15 @@ import proxy.com.fs.graphics.Sprite;
 
 import java.util.Map;
 
-import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
-import static com.genir.renderer.overrides.loading.ScriptLoader.runScriptLoadingThread;
-
 public class ResourceLoaderState {
     private Sprite bar;
 
-    public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {
-        ResourceLoader.loadResource(flags.name(), path);
+    public void init(Map var1) throws Exception {
+        com.genir.renderer.overrides.loading.ResourceLoader.init(this, var1);
     }
 
-    public void init(Map var1) throws Exception {
-        runScriptLoadingThread();
-        joinScriptLoadingThread();
+    public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {
+        ResourceLoader.loadResource(flags.name(), path);
     }
 
     public void renderProgress(float var1) {

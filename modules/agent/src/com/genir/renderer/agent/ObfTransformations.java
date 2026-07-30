@@ -23,6 +23,8 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             entry("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
             entry("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
+            entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
+            entry("proxy/com/fs/graphics/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
 
             // Obfuscated classes
             entry("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -48,6 +50,11 @@ public class ObfTransformations {
             entry("proxy/sound/Track", "sound/O0OO"),
             entry("proxy/sound/SoundBuffer", "sound/G"),
             entry("proxy/sound/OggLoader", "sound/O0oO"),
+            entry("proxy/com/fs/graphics/util/Fps", "com/fs/graphics/util/A"),
+            entry("proxy/com/fs/starfarer/renderers/AtmosphereRenderer", "com/fs/starfarer/renderers/H"),
+            entry("proxy/com/fs/starfarer/util/ScreenshotUtil", "com/fs/starfarer/util/return"),
+            entry("proxy/com/fs/starfarer/renderers/ShipArrowRenderer", "com/fs/starfarer/renderers/O"),
+            entry("proxy/com/fs/starfarer/combat/entities/ship/damage/ImpactSound", "com/fs/starfarer/combat/entities/ship/A/I"),
 
             // Obfuscated methods
             entry("FileRepository_loadImage", "o00000"),
@@ -89,6 +96,11 @@ public class ObfTransformations {
             entry("SoundStore_loadWav", "Ò00000"),
             entry("SoundStore_getIsInitialized", "o00000"),
             entry("OggLoader_load", "super"),
+            entry("AtmosphereRenderer_init", "super"),
+            entry("ScreenshotUtil_init", "Object"),
+            entry("ShipArrowRenderer_init", "o00000"),
+            entry("StarfarerSettings_getBooleanValue", "class"),
+            entry("ImpactSound_init", "o00000"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),

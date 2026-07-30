@@ -2,6 +2,7 @@ package com.genir.renderer.agent;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
 import java.util.Map;
 
 public class ClassTransformer implements ClassFileTransformer {
@@ -66,7 +67,12 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
 
-        return transformer.apply(classfileBuffer);
+        byte[] transformedClass = transformer.apply(classfileBuffer);
+        if (Arrays.equals(transformedClass, classfileBuffer)) {
+            return null;
+        }
+
+        return transformedClass;
     }
 
     private ConstantTransformer selectTransformers(ClassLoader loader, String binaryOrInternalName) {
