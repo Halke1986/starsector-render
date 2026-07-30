@@ -1,3 +1,5 @@
+v0.7.7
+
 - Fixed a regression causing increased VRAM usage. Reported by MidnightLight.
 
 v0.7.6
