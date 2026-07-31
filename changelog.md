@@ -1,3 +1,7 @@
+v0.8.0
+
+- Ported the bytecode modification pipeline from a custom system class loader to a Java agent.
+
 v0.7.7
 
 - Fixed a regression causing increased VRAM usage. Reported by MidnightLight.
