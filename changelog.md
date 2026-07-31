@@ -1,3 +1,5 @@
+- Minor rendering performance optimizations.
+
 v0.8.0
 
 - Ported the bytecode modification pipeline from a custom system class loader to a Java agent.

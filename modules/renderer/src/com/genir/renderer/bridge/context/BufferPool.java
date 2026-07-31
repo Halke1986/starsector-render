@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.interfaces.Releasable;
+import org.lwjgl.BufferUtils;
 
 import java.nio.*;
 import java.util.ArrayList;
@@ -8,23 +9,16 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BufferPool {
-    private final List<ByteBuffer>[] pool = new List[32];
+    private final List<ShortBufferSnapshot>[] shortPool = new List[32];
+    private final List<IntBufferSnapshot>[] intPool = new List[32];
+    private final List<ByteBufferSnapshot>[] bytePool = new List[32];
+    private final List<FloatBufferSnapshot>[] floatPool = new List[32];
 
     public BufferPool() {
-        for (int i = 0; i < pool.length; i++) {
-            pool[i] = new ArrayList<>();
-        }
-    }
-
-    private ByteBuffer getMem(int bytes) {
-        int idx = poolIdx(bytes);
-        List<ByteBuffer> list = pool[idx];
-
-        if (list.isEmpty()) {
-            return ByteBuffer.allocateDirect(1 << idx).order(ByteOrder.nativeOrder());
-        }
-
-        return list.remove(list.size() - 1);
+        for (int i = 0; i < shortPool.length; i++) shortPool[i] = new ArrayList<>();
+        for (int i = 0; i < intPool.length; i++) intPool[i] = new ArrayList<>();
+        for (int i = 0; i < bytePool.length; i++) bytePool[i] = new ArrayList<>();
+        for (int i = 0; i < floatPool.length; i++) floatPool[i] = new ArrayList<>();
     }
 
     private static int poolIdx(int x) {
@@ -34,120 +28,186 @@ public class BufferPool {
         return 32 - Integer.numberOfLeadingZeros(x - 1);
     }
 
-    public synchronized FloatBufferSnapshot snapshot(FloatBuffer params) {
+    public FloatBufferSnapshot snapshot(FloatBuffer params) {
         if (params == null) {
-            return new FloatBufferSnapshot(null, null, null);
+            return new FloatBufferSnapshot(0);
         }
 
-        ByteBuffer mem = getMem(params.capacity() * Float.BYTES);
-        FloatBuffer buffer = mem.asFloatBuffer().slice(0, params.capacity());
+        int idx = poolIdx(params.capacity());
+        FloatBufferSnapshot snapshot;
 
-        buffer.put(0, params, 0, params.limit());
-        buffer.position(params.position());
-        buffer.limit(params.limit());
-
-        return new FloatBufferSnapshot(buffer, mem, this);
-    }
-
-    public synchronized ByteBufferSnapshot snapshot(ByteBuffer params) {
-        if (params == null) {
-            return new ByteBufferSnapshot(null, null, null);
+        synchronized (floatPool) {
+            List<FloatBufferSnapshot> list = floatPool[idx];
+            if (list.isEmpty()) {
+                snapshot = new FloatBufferSnapshot(1 << idx);
+            } else {
+                snapshot = list.remove(list.size() - 1);
+            }
         }
 
-        ByteBuffer mem = getMem(params.capacity() * Byte.BYTES);
-        ByteBuffer buffer = mem.slice(0, params.capacity());
+        snapshot.buffer.clear();
+        snapshot.buffer.put(0, params, 0, params.limit());
+        snapshot.buffer.position(params.position());
+        snapshot.buffer.limit(params.limit());
 
-        buffer.put(0, params, 0, params.limit());
-        buffer.position(params.position());
-        buffer.limit(params.limit());
+        snapshot.alreadyCleaned.set(false);
 
-        return new ByteBufferSnapshot(buffer, mem, this);
+        return snapshot;
     }
 
-    public synchronized IntBufferSnapshot snapshot(IntBuffer params) {
+    public ByteBufferSnapshot snapshot(ByteBuffer params) {
         if (params == null) {
-            return new IntBufferSnapshot(null, null, null);
+            return new ByteBufferSnapshot(0);
         }
 
-        ByteBuffer mem = getMem(params.capacity() * Integer.BYTES);
-        IntBuffer buffer = mem.asIntBuffer().slice(0, params.capacity());
+        int idx = poolIdx(params.capacity());
+        ByteBufferSnapshot snapshot;
 
-        buffer.put(0, params, 0, params.limit());
-        buffer.position(params.position());
-        buffer.limit(params.limit());
-
-        return new IntBufferSnapshot(buffer, mem, this);
-    }
-
-    public synchronized ShortBufferSnapshot snapshot(ShortBuffer params) {
-        if (params == null) {
-            return new ShortBufferSnapshot(null, null, null);
+        synchronized (bytePool) {
+            List<ByteBufferSnapshot> list = bytePool[idx];
+            if (list.isEmpty()) {
+                snapshot = new ByteBufferSnapshot(1 << idx);
+            } else {
+                snapshot = list.remove(list.size() - 1);
+            }
         }
 
-        ByteBuffer mem = getMem(params.capacity() * Short.BYTES);
-        ShortBuffer buffer = mem.asShortBuffer().slice(0, params.capacity());
+        snapshot.buffer.clear();
+        snapshot.buffer.put(0, params, 0, params.limit());
+        snapshot.buffer.position(params.position());
+        snapshot.buffer.limit(params.limit());
 
-        buffer.put(0, params, 0, params.limit());
-        buffer.position(params.position());
-        buffer.limit(params.limit());
+        snapshot.alreadyCleaned.set(false);
 
-        return new ShortBufferSnapshot(buffer, mem, this);
+        return snapshot;
     }
 
-    private synchronized void release(ByteBuffer mem) {
-        pool[poolIdx(mem.capacity())].add(mem);
+    public IntBufferSnapshot snapshot(IntBuffer params) {
+        if (params == null) {
+            return new IntBufferSnapshot(0);
+        }
+
+        int idx = poolIdx(params.capacity());
+        IntBufferSnapshot snapshot;
+
+        synchronized (intPool) {
+            List<IntBufferSnapshot> list = intPool[idx];
+            if (list.isEmpty()) {
+                snapshot = new IntBufferSnapshot(1 << idx);
+            } else {
+                snapshot = list.remove(list.size() - 1);
+            }
+        }
+
+        snapshot.buffer.clear();
+        snapshot.buffer.put(0, params, 0, params.limit());
+        snapshot.buffer.position(params.position());
+        snapshot.buffer.limit(params.limit());
+
+        snapshot.alreadyCleaned.set(false);
+
+        return snapshot;
     }
 
-    public static class FloatBufferSnapshot extends BufferSnapshot {
+    public ShortBufferSnapshot snapshot(ShortBuffer params) {
+        if (params == null) {
+            return new ShortBufferSnapshot(0);
+        }
+
+        int idx = poolIdx(params.capacity());
+        ShortBufferSnapshot snapshot;
+
+        synchronized (shortPool) {
+            List<ShortBufferSnapshot> list = shortPool[idx];
+            if (list.isEmpty()) {
+                snapshot = new ShortBufferSnapshot(1 << idx);
+            } else {
+                snapshot = list.remove(list.size() - 1);
+            }
+        }
+
+        snapshot.buffer.clear();
+        snapshot.buffer.put(0, params, 0, params.limit());
+        snapshot.buffer.position(params.position());
+        snapshot.buffer.limit(params.limit());
+
+        snapshot.alreadyCleaned.set(false);
+
+        return snapshot;
+    }
+
+    public class FloatBufferSnapshot implements Releasable {
         public final FloatBuffer buffer;
+        private final BufferPool parent = BufferPool.this;
+        final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
 
-        FloatBufferSnapshot(FloatBuffer buffer, ByteBuffer mem, BufferPool parent) {
-            super(mem, parent);
-            this.buffer = buffer;
-        }
-    }
-
-    public static class ByteBufferSnapshot extends BufferSnapshot {
-        public final ByteBuffer buffer;
-
-        ByteBufferSnapshot(ByteBuffer buffer, ByteBuffer mem, BufferPool parent) {
-            super(mem, parent);
-            this.buffer = buffer;
-        }
-    }
-
-    public static class IntBufferSnapshot extends BufferSnapshot {
-        public final IntBuffer buffer;
-
-        IntBufferSnapshot(IntBuffer buffer, ByteBuffer mem, BufferPool parent) {
-            super(mem, parent);
-            this.buffer = buffer;
-        }
-    }
-
-    public static class ShortBufferSnapshot extends BufferSnapshot {
-        public final ShortBuffer buffer;
-
-        ShortBufferSnapshot(ShortBuffer buffer, ByteBuffer mem, BufferPool parent) {
-            super(mem, parent);
-            this.buffer = buffer;
-        }
-    }
-
-    public static class BufferSnapshot implements Releasable {
-        private final ByteBuffer mem;
-        private final BufferPool parent;
-        private final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
-
-        BufferSnapshot(ByteBuffer mem, BufferPool parent) {
-            this.mem = mem;
-            this.parent = parent;
+        FloatBufferSnapshot(int n2size) {
+            buffer = BufferUtils.createFloatBuffer(n2size);
         }
 
         @Override
         public void release() {
-            if (mem != null && alreadyCleaned.compareAndSet(false, true)) {
-                parent.release(mem);
+            if (buffer != null && alreadyCleaned.compareAndSet(false, true)) {
+                synchronized (parent.floatPool) {
+                    parent.floatPool[poolIdx(buffer.capacity())].add(this);
+                }
+            }
+        }
+    }
+
+    public class ByteBufferSnapshot implements Releasable {
+        public final ByteBuffer buffer;
+        private final BufferPool parent = BufferPool.this;
+        final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
+
+        ByteBufferSnapshot(int n2size) {
+            buffer = BufferUtils.createByteBuffer(n2size);
+        }
+
+        @Override
+        public void release() {
+            if (buffer != null && alreadyCleaned.compareAndSet(false, true)) {
+                synchronized (parent.bytePool) {
+                    parent.bytePool[poolIdx(buffer.capacity())].add(this);
+                }
+            }
+        }
+    }
+
+    public class IntBufferSnapshot implements Releasable {
+        public final IntBuffer buffer;
+        private final BufferPool parent = BufferPool.this;
+        final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
+
+        IntBufferSnapshot(int n2size) {
+            buffer = BufferUtils.createIntBuffer(n2size);
+        }
+
+        @Override
+        public void release() {
+            if (buffer != null && alreadyCleaned.compareAndSet(false, true)) {
+                synchronized (parent.intPool) {
+                    parent.intPool[poolIdx(buffer.capacity())].add(this);
+                }
+            }
+        }
+    }
+
+    public class ShortBufferSnapshot implements Releasable {
+        public final ShortBuffer buffer;
+        private final BufferPool parent = BufferPool.this;
+        final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
+
+        ShortBufferSnapshot(int n2size) {
+            buffer = BufferUtils.createShortBuffer(n2size);
+        }
+
+        @Override
+        public void release() {
+            if (buffer != null && alreadyCleaned.compareAndSet(false, true)) {
+                synchronized (parent.shortPool) {
+                    parent.shortPool[poolIdx(buffer.capacity())].add(this);
+                }
             }
         }
     }
