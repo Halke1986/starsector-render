@@ -1,4 +1,4 @@
-package com.genir.renderer.loaders;
+package com.genir.renderer.overrides.loading;
 
 public class ClassName {
     public static String internal(String name) {

@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.genir.renderer.loaders.ClassName;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import proxy.com.fs.graphics.FileRepository;

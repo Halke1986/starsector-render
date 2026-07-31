@@ -1,7 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
-import com.genir.renderer.loaders.MultiThreadedJaninoClassLoader;
 import org.apache.log4j.Logger;
 import proxy.com.fs.starfarer.loading.scripts.ScriptStore;
 

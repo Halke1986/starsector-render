@@ -1,4 +1,4 @@
-package com.genir.renderer.loaders;
+package com.genir.renderer.overrides.loading;
 
 import org.codehaus.janino.JavaSourceClassLoader;
 import proxy.com.fs.starfarer.loading.JavaSourceFinder;
