@@ -11,15 +11,31 @@ import static proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWith
 
 public class FileLoader {
     private static FileLoaderFast fastLoader = null;
+    private static boolean isModLoading = false;
 
     public static InputStream loadInputStream(String path, boolean searchMods) throws IOException {
-        if (fastLoader != null) {
-            // Assume boolean searchMods is unused during resource loading.
-            // The flag is used only by mods, after the resource loading phase finishes.
+        if (fastLoader != null && !isModLoading) {
             return fastLoader.loadInputStream(path);
         }
 
         proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
+
+        if (fastLoader != null) {
+            try {
+                // String and boolean state are used only by mods,
+                // after the multithreaded part of game loading.
+                String locationFilter = loaderInstance.ResourceLoader_locationFilter;
+                boolean skipMods = !searchMods || proxy.com.fs.util.FileLoader.ResourceLoader_withoutMods;
+
+                return fastLoader.loadInputStream(path, locationFilter, skipMods);
+            } finally {
+                loaderInstance.ResourceLoader_locationFilter = null;
+                proxy.com.fs.util.FileLoader.ResourceLoader_withoutMods = false;
+            }
+
+            // Fallback to vanilla method.
+        }
+
         return loaderInstance.FileLoader_loadInputStream_vanilla(path, searchMods);
     }
 
@@ -50,14 +66,25 @@ public class FileLoader {
         return files;
     }
 
-    public static void enterFastMode() {
+    /**
+     * Resource loading is the multi-threaded phase where game assets are loaded. It requires the most optimization.
+     */
+    public static void initResourceLoading() {
         proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
         List<ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
 
         fastLoader = new FileLoaderFast(locations);
     }
 
-    public static void exitFastMode() {
+    public static void initModLoading() {
+        isModLoading = true;
+    }
+
+    /**
+     * Gameplay requires no optimization. Drop the caches to free resources.
+     */
+    public static void initGameplay() {
+        isModLoading = false;
         fastLoader = null;
     }
 }

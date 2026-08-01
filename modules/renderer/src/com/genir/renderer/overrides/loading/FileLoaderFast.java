@@ -9,42 +9,45 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
-    private final List<ResourceLocation> locations;
+    private final List<ResourceLocation> allLocations;
     private final Map<String, List<File>> cachedFiles = new HashMap<>();
     private final String pwd = System.getProperty("user.dir");
 
-//    private static final Map<String, String> cachedReadFiles = new HashMap<>();
-//    private static final Set<String> cachedExtensions = new HashSet<>(Arrays.asList(
-//            "variant",
-//            "skin",
-//            "skill",
-//            "system",
-//            "proj",
-//            "wpn",
-//            "ship",
-//            "faction",
-//
-//            "json",
-//            "java",
-//            "csv"
-//    ));
-
     public FileLoaderFast(List<ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
-        this.locations = locations;
+        this.allLocations = locations;
         cacheLocations();
     }
 
     public InputStream loadInputStream(String path) throws IOException {
-        return findResources(path, true).get(0).two;
+        return findResources(allLocations, path, true).get(0).two;
+    }
+
+    public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) throws IOException {
+        List<ResourceLocation> filteredLocations = allLocations;
+
+        // Filter locations.
+        if (locationFilter != null) {
+            filteredLocations = filteredLocations.stream().filter(location ->
+                    location.ResourceLocation_type.toString().equals("DIRECTORY") && location.ResourceLocation_path.endsWith(locationFilter)
+            ).toList();
+        }
+
+        if (skipMods) {
+            filteredLocations = filteredLocations.stream().filter(location ->
+                    !location.ResourceLocation_isMod
+            ).toList();
+        }
+
+        return findResources(filteredLocations, path, true).get(0).two;
     }
 
     public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
-        return findResources(path, false);
+        return findResources(allLocations, path, false);
     }
 
     private void cacheLocations() {
-        for (ResourceLocation location : locations) {
+        for (ResourceLocation location : allLocations) {
             Pair<String, List<File>> locationFiles = enumerateLocation(location);
             if (locationFiles == null) {
                 continue;
@@ -69,11 +72,6 @@ public class FileLoaderFast {
                 );
 
                 knownFiles.add(file);
-
-//                String path = file.getPath();
-//                        if (cachedExtensions.contains(getFileExtension(path))) {
-//                            cachedReadFiles.put(normalizePath(path), loadFileAsString(file));
-//                        }
             }
         }
     }
@@ -164,9 +162,9 @@ public class FileLoaderFast {
         return path.substring(lastDot + 1);
     }
 
-    private List<Pair<ResourceLocation, InputStream>> findResources(String path, boolean findFirst) throws IOException {
+    private List<Pair<ResourceLocation, InputStream>> findResources(List<ResourceLocation> locations, String path, boolean findFirst) throws IOException {
         List<Pair<ResourceLocation, InputStream>> resources;
-        resources = findResourcesInLocations(path, findFirst);
+        resources = findResourcesInLocations(locations, path, findFirst);
         if (!resources.isEmpty()) {
             return resources;
         }
@@ -189,7 +187,7 @@ public class FileLoaderFast {
         throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
     }
 
-    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(String path, boolean findFirst) throws IOException {
+    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) throws IOException {
         path = normalizePath(path);
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
