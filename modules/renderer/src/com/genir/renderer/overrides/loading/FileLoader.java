@@ -1,5 +1,7 @@
-package com.genir.renderer.overrides;
+package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.GameState;
+import com.genir.renderer.overrides.PathCache;
 import proxy.com.fs.util.ResourceLoader;
 import proxy.com.fs.util.container.Pair;
 
@@ -7,7 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileUtils { // com.fs.util.C
+public class FileLoader {
     private static PathCache pathCache = new PathCache();
 
     // High throughput replacement for File.exists.

@@ -155,7 +155,7 @@ L6:
     .code stack 2 locals 3
 L0:     aload_1
 L1:     iload_2
-L2:     invokestatic Method com/genir/renderer/overrides/FileUtils loadInputStream (Ljava/lang/String;Z)Ljava/io/InputStream;
+L2:     invokestatic Method com/genir/renderer/overrides/loading/FileLoader loadInputStream (Ljava/lang/String;Z)Ljava/io/InputStream;
 L5:     areturn
 L6:
         .linenumbertable
@@ -288,7 +288,7 @@ L107:
 .method public FileUtils_loadInputStreams : (Ljava/lang/String;)Ljava/util/List;
     .code stack 1 locals 2
 L0:     aload_1
-L1:     invokestatic Method com/genir/renderer/overrides/FileUtils loadInputStreams (Ljava/lang/String;)Ljava/util/List;
+L1:     invokestatic Method com/genir/renderer/overrides/loading/FileLoader loadInputStreams (Ljava/lang/String;)Ljava/util/List;
 L4:     areturn
 L5:
         .linenumbertable
