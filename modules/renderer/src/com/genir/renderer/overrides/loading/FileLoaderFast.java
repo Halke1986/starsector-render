@@ -60,6 +60,10 @@ public class FileLoaderFast {
                 fileName = fileName.replace(locationPath, "");
                 fileName = normalizePath(fileName);
 
+                if (fileName.equals("")) {
+                    continue;
+                }
+
                 List<File> knownFiles = cachedFiles.computeIfAbsent(
                         fileName, k -> new ArrayList<>()
                 );
@@ -113,11 +117,10 @@ public class FileLoaderFast {
     }
 
     private void enumeratePath(File file, List<File> fileCollector) {
+        fileCollector.add(file);
+
         File[] files = file.listFiles();
-        if (files == null) {
-            // Not a directory.
-            fileCollector.add(file);
-        } else {
+        if (files != null) {
             for (File child : files) {
                 enumeratePath(child, fileCollector);
             }
@@ -146,20 +149,20 @@ public class FileLoaderFast {
         return path.toLowerCase(Locale.ROOT);
     }
 
-//    private String getFileExtension(String path) {
-//        if (path == null || path.isEmpty()) {
-//            return "";
-//        }
-//
-//        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
-//        int lastDot = path.lastIndexOf('.');
-//
-//        if (lastDot <= lastSeparator || lastDot == path.length() - 1) {
-//            return "";
-//        }
-//
-//        return path.substring(lastDot + 1);
-//    }
+    private String getFileExtension(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+
+        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+        int lastDot = path.lastIndexOf('.');
+
+        if (lastDot <= lastSeparator || lastDot == path.length() - 1) {
+            return "";
+        }
+
+        return path.substring(lastDot + 1);
+    }
 
     private List<Pair<ResourceLocation, InputStream>> findResources(String path, boolean findFirst) throws IOException {
         List<Pair<ResourceLocation, InputStream>> resources;
@@ -197,11 +200,11 @@ public class FileLoaderFast {
                 // Check if resource matches any of the locations.
                 for (ResourceLocation location : locations) {
                     String locationType = location.ResourceLocation_type.toString();
-                    if (locationType == "CLASSPATH") {
+                    if (locationType.equals("CLASSPATH")) {
                         continue;
                     }
 
-                    if ((locationType) == "ABSOLUTE_AND_CWD" || knownResource.getPath().startsWith(location.ResourceLocation_path)) {
+                    if (locationType.equals("ABSOLUTE_AND_CWD") || knownResource.getPath().startsWith(location.ResourceLocation_path)) {
                         BufferedInputStream stream = new BufferedInputStream(new FileInputStream(knownResource));
                         resources.add(new Pair<>(location, stream));
                         if (findFirst) {
@@ -215,7 +218,7 @@ public class FileLoaderFast {
         }
 
         for (ResourceLocation location : locations) {
-            if (location.ResourceLocation_type.toString() == "CLASSPATH") {
+            if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
                 InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(path);
                 if (stream == null) {
                     continue;
@@ -229,5 +232,31 @@ public class FileLoaderFast {
         }
 
         return resources;
+    }
+
+    public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean absoultePath) {
+        dir = normalizePath(dir);
+        List<File> knownResources = cachedFiles.get(dir);
+        if (knownResources == null) {
+            return new ArrayList<>();
+        }
+
+        Set<String> foundFiles = new HashSet<>();
+        for (File location : knownResources) {
+            File[] files = location.listFiles();
+
+            for (File file : files) {
+                String fileName = file.getName();
+                if (getFileExtension(fileName).equals(extension)) {
+                    if (absoultePath) {
+                        foundFiles.add(file.getAbsolutePath());
+                    } else {
+                        foundFiles.add(dir + "/" + fileName);
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(foundFiles);
     }
 }

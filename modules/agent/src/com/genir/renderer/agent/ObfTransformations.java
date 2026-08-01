@@ -25,6 +25,7 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
             entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
             entry("proxy/com/fs/graphics/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
+            entry("proxy/com/fs/starfarer/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
 
             // Obfuscated classes
             entry("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
@@ -101,6 +102,8 @@ public class ObfTransformations {
             entry("ShipArrowRenderer_init", "o00000"),
             entry("StarfarerSettings_getBooleanValue", "class"),
             entry("ImpactSound_init", "o00000"),
+            entry("LoadingUtils_filesWithExtensionInDirectory", "super"),
+            entry("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),
