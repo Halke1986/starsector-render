@@ -142,7 +142,7 @@ public class BufferPool {
         final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
 
         FloatBufferSnapshot(int n2size) {
-            buffer = BufferUtils.createFloatBuffer(n2size);
+            buffer = n2size != 0 ? BufferUtils.createFloatBuffer(n2size) : null;
         }
 
         @Override
@@ -161,7 +161,7 @@ public class BufferPool {
         final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
 
         ByteBufferSnapshot(int n2size) {
-            buffer = BufferUtils.createByteBuffer(n2size);
+            buffer = n2size != 0 ? BufferUtils.createByteBuffer(n2size) : null;
         }
 
         @Override
@@ -180,7 +180,7 @@ public class BufferPool {
         final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
 
         IntBufferSnapshot(int n2size) {
-            buffer = BufferUtils.createIntBuffer(n2size);
+            buffer = n2size != 0 ? BufferUtils.createIntBuffer(n2size) : null;
         }
 
         @Override
@@ -199,7 +199,7 @@ public class BufferPool {
         final AtomicBoolean alreadyCleaned = new AtomicBoolean(false);
 
         ShortBufferSnapshot(int n2size) {
-            buffer = BufferUtils.createShortBuffer(n2size);
+            buffer = n2size != 0 ? BufferUtils.createShortBuffer(n2size) : null;
         }
 
         @Override
