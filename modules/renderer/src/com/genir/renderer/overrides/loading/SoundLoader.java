@@ -1,8 +1,8 @@
 package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.FileUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
-import proxy.com.fs.graphics.FileRepository;
 import proxy.sound.OggLoader;
 import proxy.sound.SoundBuffer;
 import proxy.sound.SoundStore;
@@ -69,15 +69,18 @@ public class SoundLoader {
         }
 
         // Load sound bytes.
-        byte[] bytes;
+        InputStream stream;
         try {
-            bytes = FileRepository.FileRepository_loadSound(path);
+            stream = FileUtils.loadInputStream(path, true);
         } catch (Exception e) {
             // Vanilla throws a RuntimeException when sound fails to load.
             throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load", e);
         }
 
-        ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+        if (stream == null) {
+            throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load");
+        }
+
         String extension = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
 
         boolean unsupported = false;

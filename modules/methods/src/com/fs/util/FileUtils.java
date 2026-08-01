@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+// $FF: renamed from: com.fs.util.C
 public class FileUtils {
     // MODIFIED
     // $FF: renamed from: new (java.lang.String) java.util.List

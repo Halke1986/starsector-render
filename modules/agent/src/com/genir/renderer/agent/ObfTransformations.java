@@ -27,7 +27,6 @@ public class ObfTransformations {
             entry("proxy/com/fs/graphics/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
 
             // Obfuscated classes
-            entry("proxy/com/fs/graphics/FileRepository", "com/fs/graphics/L"),
             entry("proxy/com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),
             entry("proxy/com/fs/graphics/AlphaAdder", "com/fs/graphics/do"),
             entry("proxy/com/fs/graphics/font/FontRepository", "com/fs/graphics/A/D"),
@@ -57,8 +56,6 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/combat/entities/ship/damage/ImpactSound", "com/fs/starfarer/combat/entities/ship/A/I"),
 
             // Obfuscated methods
-            entry("FileRepository_loadImage", "o00000"),
-            entry("FileRepository_loadSound", "Ô00000"),
             entry("TextureRepository_addTexture", "super"),
             entry("FontRepository_defineFont", "super"),
             entry("StarfarerSettings_getFloatValue", "ö00000"),

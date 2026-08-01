@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.FileUtils;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.TextureBuilder;
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import proxy.com.fs.graphics.AlphaAdder;
 import proxy.com.fs.graphics.TextureHandler;
 import proxy.com.fs.graphics.TextureRepository;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
@@ -62,7 +64,7 @@ public class TextureLoader {
         try {
             logger.info("Loading image [" + path + "]");
 
-            BufferedImage image = proxy.com.fs.graphics.FileRepository.FileRepository_loadImage(path);
+            BufferedImage image = ImageIO.read(FileUtils.loadInputStream(path, true));
             if (image == null) {
                 throw new NullPointerException();
             }
@@ -99,7 +101,7 @@ public class TextureLoader {
 
         logger.info("Loading image [" + path + "]");
 
-        BufferedImage image = proxy.com.fs.graphics.FileRepository.FileRepository_loadImage(path);
+        BufferedImage image = ImageIO.read(FileUtils.loadInputStream(path, true));
         if (image == null) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load");
         }

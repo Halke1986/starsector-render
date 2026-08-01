@@ -55,7 +55,7 @@ public class FileUtils { // com.fs.util.C
         return findResources(path, null, false, locations, false, tryFastExists);
     }
 
-    public static List<Pair<ResourceLoader.ResourceLocation, InputStream>> findResources(
+    private static List<Pair<ResourceLoader.ResourceLocation, InputStream>> findResources(
             String path,
             String locationFilter,
             boolean skipMods,
@@ -109,7 +109,7 @@ public class FileUtils { // com.fs.util.C
         throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
     }
 
-    public static List<Pair<ResourceLoader.ResourceLocation, InputStream>> findResourcesInLocations(
+    private static List<Pair<ResourceLoader.ResourceLocation, InputStream>> findResourcesInLocations(
             String path,
             List<ResourceLoader.ResourceLocation> locations,
             boolean findFirst,
@@ -131,7 +131,7 @@ public class FileUtils { // com.fs.util.C
         return resources;
     }
 
-    public static InputStream openResource(String path, ResourceLoader.ResourceLocation location, boolean fastExists) throws FileNotFoundException {
+    private static InputStream openResource(String path, ResourceLoader.ResourceLocation location, boolean fastExists) throws FileNotFoundException {
         File file;
 
         switch (location.ResourceLocation_type.toString()) {
