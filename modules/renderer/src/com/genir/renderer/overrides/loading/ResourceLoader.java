@@ -82,8 +82,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
 
-        FileLoader.enterFastMode();
-
         mainThreadWaitGroup.incrementAndGet();
         mainThreadExec.execute(() -> {
             try {

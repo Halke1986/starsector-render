@@ -30,14 +30,14 @@ public class FileLoader {
         return loaderInstance.FileLoader_loadInputStreams_vanilla(path);
     }
 
-    static void enterFastMode() {
+    public static void enterFastMode() {
         proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
         List<ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
 
         fastLoader = new FileLoaderFast(locations);
     }
 
-    static void exitFastMode() {
+    public static void exitFastMode() {
         fastLoader = null;
     }
 }

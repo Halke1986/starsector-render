@@ -4,7 +4,8 @@ import proxy.com.fs.util.FileLoader.ResourceLocation;
 import proxy.com.fs.util.container.Pair;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
@@ -107,19 +108,19 @@ public class FileLoaderFast {
         return new Pair<>(locationPath, fileCollector);
     }
 
-    private void enumeratePath(Path dir, List<File> fileCollector) {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
-            for (Path path : stream) {
-                File file = path.toFile();
-                if (file.isDirectory()) {
-                    enumeratePath(path, fileCollector);
-                } else {
-                    fileCollector.add(file);
-                }
+    private void enumeratePath(Path path, List<File> fileCollector) {
+        enumeratePath(path.toFile(), fileCollector);
+    }
+
+    private void enumeratePath(File file, List<File> fileCollector) {
+        File[] files = file.listFiles();
+        if (files == null) {
+            // Not a directory.
+            fileCollector.add(file);
+        } else {
+            for (File child : files) {
+                enumeratePath(child, fileCollector);
             }
-        } catch (NoSuchFileException ignored) {
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
