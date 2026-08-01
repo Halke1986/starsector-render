@@ -63,7 +63,7 @@ public class FileLoaderFast {
                 fileName = fileName.replace(locationPath, "");
                 fileName = normalizePath(fileName);
 
-                if (fileName.equals("")) {
+                if (fileName.isEmpty()) {
                     continue;
                 }
 
@@ -170,16 +170,16 @@ public class FileLoaderFast {
         }
 
         // Build error message.
-        String searchedLocations = "";
+        StringBuilder searchedLocations = new StringBuilder();
         for (ResourceLocation location : locations) {
             switch (location.ResourceLocation_type.toString()) {
                 case "DIRECTORY":
-                    searchedLocations = searchedLocations + location.ResourceLocation_path + ",";
+                    searchedLocations.append(location.ResourceLocation_path).append(",");
                     break;
                 case "ABSOLUTE_AND_CWD":
                     break;
                 case "CLASSPATH":
-                    searchedLocations = searchedLocations + "CLASSPATH,";
+                    searchedLocations.append("CLASSPATH,");
                     break;
             }
         }
@@ -232,7 +232,7 @@ public class FileLoaderFast {
         return resources;
     }
 
-    public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean absoultePath) {
+    public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean absolutePath) {
         dir = normalizePath(dir);
         List<File> knownResources = cachedFiles.get(dir);
         if (knownResources == null) {
@@ -242,11 +242,14 @@ public class FileLoaderFast {
         Set<String> foundFiles = new HashSet<>();
         for (File location : knownResources) {
             File[] files = location.listFiles();
+            if (files == null) {
+                continue;
+            }
 
             for (File file : files) {
                 String fileName = file.getName();
                 if (getFileExtension(fileName).equals(extension)) {
-                    if (absoultePath) {
+                    if (absolutePath) {
                         foundFiles.add(file.getAbsolutePath());
                     } else {
                         foundFiles.add(dir + "/" + fileName);

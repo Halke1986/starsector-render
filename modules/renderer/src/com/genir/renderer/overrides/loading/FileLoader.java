@@ -18,7 +18,7 @@ public class FileLoader {
             return fastLoader.loadInputStream(path);
         }
 
-        proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
+        var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
 
         if (fastLoader != null) {
             try {
@@ -32,10 +32,9 @@ public class FileLoader {
                 loaderInstance.ResourceLoader_locationFilter = null;
                 proxy.com.fs.util.FileLoader.ResourceLoader_withoutMods = false;
             }
-
-            // Fallback to vanilla method.
         }
 
+        // Fallback to vanilla method.
         return loaderInstance.FileLoader_loadInputStream_vanilla(path, searchMods);
     }
 
@@ -44,7 +43,7 @@ public class FileLoader {
             return fastLoader.loadInputStreams(path);
         }
 
-        proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
+        var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
         return loaderInstance.FileLoader_loadInputStreams_vanilla(path);
     }
 
@@ -53,8 +52,7 @@ public class FileLoader {
             return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
         }
 
-        List<String> files = proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
-        return files;
+        return proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
     }
 
     public static List<String> filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
@@ -62,15 +60,14 @@ public class FileLoader {
             return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
         }
 
-        List<String> files = LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
-        return files;
+        return LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
     }
 
     /**
      * Resource loading is the multi-threaded phase where game assets are loaded. It requires the most optimization.
      */
     public static void initResourceLoading() {
-        proxy.com.fs.util.FileLoader loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
+        var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
         List<ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
 
         fastLoader = new FileLoaderFast(locations);
