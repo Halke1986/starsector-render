@@ -1,4 +1,5 @@
 - Minor rendering performance optimizations.
+- Added `fr.noterminal.bat`, which starts the game faster. A terminal window still appears during startup, but it can be closed safely.
 
 v0.8.0
 
