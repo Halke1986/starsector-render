@@ -101,6 +101,8 @@ public class ObfTransformations {
             entry("ImpactSound_init", "o00000"),
             entry("LoadingUtils_filesWithExtensionInDirectory", "super"),
             entry("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
+            entry("LoadingUtils_readStreamAsString", "super"),
+            entry("LoadingUtils_readPathAsString", "super"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),
