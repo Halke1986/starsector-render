@@ -6,11 +6,11 @@ import java.nio.file.Files;
 
 import static com.genir.renderer.overrides.loading.FileLoader.readStringVanilla;
 
-public class CachedStringInputStream extends InputStream {
+public class ResourceHandle extends InputStream {
     private final CacheableFile cacheableFile;
     private FileInputStream fileStream = null;
 
-    public CachedStringInputStream(CacheableFile cacheableFile) {
+    public ResourceHandle(CacheableFile cacheableFile) {
         this.cacheableFile = cacheableFile;
     }
 

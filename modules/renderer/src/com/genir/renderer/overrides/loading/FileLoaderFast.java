@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
 import org.apache.log4j.Logger;
-import com.genir.renderer.overrides.loading.CachedStringInputStream.CacheableFile;
+import com.genir.renderer.overrides.loading.ResourceHandle.CacheableFile;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
 import proxy.com.fs.util.container.Pair;
 
@@ -219,7 +219,7 @@ public class FileLoaderFast {
 
                     File file = knownResource.file;
                     if (locationType.equals("ABSOLUTE_AND_CWD") || file.getPath().startsWith(location.ResourceLocation_path)) {
-                        InputStream stream = new CachedStringInputStream(knownResource);
+                        InputStream stream = new ResourceHandle(knownResource);
                         resources.add(new Pair<>(location, stream));
                         if (findFirst) {
                             return resources;
