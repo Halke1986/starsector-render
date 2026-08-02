@@ -45,6 +45,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     private static final ProgressBar barAnimation = new ProgressBar();
 
     public static void init(Object stateObject, Map var1) throws Exception {
+        FileLoader.initResourceLoading();
+
         var state = (proxy.com.fs.starfarer.loading.ResourceLoaderState) stateObject;
 
         try {

@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
+import org.apache.log4j.Logger;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
 import proxy.com.fs.util.container.Pair;
 
@@ -16,7 +17,12 @@ public class FileLoaderFast {
     public FileLoaderFast(List<ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
         this.allLocations = locations;
-        cacheLocations();
+
+        long start = System.nanoTime();
+        int cachedFilesNumber = cacheLocations();
+        long duration = System.nanoTime() - start;
+
+        Logger.getLogger(FileLoaderFast.class).info("Cached " + cachedFilesNumber + " files in " + (int)(duration / 1000000) + "ms");
     }
 
     public InputStream loadInputStream(String path) throws IOException {
@@ -46,7 +52,9 @@ public class FileLoaderFast {
         return findResources(allLocations, path, false);
     }
 
-    private void cacheLocations() {
+    private int cacheLocations() {
+        int cachedFilesNumber = 0;
+
         for (ResourceLocation location : allLocations) {
             Pair<String, List<File>> locationFiles = enumerateLocation(location);
             if (locationFiles == null) {
@@ -55,6 +63,8 @@ public class FileLoaderFast {
 
             String locationPath = locationFiles.one;
             List<File> files = locationFiles.two;
+
+            cachedFilesNumber += files.size();
 
             for (File file : files) {
                 String fileName = file.getPath();
@@ -74,6 +84,8 @@ public class FileLoaderFast {
                 knownFiles.add(file);
             }
         }
+
+        return cachedFilesNumber;
     }
 
     private Pair<String, List<File>> enumerateLocation(ResourceLocation location) {
