@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides;
 
+import com.genir.renderer.overrides.loading.TextureData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -8,7 +9,6 @@ import proxy.com.fs.graphics.TextureHandler;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.nio.ByteBuffer;
 
 import static java.awt.image.BufferedImage.*;
 
@@ -17,10 +17,10 @@ public class TextureBuilder {
         final TextureHandler texture = new TextureHandler(GL11.GL_TEXTURE_2D, com.genir.renderer.bridge.commands.GL11.glGenTextures(), path);
 
         texture.TextureHandler_setPath(path);
-        texture.TextureHandler_setImageWidth(texData.imageWidth);
-        texture.TextureHandler_setImageHeight(texData.imageHeight);
-        texture.TextureHandler_setHeight(texData.height);
+        texture.TextureHandler_setImageWidth(texData.width);
+        texture.TextureHandler_setImageHeight(texData.height);
         texture.TextureHandler_setWidth(texData.width);
+        texture.TextureHandler_setHeight(texData.height);
         texture.TextureHandler_setColor0(texData.color0);
         texture.TextureHandler_setColor1(texData.color1);
         texture.TextureHandler_setColor2(texData.color2);
@@ -40,22 +40,53 @@ public class TextureBuilder {
         }
 
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
+
+        if (texData.isDDS) {
+            com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, 36492, texData.width, texData.height, 0, texData.buffer);
+        } else {
+            com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
+        }
 
         return texture;
+    }
+
+    public static TextureData readDDSImage(BufferedImage image) {
+        ImageAnalyzer analyzer = new ImageAnalyzer();
+        TextureData texData = new TextureData();
+
+        texData.width = image.getWidth();
+        texData.height = image.getHeight();
+        texData.hasAlpha = image.getColorModel().hasAlpha();
+
+        int channels = image.getColorModel().hasAlpha() ? 4 : 3;
+
+        texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * channels);
+        texData.buffer.position(0);
+        texData.buffer.limit(texData.buffer.capacity());
+
+        switch (image.getType()) {
+            case TYPE_INT_RGB, TYPE_INT_ARGB, TYPE_3BYTE_BGR, TYPE_4BYTE_ABGR:
+                readOptimized(image, texData, analyzer);
+                break;
+            default:
+                readFallback(image, texData, analyzer);
+        }
+
+        Color[] colors = analyzer.calculateAverageColor();
+        texData.color0 = colors[0];
+        texData.color1 = colors[1];
+        texData.color2 = colors[2];
+
+        return texData;
     }
 
     public static TextureData readAndAnalyzeImage(BufferedImage image) {
         ImageAnalyzer analyzer = new ImageAnalyzer();
         TextureData texData = new TextureData();
 
-        texData.imageWidth = image.getWidth();
-        texData.imageHeight = image.getHeight();
-        texData.hasAlpha = image.getColorModel().hasAlpha();
-
-        // Calculate image width and height.
         texData.width = image.getWidth();
         texData.height = image.getHeight();
+        texData.hasAlpha = image.getColorModel().hasAlpha();
 
         int channels = image.getColorModel().hasAlpha() ? 4 : 3;
 
@@ -242,21 +273,6 @@ public class TextureBuilder {
                     break;
             }
         }
-    }
-
-    public static class TextureData {
-        ByteBuffer buffer = null;
-
-        int imageWidth;
-        int imageHeight;
-        boolean hasAlpha;
-
-        int width = 1;
-        int height = 1;
-
-        Color color0 = Color.white;
-        Color color1 = Color.white;
-        Color color2 = Color.white;
     }
 
     private static class ImageAnalyzer {

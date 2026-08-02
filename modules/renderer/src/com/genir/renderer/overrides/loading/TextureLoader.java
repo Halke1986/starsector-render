@@ -11,6 +11,7 @@ import proxy.com.fs.graphics.TextureRepository;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -65,26 +66,32 @@ public class TextureLoader {
         try {
             logger.info("Loading image [" + path + "]");
 
-            InputStream stream = FileLoader.loadInputStream(path, true);
-            if (!(stream instanceof BufferedInputStream)) {
-                stream = new BufferedInputStream(stream);
-            }
-
-            BufferedImage image = ImageIO.read(stream);
-            if (image == null) {
+            InputStream resource = FileLoader.loadInputStream(path, true);
+            if (resource == null) {
                 throw new NullPointerException();
             }
 
-            if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
-                image = new AlphaAdder().TextureTransformer_apply(image);
+            TextureData texData = null;
+
+            if (resource instanceof ResourceHandle handle) {
+                texData = DDSCache.getTexture(handle.getFilePath());
             }
 
-            TextureBuilder.TextureData texData = TextureBuilder.readAndAnalyzeImage(image);
+            if (texData == null) {
+                BufferedImage image = ImageIO.read(new BufferedInputStream(resource));
+                if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
+                    image = new AlphaAdder().TextureTransformer_apply(image);
+                }
+
+                texData = TextureBuilder.readAndAnalyzeImage(image);
+            }
+
+            TextureData finalTexData = texData;
 
             mainThreadWaitGroup.incrementAndGet();
             ResourceLoader.mainThreadQueue.add(() -> {
                 try {
-                    commitAndCacheTexture(path, path, texData);
+                    commitAndCacheTexture(path, path, finalTexData);
                 } catch (Throwable e) {
                     ResourceLoader.setException(e);
                 } finally {
@@ -117,14 +124,14 @@ public class TextureLoader {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load");
         }
 
-        TextureBuilder.TextureData texData = TextureBuilder.readAndAnalyzeImage(image);
+        TextureData texData = TextureBuilder.readAndAnalyzeImage(image);
         return TextureBuilder.commitTexture(path, texData);
     }
 
     /**
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
-    private static void commitAndCacheTexture(String name, String path, TextureBuilder.TextureData texData) {
+    private static void commitAndCacheTexture(String name, String path, TextureData texData) {
         try {
             TextureHandler tex = TextureBuilder.commitTexture(path, texData);
             tex.TextureHandler_setStringID(name);

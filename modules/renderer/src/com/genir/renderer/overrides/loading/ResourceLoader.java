@@ -49,6 +49,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         var state = (proxy.com.fs.starfarer.loading.ResourceLoaderState) stateObject;
 
+        DDSCache.initializeCache();
+
         try {
             // init_vanilla will call 'initSpecStore'.
             // initSpecStore throws an exception to skip

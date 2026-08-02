@@ -8,7 +8,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
@@ -16,7 +15,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PathCache {
     private final ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Path-Loader");
     private final AtomicReference<Set<String>> filesReference = new AtomicReference<>(null);
-    private final String pwd = System.getProperty("user.dir");
 
     public PathCache() {
         // Initialize the FileRepository in a separate thread.
@@ -52,25 +50,7 @@ public class PathCache {
             return file.exists();
         }
 
-        return files.contains(normalizePath(file.getPath()));
-    }
-
-    private String normalizePath(String path) {
-        // Strip starsector-core path prefix,
-        // in case the file path is absolute.
-        if (path.startsWith(pwd)) {
-            path = path.substring(pwd.length());
-        }
-
-        // Finish stripping starsector-core path
-        // prefix on Windows.
-        if (path.startsWith("\\")) {
-            path = path.substring("\\".length());
-        }
-
-        // Lowercase file path, to avoid case sensitivity
-        // issues. Not sure if this works on Linux or MacOS.
-        return path.toLowerCase(Locale.ROOT);
+        return files.contains(PathUtil.normalize(file.getPath()));
     }
 
     private void enumeratePath(Path dir, Set<String> fileCollector) {
@@ -79,7 +59,7 @@ public class PathCache {
                 if (path.toFile().isDirectory()) {
                     enumeratePath(path, fileCollector);
                 } else {
-                    fileCollector.add(normalizePath(path.toString()));
+                    fileCollector.add(PathUtil.normalize(path.toString()));
                 }
             }
         } catch (Exception e) {

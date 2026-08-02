@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.loading;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static com.genir.renderer.overrides.loading.FileLoader.readStringVanilla;
 
@@ -27,6 +28,10 @@ public class ResourceHandle extends InputStream {
         }
 
         return cacheableFile.contents;
+    }
+
+    public Path getFilePath() {
+        return cacheableFile.file.toPath();
     }
 
     private FileInputStream getFileStream() throws IOException {
