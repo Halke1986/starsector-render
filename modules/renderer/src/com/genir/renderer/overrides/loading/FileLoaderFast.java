@@ -22,7 +22,7 @@ public class FileLoaderFast {
         int cachedFilesNumber = cacheLocations();
         long duration = System.nanoTime() - start;
 
-        Logger.getLogger(FileLoaderFast.class).info("Cached " + cachedFilesNumber + " files in " + (int)(duration / 1000000) + "ms");
+        Logger.getLogger(FileLoaderFast.class).info("Cached " + cachedFilesNumber + " files in " + (int) (duration / 1000000) + "ms");
     }
 
     public InputStream loadInputStream(String path) throws IOException {
@@ -251,7 +251,9 @@ public class FileLoaderFast {
             return new ArrayList<>();
         }
 
-        Set<String> foundFiles = new HashSet<>();
+        Set<String> knownFiles = new HashSet<>();
+        List<String> foundFiles = new ArrayList<>();
+
         for (File location : knownResources) {
             File[] files = location.listFiles();
             if (files == null) {
@@ -261,15 +263,17 @@ public class FileLoaderFast {
             for (File file : files) {
                 String fileName = file.getName();
                 if (getFileExtension(fileName).equals(extension)) {
-                    if (absolutePath) {
-                        foundFiles.add(file.getAbsolutePath());
-                    } else {
-                        foundFiles.add(dir + "/" + fileName);
+                    String filePath = absolutePath ? file.getAbsolutePath() : dir + "/" + fileName;
+
+                    // Starsector resource loading depends on the entries
+                    // being in same order as on the disk, but deduplicated.
+                    if (knownFiles.add(filePath)) {
+                        foundFiles.add(filePath);
                     }
                 }
             }
         }
 
-        return new ArrayList<>(foundFiles);
+        return foundFiles;
     }
 }
