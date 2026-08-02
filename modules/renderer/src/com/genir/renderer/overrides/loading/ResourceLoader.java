@@ -69,6 +69,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         MarkovNames.loadIfNeeded();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
+            // DDS mod functionality is integrated into Fast Rendering image pipeline.
+            // There's no need to run the standalone DDS replacer plugin.
+            if (DDSCache.shouldSkipDDSMod(mod)) {
+                continue;
+            }
+
             mod.onApplicationLoad();
         }
 

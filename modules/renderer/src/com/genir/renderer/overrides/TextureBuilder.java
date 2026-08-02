@@ -4,6 +4,7 @@ import com.genir.renderer.overrides.loading.TextureData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL42;
 import proxy.com.fs.graphics.TextureHandler;
 
 import java.awt.*;
@@ -42,7 +43,7 @@ public class TextureBuilder {
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 
         if (texData.isDDS) {
-            com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, 36492, texData.width, texData.height, 0, texData.buffer);
+            com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, texData.buffer);
         } else {
             com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
         }

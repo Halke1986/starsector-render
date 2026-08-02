@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModPlugin;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.overrides.PathUtil;
 import org.apache.log4j.Logger;
@@ -11,7 +12,6 @@ import org.lwjgl.BufferUtils;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -29,8 +29,6 @@ public class DDSCache {
 
         List<File> metadataFiles = findDDSMetadata();
         cache = readDDSMetadata(metadataFiles);
-
-        int x = 0;
     }
 
     public static TextureData getTexture(Path path) {
@@ -38,17 +36,16 @@ public class DDSCache {
             return null;
         }
 
-        String strPath = PathUtil.normalize(path.toString());
-        DDSTextureData ddsTexData = cache.get(strPath);
+        String texturePath = PathUtil.normalize(path.toString());
+        DDSTextureData ddsTexData = cache.get(texturePath);
 
-
+        // Texture was not converted to DDS.
         if (ddsTexData == null) {
-//            Logger.getLogger(DDSCache.class).info(strPath);
+            // Logger.getLogger(DDSCache.class).info(strPath);
             return null;
         }
 
         TextureData texData = ddsTexData.texData;
-
         synchronized (texData) {
             if (texData.buffer == null) {
                 byte[] bytes;
@@ -58,8 +55,11 @@ public class DDSCache {
                     throw new RuntimeException(e);
                 }
 
-                texData.buffer = BufferUtils.createByteBuffer(bytes.length);
-                texData.buffer.put(bytes);
+                int ddsHeaderLength = 148;
+                int imageSize = bytes.length - ddsHeaderLength;
+
+                texData.buffer = BufferUtils.createByteBuffer(bytes.length - ddsHeaderLength);
+                texData.buffer.put(bytes, ddsHeaderLength, imageSize);
                 texData.buffer.clear();
             }
         }
@@ -68,7 +68,7 @@ public class DDSCache {
     }
 
     private static boolean vramOptimizerEnabled() {
-        for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy()) { // TODO check version
+        for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy()) {
             if (Objects.equals(mod.getId(), "VramOptimizer")) {
                 return true;
             }
@@ -125,10 +125,6 @@ public class DDSCache {
                     String ddsFilePath = ".." + dds.getString("DDSFilePath");
                     File ddsFile = new File(ddsFilePath);
 
-                    if (!Files.exists(ddsFile.toPath())) {
-                        throw new FileNotFoundException(ddsFilePath);
-                    }
-
                     String absolutePath;
                     if (Objects.equals(modDir, "starsector-core")) {
                         absolutePath = relPath;
@@ -167,5 +163,9 @@ public class DDSCache {
     }
 
     private record DDSTextureData(TextureData texData, File ddsFile) {
+    }
+
+    public static boolean shouldSkipDDSMod(ModPlugin mod) {
+        return mod.getClass().getName().contains("DeCell.VOpt.");
     }
 }
