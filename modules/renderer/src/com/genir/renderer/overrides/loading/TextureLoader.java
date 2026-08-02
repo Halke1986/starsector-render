@@ -10,7 +10,9 @@ import proxy.com.fs.graphics.TextureRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +65,12 @@ public class TextureLoader {
         try {
             logger.info("Loading image [" + path + "]");
 
-            BufferedImage image = ImageIO.read(FileLoader.loadInputStream(path, true));
+            InputStream stream = FileLoader.loadInputStream(path, true);
+            if (!(stream instanceof BufferedInputStream)) {
+                stream = new BufferedInputStream(stream);
+            }
+
+            BufferedImage image = ImageIO.read(stream);
             if (image == null) {
                 throw new NullPointerException();
             }
@@ -100,7 +107,12 @@ public class TextureLoader {
 
         logger.info("Loading image [" + path + "]");
 
-        BufferedImage image = ImageIO.read(FileLoader.loadInputStream(path, true));
+        InputStream stream = FileLoader.loadInputStream(path, true);
+        if (!(stream instanceof BufferedInputStream)) {
+            stream = new BufferedInputStream(stream);
+        }
+
+        BufferedImage image = ImageIO.read(stream);
         if (image == null) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load");
         }

@@ -202,7 +202,7 @@ public class FileLoaderFast {
         throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
     }
 
-    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) throws IOException {
+    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) {
         path = normalizePath(path);
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();

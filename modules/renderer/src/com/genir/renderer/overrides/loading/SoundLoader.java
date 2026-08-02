@@ -6,6 +6,7 @@ import proxy.sound.OggLoader;
 import proxy.sound.SoundBuffer;
 import proxy.sound.SoundStore;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
@@ -70,6 +71,9 @@ public class SoundLoader {
         InputStream stream;
         try {
             stream = FileLoader.loadInputStream(path, true);
+            if (!(stream instanceof BufferedInputStream)) {
+                stream = new BufferedInputStream(stream);
+            }
         } catch (Exception e) {
             // Vanilla throws a RuntimeException when sound fails to load.
             throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load", e);
@@ -101,8 +105,6 @@ public class SoundLoader {
         // Submit empty job to main thread to progress the loading bar.
         mainThreadWaitGroup.incrementAndGet();
         ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
-
-        System.out.println("Loaded Sound: [" + path + "]");
     }
 
     private static void loadOgg(String path, InputStream stream, SoundStore soundStore) throws IOException {
