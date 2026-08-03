@@ -11,7 +11,7 @@ public class TextureData {
     public boolean hasAlpha;
     public boolean isDDS = false;
 
-    public Color color0 = Color.white;
-    public Color color1 = Color.white;
-    public Color color2 = Color.white;
+    public Color mean = Color.white;
+    public Color weighted = Color.white;
+    public Color median = Color.white;
 }

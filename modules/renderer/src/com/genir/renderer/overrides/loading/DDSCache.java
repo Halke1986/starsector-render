@@ -19,6 +19,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
+/**
+ * DDSCache provides integration with VramOptimizer mod. When VramOptimizer is enabled,
+ * vanilla texture loading is replaced with the much faster DDS texture loading.
+ */
 public class DDSCache {
     private static Map<String, DDSTextureData> cache = null;
 
@@ -152,12 +156,21 @@ public class DDSCache {
         texData.isDDS = true;
 
         JSONArray mean = dds.getJSONArray("Mean");
-        JSONArray weighted = dds.getJSONArray("Mean");
+        JSONArray weighted = dds.getJSONArray("Weighted");
         JSONArray median = dds.getJSONArray("Median");
 
-        texData.color0 = new Color((float) mean.getDouble(0), (float) mean.getDouble(1), (float) mean.getDouble(2));
-        texData.color1 = new Color((float) weighted.getDouble(0), (float) weighted.getDouble(1), (float) weighted.getDouble(2));
-        texData.color2 = new Color((float) median.getDouble(0), (float) median.getDouble(1), (float) median.getDouble(2));
+        texData.mean = new Color(
+                (float) mean.getDouble(0),
+                (float) mean.getDouble(1),
+                (float) mean.getDouble(2));
+        texData.weighted = new Color(
+                (float) weighted.getDouble(0),
+                (float) weighted.getDouble(1),
+                (float) weighted.getDouble(2));
+        texData.median = new Color(
+                (float) median.getDouble(0),
+                (float) median.getDouble(1),
+                (float) median.getDouble(2));
 
         return texData;
     }

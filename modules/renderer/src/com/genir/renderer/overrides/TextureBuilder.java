@@ -22,9 +22,9 @@ public class TextureBuilder {
         texture.TextureHandler_setImageHeight(texData.height);
         texture.TextureHandler_setWidth(texData.width);
         texture.TextureHandler_setHeight(texData.height);
-        texture.TextureHandler_setColor0(texData.color0);
-        texture.TextureHandler_setColor1(texData.color1);
-        texture.TextureHandler_setColor2(texData.color2);
+        texture.TextureHandler_setColor0(texData.mean);
+        texture.TextureHandler_setColor1(texData.weighted);
+        texture.TextureHandler_setColor2(texData.median);
 
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
@@ -74,9 +74,9 @@ public class TextureBuilder {
         }
 
         Color[] colors = analyzer.calculateAverageColor();
-        texData.color0 = colors[0];
-        texData.color1 = colors[1];
-        texData.color2 = colors[2];
+        texData.mean = colors[0];
+        texData.weighted = colors[1];
+        texData.median = colors[2];
 
         return texData;
     }
@@ -289,7 +289,7 @@ public class TextureBuilder {
             x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            Color color0 = new Color(var22, y, x, 255);
+            Color mean = new Color(var22, y, x, 255);
             float var23 = 0.5F;
             var22 = (int) method_21184(var12, var11 * var23);
             y = (int) method_21184(var13, var11 * var23);
@@ -303,7 +303,7 @@ public class TextureBuilder {
             x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            Color color1 = new Color(var22, y, x, 255);
+            Color weighted = new Color(var22, y, x, 255);
             var22 = (int) method_21183(var12, var11);
             y = (int) method_21183(var13, var11);
             x = (int) method_21184(var14, var11);
@@ -316,9 +316,9 @@ public class TextureBuilder {
             x = Math.max(x, 0);
             var22 = Math.max(var22, 0);
 
-            Color color2 = new Color(var22, y, x, 255);
+            Color median = new Color(var22, y, x, 255);
 
-            return new Color[]{color0, color1, color2};
+            return new Color[]{mean, weighted, median};
         }
 
         private float method_21183(float[] var1, float var2) {
