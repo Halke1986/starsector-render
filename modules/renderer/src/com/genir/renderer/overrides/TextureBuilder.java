@@ -51,36 +51,6 @@ public class TextureBuilder {
         return texture;
     }
 
-    public static TextureData readDDSImage(BufferedImage image) {
-        ImageAnalyzer analyzer = new ImageAnalyzer();
-        TextureData texData = new TextureData();
-
-        texData.width = image.getWidth();
-        texData.height = image.getHeight();
-        texData.hasAlpha = image.getColorModel().hasAlpha();
-
-        int channels = image.getColorModel().hasAlpha() ? 4 : 3;
-
-        texData.buffer = BufferUtils.createByteBuffer(texData.width * texData.height * channels);
-        texData.buffer.position(0);
-        texData.buffer.limit(texData.buffer.capacity());
-
-        switch (image.getType()) {
-            case TYPE_INT_RGB, TYPE_INT_ARGB, TYPE_3BYTE_BGR, TYPE_4BYTE_ABGR:
-                readOptimized(image, texData, analyzer);
-                break;
-            default:
-                readFallback(image, texData, analyzer);
-        }
-
-        Color[] colors = analyzer.calculateAverageColor();
-        texData.color0 = colors[0];
-        texData.color1 = colors[1];
-        texData.color2 = colors[2];
-
-        return texData;
-    }
-
     public static TextureData readAndAnalyzeImage(BufferedImage image) {
         ImageAnalyzer analyzer = new ImageAnalyzer();
         TextureData texData = new TextureData();
