@@ -12,6 +12,7 @@ import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.graphics.particle.SmoothParticle;
 import proxy.com.fs.graphics.util.Fps;
+import proxy.com.fs.starfarer.campaign.rules.Rules;
 import proxy.com.fs.starfarer.util.ScreenshotUtil;
 import proxy.com.fs.starfarer.Version;
 import proxy.com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
@@ -91,6 +92,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
+        ExecutorService rulesExec = ExecutorFactory.newExecutor(1, "FR-Rules-Loader", new ExceptionHandler());
 
         mainThreadWaitGroup.incrementAndGet();
         mainThreadExec.execute(() -> {
@@ -106,6 +108,14 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 setException(e);
             } finally {
                 mainThreadWaitGroup.decrementAndGet();
+            }
+        });
+
+        rulesExec.execute(() -> {
+            try {
+                Rules.Rules_loadRules(state);
+            } catch (Throwable e) {
+                setException(e);
             }
         });
 
@@ -133,9 +143,11 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             // Interrupt workers.
             mainThreadExec.shutdownNow();
             workers.shutdownNow();
+            rulesExec.shutdownNow();
 
             awaitTermination(mainThreadExec);
             awaitTermination(workers);
+            awaitTermination(rulesExec);
 
             if (t instanceof Exception e) {
                 throw e;
@@ -146,9 +158,11 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         mainThreadExec.shutdown();
         workers.shutdown();
+        rulesExec.shutdown();
 
         awaitTermination(mainThreadExec);
         awaitTermination(workers);
+        awaitTermination(rulesExec);
 
         FileLoader.initModLoading();
 
