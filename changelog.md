@@ -1,3 +1,5 @@
+- Added support for VRAM Optimizer. When installed, Fast Rendering uses its DDS texture cache, reducing game load times and eliminating the initial VRAM usage spike. 
+
 v0.8.1
 
 - Minor rendering performance optimizations.
