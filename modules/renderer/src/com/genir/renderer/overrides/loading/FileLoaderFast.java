@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
 import org.apache.log4j.Logger;
-import com.genir.renderer.overrides.loading.ResourceHandle.CacheableFile;
+import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
 import proxy.com.fs.util.container.Pair;
 
@@ -14,7 +14,7 @@ import java.util.*;
 
 public class FileLoaderFast {
     private final List<ResourceLocation> allLocations;
-    private final Map<String, List<CacheableFile>> cachedFiles = new HashMap<>();
+    private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
     private final String pwd = System.getProperty("user.dir");
 
     public FileLoaderFast(List<ResourceLocation> locations) {
@@ -80,11 +80,11 @@ public class FileLoaderFast {
                     continue;
                 }
 
-                List<CacheableFile> knownFiles = cachedFiles.computeIfAbsent(
+                List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
                         fileName, k -> new ArrayList<>()
                 );
 
-                knownFiles.add(new CacheableFile(file));
+                knownFiles.add(new FileHandle(file));
             }
         }
 
@@ -206,10 +206,10 @@ public class FileLoaderFast {
         path = normalizePath(path);
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
-        List<CacheableFile> knownResources = cachedFiles.get(path);
+        List<FileHandle> knownResources = cachedFiles.get(path);
 
         if (knownResources != null) {
-            for (CacheableFile knownResource : knownResources) {
+            for (FileHandle knownResource : knownResources) {
                 // Check if resource matches any of the locations.
                 for (ResourceLocation location : locations) {
                     String locationType = location.ResourceLocation_type.toString();
@@ -250,7 +250,7 @@ public class FileLoaderFast {
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean absolutePath) {
         dir = normalizePath(dir);
-        List<CacheableFile> knownResources = cachedFiles.get(dir);
+        List<FileHandle> knownResources = cachedFiles.get(dir);
         if (knownResources == null) {
             return new ArrayList<>();
         }
@@ -258,7 +258,7 @@ public class FileLoaderFast {
         Set<String> knownFiles = new HashSet<>();
         List<String> foundFiles = new ArrayList<>();
 
-        for (CacheableFile knownResource : knownResources) {
+        for (FileHandle knownResource : knownResources) {
             File[] files = knownResource.file.listFiles();
             if (files == null) {
                 continue;

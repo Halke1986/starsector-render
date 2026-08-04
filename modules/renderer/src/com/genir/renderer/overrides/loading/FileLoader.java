@@ -69,8 +69,8 @@ public class FileLoader {
     }
 
     public static String readStreamAsString(InputStream stream) throws IOException {
-        if (stream instanceof ResourceHandle cachedString) {
-            return cachedString.getString();
+        if (stream instanceof ResourceHandle resourceHandle) {
+            return resourceHandle.getString();
         }
 
         return readStringVanilla(stream);
