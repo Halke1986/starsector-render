@@ -102,10 +102,6 @@ public class TextureLoader {
                 TextureData texData = DDSCache.getTexture(handle.getFilePath());
                 if (texData != null) {
                     logger.info("Loading image DDS override [" + path + "]");
-
-                    // BufferedImage image = ImageIO.read(new BufferedInputStream(resource)); // TODO remove test
-                    // TextureData test = TextureBuilder.readAndAnalyzeImage(image);
-
                     return texData;
                 }
             }
