@@ -6,32 +6,32 @@ import java.nio.file.Files;
 
 import static com.genir.renderer.overrides.loading.FileLoader.readStringVanilla;
 
-public class CachedStringInputStream extends InputStream {
-    private final CacheableFile cacheableFile;
+public class ResourceHandle extends InputStream {
+    private final FileHandle fileHandle;
     private FileInputStream fileStream = null;
 
-    public CachedStringInputStream(CacheableFile cacheableFile) {
-        this.cacheableFile = cacheableFile;
+    public ResourceHandle(FileHandle fileHandle) {
+        this.fileHandle = fileHandle;
     }
 
     public String getString() throws IOException {
-        if (cacheableFile.contents == null) {
+        if (fileHandle.cachedContents == null) {
             try {
-                cacheableFile.contents = Files.readString(cacheableFile.file.toPath(), StandardCharsets.UTF_8);
+                fileHandle.cachedContents = Files.readString(fileHandle.file.toPath(), StandardCharsets.UTF_8);
             } catch (Exception e) {
                 // In case of incorrect character set exception, fall back to the lenient vanilla implementation.
-                cacheableFile.contents = readStringVanilla(new FileInputStream(cacheableFile.file));
+                fileHandle.cachedContents = readStringVanilla(new FileInputStream(fileHandle.file));
             }
 
-            cacheableFile.contents = cacheableFile.contents.replaceAll("\\r", "");
+            fileHandle.cachedContents = fileHandle.cachedContents.replaceAll("\\r", "");
         }
 
-        return cacheableFile.contents;
+        return fileHandle.cachedContents;
     }
 
     private FileInputStream getFileStream() throws IOException {
         if (fileStream == null) {
-            fileStream = new FileInputStream(cacheableFile.file);
+            fileStream = new FileInputStream(fileHandle.file);
         }
         return fileStream;
     }
@@ -81,11 +81,11 @@ public class CachedStringInputStream extends InputStream {
         getFileStream().close();
     }
 
-    public static class CacheableFile {
+    public static class FileHandle {
         public File file;
-        public String contents = null;
+        public String cachedContents = null;
 
-        public CacheableFile(File file) {
+        public FileHandle(File file) {
             this.file = file;
         }
     }
