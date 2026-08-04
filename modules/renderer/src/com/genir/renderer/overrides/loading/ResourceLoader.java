@@ -12,9 +12,8 @@ import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.graphics.particle.SmoothParticle;
 import proxy.com.fs.graphics.util.Fps;
-import proxy.com.fs.starfarer.campaign.rules.Rules;
-import proxy.com.fs.starfarer.util.ScreenshotUtil;
 import proxy.com.fs.starfarer.Version;
+import proxy.com.fs.starfarer.campaign.rules.Rules;
 import proxy.com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
 import proxy.com.fs.starfarer.loading.SpecStore;
 import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
@@ -22,6 +21,7 @@ import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 import proxy.com.fs.starfarer.renderers.AtmosphereRenderer;
 import proxy.com.fs.starfarer.renderers.ShipArrowRenderer;
 import proxy.com.fs.starfarer.settings.StarfarerSettings;
+import proxy.com.fs.starfarer.util.ScreenshotUtil;
 
 import java.awt.*;
 import java.io.IOException;
@@ -70,12 +70,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         MarkovNames.loadIfNeeded();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
-            // DDS mod functionality is integrated into Fast Rendering image pipeline.
-            // There's no need to run the standalone DDS replacer plugin.
-            if (DDSCache.shouldSkipDDSMod(mod)) {
-                continue;
-            }
-
             mod.onApplicationLoad();
         }
 

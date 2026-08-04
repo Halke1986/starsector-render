@@ -177,8 +177,4 @@ public class DDSCache {
 
     private record DDSTextureData(TextureData texData, File ddsFile) {
     }
-
-    public static boolean shouldSkipDDSMod(ModPlugin mod) {
-        return mod.getClass().getName().contains("DeCell.VOpt.");
-    }
 }
