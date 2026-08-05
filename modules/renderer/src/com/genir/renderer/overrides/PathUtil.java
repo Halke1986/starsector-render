@@ -14,10 +14,13 @@ public class PathUtil {
             path = path.substring(pwd.length());
         }
 
-        // Finish stripping starsector-core path
-        // prefix on Windows.
-        if (path.startsWith("\\")) {
-            path = path.substring("\\".length());
+        // Convert path format.
+        path = path.replace("\\", "/");
+
+        // Remove leading slash. This needs to be done before
+        // call to normalize(), as normalize() converts '/../' to '/'.
+        if (path.startsWith("/")) {
+            path = path.substring("/".length());
         }
 
         // Normalize path.
