@@ -1,4 +1,5 @@
-- Added support for VRAM Optimizer. When installed, Fast Rendering uses its DDS texture cache, reducing game load times and eliminating the initial VRAM usage spike. 
+- Added support for VRAM Optimizer. When installed, Fast Rendering uses its DDS texture cache, reducing game load times and eliminating the initial VRAM usage spike.
+- Fixed a NullPointerException when loading Valhalla Starworks. Reported by Hyperkayak.
 
 v0.8.1
 
