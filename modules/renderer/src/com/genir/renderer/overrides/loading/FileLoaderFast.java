@@ -256,6 +256,10 @@ public class FileLoaderFast {
                 if (getFileExtension(fileName).equals(extension)) {
                     String fileKey = dir + "/" + fileName;
 
+                    // Always return absolute paths for core resources, even when useAbsolutePath is false.
+                    // This matches vanilla Starsector behavior and prevents a modded resource from being
+                    // mistaken for a core game resource. Valhalla Starworks 2.0 is one mod that would
+                    // otherwise trigger such a false-positive match.
                     String filePath;
                     if (useAbsolutePath || directoryHndle.isCoreFile) {
                         filePath = file.getAbsolutePath();

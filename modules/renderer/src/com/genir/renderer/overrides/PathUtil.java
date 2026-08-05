@@ -28,6 +28,9 @@ public class PathUtil {
 
         // Lowercase file path, to avoid case sensitivity
         // issues. Not sure if this works on Linux or MacOS.
+        // Machina Void Shipyards Armaa Expansion Patch is one
+        // mod that would otherwise trigger a false-negative
+        // file search result
         return path.toLowerCase(Locale.ROOT);
     }
 }

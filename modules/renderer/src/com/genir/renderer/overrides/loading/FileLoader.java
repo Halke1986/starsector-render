@@ -50,9 +50,6 @@ public class FileLoader {
 
     public static List<String> filesWithExtensionInDirectory(String dir, String extension) {
         if (fastLoader != null) {
-//            var test = proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
-//            var mod = fastLoader.filesWithExtensionInDirectory(dir, extension, false);
-//
             return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
         }
 
@@ -61,9 +58,6 @@ public class FileLoader {
 
     public static List<String> filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
         if (fastLoader != null) {
-//            var test = proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
-//            var mod = fastLoader.filesWithExtensionInDirectory(dir, extension, false);
-//
             return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
         }
 
