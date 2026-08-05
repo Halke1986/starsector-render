@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
+import com.genir.renderer.overrides.PathUtil;
 import org.apache.log4j.Logger;
 import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
@@ -15,7 +16,6 @@ import java.util.*;
 public class FileLoaderFast {
     private final List<ResourceLocation> allLocations;
     private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
-    private final String pwd = System.getProperty("user.dir");
 
     public FileLoaderFast(List<ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
@@ -74,7 +74,7 @@ public class FileLoaderFast {
 
                 // String location path, leaving only the file name.
                 fileName = fileName.replace(locationPath, "");
-                fileName = normalizePath(fileName);
+                fileName = PathUtil.normalize(fileName);
 
                 if (fileName.isEmpty()) {
                     continue;
@@ -101,7 +101,7 @@ public class FileLoaderFast {
 
             case "ABSOLUTE_AND_CWD":
                 // Core files.
-                locationPath = pwd;
+                locationPath = PathUtil.pwd;
                 enumeratePath(Paths.get(locationPath), fileCollector);
 
                 String savesPath = System.getProperty("com.fs.starfarer.settings.paths.saves");
@@ -138,28 +138,6 @@ public class FileLoaderFast {
                 enumeratePath(child, fileCollector);
             }
         }
-    }
-
-    private String normalizePath(String path) {
-        // Strip starsector-core path prefix,
-        // in case the file path is absolute.
-        if (path.startsWith(pwd)) {
-            path = path.substring(pwd.length());
-        }
-
-        path = path.replace("\\", "/");
-        if (path.startsWith("/")) {
-            path = path.substring("/".length());
-        }
-
-        path = Paths.get(path).normalize().toString();
-
-        // normalize() reintroduces \ on Windows.
-        path = path.replace("\\", "/");
-
-        // Lowercase file path, to avoid case sensitivity
-        // issues. Not sure if this works on Linux or MacOS.
-        return path.toLowerCase(Locale.ROOT);
     }
 
     private String getFileExtension(String path) {
@@ -203,7 +181,7 @@ public class FileLoaderFast {
     }
 
     private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) {
-        path = normalizePath(path);
+        path = PathUtil.normalize(path);
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
         List<FileHandle> knownResources = cachedFiles.get(path);
@@ -249,7 +227,7 @@ public class FileLoaderFast {
     }
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean absolutePath) {
-        dir = normalizePath(dir);
+        dir = PathUtil.normalize(dir);
         List<FileHandle> knownResources = cachedFiles.get(dir);
         if (knownResources == null) {
             return new ArrayList<>();

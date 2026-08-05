@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides;
 
+import java.nio.file.Paths;
 import java.util.Locale;
 
 public class PathUtil {
@@ -18,6 +19,12 @@ public class PathUtil {
         if (path.startsWith("\\")) {
             path = path.substring("\\".length());
         }
+
+        // Normalize path.
+        path = Paths.get(path).normalize().toString();
+
+        // normalize() reintroduces \ on Windows.
+        path = path.replace("\\", "/");
 
         // Lowercase file path, to avoid case sensitivity
         // issues. Not sure if this works on Linux or MacOS.
