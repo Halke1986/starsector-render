@@ -17,4 +17,22 @@
     </extension>
     <method v="2" />
   </configuration>
+  <configuration default="false" name="StarsectorFR" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="azul-17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="com.fs.starfarer.StarfarerLauncher" />
+    <option name="VM_PARAMETERS" value="-Xmx4g -Xms4g -Xss4m -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions -XX:-BytecodeVerificationLocal -XX:-BytecodeVerificationRemote -XX:+ShowCodeDetailsInExceptionMessages -XX:+ExtensiveErrorReports -XX:+ShowMessageBoxOnError -XX:+PrintCommandLineFlags -XX:+PrintCodeCache -XX:+UseShenandoahGC -XX:+DisableExplicitGC -XX:+UseFastStosb -XX:+UseXmmI2D -XX:+UseXmmI2F -XX:+AlwaysPreTouch -XX:+ZeroTLAB -XX:+UseStringDeduplication -XX:+EnableVectorSupport -XX:+EnableVectorAggressiveReboxing -XX:+EnableVectorReboxing -XX:+UseVectorCmov -XX:+UseVectorStubs -XX:ThreadPriorityPolicy=1 -Xlog:async -Djava.library.path=native\\windows -Djava.util.Arrays.useLegacyMergeSort=true --enable-preview --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.lang.ref=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.desktop/java.awt=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED --add-exports=java.base/sun.nio.ch=ALL-UNNAMED -Dcom.fs.starfarer.settings.paths.saves=../saves -Dcom.fs.starfarer.settings.paths.screenshots=../screenshots -Dcom.fs.starfarer.settings.paths.mods=../mods -Dcom.fs.starfarer.settings.paths.logs=. -javaagent:fr.agent.jar -classpath fr.jar;janino.jar;commons-compiler.jar;commons-compiler-jdk.jar;starfarer.api.jar;starfarer_obf.jar;jogg-0.0.7.jar;jorbis-0.0.15.jar;json.jar;lwjgl.jar;jinput.jar;log4j-1.2.9.jar;lwjgl_util.jar;fs.sound_obf.jar;fs.common_obf.jar;xstream-1.4.10.jar;txw2-3.0.2.jar;jaxb-api-2.4.0-b180830.0359.jar;webp-imageio-0.1.6.jar com.fs.starfarer.StarfarerLauncher" />
+    <option name="WORKING_DIRECTORY" value="C:/Program Files (x86)/Fractal Softworks/Starsector98/starsector-core" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+      </ENTRIES>
+    </extension>
+    <method v="2" />
+  </configuration>
 </component>

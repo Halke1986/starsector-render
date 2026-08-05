@@ -87,11 +87,13 @@ public class ResourceHandle extends InputStream {
     }
 
     public static class FileHandle {
-        public File file;
+        public final File file;
+        public final boolean isCoreFile;
         public String cachedContents = null;
 
-        public FileHandle(File file) {
+        public FileHandle(File file, boolean isCoreFile) {
             this.file = file;
+            this.isCoreFile = isCoreFile;
         }
     }
 }
