@@ -70,18 +70,16 @@ public class FileLoaderFast {
             cachedFilesNumber += files.size();
 
             for (File file : files) {
-                String fileName = file.getPath();
-
                 // String location path, leaving only the file name.
-                fileName = fileName.replace(locationPath, "");
-                fileName = PathUtil.normalize(fileName);
+                String resourceKey = file.getPath().replace(locationPath, "");
+                resourceKey = PathUtil.normalize(resourceKey);
 
-                if (fileName.isEmpty()) {
+                if (resourceKey.isEmpty()) {
                     continue;
                 }
 
                 List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
-                        fileName, k -> new ArrayList<>()
+                        resourceKey, k -> new ArrayList<>()
                 );
 
                 knownFiles.add(new FileHandle(file));
@@ -181,22 +179,27 @@ public class FileLoaderFast {
     }
 
     private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) {
-        path = PathUtil.normalize(path);
+        String resourceKey = PathUtil.normalize(path);
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
-        List<FileHandle> knownResources = cachedFiles.get(path);
+        List<FileHandle> knownResources = cachedFiles.get(resourceKey);
 
         if (knownResources != null) {
             for (FileHandle knownResource : knownResources) {
-                // Check if resource matches any of the locations.
+                // Check if resource exists in any of the locations.
                 for (ResourceLocation location : locations) {
                     String locationType = location.ResourceLocation_type.toString();
                     if (locationType.equals("CLASSPATH")) {
                         continue;
                     }
 
-                    File file = knownResource.file;
-                    if (locationType.equals("ABSOLUTE_AND_CWD") || file.getPath().startsWith(location.ResourceLocation_path)) {
+                    boolean cwdMatch = locationType.equals("ABSOLUTE_AND_CWD"); // Core game resource.
+
+                    boolean directoryMatch = locationType.equals("DIRECTORY") // Modded resource.
+                            && knownResource.file.getPath().startsWith(location.ResourceLocation_path) // Ensure the resource is located in the appropriate mod directory.
+                            && !path.startsWith(PathUtil.pwd); // Avoid matching modded resource when looking for a core game resource.
+
+                    if (cwdMatch || directoryMatch) {
                         InputStream stream = new ResourceHandle(knownResource);
                         resources.add(new Pair<>(location, stream));
                         if (findFirst) {
@@ -209,9 +212,10 @@ public class FileLoaderFast {
             }
         }
 
+        // Handle the rare case of a resource embedded in a jar file.
         for (ResourceLocation location : locations) {
             if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
-                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(path);
+                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(resourceKey);
                 if (stream == null) {
                     continue;
                 }

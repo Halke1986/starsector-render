@@ -49,18 +49,18 @@ public class FileLoader {
     }
 
     public static List<String> filesWithExtensionInDirectory(String dir, String extension) {
-        if (fastLoader != null) {
-            return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
-        }
+//        if (fastLoader != null) {
+//            return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
+//        }
 
         return proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
     }
 
     public static List<String> filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
-        if (fastLoader != null) {
-            return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
-        }
-
+//        if (fastLoader != null) {
+//            return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
+//        }
+//
         return LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
     }
 
