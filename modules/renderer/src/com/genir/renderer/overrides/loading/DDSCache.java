@@ -42,7 +42,7 @@ public class DDSCache {
         }
 
         asert(path.isAbsolute());
-        DDSTextureData ddsTexData = cache.get(path);
+        DDSTextureData ddsTexData = cache.get(path.normalize());
 
         // Texture was not converted to DDS.
         if (ddsTexData == null) {
@@ -85,7 +85,7 @@ public class DDSCache {
         List<File> metadataFiles = new ArrayList<>();
 
         // Iterate over dds cache.
-        Path ddsDir = Paths.mods.resolve("DDSCache");
+        Path ddsDir = Path.of(Paths.mods).resolve("DDSCache");
         try (DirectoryStream<Path> ddsDirStream = Files.newDirectoryStream(ddsDir)) {
             for (Path ddsModDirPath : ddsDirStream) {
                 if (!ddsModDirPath.toFile().isDirectory()) {
@@ -128,11 +128,11 @@ public class DDSCache {
                     String ddsFilePath = ".." + dds.getString("DDSFilePath");
                     File ddsFile = new File(ddsFilePath);
 
-                    Path absolutePath;
+                    Path absolutePath = Path.of(Paths.pwd);
                     if (Objects.equals(modDir, "starsector-core")) {
-                        absolutePath = Paths.pwd.resolve(relPath);
+                        absolutePath = absolutePath.resolve(relPath);
                     } else {
-                        absolutePath = Paths.pwd.resolve(Paths.mods).resolve(modDir).resolve(relPath);
+                        absolutePath = absolutePath.resolve(Paths.mods).resolve(modDir).resolve(relPath);
                     }
 
                     cache.put(absolutePath.normalize(), new DDSTextureData(readTextureData(dds), ddsFile));
