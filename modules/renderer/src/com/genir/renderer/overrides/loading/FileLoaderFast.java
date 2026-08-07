@@ -1,7 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
 import com.genir.renderer.overrides.PathUtil;
-import org.apache.log4j.Logger;
 import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import org.apache.log4j.Logger;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
@@ -11,10 +10,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
+    private final static String DIRECTORY = "DIRECTORY";
+    private final static String CLASSPATH = "CLASSPATH";
+    private final static String ABSOLUTE_AND_CWD = "ABSOLUTE_AND_CWD";
+
     private final List<ResourceLocation> allLocations;
     private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
 
@@ -72,17 +74,17 @@ public class FileLoaderFast {
         List<FileHandle> fileCollector = new ArrayList<>();
 
         switch (location.ResourceLocation_type.toString()) {
-            case "CLASSPATH":
+            case CLASSPATH:
                 return null;
 
-            case "ABSOLUTE_AND_CWD":
+            case ABSOLUTE_AND_CWD:
                 enumeratePath(locationPath, fileCollector, location); // Game assets.
                 enumeratePath(locationPath.resolve(PathUtil.saves), fileCollector, location); // Saved games.
                 enumeratePath(locationPath.resolve(PathUtil.mods).resolve("enabled_mods.json"), fileCollector, location); // Enabled mods list.
                 enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, location); // Mikohime Java mod.
 
                 break;
-            case "DIRECTORY":
+            case DIRECTORY:
                 enumeratePath(locationPath, fileCollector, location); // Mod assets.
 
                 break;
@@ -106,105 +108,73 @@ public class FileLoaderFast {
         }
     }
 
-    public InputStream loadInputStream(String path) throws IOException {
-        return findResources(allLocations, path, true).get(0).two;
-    }
+    public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) {
+        List<Pair<ResourceLocation, InputStream>> resources = loadInputStreams(path);
 
-    public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) throws IOException {
-        List<ResourceLocation> filteredLocations = allLocations;
+        for (Pair<ResourceLocation, InputStream> resource : resources) {
+            ResourceLocation location = resource.one;
 
-        // Filter locations.
-        if (locationFilter != null) {
-            filteredLocations = filteredLocations.stream().filter(location ->
-                    location.ResourceLocation_type.toString().equals("DIRECTORY") && location.ResourceLocation_path.endsWith(locationFilter)
-            ).toList();
-        }
-
-        if (skipMods) {
-            filteredLocations = filteredLocations.stream().filter(location ->
-                    !location.ResourceLocation_isMod
-            ).toList();
-        }
-
-        return findResources(filteredLocations, path, true).get(0).two;
-    }
-
-    public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
-        return findResources(allLocations, path, false);
-    }
-
-    private List<Pair<ResourceLocation, InputStream>> findResources(List<ResourceLocation> locations, String path, boolean findFirst) throws IOException {
-        List<Pair<ResourceLocation, InputStream>> resources;
-        resources = findResourcesInLocations(locations, path, findFirst);
-        if (!resources.isEmpty()) {
-            return resources;
-        }
-
-        // Build error message.
-        StringBuilder searchedLocations = new StringBuilder();
-        for (ResourceLocation location : locations) {
-            switch (location.ResourceLocation_type.toString()) {
-                case "DIRECTORY":
-                    searchedLocations.append(location.ResourceLocation_path).append(",");
-                    break;
-                case "ABSOLUTE_AND_CWD":
-                    break;
-                case "CLASSPATH":
-                    searchedLocations.append("CLASSPATH,");
-                    break;
+            if (skipMods && location.ResourceLocation_isMod) {
+                continue;
             }
+
+            if (locationFilter != null && location.ResourceLocation_type.toString().equals(DIRECTORY) && !location.ResourceLocation_path.endsWith(locationFilter)) {
+                continue;
+            }
+
+            return resource.two;
         }
 
-        throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
+        throw new RuntimeException("Resource [" + path + "] not found in game and mod resources.");
     }
 
-    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) {
+    public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) {
         String resourceKey = PathUtil.normalize(path);
+
+        // Vanill may pass absolute path when it loads core game resource.
+        boolean isAbsolute = resourceKey.startsWith(PathUtil.pwd);
+        if (isAbsolute) {
+            resourceKey = PathUtil.normalize(resourceKey.substring(PathUtil.pwd.length()));
+        }
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
         List<FileHandle> knownResources = cachedFiles.get(resourceKey);
 
+        // Convert resources to outpur format.
         if (knownResources != null) {
-            for (FileHandle knownResource : knownResources) {
-                // Check if resource exists in any of the locations.
-                for (ResourceLocation location : locations) {
-                    String locationType = location.ResourceLocation_type.toString();
-                    if (locationType.equals("CLASSPATH")) {
-                        continue;
-                    }
-
-                    boolean cwdMatch = locationType.equals("ABSOLUTE_AND_CWD"); // Core game resource.
-
-                    boolean directoryMatch = locationType.equals("DIRECTORY") // Modded resource.
-                            && knownResource.file.getPath().startsWith(location.ResourceLocation_path) // Ensure the resource is located in the appropriate mod directory.
-                            && !path.startsWith(PathUtil.pwd); // Avoid matching modded resource when looking for a core game resource.
-
-                    if (cwdMatch || directoryMatch) {
-                        InputStream stream = new ResourceHandle(knownResource);
-                        resources.add(new Pair<>(location, stream));
-                        if (findFirst) {
-                            return resources;
-                        }
-
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Handle the rare case of a resource embedded in a jar file.
-        for (ResourceLocation location : locations) {
-            if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
-                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(resourceKey);
-                if (stream == null) {
+            for (FileHandle resource : knownResources) {
+                // Avoid matching modded resource when looking for a core game resource.
+                if (isAbsolute && resource.location.ResourceLocation_type.toString() == DIRECTORY) {
                     continue;
                 }
 
-                resources.add(new Pair<>(location, stream));
-                if (findFirst) {
-                    return resources;
+                resources.add(new Pair<>(resource.location, new ResourceHandle(resource)));
+            }
+        }
+
+        // Assume resource will not be present in files
+        // and embedded in jars at the same time.
+        if (!resources.isEmpty()) {
+            return resources;
+        }
+
+        // Handle the rare case of a resource embedded in a jar file.
+        InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(path);
+        if (stream != null) {
+            // Find the classpath location.
+            ResourceLocation classpath = null;
+            for (ResourceLocation location : allLocations) {
+                if (location.ResourceLocation_type.toString() == CLASSPATH) {
+                    classpath = location;
+                    break;
                 }
             }
+
+            resources.add(new Pair<>(classpath, stream));
+        }
+
+        if (resources.isEmpty()) {
+            throw new RuntimeException("Resource [" + path + "] not found in game and mod resources.");
         }
 
         return resources;
@@ -281,7 +251,7 @@ public class FileLoaderFast {
     }
 
     private boolean isExcludedLocation(ResourceLocation location) {
-        if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
+        if (location.ResourceLocation_type.toString().equals(CLASSPATH)) {
             return true;
         }
 

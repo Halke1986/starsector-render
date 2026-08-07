@@ -16,7 +16,7 @@ public class FileLoader {
 
     public static InputStream loadInputStream(String path, boolean searchMods) throws IOException {
         if (fastLoader != null && !isModLoading) {
-            return fastLoader.loadInputStream(path);
+            return fastLoader.loadInputStream(path, null, false);
         }
 
         var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
