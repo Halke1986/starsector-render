@@ -6,6 +6,7 @@ import java.util.Locale;
 public class PathUtil {
     public static final String pwd = System.getProperty("user.dir");
     public static final String mods = System.getProperty("com.fs.starfarer.settings.paths.mods");
+    public static final String saves = System.getProperty("com.fs.starfarer.settings.paths.saves");
 
     public static String normalize(String path) {
         // Strip starsector-core path prefix,

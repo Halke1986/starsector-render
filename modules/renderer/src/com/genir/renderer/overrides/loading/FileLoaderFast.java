@@ -32,37 +32,14 @@ public class FileLoaderFast {
         Logger.getLogger(FileLoaderFast.class).info("Cached " + cachedFilesNumber + " files in " + (int) (duration / 1000000) + "ms");
     }
 
-    public InputStream loadInputStream(String path) throws IOException {
-        return findResources(allLocations, path, true).get(0).two;
-    }
-
-    public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) throws IOException {
-        List<ResourceLocation> filteredLocations = allLocations;
-
-        // Filter locations.
-        if (locationFilter != null) {
-            filteredLocations = filteredLocations.stream().filter(location ->
-                    location.ResourceLocation_type.toString().equals("DIRECTORY") && location.ResourceLocation_path.endsWith(locationFilter)
-            ).toList();
-        }
-
-        if (skipMods) {
-            filteredLocations = filteredLocations.stream().filter(location ->
-                    !location.ResourceLocation_isMod
-            ).toList();
-        }
-
-        return findResources(filteredLocations, path, true).get(0).two;
-    }
-
-    public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
-        return findResources(allLocations, path, false);
-    }
-
     private int cacheLocations() {
         int cachedFilesNumber = 0;
 
         for (ResourceLocation location : allLocations) {
+            if (isExcludedLocation(location)) {
+                continue;
+            }
+
             Pair<String, List<FileHandle>> locationFiles = enumerateLocation(location);
             if (locationFiles == null) {
                 continue;
@@ -94,7 +71,7 @@ public class FileLoaderFast {
     }
 
     private Pair<String, List<FileHandle>> enumerateLocation(ResourceLocation location) {
-        String locationPath = null;
+        Path locationPath = Path.of(getLocationPath(location)).toAbsolutePath();
         List<FileHandle> fileCollector = new ArrayList<>();
 
         switch (location.ResourceLocation_type.toString()) {
@@ -102,30 +79,19 @@ public class FileLoaderFast {
                 return null;
 
             case "ABSOLUTE_AND_CWD":
-                // Core files.
-                locationPath = PathUtil.pwd;
-                enumeratePath(Paths.get(locationPath), fileCollector, CORE_FILE);
-
-                // Saved games.
-                String savesPath = System.getProperty("com.fs.starfarer.settings.paths.saves");
-                enumeratePath(Paths.get(locationPath + "/" + savesPath), fileCollector, CORE_FILE);
-
-                // Enabled mods list.
-                String modsPath = System.getProperty("com.fs.starfarer.settings.paths.mods");
-                File enabledMods = new File(locationPath + "/" + modsPath + "/enabled_mods.json");
-                fileCollector.add(new FileHandle(enabledMods, CORE_FILE));
-
-                // Mikohime Java mod.
-                enumeratePath(Paths.get(locationPath + "/../mikohime"), fileCollector, MOD_FILE);
+                enumeratePath(locationPath, fileCollector, CORE_FILE); // Game assets.
+                enumeratePath(locationPath.resolve(PathUtil.saves), fileCollector, CORE_FILE); // Saved games.
+                enumeratePath(locationPath.resolve(PathUtil.mods).resolve("enabled_mods.json"), fileCollector, CORE_FILE); // Enabled mods list.
+                enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, MOD_FILE); // Mikohime Java mod.
 
                 break;
             case "DIRECTORY":
-                locationPath = location.ResourceLocation_path;
-                enumeratePath(Paths.get(location.ResourceLocation_path), fileCollector, MOD_FILE);
+                enumeratePath(locationPath, fileCollector, MOD_FILE); // Mod assets.
+
                 break;
         }
 
-        return new Pair<>(locationPath, fileCollector);
+        return new Pair<>(locationPath.toString(), fileCollector);
     }
 
     private void enumeratePath(Path path, List<FileHandle> fileCollector, boolean coreFile) {
@@ -143,19 +109,31 @@ public class FileLoaderFast {
         }
     }
 
-    private String getFileExtension(String path) {
-        if (path == null || path.isEmpty()) {
-            return "";
+    public InputStream loadInputStream(String path) throws IOException {
+        return findResources(allLocations, path, true).get(0).two;
+    }
+
+    public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) throws IOException {
+        List<ResourceLocation> filteredLocations = allLocations;
+
+        // Filter locations.
+        if (locationFilter != null) {
+            filteredLocations = filteredLocations.stream().filter(location ->
+                    location.ResourceLocation_type.toString().equals("DIRECTORY") && location.ResourceLocation_path.endsWith(locationFilter)
+            ).toList();
         }
 
-        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
-        int lastDot = path.lastIndexOf('.');
-
-        if (lastDot <= lastSeparator || lastDot == path.length() - 1) {
-            return "";
+        if (skipMods) {
+            filteredLocations = filteredLocations.stream().filter(location ->
+                    !location.ResourceLocation_isMod
+            ).toList();
         }
 
-        return path.substring(lastDot + 1);
+        return findResources(filteredLocations, path, true).get(0).two;
+    }
+
+    public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
+        return findResources(allLocations, path, false);
     }
 
     private List<Pair<ResourceLocation, InputStream>> findResources(List<ResourceLocation> locations, String path, boolean findFirst) throws IOException {
@@ -277,5 +255,43 @@ public class FileLoaderFast {
         }
 
         return foundFiles;
+    }
+
+    private String getFileExtension(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+
+        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+        int lastDot = path.lastIndexOf('.');
+
+        if (lastDot <= lastSeparator || lastDot == path.length() - 1) {
+            return "";
+        }
+
+        return path.substring(lastDot + 1);
+    }
+
+    private String getLocationPath(ResourceLocation location) {
+        switch (location.ResourceLocation_type.toString()) {
+            case "DIRECTORY":
+                return location.ResourceLocation_path;
+            case "ABSOLUTE_AND_CWD":
+                return PathUtil.pwd;
+            default:
+                return null;
+        }
+    }
+
+    private boolean isExcludedLocation(ResourceLocation location) {
+        if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
+            return true;
+        }
+
+        if (location.ResourceLocation_path == "../starfarer.res/res") {
+            return true;
+        }
+
+        return false;
     }
 }
