@@ -76,8 +76,9 @@ public class FileLoaderFast {
 
             for (FileHandle fileHandle : files) {
                 Path filePath = fileHandle.file.toPath();
-                String fileKey = Paths.normalize(filePath.toString());
-                asert(Paths.isAbsolute(fileKey));
+                String fileKeyAbsolute = Paths.normalize(filePath.toString());
+                asert(Path.of(fileKeyAbsolute).isAbsolute());
+                String fileKey = Paths.normalize(fileKeyAbsolute.substring(Paths.pwd.length()));
                 cachedResources.put(fileKey, fileHandle);
             }
         }
@@ -86,7 +87,7 @@ public class FileLoaderFast {
     }
 
     private List<FileHandle> enumerateLocation(ResourceLocation location) {
-        Path locationPath = Path.of(getLocationPath(location));
+        Path locationPath = Path.of(getLocationPath(location)).toAbsolutePath();
         List<FileHandle> fileCollector = new ArrayList<>();
 
         switch (location.ResourceLocation_type.toString()) {
@@ -149,9 +150,8 @@ public class FileLoaderFast {
         throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
     }
 
-    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String pathRaw, boolean findFirst) {
-        String path = Paths.normalize(pathRaw);
-        boolean pathIsAbsolute = Paths.isAbsolute(path);
+    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) {
+        boolean pathIsAbsolute = Path.of(path).isAbsolute();
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
 
@@ -168,7 +168,8 @@ public class FileLoaderFast {
 
             String expectedPath;
             if (pathIsAbsolute) {
-                expectedPath = path;
+                // Relativize path.
+                expectedPath = path.substring(Paths.pwd.length());
             } else {
                 String locationPath = getLocationPath(location);
                 expectedPath = locationPath + "/" + path;
@@ -185,10 +186,16 @@ public class FileLoaderFast {
             }
         }
 
+        // Assume resource will not be present in files
+        // and embedded in jars at the same time.
+        if (!resources.isEmpty()) {
+            return resources;
+        }
+
         // Handle the rare case of a resource embedded in a jar file.
         for (ResourceLocation location : locations) {
             if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
-                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(pathRaw);
+                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(path);
                 if (stream == null) {
                     continue;
                 }
@@ -271,9 +278,13 @@ public class FileLoaderFast {
     private String getLocationPath(ResourceLocation location) {
         switch (location.ResourceLocation_type.toString()) {
             case "DIRECTORY":
-                return location.ResourceLocation_path;
+                // Strip PWD and leading slash.
+                String absolute = location.ResourceLocation_path;
+                String relative = absolute.substring(Paths.pwd.length() + 1);
+
+                return relative;
             case "ABSOLUTE_AND_CWD":
-                return Paths.pwd;
+                return "";
             default:
                 return null;
         }

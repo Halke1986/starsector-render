@@ -7,11 +7,6 @@ public class Paths {
     public static final String mods = normalize(System.getProperty("com.fs.starfarer.settings.paths.mods"));
     public static final String saves = normalize(System.getProperty("com.fs.starfarer.settings.paths.saves"));
 
-    public static boolean isAbsolute(String path) {
-        // Assume all absolute paths are rooted in application working directory.
-        return path.startsWith(pwd);
-    }
-
     public static String normalize(String path) {
         path = path.replace("\\", "/");
 
