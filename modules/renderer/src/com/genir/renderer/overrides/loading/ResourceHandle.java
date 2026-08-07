@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import proxy.com.fs.util.FileLoader.ResourceLocation;
+
 import static com.genir.renderer.overrides.loading.FileLoader.readStringVanilla;
 
 public class ResourceHandle extends InputStream {
@@ -88,12 +90,16 @@ public class ResourceHandle extends InputStream {
 
     public static class FileHandle {
         public final File file;
-        public final boolean isCoreFile;
+        public final ResourceLocation location;
         public String cachedContents = null;
 
-        public FileHandle(File file, boolean isCoreFile) {
+        public FileHandle(File file, ResourceLocation location) {
             this.file = file;
-            this.isCoreFile = isCoreFile;
+            this.location = location;
+        }
+
+        public boolean isCoreFile() {
+            return !location.ResourceLocation_isMod;
         }
     }
 }

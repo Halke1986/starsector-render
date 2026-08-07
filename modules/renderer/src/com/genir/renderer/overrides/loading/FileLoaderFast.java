@@ -15,9 +15,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
-    private static final boolean CORE_FILE = true;
-    private static final boolean MOD_FILE = false;
-
     private final List<ResourceLocation> allLocations;
     private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
 
@@ -79,14 +76,14 @@ public class FileLoaderFast {
                 return null;
 
             case "ABSOLUTE_AND_CWD":
-                enumeratePath(locationPath, fileCollector, CORE_FILE); // Game assets.
-                enumeratePath(locationPath.resolve(PathUtil.saves), fileCollector, CORE_FILE); // Saved games.
-                enumeratePath(locationPath.resolve(PathUtil.mods).resolve("enabled_mods.json"), fileCollector, CORE_FILE); // Enabled mods list.
-                enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, MOD_FILE); // Mikohime Java mod.
+                enumeratePath(locationPath, fileCollector, location); // Game assets.
+                enumeratePath(locationPath.resolve(PathUtil.saves), fileCollector, location); // Saved games.
+                enumeratePath(locationPath.resolve(PathUtil.mods).resolve("enabled_mods.json"), fileCollector, location); // Enabled mods list.
+                enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, location); // Mikohime Java mod.
 
                 break;
             case "DIRECTORY":
-                enumeratePath(locationPath, fileCollector, MOD_FILE); // Mod assets.
+                enumeratePath(locationPath, fileCollector, location); // Mod assets.
 
                 break;
         }
@@ -94,17 +91,17 @@ public class FileLoaderFast {
         return new Pair<>(locationPath.toString(), fileCollector);
     }
 
-    private void enumeratePath(Path path, List<FileHandle> fileCollector, boolean coreFile) {
-        enumeratePath(path.toFile(), fileCollector, coreFile);
+    private void enumeratePath(Path path, List<FileHandle> fileCollector, ResourceLocation location) {
+        enumeratePath(path.toFile(), fileCollector, location);
     }
 
-    private void enumeratePath(File file, List<FileHandle> fileCollector, boolean coreFile) {
-        fileCollector.add(new FileHandle(file, coreFile));
+    private void enumeratePath(File file, List<FileHandle> fileCollector, ResourceLocation location) {
+        fileCollector.add(new FileHandle(file, location));
 
         File[] files = file.listFiles();
         if (files != null) {
             for (File child : files) {
-                enumeratePath(child, fileCollector, coreFile);
+                enumeratePath(child, fileCollector, location);
             }
         }
     }
@@ -223,8 +220,8 @@ public class FileLoaderFast {
         Set<String> knownFiles = new HashSet<>();
         List<String> foundFiles = new ArrayList<>();
 
-        for (FileHandle directoryHndle : knownDirectories) {
-            File[] files = directoryHndle.file.listFiles();
+        for (FileHandle directoryHandle : knownDirectories) {
+            File[] files = directoryHandle.file.listFiles();
             if (files == null) {
                 continue;
             }
@@ -239,7 +236,7 @@ public class FileLoaderFast {
                     // mistaken for a core game resource. Valhalla Starworks 2.0 is one mod that would
                     // otherwise trigger such a false-positive match.
                     String filePath;
-                    if (useAbsolutePath || directoryHndle.isCoreFile) {
+                    if (useAbsolutePath || directoryHandle.isCoreFile()) {
                         filePath = file.getAbsolutePath();
                     } else {
                         filePath = dir + "/" + fileName;
