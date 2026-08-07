@@ -1,9 +1,8 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.ModPlugin;
 import com.fs.starfarer.api.ModSpecAPI;
-import com.genir.renderer.overrides.PathUtil;
+import com.genir.renderer.overrides.Paths;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,12 +18,14 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
+import static com.genir.renderer.debug.Debug.asert;
+
 /**
  * DDSCache provides integration with VramOptimizer mod. When VramOptimizer is enabled,
  * vanilla texture loading is replaced with the much faster DDS texture loading.
  */
 public class DDSCache {
-    private static Map<String, DDSTextureData> cache = null;
+    private static Map<Path, DDSTextureData> cache = null;
 
     public static void initializeCache() {
         if (!vramOptimizerEnabled()) {
@@ -40,12 +41,11 @@ public class DDSCache {
             return null;
         }
 
-        String texturePath = PathUtil.normalize(path.toString());
-        DDSTextureData ddsTexData = cache.get(texturePath);
+        asert(path.isAbsolute());
+        DDSTextureData ddsTexData = cache.get(path);
 
         // Texture was not converted to DDS.
         if (ddsTexData == null) {
-            // Logger.getLogger(DDSCache.class).info(strPath);
             return null;
         }
 
@@ -82,12 +82,11 @@ public class DDSCache {
     }
 
     private static List<File> findDDSMetadata() {
-        String ddsDir = PathUtil.normalize(PathUtil.modDir + "/DDSCache");
-
         List<File> metadataFiles = new ArrayList<>();
 
         // Iterate over dds cache.
-        try (DirectoryStream<Path> ddsDirStream = Files.newDirectoryStream(Path.of(ddsDir))) {
+        Path ddsDir = Paths.mods.resolve("DDSCache");
+        try (DirectoryStream<Path> ddsDirStream = Files.newDirectoryStream(ddsDir)) {
             for (Path ddsModDirPath : ddsDirStream) {
                 if (!ddsModDirPath.toFile().isDirectory()) {
                     continue;
@@ -112,8 +111,8 @@ public class DDSCache {
         return metadataFiles;
     }
 
-    private static Map<String, DDSTextureData> readDDSMetadata(List<File> metadataFiles) {
-        Map<String, DDSTextureData> cache = new HashMap<>();
+    private static Map<Path, DDSTextureData> readDDSMetadata(List<File> metadataFiles) {
+        Map<Path, DDSTextureData> cache = new HashMap<>();
 
         for (File file : metadataFiles) {
             try {
@@ -129,15 +128,14 @@ public class DDSCache {
                     String ddsFilePath = ".." + dds.getString("DDSFilePath");
                     File ddsFile = new File(ddsFilePath);
 
-                    String absolutePath;
+                    Path absolutePath;
                     if (Objects.equals(modDir, "starsector-core")) {
-                        absolutePath = relPath;
+                        absolutePath = Paths.pwd.resolve(relPath);
                     } else {
-                        absolutePath = PathUtil.modDir + "/" + modDir + "/" + relPath;
+                        absolutePath = Paths.pwd.resolve(Paths.mods).resolve(modDir).resolve(relPath);
                     }
 
-                    String normalizedPath = PathUtil.normalize(Path.of(absolutePath).normalize().toString());
-                    cache.put(normalizedPath, new DDSTextureData(readTextureData(dds), ddsFile));
+                    cache.put(absolutePath.normalize(), new DDSTextureData(readTextureData(dds), ddsFile));
                 }
             } catch (Exception e) {
                 Logger.getLogger(DDSCache.class).info(e);

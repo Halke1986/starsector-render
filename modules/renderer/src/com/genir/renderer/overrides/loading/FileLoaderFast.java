@@ -1,7 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
-import com.genir.renderer.overrides.PathUtil;
-import org.apache.log4j.Logger;
+import com.genir.renderer.overrides.Paths;
 import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import org.apache.log4j.Logger;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
@@ -19,7 +17,7 @@ public class FileLoaderFast {
     private static final boolean MOD_FILE = false;
 
     private final List<ResourceLocation> allLocations;
-    private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
+    private final Map<String, FileHandle> cachedResources = new HashMap<>();
 
     public FileLoaderFast(List<ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
@@ -63,38 +61,30 @@ public class FileLoaderFast {
         int cachedFilesNumber = 0;
 
         for (ResourceLocation location : allLocations) {
-            Pair<String, List<FileHandle>> locationFiles = enumerateLocation(location);
-            if (locationFiles == null) {
+            // Handle the unused path ../starfarer.res/res
+            if (location.ResourceLocation_path == "../starfarer.res/res") {
                 continue;
             }
 
-            String locationPath = locationFiles.one;
-            List<FileHandle> fileHandles = locationFiles.two;
+            List<FileHandle> files = enumerateLocation(location);
+            if (files == null) {
+                continue;
+            }
 
-            cachedFilesNumber += fileHandles.size();
+            cachedFilesNumber += files.size();
 
-            for (FileHandle fileHandle : fileHandles) {
-                String fileName = fileHandle.file.getPath();
-
-                // String location path, leaving only the file name.
-                String resourceKey = PathUtil.normalize(fileName.replace(locationPath, ""));
-                if (resourceKey.isEmpty()) {
-                    continue;
-                }
-
-                List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
-                        resourceKey, k -> new ArrayList<>()
-                );
-
-                knownFiles.add(fileHandle);
+            for (FileHandle fileHandle : files) {
+                Path filePath = fileHandle.file.toPath();
+                String fileKey = getResourceKey(filePath);
+                cachedResources.put(fileKey, fileHandle);
             }
         }
 
         return cachedFilesNumber;
     }
 
-    private Pair<String, List<FileHandle>> enumerateLocation(ResourceLocation location) {
-        String locationPath = null;
+    private List<FileHandle> enumerateLocation(ResourceLocation location) {
+        Path locationPath = getLocationPath(location);
         List<FileHandle> fileCollector = new ArrayList<>();
 
         switch (location.ResourceLocation_type.toString()) {
@@ -102,34 +92,23 @@ public class FileLoaderFast {
                 return null;
 
             case "ABSOLUTE_AND_CWD":
-                // Core files.
-                locationPath = PathUtil.pwd;
-                enumeratePath(Paths.get(locationPath), fileCollector, CORE_FILE);
-
-                // Saved games.
-                String savesPath = System.getProperty("com.fs.starfarer.settings.paths.saves");
-                enumeratePath(Paths.get(locationPath + "/" + savesPath), fileCollector, CORE_FILE);
-
-                // Enabled mods list.
-                String modsPath = System.getProperty("com.fs.starfarer.settings.paths.mods");
-                File enabledMods = new File(locationPath + "/" + modsPath + "/enabled_mods.json");
-                fileCollector.add(new FileHandle(enabledMods, CORE_FILE));
-
-                // Mikohime Java mod.
-                enumeratePath(Paths.get(locationPath + "/../mikohime"), fileCollector, MOD_FILE);
+                enumeratePath(locationPath, fileCollector, CORE_FILE); // Game assets.
+                enumeratePath(locationPath.resolve(Paths.saves), fileCollector, CORE_FILE); // Saved games.
+                enumeratePath(locationPath.resolve(Paths.mods).resolve("enabled_mods.json"), fileCollector, CORE_FILE); // Enabled mods list.
+                enumeratePath(locationPath.resolveSibling("mikohime"), fileCollector, MOD_FILE); // Mikohime Java mod.
 
                 break;
             case "DIRECTORY":
-                locationPath = location.ResourceLocation_path;
-                enumeratePath(Paths.get(location.ResourceLocation_path), fileCollector, MOD_FILE);
+                enumeratePath(locationPath, fileCollector, MOD_FILE); // Mod assets.
+
                 break;
         }
 
-        return new Pair<>(locationPath, fileCollector);
+        return fileCollector;
     }
 
     private void enumeratePath(Path path, List<FileHandle> fileCollector, boolean coreFile) {
-        enumeratePath(path.toFile(), fileCollector, coreFile);
+        enumeratePath(path.normalize().toFile(), fileCollector, coreFile);
     }
 
     private void enumeratePath(File file, List<FileHandle> fileCollector, boolean coreFile) {
@@ -141,21 +120,6 @@ public class FileLoaderFast {
                 enumeratePath(child, fileCollector, coreFile);
             }
         }
-    }
-
-    private String getFileExtension(String path) {
-        if (path == null || path.isEmpty()) {
-            return "";
-        }
-
-        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
-        int lastDot = path.lastIndexOf('.');
-
-        if (lastDot <= lastSeparator || lastDot == path.length() - 1) {
-            return "";
-        }
-
-        return path.substring(lastDot + 1);
     }
 
     private List<Pair<ResourceLocation, InputStream>> findResources(List<ResourceLocation> locations, String path, boolean findFirst) throws IOException {
@@ -183,36 +147,39 @@ public class FileLoaderFast {
         throw new RuntimeException("Error loading [" + path + "] resource, not found in [" + searchedLocations + "]");
     }
 
-    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String path, boolean findFirst) {
-        String resourceKey = PathUtil.normalize(path);
+    private List<Pair<ResourceLocation, InputStream>> findResourcesInLocations(List<ResourceLocation> locations, String pathStr, boolean findFirst) {
+        // Sanitize path from leading slashes introduced by MissileShipOverhaul.
+        Path path = Path.of(pathStr.replaceFirst("^[\\\\/]+", ""));
 
+        boolean pathIsAbsolute = path.isAbsolute();
+        Path resourcePathInLocation = pathIsAbsolute ? Paths.pwd.relativize(path) : path;
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
-        List<FileHandle> knownResources = cachedFiles.get(resourceKey);
 
-        if (knownResources != null) {
-            for (FileHandle knownResource : knownResources) {
-                // Check if resource exists in any of the locations.
-                for (ResourceLocation location : locations) {
-                    String locationType = location.ResourceLocation_type.toString();
-                    if (locationType.equals("CLASSPATH")) {
-                        continue;
-                    }
+        for (ResourceLocation location : locations) {
+            String locationType = location.ResourceLocation_type.toString();
+            if (locationType.equals("CLASSPATH")) {
+                continue;
+            }
 
-                    boolean cwdMatch = locationType.equals("ABSOLUTE_AND_CWD"); // Core game resource.
+            if (location.ResourceLocation_path == "../starfarer.res/res") {
+                continue;
+            }
 
-                    boolean directoryMatch = locationType.equals("DIRECTORY") // Modded resource.
-                            && knownResource.file.getPath().startsWith(location.ResourceLocation_path) // Ensure the resource is located in the appropriate mod directory.
-                            && !path.startsWith(PathUtil.pwd); // Avoid matching modded resource when looking for a core game resource.
+            // Avoid matching modded resource when looking for a core game resource.
+            if (pathIsAbsolute && locationType.equals("DIRECTORY")) {
+                continue;
+            }
 
-                    if (cwdMatch || directoryMatch) {
-                        InputStream stream = new ResourceHandle(knownResource);
-                        resources.add(new Pair<>(location, stream));
-                        if (findFirst) {
-                            return resources;
-                        }
+            Path locationPath = getLocationPath(location);
+            Path expectedPath = locationPath.resolve(resourcePathInLocation).normalize();
+            String resourceKey = getResourceKey(expectedPath);
 
-                        break;
-                    }
+            FileHandle resource = cachedResources.get(resourceKey);
+            if (resource != null) {
+                InputStream stream = new ResourceHandle(resource);
+                resources.add(new Pair<>(location, stream));
+                if (findFirst) {
+                    return resources;
                 }
             }
         }
@@ -220,7 +187,7 @@ public class FileLoaderFast {
         // Handle the rare case of a resource embedded in a jar file.
         for (ResourceLocation location : locations) {
             if (location.ResourceLocation_type.toString().equals("CLASSPATH")) {
-                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(resourceKey);
+                InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(pathStr);
                 if (stream == null) {
                     continue;
                 }
@@ -236,17 +203,29 @@ public class FileLoaderFast {
     }
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean useAbsolutePath) {
-        dir = PathUtil.normalize(dir);
-        List<FileHandle> knownDirectories = cachedFiles.get(dir);
-        if (knownDirectories == null) {
-            return new ArrayList<>();
-        }
-
         Set<String> knownFiles = new HashSet<>();
         List<String> foundFiles = new ArrayList<>();
 
-        for (FileHandle directoryHndle : knownDirectories) {
-            File[] files = directoryHndle.file.listFiles();
+        for (ResourceLocation location : allLocations) {
+            String locationType = location.ResourceLocation_type.toString();
+            if (locationType.equals("CLASSPATH")) {
+                continue;
+            }
+
+            if (location.ResourceLocation_path == "../starfarer.res/res") {
+                continue;
+            }
+
+            Path locationPath = getLocationPath(location);
+            Path expectedPath = locationPath.resolve(Path.of(dir)).normalize();
+            String resourceKey = getResourceKey(expectedPath);
+
+            FileHandle dirHandle = cachedResources.get(resourceKey);
+            if (dirHandle == null) {
+                continue;
+            }
+
+            File[] files = dirHandle.file.listFiles();
             if (files == null) {
                 continue;
             }
@@ -254,28 +233,67 @@ public class FileLoaderFast {
             for (File file : files) {
                 String fileName = file.getName();
                 if (getFileExtension(fileName).equals(extension)) {
-                    String fileKey = dir + "/" + fileName;
-
                     // Always return absolute paths for core resources, even when useAbsolutePath is false.
                     // This matches vanilla Starsector behavior and prevents a modded resource from being
                     // mistaken for a core game resource. Valhalla Starworks 2.0 is one mod that would
                     // otherwise trigger such a false-positive match.
-                    String filePath;
-                    if (useAbsolutePath || directoryHndle.isCoreFile) {
-                        filePath = file.getAbsolutePath();
+                    Path filePath;
+                    if (useAbsolutePath || dirHandle.isCoreFile) {
+                        filePath = file.toPath().toAbsolutePath();
                     } else {
-                        filePath = dir + "/" + fileName;
+                        filePath = Path.of(dir, fileName);
                     }
 
                     // Starsector resource loading depends on the entries
                     // being in same order as on the disk, but deduplicated.
+                    String fileKey = dir + "/" + fileName;
                     if (knownFiles.add(fileKey)) {
-                        foundFiles.add(filePath);
+                        foundFiles.add(filePath.toString());
                     }
                 }
             }
         }
 
         return foundFiles;
+    }
+
+    private String getFileExtension(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+
+        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+        int lastDot = path.lastIndexOf('.');
+
+        if (lastDot <= lastSeparator || lastDot == path.length() - 1) {
+            return "";
+        }
+
+        return path.substring(lastDot + 1);
+    }
+
+    private Path getLocationPath(ResourceLocation location) {
+        Path path;
+        switch (location.ResourceLocation_type.toString()) {
+            case "DIRECTORY":
+                path = Path.of(location.ResourceLocation_path);
+                break;
+            case "ABSOLUTE_AND_CWD":
+                path = Paths.pwd;
+                break;
+            default:
+                return null;
+        }
+
+        return path.normalize();
+    }
+
+    private String getResourceKey(Path resourcePath) {
+        Path dirPathRelative = Paths.pwd.relativize(resourcePath);
+
+        // Use lowercase keys to make resource lookup case-insensitive.
+        // Without this, Machina Void Shipyards Armaa Expansion Patch
+        // can produce a false-negative lookup result.
+        return dirPathRelative.toString().toLowerCase(Locale.ROOT);
     }
 }
