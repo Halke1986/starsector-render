@@ -1,10 +1,11 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
+import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
+
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
-import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 
 public record ArrayPointer(int size, int type, int stride, Buffer pointer) {
     public ArraySnapshot getSnapshot(BufferPool bufferPool) {

@@ -3,7 +3,10 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.BufferUtils;
 
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
