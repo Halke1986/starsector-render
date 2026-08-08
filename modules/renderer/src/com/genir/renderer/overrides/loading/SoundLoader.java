@@ -33,7 +33,7 @@ public class SoundLoader {
 
     public static void queueSound(String path) {
         if (path != null && knownSounds.add(path)) {
-            ResourceLoader.workers.execute(() -> {
+            ResourceLoader.soundWorkers.execute(() -> {
                 try {
                     loadSound(path);
                 } catch (Throwable e) {
@@ -101,10 +101,6 @@ public class SoundLoader {
         if (unsupported) {
             throw new RuntimeException("Only wav and ogg are currently supported.");
         }
-
-        // Submit empty job to main thread to progress the loading bar.
-        mainThreadWaitGroup.incrementAndGet();
-        ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
     }
 
     private static void loadOgg(String path, InputStream stream, SoundStore soundStore) throws IOException {

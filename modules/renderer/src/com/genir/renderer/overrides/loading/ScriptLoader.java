@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
+
 /**
  * ScriptLoader is responsible for pre-loading scripts and plugins.
  * Vanilla implementation suffers from race conditions that can cause
@@ -39,13 +41,17 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
         scripts.add(className);
 
-        ResourceLoader.workers.execute(() -> {
+        ResourceLoader.scriptWorkers.execute(() -> {
             try {
                 loadClass(className);
             } catch (Throwable e) {
                 ResourceLoader.setException(e);
             }
         });
+
+        // Submit empty job to main thread to progress the loading bar.
+        mainThreadWaitGroup.incrementAndGet();
+        ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
     }
 
     private static void loadClass(String className) {

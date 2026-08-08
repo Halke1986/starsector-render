@@ -40,8 +40,13 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            4, "FR-Resource-Loader-Worker", new ExceptionHandler());
+            3, "FR-Texture-Loader", new ExceptionHandler());
+    public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(
+            3, "FR-Script-Loader", new ExceptionHandler());
+    public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
+            2, "FR-Sound-Loader", new ExceptionHandler());
 
     private static final ProgressBar barAnimation = new ProgressBar();
 
@@ -62,6 +67,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         // Run skipped vanilla ResourceLoader init epilogue.
         initEpilogue();
+
+        soundWorkers.shutdown();
+        awaitTermination(soundWorkers);
     }
 
     private static void initEpilogue() throws Exception {
@@ -137,10 +145,14 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             // Interrupt workers.
             mainThreadExec.shutdownNow();
             workers.shutdownNow();
+            scriptWorkers.shutdownNow();
+            soundWorkers.shutdownNow();
             rulesExec.shutdownNow();
 
             awaitTermination(mainThreadExec);
             awaitTermination(workers);
+            awaitTermination(scriptWorkers);
+            awaitTermination(soundWorkers);
             awaitTermination(rulesExec);
 
             if (t instanceof Exception e) {
@@ -152,10 +164,12 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         mainThreadExec.shutdown();
         workers.shutdown();
+        scriptWorkers.shutdown();
         rulesExec.shutdown();
 
         awaitTermination(mainThreadExec);
         awaitTermination(workers);
+        awaitTermination(scriptWorkers);
         awaitTermination(rulesExec);
 
         FileLoader.initModLoading();
