@@ -1,3 +1,5 @@
+- Fixed a NullPointerException when loading PMMM with PMMMVE. Reported by AlfadorZero, hyperspace turtle.
+
 v0.8.2
 
 - Added support for VRAM Optimizer. When installed, Fast Rendering uses its DDS texture cache, reducing game load times and eliminating the initial VRAM usage spike.
