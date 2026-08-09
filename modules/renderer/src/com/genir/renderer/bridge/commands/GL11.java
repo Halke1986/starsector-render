@@ -97,7 +97,8 @@ public class GL11 {
     static GlBegin glBeginCommand = new GlBegin();
 
     public static void glBegin(int mode) {
-        getThreadContext().exec.execute(
+        final Context context = getThreadContext();
+        context.exec.execute(
                 glBeginCommand,
                 Float.intBitsToFloat(mode)
         );
@@ -119,9 +120,8 @@ public class GL11 {
     static GlEnd glEndCommand = new GlEnd();
 
     public static void glEnd() {
-        getThreadContext().exec.execute(
-                glEndCommand
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glEndCommand);
     }
 
     public static void glColor3f(float red, float green, float blue) {
@@ -172,13 +172,8 @@ public class GL11 {
     static GlColor4f glColor4fCommand = new GlColor4f();
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
-        getThreadContext().exec.execute(
-                glColor4fCommand,
-                red,
-                green,
-                blue,
-                alpha
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glColor4fCommand, red, green, blue, alpha);
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -222,13 +217,8 @@ public class GL11 {
     static GlTexCoord4f glTexCoord4fCommand = new GlTexCoord4f();
 
     public static void glTexCoord4f(float s, float t, float r, float q) {
-        getThreadContext().exec.execute(
-                glTexCoord4fCommand,
-                s,
-                t,
-                r,
-                q
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glTexCoord4fCommand, s, t, r, q);
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
@@ -289,12 +279,8 @@ public class GL11 {
     static GlVertex3f glVertex3fCommand = new GlVertex3f();
 
     public static void glVertex3f(float x, float y, float z) {
-        getThreadContext().exec.execute(
-                glVertex3fCommand,
-                x,
-                y,
-                z
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glVertex3fCommand, x, y, z);
     }
 
     public static void glVertex3d(double x, double y, double z) {
@@ -548,9 +534,8 @@ public class GL11 {
     static GlPushMatrix glPushMatrixCommand = new GlPushMatrix();
 
     public static void glPushMatrix() {
-        getThreadContext().exec.execute(
-                glPushMatrixCommand
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glPushMatrixCommand);
     }
 
     static class GlPopMatrix implements GLCommand, Recordable { // Heap optimized
@@ -569,9 +554,8 @@ public class GL11 {
     static GlPopMatrix glPopMatrixCommand = new GlPopMatrix();
 
     public static void glPopMatrix() {
-        getThreadContext().exec.execute(
-                glPopMatrixCommand
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glPopMatrixCommand);
     }
 
     public static void glLoadIdentity() {
@@ -612,12 +596,8 @@ public class GL11 {
     static GlTranslatef glTranslatefCommand = new GlTranslatef();
 
     public static void glTranslatef(float x, float y, float z) {
-        getThreadContext().exec.execute(
-                glTranslatefCommand,
-                x,
-                y,
-                z
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glTranslatefCommand, x, y, z);
     }
 
     static class GlRotatef implements GLCommand, Recordable { // Heap optimized
@@ -641,13 +621,8 @@ public class GL11 {
     static GlRotatef glRotatefCommand = new GlRotatef();
 
     public static void glRotatef(float angle, float x, float y, float z) {
-        getThreadContext().exec.execute(
-                glRotatefCommand,
-                angle,
-                x,
-                y,
-                z
-        );
+        final Context context = getThreadContext();
+        context.exec.execute(glRotatefCommand, angle, x, y, z);
     }
 
     public static void glScalef(float x, float y, float z) {
