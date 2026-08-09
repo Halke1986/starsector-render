@@ -11,6 +11,7 @@ import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.bridge.interfaces.Recordable;
 import com.genir.renderer.bridge.interfaces.Releasable;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -1805,22 +1806,25 @@ public class GL11 {
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) {
-        record glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
-            }
-        }
-
-        final Context context = getThreadContext();
-        context.exec.wait(new glGetTexImage(target, level, format, type, pixels));
+        glGetTexImage(target, level, format, type, pixels.asFloatBuffer());
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, FloatBuffer pixels) {
         record glGetTexImage(int target, int level, int format, int type, FloatBuffer pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
+                int compressed = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(org.lwjgl.opengl.GL11.GL_TEXTURE_2D, 0, org.lwjgl.opengl.GL13.GL_TEXTURE_COMPRESSED);
+                if (compressed == org.lwjgl.opengl.GL11.GL_TRUE) {
+                    // Allocate additional storge beyond the actual image as a workaround for AMD driver crash
+                    // when reading data of a compressed texture with dimensions not divisible by 4.
+                    FloatBuffer resizedPixels = BufferUtils.createFloatBuffer(pixels.capacity() * 2);
+                    org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, resizedPixels);
+
+                    resizedPixels.limit(pixels.capacity());
+                    glGetTexImage.this.pixels.put(resizedPixels);
+                } else {
+                    org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
+                }
             }
         }
 

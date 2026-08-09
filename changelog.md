@@ -1,6 +1,7 @@
 v0.8.3
  
 - Fixed a NullPointerException when loading PMMM with PMMMVE. Reported by AlfadorZero, hyperspace turtle.
+- Implemented a workaround for an AMD driver crash when using VRAM Optimizer, GraphicsLib, and Moci Ship Pack together. Reported by MidnightLight and lChronosl.
 - Optimized game startup time.
 
 v0.8.2
