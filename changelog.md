@@ -1,4 +1,7 @@
+v0.8.3
+ 
 - Fixed a NullPointerException when loading PMMM with PMMMVE. Reported by AlfadorZero, hyperspace turtle.
+- Optimized game startup time.
 
 v0.8.2
 
