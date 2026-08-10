@@ -35,7 +35,6 @@ public class Context {
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
     public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
     public final ShaderTracker shaderTracker = new ShaderTracker(exec);
-    public final BufferManager bufferManager = new BufferManager();
 
     public void update() {
         // Runs on rendering thread.

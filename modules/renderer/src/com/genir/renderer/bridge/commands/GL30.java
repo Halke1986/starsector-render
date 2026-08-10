@@ -185,17 +185,6 @@ public class GL30 {
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
-        final Context context = getThreadContext();
-
-        try {
-            ByteBuffer range = context.bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
-            if (range != null) {
-                return range;
-            }
-        } catch (RuntimeException e) {
-            return null;
-        }
-
         // Fall back to OpenGL glMapBufferRange if bufferManager cannot map the buffer.
         record glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) implements GLGetter<ByteBuffer> {
             @Override
@@ -204,6 +193,7 @@ public class GL30 {
             }
         }
 
+        final Context context = getThreadContext();
         return context.exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
     }
 
