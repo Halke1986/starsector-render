@@ -903,11 +903,27 @@ public class GL11 {
      * Other calls.
      */
     public static void glFlush() {
-        // Don't do anything. glFlush and glFinish are mostly
-        // redundant when Display update is being called.
+        record glFlush() implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL11.glFlush();
+            }
+        }
+
+        final Context context = getThreadContext();
+        context.exec.execute(new glFlush());
     }
 
     public static void glFinish() {
+        record glFinish() implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL11.glFinish();
+            }
+        }
+
+        final Context context = getThreadContext();
+        context.exec.execute(new glFinish());
     }
 
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
