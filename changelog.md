@@ -14,7 +14,7 @@ v0.8.1
 - Minor rendering performance optimizations.
 - Added `fr.noterminal.bat`, which starts the game faster. A terminal window still appears during startup, but it can be closed safely.
 - Optimized game startup time.
-- 
+
 v0.8.0
 
 - Ported the bytecode modification pipeline from a custom system class loader to a Java agent.
