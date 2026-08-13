@@ -903,27 +903,18 @@ public class GL11 {
      * Other calls.
      */
     public static void glFlush() {
-        record glFlush() implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL11.glFlush();
-            }
-        }
+        // Don't do anything. glFlush and glFinish are mostly
+        // redundant when Display.update() is being called.
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glFlush());
+        // BoxUtil 1.5.4 requires glFlush() in parallel contexts to render
+        // certain entities correctly. However, with parallel GL calls
+        // synchronized by Fast Rendering, glFlush() calls from modded code
+        // are redundant. Fast Rendering performs the required flush at
+        // synchronization points in the GL method executor. This reduces
+        // the number of flushes and CPU load while preserving correctness.
     }
 
     public static void glFinish() {
-        record glFinish() implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL11.glFinish();
-            }
-        }
-
-        final Context context = getThreadContext();
-        context.exec.execute(new glFinish());
     }
 
     public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {

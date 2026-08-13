@@ -1,3 +1,6 @@
+- Improved rendering stability and performance when using BoxUtil.
+- Fixed missing entities and image flicker that could occur on certain low-end GPUs when using BoxUtil. 
+
 v0.8.3
  
 - Fixed a NullPointerException when loading PMMM with PMMMVE. Reported by AlfadorZero, hyperspace turtle.
