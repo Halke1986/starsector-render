@@ -1,3 +1,5 @@
+v0.8.4rc1
+
 - Improved rendering stability and performance when using BoxUtil.
 - Fixed missing entities and image flicker that could occur on certain low-end GPUs when using BoxUtil. 
 
