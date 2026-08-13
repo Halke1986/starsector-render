@@ -99,7 +99,7 @@ public class TextureLoader {
 
             // Load texture DDS override.
             if (resource instanceof ResourceHandle handle) {
-                TextureData texData = DDSCache.getTexture(handle.getFilePath());
+                TextureData texData = DDSIntegration.getTexture(handle.getFilePath());
                 if (texData != null) {
                     logger.info("Loading image DDS override [" + path + "]");
                     return texData;
