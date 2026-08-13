@@ -21,9 +21,4 @@ public class ScriptStore {
     public static Set<String> ScriptStore_getPluginSet() {
         return null;
     }
-
-    // $FF: renamed from: Object () com.fs.starfarer.loading.scripts.B
-    public static SecureClassLoader ScriptStore_getSecureClassLoader() {
-        return null;
-    }
 }
