@@ -26,7 +26,7 @@ public class GL14 {
         context.exec.execute(new glBlendEquation(mode));
     }
 
-    static class GlBlendFuncSeparate implements GLCommand, Recordable { // Heap optimized
+    private record GlBlendFuncSeparate() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;

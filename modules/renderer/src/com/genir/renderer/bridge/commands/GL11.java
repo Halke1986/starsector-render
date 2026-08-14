@@ -80,7 +80,7 @@ public class GL11 {
     /**
      * Draw.
      */
-    static class GlBegin implements GLCommand, Recordable { // Heap optimized
+    private record GlBegin() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -104,7 +104,7 @@ public class GL11 {
         );
     }
 
-    static class GlEnd implements GLCommand, Recordable { // Heap optimized
+    private record GlEnd() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -151,7 +151,7 @@ public class GL11 {
         );
     }
 
-    static class GlColor4f implements GLCommand, Recordable { // Heap optimized
+    private record GlColor4f() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -196,7 +196,7 @@ public class GL11 {
         );
     }
 
-    static class GlTexCoord4f implements GLCommand, Recordable { // Heap optimized
+    private record GlTexCoord4f() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -259,7 +259,7 @@ public class GL11 {
         );
     }
 
-    static class GlVertex3f implements GLCommand, Recordable { // Heap optimized
+    private record GlVertex3f() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -518,7 +518,7 @@ public class GL11 {
         context.exec.execute(new glMatrixMode(mode));
     }
 
-    static class GlPushMatrix implements GLCommand, Recordable { // Heap optimized
+    private record GlPushMatrix() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -538,7 +538,7 @@ public class GL11 {
         context.exec.execute(glPushMatrixCommand);
     }
 
-    static class GlPopMatrix implements GLCommand, Recordable { // Heap optimized
+    private record GlPopMatrix() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -576,7 +576,7 @@ public class GL11 {
         context.exec.execute(new glLoadIdentity());
     }
 
-    static class GlTranslatef implements GLCommand, Recordable { // Heap optimized
+    private record GlTranslatef() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -600,7 +600,7 @@ public class GL11 {
         context.exec.execute(glTranslatefCommand, x, y, z);
     }
 
-    static class GlRotatef implements GLCommand, Recordable { // Heap optimized
+    private record GlRotatef() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -720,7 +720,7 @@ public class GL11 {
     /**
      * Render getContext().
      */
-    static class GlEnable implements GLCommand, Recordable { // Heap optimized
+    private record GlEnable() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -738,7 +738,7 @@ public class GL11 {
         }
     }
 
-    static class GlEnableClient implements GLCommand, Recordable { // Heap optimized
+    private record GlEnableClient() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             int cap = Float.floatToRawIntBits(args[argsOffset + 1]);
@@ -768,7 +768,7 @@ public class GL11 {
         );
     }
 
-    static class GlDisable implements GLCommand, Recordable { // Heap optimized
+    private record GlDisable() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -786,7 +786,7 @@ public class GL11 {
         }
     }
 
-    static class GlDisableClient implements GLCommand, Recordable { // Heap optimized
+    private record GlDisableClient() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             int cap = Float.floatToRawIntBits(args[argsOffset + 1]);
@@ -821,7 +821,7 @@ public class GL11 {
         glBlendFuncSeparate(sfactor, dfactor, sfactor, dfactor);
     }
 
-    static class GlBindTexture implements GLCommand, Recordable { // Heap optimized
+    private record GlBindTexture() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             ListManager listManager = context.listManager;
@@ -838,7 +838,7 @@ public class GL11 {
         }
     }
 
-    static class GlBindTextureClient implements GLCommand, Recordable { // Heap optimized
+    private record GlBindTextureClient() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             int target = Float.floatToRawIntBits(args[argsOffset + 1]);

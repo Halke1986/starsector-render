@@ -80,11 +80,17 @@ public class Executor {
      */
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
-        wait((context, args, offset) ->
-                result[0] = task.call(context)
-        );
+
+        wait(new GetWrapper(task, result));
 
         return (T) result[0];
+    }
+
+    private record GetWrapper(GLGetter<?> task, Object[] result) implements GLCommand {
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            result[0] = task.call(context);
+        }
     }
 
     /**
@@ -197,9 +203,18 @@ public class Executor {
             GLCommand command = commands[i];
             int argsSize = (int) args[argsOffset];
 
+            // Logger.getLogger(Executor.class).info(unwrapCommand(command));
             command.run(context, args, argsOffset);
 
             argsOffset += argsSize;
+        }
+    }
+
+    private Object unwrapCommand(GLCommand command) {
+        if (command instanceof GetWrapper wrapper) {
+            return wrapper.task;
+        } else {
+            return command;
         }
     }
 
