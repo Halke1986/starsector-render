@@ -185,7 +185,6 @@ public class GL30 {
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
-        // Fall back to OpenGL glMapBufferRange if bufferManager cannot map the buffer.
         record glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) implements GLGetter<ByteBuffer> {
             @Override
             public ByteBuffer call(Context context) {

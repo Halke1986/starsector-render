@@ -1,8 +1,10 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +24,8 @@ public class Executor {
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
 
+    private static final Object execMutex = new Object();
+
     public Executor(Context context) {
         this.context = context;
     }
@@ -34,6 +38,15 @@ public class Executor {
         frame.add(command);
 
         frame.args[frame.argsOffset++] = 1;
+    }
+
+    public void executeSync(GLCommand command, GLSync fence) {
+        Frame frame = currentFrame;
+        frame.add(command);
+
+        frame.args[frame.argsOffset++] = 1;
+
+        frame.fences.add(fence);
     }
 
     public void execute(GLCommand command, float arg1) {
@@ -154,7 +167,26 @@ public class Executor {
                     return;
                 }
 
-                executeCommands(frameToExecute);
+                // Ensure all GLSync fences required by this command batch have been created.
+                // Otherwise, glWaitSync() may execute before the corresponding glFenceSync(),
+                // causing a deadlock inside the following synchronized block.
+                for (GLSync sync : frameToExecute.fences) {
+                    sync.future().get();
+                }
+
+                // Synchronize parallel GL calls. In theory, this should not be required
+                // for correct execution. Serializing the calls, however, fixes entity
+                // flicker that can occur on certain low-end GPUs with BoxUtil 1.5.4.
+                synchronized (execMutex) {
+                    executeCommands(frameToExecute);
+
+                    try {
+                        GL11.glFlush();
+                    } catch (RuntimeException ignored) {
+                        // Handle glFlush() called on a thread
+                        // where GL context was not yet created.
+                    }
+                }
 
                 // Return the frame object for reuse.
                 frameToExecute.clear();
@@ -205,7 +237,6 @@ public class Executor {
 
             // Logger.getLogger(Executor.class).info(unwrapCommand(command));
             command.run(context, args, argsOffset);
-
             argsOffset += argsSize;
         }
     }

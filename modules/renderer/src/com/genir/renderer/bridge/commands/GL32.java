@@ -70,7 +70,7 @@ public class GL32 {
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new glWaitSync(sync, flags, timeout));
+        context.exec.executeSync(new glWaitSync(sync, flags, timeout), sync);
     }
 
     public static void glDeleteSync(GLSync sync) {

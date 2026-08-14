@@ -1,6 +1,10 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Frame {
     public GLCommand[] commands = new GLCommand[1];
@@ -8,6 +12,8 @@ public class Frame {
 
     public float[] args = new float[5];
     public int argsOffset = 0;
+
+    public List<GLSync> fences = new ArrayList<>();
 
     public void add(GLCommand command) {
         if (commands.length <= commandsSize) {
@@ -22,5 +28,6 @@ public class Frame {
     public void clear() {
         commandsSize = 0;
         argsOffset = 0;
+        fences.clear();
     }
 }
