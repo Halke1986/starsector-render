@@ -7,7 +7,6 @@ import proxy.com.fs.util.FileLoader.ResourceLocation;
 import proxy.com.fs.util.container.Pair;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
@@ -140,11 +139,11 @@ public class FileLoaderFast {
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
         List<FileHandle> knownResources = cachedFiles.get(resourceKey);
 
-        // Convert resources to outpur format.
+        // Convert resources to output format.
         if (knownResources != null) {
             for (FileHandle resource : knownResources) {
                 // Avoid matching modded resource when looking for a core game resource.
-                if (isAbsolute && resource.location.ResourceLocation_type.toString() == DIRECTORY) {
+                if (isAbsolute && Objects.equals(resource.location.ResourceLocation_type.toString(), DIRECTORY)) {
                     continue;
                 }
 
@@ -164,7 +163,7 @@ public class FileLoaderFast {
             // Find the classpath location.
             ResourceLocation classpath = null;
             for (ResourceLocation location : allLocations) {
-                if (location.ResourceLocation_type.toString() == CLASSPATH) {
+                if (Objects.equals(location.ResourceLocation_type.toString(), CLASSPATH)) {
                     classpath = location;
                     break;
                 }
@@ -240,14 +239,11 @@ public class FileLoaderFast {
     }
 
     private String getLocationPath(ResourceLocation location) {
-        switch (location.ResourceLocation_type.toString()) {
-            case "DIRECTORY":
-                return location.ResourceLocation_path;
-            case "ABSOLUTE_AND_CWD":
-                return PathUtil.pwd;
-            default:
-                return null;
-        }
+        return switch (location.ResourceLocation_type.toString()) {
+            case "DIRECTORY" -> location.ResourceLocation_path;
+            case "ABSOLUTE_AND_CWD" -> PathUtil.pwd;
+            default -> null;
+        };
     }
 
     private boolean isExcludedLocation(ResourceLocation location) {
@@ -255,10 +251,6 @@ public class FileLoaderFast {
             return true;
         }
 
-        if (location.ResourceLocation_path == "../starfarer.res/res") {
-            return true;
-        }
-
-        return false;
+        return Objects.equals(location.ResourceLocation_path, "../starfarer.res/res");
     }
 }
