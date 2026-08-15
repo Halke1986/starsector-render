@@ -22,6 +22,7 @@ import java.nio.IntBuffer;
 import static com.genir.renderer.bridge.commands.GL14.glBlendFuncSeparate;
 import static com.genir.renderer.bridge.context.BufferUtil.putIfPossible;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
+import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class GL11 {
     /**
@@ -845,6 +846,7 @@ public class GL11 {
             int texture = Float.floatToRawIntBits(args[argsOffset + 2]);
 
             context.attribTracker.glBindTexture(target, texture);
+            context.textureTracker.glBindTexture(target, texture);
         }
     }
 
@@ -863,6 +865,7 @@ public class GL11 {
             listManager.record(glBindTextureClientCommand, args, 0);
         } else {
             context.attribTracker.glBindTexture(target, texture);
+            context.textureTracker.glBindTexture(target, texture);
         }
 
         context.exec.execute(glBindTextureCommand,
@@ -1403,6 +1406,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        context.textureTracker.glDeleteTextures(texture);
         context.exec.execute(new glDeleteTextures(texture));
     }
 
@@ -1416,6 +1420,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        context.textureTracker.glDeleteTextures(textures);
         final IntBufferSnapshot snapshot = context.bufferPool.snapshot(textures);
         context.exec.execute(new glDeleteTextures(snapshot));
     }
@@ -1843,14 +1848,18 @@ public class GL11 {
     }
 
     public static boolean glIsTexture(int texture) {
-        record glIsTexture(int texture) implements GLGetter<Boolean> {
+        record glIsTexture(int texture, boolean expected) implements GLCommand {
             @Override
-            public Boolean call(Context context) {
-                return org.lwjgl.opengl.GL11.glIsTexture(texture);
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                boolean actual = org.lwjgl.opengl.GL11.glIsTexture(texture);
+                asertEqual(expected, actual);
             }
         }
 
         final Context context = getThreadContext();
-        return context.exec.get(new glIsTexture(texture));
+        boolean expected = context.textureTracker.glIsTexture(texture);
+        context.exec.execute(new glIsTexture(texture, expected));
+        return expected;
     }
 }
