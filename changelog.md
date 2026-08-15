@@ -1,3 +1,5 @@
+- Fixed a regression where it was impossible to start a new game with Nexerelin. Reported by Forgotten.
+
 v0.8.4rc1
 
 - Improved rendering stability and performance when using BoxUtil.

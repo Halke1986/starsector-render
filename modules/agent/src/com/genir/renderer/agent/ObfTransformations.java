@@ -26,7 +26,6 @@ public class ObfTransformations {
             entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
             entry("proxy/com/fs/graphics/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
             entry("proxy/com/fs/starfarer/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
-            entry("proxy/com/fs/starfarer/campaign/rules/Rules", "com/fs/starfarer/campaign/rules/Rules"),
 
             // Obfuscated classes
             entry("proxy/com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),
@@ -104,7 +103,6 @@ public class ObfTransformations {
             entry("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
             entry("LoadingUtils_readStreamAsString", "super"),
             entry("LoadingUtils_readPathAsString", "super"),
-            entry("Rules_loadRules", "o00000"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),

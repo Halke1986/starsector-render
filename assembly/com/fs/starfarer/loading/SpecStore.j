@@ -189,7 +189,9 @@ L198:   invokestatic Method com/fs/starfarer/loading/SpecStore 'ö00000' (Lcom/f
 L201:   aload_0 
 L202:   invokestatic Method com/fs/starfarer/loading/SpecStore 'ØO0000' (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
 L205:   ldc 'data/campaign/starmap.json' 
-L207:   invokestatic Method com/fs/starfarer/loading/S o00000 (Ljava/lang/String;)V
+L207:   invokestatic Method com/fs/starfarer/loading/S o00000 (Ljava/lang/String;)V 
+L210:   aload_0 
+L211:   invokestatic Method com/fs/starfarer/campaign/rules/Rules o00000 (Lcom/fs/starfarer/loading/ResourceLoaderState;)V 
 L214:   return 
 L215:   
     .end code 
