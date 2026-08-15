@@ -18,7 +18,6 @@ public class AttribTracker {
     // Values not being a part of attributes stack.
     private int framebufferBinding = 0;
     private int vertexArrayBinding = 0;
-    private int currentProgram = 0;
 
     public boolean getEnableStencilTest() {
         return state.enableStencilTest;
@@ -70,10 +69,6 @@ public class AttribTracker {
 
     public AttribState.Viewport getViewport() {
         return state.viewport;
-    }
-
-    public int getCurrentProgram() {
-        return currentProgram;
     }
 
     public boolean getEnableScissorTest() {
@@ -139,9 +134,5 @@ public class AttribTracker {
 
     public void glViewport(int x, int y, int width, int height) {
         state.glViewport(x, y, width, height);
-    }
-
-    public void glUseProgram(int program) {
-        currentProgram = program;
     }
 }

@@ -9,11 +9,24 @@ import java.util.Map;
 public class ShaderTracker {
     private final Executor exec;
 
+    private int currentProgram = 0;
     private final Map<Integer, Map<String, Integer>> uniformLocations = new HashMap<>();
     private final Map<Integer, Map<Integer, Integer>> programParameters = new HashMap<>();
 
     public ShaderTracker(Executor exec) {
         this.exec = exec;
+    }
+
+    public int getCurrentProgram() {
+        return currentProgram;
+    }
+
+    //
+    // GL calls.
+    //
+
+    public void glUseProgram(int program) {
+        currentProgram = program;
     }
 
     public void glLinkProgram(int program) {

@@ -130,7 +130,7 @@ public class FileLoaderFast {
     public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) {
         String resourceKey = PathUtil.normalize(path);
 
-        // Vanill may pass absolute path when it loads core game resource.
+        // Vanilla may pass absolute path when it loads core game resource.
         boolean isAbsolute = resourceKey.startsWith(PathUtil.pwd);
         if (isAbsolute) {
             resourceKey = PathUtil.normalize(resourceKey.substring(PathUtil.pwd.length()));
