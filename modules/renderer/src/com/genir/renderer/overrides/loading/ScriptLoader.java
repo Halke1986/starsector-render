@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.loading;
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Logger;
 import proxy.com.fs.starfarer.loading.scripts.ScriptStore;
+import proxy.com.fs.starfarer.loading.scripts.SecureClassLoader;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -115,7 +116,6 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         List<String> scripts = ScriptStore.ScriptStore_getScriptList();
         List<URL> urls = new ArrayList<>();
 
-
         if (scripts != null) {
             for (String scriptPath : scripts) {
                 try {
@@ -132,7 +132,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
             }
         }
 
-        ClassLoader secureLoader = ScriptStore.ScriptStore_getSecureClassLoader();
+        ClassLoader secureLoader = new SecureClassLoader(ScriptLoader.class.getClassLoader());
         ClassLoader jarLoader = new URLClassLoader(urls.toArray(new URL[0]), secureLoader);
         ClassLoader sourceLoader = new MultiThreadedJaninoClassLoader(jarLoader);
 

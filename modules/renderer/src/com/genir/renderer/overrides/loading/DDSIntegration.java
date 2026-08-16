@@ -11,6 +11,8 @@ import org.lwjgl.BufferUtils;
 
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -21,16 +23,21 @@ import java.util.*;
 import static com.genir.renderer.debug.Debug.asert;
 
 /**
- * DDSCache provides integration with VramOptimizer mod. When VramOptimizer is enabled,
+ * DDSIntegration provides integration with VramOptimizer mod. When VramOptimizer is enabled,
  * vanilla texture loading is replaced with the much faster DDS texture loading.
  */
-public class DDSCache {
+public class DDSIntegration {
     private static Map<Path, DDSTextureData> cache = null;
 
-    public static void initializeCache() {
+    private static Method methodBeforeTextureUpload = null;
+    private static Method methodAfterTextureUpload = null;
+
+    public static void initialize() {
         if (!vramOptimizerEnabled()) {
             return;
         }
+
+        initIntegrationHandles();
 
         List<File> metadataFiles = findDDSMetadata();
         cache = readDDSMetadata(metadataFiles);
@@ -138,7 +145,7 @@ public class DDSCache {
                     cache.put(absolutePath.normalize(), new DDSTextureData(readTextureData(dds), ddsFile));
                 }
             } catch (Exception e) {
-                Logger.getLogger(DDSCache.class).info(e);
+                Logger.getLogger(DDSIntegration.class).info(e);
             }
         }
 
@@ -171,6 +178,53 @@ public class DDSCache {
                 (float) median.getDouble(2));
 
         return texData;
+    }
+
+    public static void beforeTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
+        if (methodBeforeTextureUpload == null) {
+            return;
+        }
+
+        try {
+            methodBeforeTextureUpload.invoke(null, width, height, textureID, texturePath, textureType);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void afterTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
+        if (methodAfterTextureUpload == null) {
+            return;
+        }
+
+        try {
+            methodAfterTextureUpload.invoke(null, width, height, textureID, texturePath, textureType);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void initIntegrationHandles() {
+        Logger logger = Logger.getLogger(DDSIntegration.class);
+
+        try {
+            String tClassName = "DeCell.VOpt.Commons.Rendering.Textures";
+            ScriptLoader.addScript(tClassName);
+            ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
+            Class<?> tclass = scriptLoader.loadClass(tClassName);
+
+            methodBeforeTextureUpload = tclass.getMethod("BeforeTextureUpload", int.class, int.class, int.class, String.class, int.class);
+            methodAfterTextureUpload = tclass.getMethod("AfterTextureUpload", int.class, int.class, int.class, String.class, int.class);
+
+            tclass.getMethod("Init").invoke(null);
+
+            logger.info("Initialized DDS integration");
+        } catch (Throwable e) {
+            methodBeforeTextureUpload = null;
+            methodAfterTextureUpload = null;
+
+            logger.error("Failed to initialize DDS integration", e);
+        }
     }
 
     private record DDSTextureData(TextureData texData, File ddsFile) {

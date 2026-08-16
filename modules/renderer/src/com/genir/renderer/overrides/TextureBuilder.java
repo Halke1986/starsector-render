@@ -1,5 +1,6 @@
 package com.genir.renderer.overrides;
 
+import com.genir.renderer.overrides.loading.DDSIntegration;
 import com.genir.renderer.overrides.loading.TextureData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -14,6 +15,8 @@ import java.awt.image.Raster;
 import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
+    private static boolean initDone = false;
+
     public static TextureHandler commitTexture(String path, TextureData texData) {
         final TextureHandler texture = new TextureHandler(GL11.GL_TEXTURE_2D, com.genir.renderer.bridge.commands.GL11.glGenTextures(), path);
 
@@ -26,8 +29,13 @@ public class TextureBuilder {
         texture.TextureHandler_setColor1(texData.weighted);
         texture.TextureHandler_setColor2(texData.median);
 
+        int textureID = texture.TextureHandler_getTextureID();
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
+        int internalFormat = texData.isDDS ? GL42.GL_COMPRESSED_RGBA_BPTC_UNORM : GL11.GL_RGBA;
+
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
+
+        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -47,6 +55,8 @@ public class TextureBuilder {
         } else {
             com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
         }
+
+        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         return texture;
     }
