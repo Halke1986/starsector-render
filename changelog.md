@@ -1,3 +1,5 @@
+- Optimized game startup time.
+
 v0.8.4
 
 - Fixed a regression where it was impossible to start a new game with Nexerelin. Reported by Forgotten.
