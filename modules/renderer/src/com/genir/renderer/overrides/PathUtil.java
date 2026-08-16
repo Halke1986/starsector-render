@@ -29,6 +29,13 @@ public class PathUtil {
             path = path.substring(0, path.length() - "/".length());
         }
 
+        // Remove trailing dot. It is required because of paths like
+        // "graphics/portraits/dwergr.png." introduced by
+        // Reborn as a Space Mercenary v0.0.4
+        if (path.endsWith(".")) {
+            path = path.substring(0, path.length() - ".".length());
+        }
+
         // Lowercase file path, to avoid case sensitivity
         // issues. Not sure if this works on Linux or MacOS.
         // Machina Void Shipyards Armaa Expansion Patch is one
