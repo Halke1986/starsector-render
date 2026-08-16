@@ -24,7 +24,7 @@ public class FileLoaderFast {
         this.allLocations = locations;
 
         long start = System.nanoTime();
-        int cachedFilesNumber = new FileCrawler().cacheLocations();
+        int cachedFilesNumber = new DirectoryCrawler().cacheLocations();
         long duration = System.nanoTime() - start;
 
         Logger.getLogger(FileLoaderFast.class).info("Cached " + cachedFilesNumber + " files in " + (int) (duration / 1000000) + "ms");
@@ -177,7 +177,11 @@ public class FileLoaderFast {
         return Objects.equals(location.ResourceLocation_path, "../starfarer.res/res");
     }
 
-    private class FileCrawler {
+    /**
+     * DirectoryCrawler caches all files in selected locations using a multi-threaded
+     * algorithm, for approximately 50% performance improvement.
+     */
+    private class DirectoryCrawler {
         private int cacheLocations() {
             int cachedFilesNumber = 0;
 
