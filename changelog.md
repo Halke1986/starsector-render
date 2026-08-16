@@ -1,4 +1,5 @@
 - Fixed a regression where it was impossible to start a new game with Nexerelin. Reported by Forgotten.
+- Added support for Shadowverse/szb. Incompatibility reported by leo2334abc.
 
 v0.8.4rc1
 
