@@ -1804,11 +1804,9 @@ public class GL11 {
                 if (compressed == org.lwjgl.opengl.GL11.GL_TRUE) {
                     // Allocate additional storge beyond the actual image as a workaround for AMD driver crash
                     // when reading data of a compressed texture with dimensions not divisible by 4.
-                    FloatBuffer resizedPixels = BufferUtils.createFloatBuffer(pixels.capacity() * 2);
+                    FloatBuffer resizedPixels = BufferUtils.createFloatBuffer(pixels.remaining() * 2);
                     org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, resizedPixels);
-
-                    resizedPixels.limit(pixels.capacity());
-                    glGetTexImage.this.pixels.put(resizedPixels);
+                    pixels.put(pixels.position(), resizedPixels, 0, pixels.remaining());
                 } else {
                     org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
                 }
