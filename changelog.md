@@ -1,3 +1,5 @@
+v0.8.4
+
 - Fixed a regression where it was impossible to start a new game with Nexerelin. Reported by Forgotten.
 - Added support for Shadowverse/szb. Incompatibility reported by leo2334abc.
 - Added handling for file paths ending with a dot, as introduced by the Reborn as a Space Mercenary mod. Issue reported by Raven.
