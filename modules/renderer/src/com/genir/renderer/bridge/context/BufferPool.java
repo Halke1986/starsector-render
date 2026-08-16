@@ -36,7 +36,7 @@ public class BufferPool {
             return new FloatBufferSnapshot(0);
         }
 
-        int idx = poolIdx(params.capacity());
+        int idx = poolIdx(params.remaining());
         FloatBufferSnapshot snapshot;
 
         synchronized (floatPool) {
@@ -49,9 +49,8 @@ public class BufferPool {
         }
 
         snapshot.buffer.clear();
-        snapshot.buffer.put(0, params, 0, params.limit());
-        snapshot.buffer.position(params.position());
-        snapshot.buffer.limit(params.limit());
+        snapshot.buffer.put(0, params, params.position(), params.remaining());
+        snapshot.buffer.limit(params.remaining());
 
         snapshot.alreadyCleaned.set(false);
 
@@ -63,7 +62,7 @@ public class BufferPool {
             return new ByteBufferSnapshot(0);
         }
 
-        int idx = poolIdx(params.capacity());
+        int idx = poolIdx(params.remaining());
         ByteBufferSnapshot snapshot;
 
         synchronized (bytePool) {
@@ -76,9 +75,8 @@ public class BufferPool {
         }
 
         snapshot.buffer.clear();
-        snapshot.buffer.put(0, params, 0, params.limit());
-        snapshot.buffer.position(params.position());
-        snapshot.buffer.limit(params.limit());
+        snapshot.buffer.put(0, params, params.position(), params.remaining());
+        snapshot.buffer.limit(params.remaining());
 
         snapshot.alreadyCleaned.set(false);
 
@@ -90,7 +88,7 @@ public class BufferPool {
             return new IntBufferSnapshot(0);
         }
 
-        int idx = poolIdx(params.capacity());
+        int idx = poolIdx(params.remaining());
         IntBufferSnapshot snapshot;
 
         synchronized (intPool) {
@@ -103,9 +101,8 @@ public class BufferPool {
         }
 
         snapshot.buffer.clear();
-        snapshot.buffer.put(0, params, 0, params.limit());
-        snapshot.buffer.position(params.position());
-        snapshot.buffer.limit(params.limit());
+        snapshot.buffer.put(0, params, params.position(), params.remaining());
+        snapshot.buffer.limit(params.remaining());
 
         snapshot.alreadyCleaned.set(false);
 
@@ -117,7 +114,7 @@ public class BufferPool {
             return new ShortBufferSnapshot(0);
         }
 
-        int idx = poolIdx(params.capacity());
+        int idx = poolIdx(params.remaining());
         ShortBufferSnapshot snapshot;
 
         synchronized (shortPool) {
@@ -130,9 +127,8 @@ public class BufferPool {
         }
 
         snapshot.buffer.clear();
-        snapshot.buffer.put(0, params, 0, params.limit());
-        snapshot.buffer.position(params.position());
-        snapshot.buffer.limit(params.limit());
+        snapshot.buffer.put(0, params, params.position(), params.remaining());
+        snapshot.buffer.limit(params.remaining());
 
         snapshot.alreadyCleaned.set(false);
 
