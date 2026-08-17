@@ -10,8 +10,16 @@ public class Context {
     public Profiler.Frame mainProfilerFrame = null;
     public Profiler.Frame renderingProfilerFrame = null;
 
-    public Context(boolean isMain) {
-        this.isMain = isMain;
+    public Context(Context parent) {
+        if (parent == null) {
+            this.isMain = true;
+            this.shaderTracker = new ShaderTracker();
+            this.textureTracker = new TextureTracker();
+        } else {
+            this.isMain = false;
+            this.shaderTracker = parent.shaderTracker;
+            this.textureTracker = parent.textureTracker;
+        }
     }
 
     // Server state. Runs on rendering thread.
@@ -26,16 +34,18 @@ public class Context {
     public final StateCache glStateCache = new StateCache();
     public final BufferPool bufferPool = new BufferPool();
 
-    // Client state. Runs on main thread.
+    // Context-local client state. Runs on main thread.
     public final float[] commandArgs = new float[4];
-    public final ListManager clientListManager = new ListManager(this);
-    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool);
     public final AttribTracker attribTracker = new AttribTracker();
+    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool);
+    // Context-local client state, that can however be safely run per-context.
+    public final ListManager clientListManager = new ListManager(this);
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
     public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
-    public final ShaderTracker shaderTracker = new ShaderTracker(exec);
-    public final TextureTracker textureTracker = new TextureTracker(attribTracker);
+    // Context-shared client state.
+    public final ShaderTracker shaderTracker;
+    public final TextureTracker textureTracker;
 
     public void update() {
         // Runs on rendering thread.

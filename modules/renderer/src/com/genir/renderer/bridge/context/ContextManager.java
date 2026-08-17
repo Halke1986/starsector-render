@@ -12,7 +12,7 @@ import static com.genir.renderer.debug.Debug.asert;
  * allow executing LWJGL commands at all times.
  */
 public class ContextManager {
-    private static Context mainContext = new Context(true);
+    private static Context mainContext = new Context(null);
     private static Thread mainThread = Thread.currentThread();
     private static final Map<Thread, Context> auxContext = new HashMap<>();
 
@@ -38,7 +38,7 @@ public class ContextManager {
     synchronized public static Context createAuxContext() {
         asert(auxContext.get(Thread.currentThread()) == null);
 
-        Context context = new Context(false);
+        Context context = new Context(mainContext);
         auxContext.put(Thread.currentThread(), context);
 
         return context;
@@ -49,7 +49,7 @@ public class ContextManager {
 
         // Always have a context ready, because vanilla may perform
         // additional LWJGL calls after destroying the OpenGL context.
-        mainContext = new Context(true);
+        mainContext = new Context(null);
     }
 
     synchronized public static void destroyAuxContext() {
