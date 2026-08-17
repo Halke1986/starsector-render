@@ -361,7 +361,7 @@ public class GL20 {
         }
 
         final Context context = getThreadContext();
-        context.shaderTracker.glUseProgram(program);
+        context.attribTracker.glUseProgram(program);
         context.exec.execute(new glUseProgram(program));
     }
 
