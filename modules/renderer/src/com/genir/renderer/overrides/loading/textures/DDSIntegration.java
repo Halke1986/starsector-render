@@ -9,6 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL42;
 
 import java.awt.*;
 import java.io.File;
@@ -77,6 +80,33 @@ public class DDSIntegration {
         }
 
         return texData;
+    }
+
+    public static int commitTexture(String path, TextureData texData) {
+        int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+
+        int internalFormat = texData.isDDS ? GL42.GL_COMPRESSED_RGBA_BPTC_UNORM : GL11.GL_RGBA;
+
+        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+
+        boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
+        if (generateMipmap) {
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
+        } else {
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
+        }
+
+        com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+        com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, texData.buffer);
+
+        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+
+        return textureID;
     }
 
     private static boolean vramOptimizerEnabled() {

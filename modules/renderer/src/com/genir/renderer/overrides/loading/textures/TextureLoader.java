@@ -88,7 +88,7 @@ public class TextureLoader {
         }
 
         TextureData texData = loadTextureData("", path);
-        int textureID = TextureBuilder.commitTexture(path, texData);
+        int textureID = commitTexture(path, texData);
         return newVanillaTextureHandler(null, path, texData, textureID);
     }
 
@@ -123,12 +123,20 @@ public class TextureLoader {
         }
     }
 
+    private static int commitTexture(String path, TextureData texData) {
+        if (texData.isDDS) {
+            return DDSIntegration.commitTexture(path, texData);
+        } else {
+            return TextureBuilder.commitTexture(path, texData);
+        }
+    }
+
     /**
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
     private static void commitAndCacheTexture(String name, String path, TextureData texData) {
         try {
-            int textureID = TextureBuilder.commitTexture(path, texData);
+            int textureID = commitTexture(path, texData);
 
             TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
             TextureRepository.TextureRepository_addTexture(name, handler);

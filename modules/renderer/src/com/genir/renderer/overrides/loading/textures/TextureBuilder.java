@@ -3,7 +3,6 @@ package com.genir.renderer.overrides.loading.textures;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL42;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -14,12 +13,12 @@ import static java.awt.image.BufferedImage.*;
 public class TextureBuilder {
     public static int commitTexture(String path, TextureData texData) {
         int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
-        int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
-        int internalFormat = texData.isDDS ? GL42.GL_COMPRESSED_RGBA_BPTC_UNORM : GL11.GL_RGBA;
-
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
+        int internalFormat = GL11.GL_RGBA;
+
+        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, GL11.GL_RGBA);
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -33,12 +32,7 @@ public class TextureBuilder {
         }
 
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
-        if (texData.isDDS) {
-            com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, texData.buffer);
-        } else {
-            com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
-        }
+        com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
 
         DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 

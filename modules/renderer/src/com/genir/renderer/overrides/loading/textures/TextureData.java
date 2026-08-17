@@ -4,12 +4,13 @@ import java.awt.*;
 import java.nio.ByteBuffer;
 
 public class TextureData {
-    public ByteBuffer buffer = null;
-
+    public boolean isDDS = false;
     public int width;
     public int height;
+
+    // Vanilla image data.
     public boolean hasAlpha;
-    public boolean isDDS = false;
+    public ByteBuffer buffer = null;
 
     // Vanilla texture metadata.
     public Color mean = Color.white;
