@@ -1,20 +1,15 @@
 package com.genir.renderer.bridge.context.stall;
 
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Executor;
 import org.lwjgl.opengl.GL20;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShaderTracker {
-    private final Executor exec;
-
+public class ShaderTracker { // Context-shared object.
     private final Map<Integer, Map<String, Integer>> uniformLocations = new HashMap<>();
     private final Map<Integer, Map<Integer, Integer>> programParameters = new HashMap<>();
-
-    public ShaderTracker(Executor exec) {
-        this.exec = exec;
-    }
 
     //
     // GL calls.
@@ -31,6 +26,7 @@ public class ShaderTracker {
                 new HashMap<>()
         );
 
+        final Executor exec = getContextExecutor();
         return locations.computeIfAbsent(name.toString(), k ->
                 exec.get(context -> GL20.glGetUniformLocation(program, name))
         );
@@ -41,8 +37,15 @@ public class ShaderTracker {
                 new HashMap<>()
         );
 
+        final Executor exec = getContextExecutor();
         return parameters.computeIfAbsent(pname, k ->
                 exec.get(context -> GL20.glGetProgrami(program, pname))
         );
+    }
+
+    private Executor getContextExecutor() {
+        // ShaderTracker object is shared between contexts, therefore
+        // it cannot have a static reference to the context-local Executor.
+        return ContextManager.getThreadContext().exec;
     }
 }

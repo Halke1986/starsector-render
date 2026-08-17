@@ -10,8 +10,16 @@ public class Context {
     public Profiler.Frame mainProfilerFrame = null;
     public Profiler.Frame renderingProfilerFrame = null;
 
-    public Context(boolean isMain) {
-        this.isMain = isMain;
+    public Context(Context parent) {
+        if (parent == null) {
+            this.isMain = true;
+            this.shaderTracker = new ShaderTracker();
+            this.textureTracker = new TextureTracker();
+        } else {
+            this.isMain = false;
+            this.shaderTracker = parent.shaderTracker;
+            this.textureTracker = parent.textureTracker;
+        }
     }
 
     // Server state. Runs on rendering thread.
@@ -36,8 +44,8 @@ public class Context {
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
     public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);
     // Context-shared client state.
-    public final ShaderTracker shaderTracker = new ShaderTracker(exec);
-    public final TextureTracker textureTracker = new TextureTracker(attribTracker);
+    public final ShaderTracker shaderTracker;
+    public final TextureTracker textureTracker;
 
     public void update() {
         // Runs on rendering thread.

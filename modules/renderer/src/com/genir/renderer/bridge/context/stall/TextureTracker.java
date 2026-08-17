@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.BufferUtil;
+import com.genir.renderer.bridge.context.ContextManager;
 
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -8,15 +9,9 @@ import java.util.Map;
 
 import static com.genir.renderer.debug.Debug.asert;
 
-public class TextureTracker {
-    private final AttribTracker attribTracker;
-
+public class TextureTracker { // Context-shared object.
     private boolean[] boundTextures = new boolean[1];
     private final Map<Integer, TexData> parameterCache = new HashMap<>();
-
-    public TextureTracker(AttribTracker attribTracker) {
-        this.attribTracker = attribTracker;
-    }
 
     public void glBindTexture(int target, int texture) {
         while (boundTextures.length <= texture) {
@@ -49,7 +44,7 @@ public class TextureTracker {
             return;
         }
 
-        int textureID = attribTracker.getTextureBindingID();
+        int textureID = getContextAttribTracker().getTextureBindingID();
         if (textureID == 0) {
             return;
         }
@@ -69,7 +64,7 @@ public class TextureTracker {
             return null;
         }
 
-        int textureID = attribTracker.getTextureBindingID();
+        int textureID = getContextAttribTracker().getTextureBindingID();
         TexData data = parameterCache.get(textureID);
         if (data == null) {
             return null;
@@ -81,6 +76,12 @@ public class TextureTracker {
             case org.lwjgl.opengl.GL11.GL_TEXTURE_INTERNAL_FORMAT -> data.internalformat;
             default -> null;
         };
+    }
+
+    private AttribTracker getContextAttribTracker() {
+        // TextureTracker object is shared between contexts, therefore
+        // it cannot have a static reference to the context-local AttribTracker.
+        return ContextManager.getThreadContext().attribTracker;
     }
 
     private record TexData(int internalformat, int width, int height) {
