@@ -14,6 +14,9 @@ public class ResourceGenerator {
     private int requiredThisFrame = 0;
     private int cacheSize = 0;
 
+    // NOTE: generators across related GL contexts share the same resource pool.
+    // As long as the actual resource generation is delegated to a GL call, it
+    // is safe to maintain separate ResourceGenerator objects per context.
     private final Stack<Integer> stash = new Stack<>();
 
     public ResourceGenerator(Callable<Integer> generate, Executor exec) {
