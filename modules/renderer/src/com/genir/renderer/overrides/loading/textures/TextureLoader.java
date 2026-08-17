@@ -88,7 +88,8 @@ public class TextureLoader {
         }
 
         TextureData texData = loadTextureData("", path);
-        return TextureBuilder.commitTexture(path, texData);
+        int textureID = TextureBuilder.commitTexture(path, texData);
+        return newVanillaTextureHandler(null, path, texData, textureID);
     }
 
     private static TextureData loadTextureData(String type, String path) {
@@ -127,11 +128,28 @@ public class TextureLoader {
      */
     private static void commitAndCacheTexture(String name, String path, TextureData texData) {
         try {
-            TextureHandler tex = TextureBuilder.commitTexture(path, texData);
-            tex.TextureHandler_setStringID(name);
-            TextureRepository.TextureRepository_addTexture(name, tex);
+            int textureID = TextureBuilder.commitTexture(path, texData);
+
+            TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
+            TextureRepository.TextureRepository_addTexture(name, handler);
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
         }
+    }
+
+    private static TextureHandler newVanillaTextureHandler(String name, String path, TextureData texData, int textureID) {
+        TextureHandler handler = new TextureHandler(GL11.GL_TEXTURE_2D, textureID, path);
+
+        handler.TextureHandler_setStringID(name);
+        handler.TextureHandler_setPath(path);
+        handler.TextureHandler_setImageWidth(texData.width);
+        handler.TextureHandler_setImageHeight(texData.height);
+        handler.TextureHandler_setWidth(texData.width);
+        handler.TextureHandler_setHeight(texData.height);
+        handler.TextureHandler_setColor0(texData.mean);
+        handler.TextureHandler_setColor1(texData.weighted);
+        handler.TextureHandler_setColor2(texData.median);
+
+        return handler;
     }
 }

@@ -11,6 +11,7 @@ public class TextureData {
     public boolean hasAlpha;
     public boolean isDDS = false;
 
+    // Vanilla texture metadata.
     public Color mean = Color.white;
     public Color weighted = Color.white;
     public Color median = Color.white;

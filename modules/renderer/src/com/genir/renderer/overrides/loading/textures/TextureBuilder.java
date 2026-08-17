@@ -4,7 +4,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL42;
-import proxy.com.fs.graphics.TextureHandler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,25 +12,12 @@ import java.awt.image.Raster;
 import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
-    private static boolean initDone = false;
-
-    public static TextureHandler commitTexture(String path, TextureData texData) {
-        final TextureHandler texture = new TextureHandler(GL11.GL_TEXTURE_2D, com.genir.renderer.bridge.commands.GL11.glGenTextures(), path);
-
-        texture.TextureHandler_setPath(path);
-        texture.TextureHandler_setImageWidth(texData.width);
-        texture.TextureHandler_setImageHeight(texData.height);
-        texture.TextureHandler_setWidth(texData.width);
-        texture.TextureHandler_setHeight(texData.height);
-        texture.TextureHandler_setColor0(texData.mean);
-        texture.TextureHandler_setColor1(texData.weighted);
-        texture.TextureHandler_setColor2(texData.median);
-
-        int textureID = texture.TextureHandler_getTextureID();
+    public static int commitTexture(String path, TextureData texData) {
+        int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         int internalFormat = texData.isDDS ? GL42.GL_COMPRESSED_RGBA_BPTC_UNORM : GL11.GL_RGBA;
 
-        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
@@ -56,7 +42,7 @@ public class TextureBuilder {
 
         DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
-        return texture;
+        return textureID;
     }
 
     public static TextureData readAndAnalyzeImage(BufferedImage image) {
