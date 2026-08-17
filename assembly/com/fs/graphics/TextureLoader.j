@@ -786,7 +786,7 @@ L4:     iload 4
 L6:     iload 5
 L8:     iload 6
 L10:    iload 7
-L12:    invokestatic Method com/genir/renderer/overrides/loading/TextureLoader loadTexture (Ljava/lang/Object;Lproxy/com/fs/graphics/TextureHandler;Ljava/lang/String;IIIIZ)Lproxy/com/fs/graphics/TextureHandler;
+L12:    invokestatic Method com/genir/renderer/overrides/loading/textures/TextureLoader loadTexture (Ljava/lang/Object;Lproxy/com/fs/graphics/TextureHandler;Ljava/lang/String;IIIIZ)Lproxy/com/fs/graphics/TextureHandler;
 L15:    areturn
 L16:
         .linenumbertable

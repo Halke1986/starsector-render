@@ -1,7 +1,9 @@
-package com.genir.renderer.overrides.loading;
+package com.genir.renderer.overrides.loading.textures;
 
 import com.genir.renderer.overrides.GameState;
-import com.genir.renderer.overrides.TextureBuilder;
+import com.genir.renderer.overrides.loading.FileLoader;
+import com.genir.renderer.overrides.loading.ResourceHandle;
+import com.genir.renderer.overrides.loading.ResourceLoader;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 import proxy.com.fs.graphics.AlphaAdder;

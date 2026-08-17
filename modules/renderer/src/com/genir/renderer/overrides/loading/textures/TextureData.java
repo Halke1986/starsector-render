@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.loading;
+package com.genir.renderer.overrides.loading.textures;
 
 import java.awt.*;
 import java.nio.ByteBuffer;

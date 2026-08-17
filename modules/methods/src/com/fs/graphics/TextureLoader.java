@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class TextureLoader {
     public TextureHandler TextureLoader_loadTexture(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
-        return com.genir.renderer.overrides.loading.TextureLoader.loadTexture(this, target, path, var3, var4, var5, var6, generateSubImage);
+        return com.genir.renderer.overrides.loading.textures.TextureLoader.loadTexture(this, target, path, var3, var4, var5, var6, generateSubImage);
     }
     //.method public TextureLoader_loadTexture : (Lproxy/com/fs/graphics/TextureHandler;Ljava/lang/String;IIIIZ)Lproxy/com/fs/graphics/TextureHandler;
     //    .code stack 8 locals 8
@@ -18,7 +18,7 @@ public class TextureLoader {
     //L6:     iload 5
     //L8:     iload 6
     //L10:    iload 7
-    //L12:    invokestatic Method com/genir/renderer/overrides/loading/TextureLoader loadTexture (Ljava/lang/Object;Lproxy/com/fs/graphics/TextureHandler;Ljava/lang/String;IIIIZ)Lproxy/com/fs/graphics/TextureHandler;
+    //L12:    invokestatic Method com/genir/renderer/overrides/textures/loading/TextureLoader loadTexture (Ljava/lang/Object;Lproxy/com/fs/graphics/TextureHandler;Ljava/lang/String;IIIIZ)Lproxy/com/fs/graphics/TextureHandler;
     //L15:    areturn
     //L16:
     //        .linenumbertable

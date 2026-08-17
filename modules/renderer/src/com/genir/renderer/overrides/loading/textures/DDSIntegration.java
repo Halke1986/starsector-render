@@ -1,8 +1,9 @@
-package com.genir.renderer.overrides.loading;
+package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.overrides.PathUtil;
+import com.genir.renderer.overrides.loading.ScriptLoader;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;

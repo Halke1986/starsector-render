@@ -1,7 +1,5 @@
-package com.genir.renderer.overrides;
+package com.genir.renderer.overrides.loading.textures;
 
-import com.genir.renderer.overrides.loading.DDSIntegration;
-import com.genir.renderer.overrides.loading.TextureData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;

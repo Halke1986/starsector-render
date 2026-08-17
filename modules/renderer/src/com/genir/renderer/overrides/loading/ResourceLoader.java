@@ -8,6 +8,8 @@ import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamManager;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.Display;
+import com.genir.renderer.overrides.loading.textures.DDSIntegration;
+import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import proxy.com.fs.graphics.Sprite;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.graphics.particle.SmoothParticle;
@@ -21,7 +23,6 @@ import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 import proxy.com.fs.starfarer.renderers.AtmosphereRenderer;
 import proxy.com.fs.starfarer.renderers.ShipArrowRenderer;
 import proxy.com.fs.starfarer.settings.StarfarerSettings;
-import proxy.com.fs.starfarer.util.ScreenshotUtil;
 
 import java.awt.*;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
 
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            3, "FR-Texture-Loader", new ExceptionHandler());
+            1, "FR-Texture-Loader", new ExceptionHandler());
     public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(
             3, "FR-Script-Loader", new ExceptionHandler());
     public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
