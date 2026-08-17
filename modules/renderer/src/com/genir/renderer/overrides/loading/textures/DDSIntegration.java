@@ -17,6 +17,7 @@ import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -31,7 +32,7 @@ import static com.genir.renderer.debug.Debug.asert;
  * vanilla texture loading is replaced with the much faster DDS texture loading.
  */
 public class DDSIntegration {
-    private static Map<Path, DDSTextureData> cache = null;
+    private static Map<Path, TextureData> cache = null;
 
     private static Method methodBeforeTextureUpload = null;
     private static Method methodAfterTextureUpload = null;
@@ -53,33 +54,7 @@ public class DDSIntegration {
         }
 
         asert(path.isAbsolute());
-        DDSTextureData ddsTexData = cache.get(path.normalize());
-
-        // Texture was not converted to DDS.
-        if (ddsTexData == null) {
-            return null;
-        }
-
-        TextureData texData = ddsTexData.texData;
-        synchronized (texData) {
-            if (texData.buffer == null) {
-                byte[] bytes;
-                try {
-                    bytes = Files.readAllBytes(ddsTexData.ddsFile.toPath());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-                int ddsHeaderLength = 148;
-                int imageSize = bytes.length - ddsHeaderLength;
-
-                texData.buffer = BufferUtils.createByteBuffer(bytes.length - ddsHeaderLength);
-                texData.buffer.put(bytes, ddsHeaderLength, imageSize);
-                texData.buffer.clear();
-            }
-        }
-
-        return texData;
+        return cache.get(path.normalize());
     }
 
     public static int commitTexture(String path, TextureData texData) {
@@ -102,11 +77,33 @@ public class DDSIntegration {
         }
 
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, texData.buffer);
+
+        ByteBuffer buffer = readTextureBytes(texData);
+        com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, buffer);
 
         DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         return textureID;
+    }
+
+    public static ByteBuffer readTextureBytes(TextureData texData) {
+        try {
+            asert(texData.isDDS);
+            asert(texData.buffer == null);
+
+            byte[] bytes = Files.readAllBytes(texData.ddsImagePath);
+
+            int ddsHeaderLength = 148;
+            int imageSize = bytes.length - ddsHeaderLength;
+
+            ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length - ddsHeaderLength);
+            buffer.put(bytes, ddsHeaderLength, imageSize);
+            buffer.clear();
+
+            return buffer;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static boolean vramOptimizerEnabled() {
@@ -149,8 +146,8 @@ public class DDSIntegration {
         return metadataFiles;
     }
 
-    private static Map<Path, DDSTextureData> readDDSMetadata(List<File> metadataFiles) {
-        Map<Path, DDSTextureData> cache = new HashMap<>();
+    private static Map<Path, TextureData> readDDSMetadata(List<File> metadataFiles) {
+        Map<Path, TextureData> cache = new HashMap<>();
 
         for (File file : metadataFiles) {
             try {
@@ -163,9 +160,6 @@ public class DDSIntegration {
                     String relPath = dds.getString("RelativeImagePath");
                     String modDir = dds.getString("ModFolderName");
 
-                    String ddsFilePath = ".." + dds.getString("DDSFilePath");
-                    File ddsFile = new File(ddsFilePath);
-
                     Path absolutePath = Path.of(PathUtil.pwd);
                     if (Objects.equals(modDir, "starsector-core")) {
                         absolutePath = absolutePath.resolve(relPath);
@@ -173,7 +167,11 @@ public class DDSIntegration {
                         absolutePath = absolutePath.resolve(PathUtil.mods).resolve(modDir).resolve(relPath);
                     }
 
-                    cache.put(absolutePath.normalize(), new DDSTextureData(readTextureData(dds), ddsFile));
+                    String ddsImagePath = ".." + dds.getString("DDSFilePath");
+
+                    TextureData texData = readTextureData(dds);
+                    texData.ddsImagePath = Path.of(ddsImagePath);
+                    cache.put(absolutePath.normalize(), texData);
                 }
             } catch (Exception e) {
                 Logger.getLogger(DDSIntegration.class).info(e);
@@ -256,8 +254,5 @@ public class DDSIntegration {
 
             logger.error("Failed to initialize DDS integration", e);
         }
-    }
-
-    private record DDSTextureData(TextureData texData, File ddsFile) {
     }
 }
