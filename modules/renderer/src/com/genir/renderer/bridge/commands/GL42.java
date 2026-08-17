@@ -39,6 +39,7 @@ public class GL42 {
         }
 
         final Context context = getThreadContext();
+        context.textureTracker.updateTextureData(0, internalformat, width, height);
         context.exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
     }
 }
