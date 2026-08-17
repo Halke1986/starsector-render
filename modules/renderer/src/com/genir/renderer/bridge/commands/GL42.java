@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.TextureManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
@@ -34,6 +35,7 @@ public class GL42 {
         record glTexStorage2D(int target, int levels, int internalformat, int width, int height) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                TextureManager.textureModified();
                 org.lwjgl.opengl.GL42.glTexStorage2D(target, levels, internalformat, width, height);
             }
         }

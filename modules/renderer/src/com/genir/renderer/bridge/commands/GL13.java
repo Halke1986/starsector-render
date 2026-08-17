@@ -33,6 +33,7 @@ public class GL13 {
 
         final Context context = getThreadContext();
         final BufferPool.ByteBufferSnapshot snapshot = context.bufferPool.snapshot(data);
+        context.textureTracker.updateTextureData(level, internalformat, width, height);
         context.exec.execute(new glCompressedTexImage2D(target, level, internalformat, width, height, border, snapshot));
     }
 }

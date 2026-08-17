@@ -2,6 +2,9 @@ package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.TextureManager;
 import com.genir.renderer.overrides.PathUtil;
 import com.genir.renderer.overrides.loading.ScriptLoader;
 import org.apache.log4j.Logger;
@@ -59,31 +62,47 @@ public class DDSIntegration {
 
     public static int commitTexture(String path, TextureData texData) {
         int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
-        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        int internalFormat = texData.isDDS ? GL42.GL_COMPRESSED_RGBA_BPTC_UNORM : GL11.GL_RGBA;
+        final Context context = ContextManager.getThreadContext();
+
+
+        TextureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
+
+        // Simulate a single call to com.genir.renderer.bridge.commands.GL11.glBindTexture.
+        // Calling the actual method would cause premature texture load, as glBindTexture is
+        // the lazy load trigger.
+        context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        context.textureTracker.updateTextureData(0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height);
+        context.exec.execute((ctx, args, offset) -> org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID));
+
+        return textureID;
+    }
+
+    // Rendering thread.
+    private static void commitTextureLazy(String path, TextureData texData, int textureID) {
+        int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
 
         DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
         } else {
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
         }
 
-        com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
         ByteBuffer buffer = readTextureBytes(texData);
-        com.genir.renderer.bridge.commands.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, buffer);
+        org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+        org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, buffer);
 
         DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
-        return textureID;
+        Logger.getLogger(DDSIntegration.class).info("Lazy loading [" + path + "]");
     }
 
     public static ByteBuffer readTextureBytes(TextureData texData) {
