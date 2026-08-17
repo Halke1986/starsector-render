@@ -7,6 +7,7 @@ import com.genir.renderer.bridge.context.ClientAttribTracker;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ListManager;
 import com.genir.renderer.bridge.context.stall.AttribState;
+import com.genir.renderer.bridge.context.stall.TextureTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.bridge.interfaces.Recordable;
@@ -1282,6 +1283,7 @@ public class GL11 {
 
         final Context context = getThreadContext();
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.textureTracker.updateTextureData(level, internalformat, width, 1);
         context.exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
@@ -1296,6 +1298,7 @@ public class GL11 {
 
         final Context context = getThreadContext();
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.textureTracker.updateTextureData(level, internalformat, width, height);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1310,6 +1313,7 @@ public class GL11 {
 
         final Context context = getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        context.textureTracker.updateTextureData(level, internalformat, width, height);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1440,6 +1444,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
+        context.textureTracker.updateTextureData(level, internalFormat, width, height);
         context.exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
     }
 
@@ -1781,15 +1786,35 @@ public class GL11 {
     }
 
     public static int glGetTexLevelParameteri(int target, int level, int pname) {
-        record glGetTexLevelParameteri(int target, int level, int pname) implements GLGetter<Integer> {
+        record glGetTexLevelParameteri(int target, int level, int pname, int expected) implements GLCommand, GLGetter<Integer> {
             @Override
             public Integer call(Context context) {
+                int x = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
                 return org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
+            }
+
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                int actual = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
+                asertEqual(expected, actual);
             }
         }
 
+        // Skip incorrect calls in BoxUtil 1.5.4
+        if (level > 30000) {
+            return 0;
+        }
+
         final Context context = getThreadContext();
-        return context.exec.get(new glGetTexLevelParameteri(target, level, pname));
+        Integer expected = context.textureTracker.getTextureData(pname);
+
+        if (expected != null) {
+            context.exec.execute(new glGetTexLevelParameteri(target, level, pname, expected));
+            return expected;
+        }
+
+        return context.exec.get(new glGetTexLevelParameteri(target, level, pname, 0));
     }
 
     public static void glGetTexImage(int target, int level, int format, int type, ByteBuffer pixels) {
@@ -1856,7 +1881,7 @@ public class GL11 {
         }
 
         final Context context = getThreadContext();
-        boolean expected = context.textureTracker.glIsTexture(texture);
+        final boolean expected = context.textureTracker.glIsTexture(texture);
         context.exec.execute(new glIsTexture(texture, expected));
         return expected;
     }
