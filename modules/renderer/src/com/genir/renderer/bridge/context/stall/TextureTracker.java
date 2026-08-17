@@ -4,27 +4,41 @@ import com.genir.renderer.bridge.context.BufferUtil;
 import com.genir.renderer.bridge.context.ContextManager;
 
 import java.nio.IntBuffer;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.genir.renderer.debug.Debug.asert;
 
 public class TextureTracker { // Context-shared object.
+    // Async access to this.boundTextures. Races are acceptable,
+    // as long as not causing out-of-bounds access.
     private boolean[] boundTextures = new boolean[1];
-    private final Map<Integer, TexData> parameterCache = new HashMap<>();
+    private final Map<Integer, TexData> parameterCache = new ConcurrentHashMap<>();
 
     public void glBindTexture(int target, int texture) {
-        while (boundTextures.length <= texture) {
-            boundTextures = BufferUtil.reallocate(boundTextures.length * 2, boundTextures);
+        if (glIsTexture(texture)) {
+            return;
         }
 
-        boundTextures[texture] = true;
+        synchronized (this) {
+            while (boundTextures.length <= texture) {
+                boundTextures = BufferUtil.reallocate(boundTextures.length * 2, boundTextures);
+            }
+
+            boundTextures[texture] = true;
+        }
     }
 
     public void glDeleteTextures(int texture) {
+        boolean[] boundTextures = this.boundTextures;
         if (texture < boundTextures.length) {
             boundTextures[texture] = false;
         }
+    }
+
+    public boolean glIsTexture(int texture) {
+        boolean[] boundTextures = this.boundTextures;
+        return texture < boundTextures.length && boundTextures[texture];
     }
 
     public void glDeleteTextures(IntBuffer textures) {
@@ -32,10 +46,6 @@ public class TextureTracker { // Context-shared object.
         while (readBuffer.hasRemaining()) {
             glDeleteTextures(readBuffer.get());
         }
-    }
-
-    public boolean glIsTexture(int texture) {
-        return texture < boundTextures.length && boundTextures[texture];
     }
 
     public void updateTextureData(int level, int internalformat, int width, int height) {

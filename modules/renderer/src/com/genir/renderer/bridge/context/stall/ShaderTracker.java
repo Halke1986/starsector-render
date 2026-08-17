@@ -15,13 +15,13 @@ public class ShaderTracker { // Context-shared object.
     // GL calls.
     //
 
-    public void glLinkProgram(int program) {
+    synchronized public void glLinkProgram(int program) {
         // Clean previous program data.
         uniformLocations.remove(program);
         programParameters.remove(program);
     }
 
-    public int glGetUniformLocation(int program, CharSequence name) {
+    synchronized public int glGetUniformLocation(int program, CharSequence name) {
         Map<String, Integer> locations = uniformLocations.computeIfAbsent(program, k ->
                 new HashMap<>()
         );
@@ -32,7 +32,7 @@ public class ShaderTracker { // Context-shared object.
         );
     }
 
-    public int glGetProgrami(int program, int pname) {
+    synchronized public int glGetProgrami(int program, int pname) {
         Map<Integer, Integer> parameters = programParameters.computeIfAbsent(program, k ->
                 new HashMap<>()
         );
