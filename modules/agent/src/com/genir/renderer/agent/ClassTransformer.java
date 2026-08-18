@@ -16,8 +16,7 @@ public class ClassTransformer implements ClassFileTransformer {
                     "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11",
                     "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14",
                     "org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display",
-                    "org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext",
-                    "org/lwjgl/util/Display", "com/genir/renderer/bridge/commands/DisplayUtil"
+                    "org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"
             ),
 
             // Replace class loader for loading scripts.
