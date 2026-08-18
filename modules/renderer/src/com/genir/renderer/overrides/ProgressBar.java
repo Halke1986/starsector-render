@@ -5,7 +5,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
@@ -40,13 +39,6 @@ public class ProgressBar {
         w = Display.getWidth();
         h = Display.getHeight();
 
-        // Read screen pixels.
-        final ByteBuffer pixels = BufferUtils.createByteBuffer(w * h * 4);
-        final int readBufferState = com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_READ_BUFFER);
-        com.genir.renderer.bridge.commands.GL11.glReadBuffer(GL11.GL_FRONT);
-        com.genir.renderer.bridge.commands.GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-        com.genir.renderer.bridge.commands.GL11.glReadBuffer(readBufferState);
-
         // Allocate and define texture.
         texID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
@@ -56,17 +48,11 @@ public class ProgressBar {
         com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
         com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
-        com.genir.renderer.bridge.commands.GL11.glTexImage2D(
-                GL11.GL_TEXTURE_2D,
-                0,
-                GL11.GL_RGBA8,
-                w,
-                h,
-                0,
-                GL11.GL_RGBA,
-                GL11.GL_UNSIGNED_BYTE,
-                pixels
-        );
+        // Read screen pixels.
+        final int readBufferState = com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_READ_BUFFER);
+        com.genir.renderer.bridge.commands.GL11.glReadBuffer(GL11.GL_FRONT);
+        com.genir.renderer.bridge.commands.GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 0, 0, w, h, 0);
+        com.genir.renderer.bridge.commands.GL11.glReadBuffer(readBufferState);
     }
 
     private static void drawBackground() {
