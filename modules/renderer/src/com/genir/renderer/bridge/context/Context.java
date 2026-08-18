@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.debug.Profiler;
+import org.apache.log4j.Logger;
 
 public class Context {
     public final boolean isMain;
@@ -11,6 +12,8 @@ public class Context {
     public Profiler.Frame renderingProfilerFrame = null;
 
     public Context(Context parent) {
+        Logger.getLogger(Context.class).info("Created new virtual OpenGL context.");
+
         if (parent == null) {
             this.isMain = true;
             this.shaderTracker = new ShaderTracker();

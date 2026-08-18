@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.overrides.ProgressBar;
+import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Drawable;
@@ -13,7 +14,6 @@ import org.lwjgl.opengl.PixelFormat;
 import java.nio.ByteBuffer;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
-import static com.genir.renderer.debug.Debug.log;
 
 public class Display {
     public static void create(PixelFormat pixel_format) {
@@ -73,70 +73,6 @@ public class Display {
         update(true);
     }
 
-    public static DisplayMode[] getAvailableDisplayModes() {
-        record getAvailableDisplayModes() implements GLGetter<DisplayMode[]> {
-            @Override
-            public DisplayMode[] call(Context context) {
-                try {
-                    return org.lwjgl.opengl.Display.getAvailableDisplayModes();
-                } catch (LWJGLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        final Context context = getThreadContext();
-        return context.exec.get(new getAvailableDisplayModes());
-    }
-
-    public static int setIcon(ByteBuffer[] icons) {
-        record setIcon(ByteBuffer[] icons) implements GLGetter<Integer> {
-            @Override
-            public Integer call(Context context) {
-                return org.lwjgl.opengl.Display.setIcon(icons);
-            }
-        }
-
-        final Context context = getThreadContext();
-        return context.exec.get(new setIcon(icons));
-    }
-
-    public static DisplayMode getDesktopDisplayMode() {
-        record getDesktopDisplayMode() implements GLGetter<DisplayMode> {
-            @Override
-            public DisplayMode call(Context context) {
-                return org.lwjgl.opengl.Display.getDesktopDisplayMode();
-            }
-        }
-
-        final Context context = getThreadContext();
-        return context.exec.get(new getDesktopDisplayMode());
-    }
-
-    public static DisplayMode getDisplayMode() {
-        record getDisplayMode() implements GLGetter<DisplayMode> {
-            @Override
-            public DisplayMode call(Context context) {
-                return org.lwjgl.opengl.Display.getDisplayMode();
-            }
-        }
-
-        final Context context = getThreadContext();
-        return context.exec.get(new getDisplayMode());
-    }
-
-    public static void setTitle(String newTitle) {
-        record setTitle(String newTitle) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.Display.setTitle(newTitle);
-            }
-        }
-
-        final Context context = getThreadContext();
-        context.exec.wait(new setTitle(newTitle));
-    }
-
     public static void setVSyncEnabled(boolean sync) {
         record setVSyncEnabled(boolean sync) implements GLCommand {
             @Override
@@ -144,18 +80,14 @@ public class Display {
                 // Drain OpenGL error queue and log errors. NOTE: As of 0.98a vanilla
                 // ignores OpenGL errors and lets setVSyncEnabled drain the error
                 // queue and throw an exception.
-                try {
-                    int err = 0;
-                    do {
-                        err = org.lwjgl.opengl.GL11.glGetError();
-                        if (err != 0) {
-                            log("OpenGL error: " + err);
-                        }
-                    } while (err != 0);
-                } catch (Throwable ignored) {
-                    // glGetError may throw at application startup,
-                    // when called before OpenGL context is created.
-                }
+                do {
+                    int err = org.lwjgl.opengl.GL11.glGetError();
+                    if (err != 0) {
+                        Logger.getLogger(Display.class).info("OpenGL error: " + err);
+                    } else {
+                        break;
+                    }
+                } while (true);
 
                 // setVSyncEnabled error does not prevent the application from
                 // continuing to work correctly.
@@ -169,12 +101,18 @@ public class Display {
             }
         }
 
+        if (!org.lwjgl.opengl.Display.isCreated()) {
+            // Vanilla calls setVSyncEnabled before creating the display.
+            // Run the method outside GL context for side effects.
+            org.lwjgl.opengl.Display.setVSyncEnabled(sync);
+            return;
+        }
+
         final Context context = getThreadContext();
         context.exec.wait(new setVSyncEnabled(sync));
     }
 
-
-    public static void setFullscreen(boolean fullscreen) {
+    public static void setFullscreen(boolean fullscreen) throws LWJGLException {
         record setFullscreen(boolean fullscreen) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
@@ -187,10 +125,16 @@ public class Display {
             }
         }
 
+        if (!org.lwjgl.opengl.Display.isCreated()) {
+            // Vanilla calls setFullscreen before creating the display.
+            // Run the method outside GL context for side effects.
+            org.lwjgl.opengl.Display.setFullscreen(fullscreen);
+            return;
+        }
+
         final Context context = getThreadContext();
         context.exec.wait(new setFullscreen(fullscreen));
     }
-
 
     public static void processMessages() {
         record processMessages() implements GLCommand {
@@ -218,7 +162,6 @@ public class Display {
         context.exec.execute(new sync(fps));
     }
 
-
     public static Drawable getDrawable() {
         record getDrawable() implements GLGetter<Drawable> {
             @Override
@@ -231,8 +174,8 @@ public class Display {
         return context.exec.get(new getDrawable());
     }
 
-    //**********************************************************************
-    // Following methods do not need to be called from OpenGl context proxy.
+    //************************************************************************************************
+    // Following methods do not need to be called from OpenGl context, even if the context is created.
 
     public static int getX() {
         return org.lwjgl.opengl.Display.getX();
@@ -268,5 +211,25 @@ public class Display {
 
     public static boolean isVisible() {
         return org.lwjgl.opengl.Display.isVisible();
+    }
+
+    public static DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
+        return org.lwjgl.opengl.Display.getAvailableDisplayModes();
+    }
+
+    public static int setIcon(ByteBuffer[] icons) {
+        return org.lwjgl.opengl.Display.setIcon(icons);
+    }
+
+    public static DisplayMode getDesktopDisplayMode() {
+        return org.lwjgl.opengl.Display.getDesktopDisplayMode();
+    }
+
+    public static DisplayMode getDisplayMode() {
+        return org.lwjgl.opengl.Display.getDisplayMode();
+    }
+
+    public static void setTitle(String newTitle) {
+        org.lwjgl.opengl.Display.setTitle(newTitle);
     }
 }

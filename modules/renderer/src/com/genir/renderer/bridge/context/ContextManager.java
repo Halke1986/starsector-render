@@ -7,13 +7,11 @@ import static com.genir.renderer.debug.Debug.asert;
 
 /**
  * ContextManager manages virtual OpenGL contexts.
- * Each non-context thread should have a separate context enabled,
- * even if OpenGL context was not created explicitly. This is to
- * allow executing LWJGL commands at all times.
+ * Each client thread should have a separate context enabled.
  */
 public class ContextManager {
-    private static Context mainContext = new Context(null);
-    private static Thread mainThread = Thread.currentThread();
+    private static Context mainContext = null;
+    private static Thread mainThread = null;
     private static final Map<Thread, Context> auxContext = new HashMap<>();
 
     public static Context getThreadContext() {
@@ -21,8 +19,7 @@ public class ContextManager {
             return mainContext;
         }
 
-        // Assume a majority of commands is executed by the main application thread.
-        // Skip the slow contextMap.computeIfAbsent call for those commands.
+        // Assume the majority of commands is executed by main application thread.
         if (Thread.currentThread() == mainThread) {
             return mainContext;
         }
@@ -31,8 +28,17 @@ public class ContextManager {
     }
 
     synchronized public static Context createMainContext() {
+        mainContext = new Context(null);
         mainThread = Thread.currentThread();
+
         return mainContext;
+    }
+
+    synchronized public static void destroyMainContext() {
+        mainContext.shutdown();
+
+        mainContext = null;
+        mainThread = null;
     }
 
     synchronized public static Context createAuxContext() {
@@ -42,14 +48,6 @@ public class ContextManager {
         auxContext.put(Thread.currentThread(), context);
 
         return context;
-    }
-
-    synchronized public static void destroyMainContext() {
-        mainContext.shutdown();
-
-        // Always have a context ready, because vanilla may perform
-        // additional LWJGL calls after destroying the OpenGL context.
-        mainContext = new Context(null);
     }
 
     synchronized public static void destroyAuxContext() {

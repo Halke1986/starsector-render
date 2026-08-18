@@ -11,6 +11,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
+import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class GL20 {
     public static void glAttachShader(int program, int shader) {
@@ -158,11 +159,35 @@ public class GL20 {
     }
 
     public static int glGetUniformLocation(int program, CharSequence name) {
-        return getThreadContext().shaderTracker.glGetUniformLocation(program, name);
+        record glGetUniformLocation(int program, CharSequence name, int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                int actual = org.lwjgl.opengl.GL20.glGetUniformLocation(program, name);
+                asertEqual(expected, actual);
+            }
+        }
+
+        final Context context = getThreadContext();
+        final int expected = getThreadContext().shaderTracker.glGetUniformLocation(program, name);
+        context.exec.execute(new glGetUniformLocation(program, name.toString(), expected));
+        return expected;
     }
 
     public static int glGetProgrami(int program, int pname) {
-        return getThreadContext().shaderTracker.glGetProgrami(program, pname);
+        record glGetProgrami(int program, int pname, int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                int actual = org.lwjgl.opengl.GL20.glGetProgrami(program, pname);
+                asertEqual(expected, actual);
+            }
+        }
+
+        final Context context = getThreadContext();
+        final int expected = getThreadContext().shaderTracker.glGetProgrami(program, pname);
+        context.exec.execute(new glGetProgrami(program, pname, expected));
+        return expected;
     }
 
     public static void glLinkProgram(int program) {
