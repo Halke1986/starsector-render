@@ -3,16 +3,20 @@ package com.genir.renderer.bridge.context;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.genir.renderer.debug.Debug.asert;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D;
 
 public class TextureManager {
+    private int managedNumber = 0;
+    private int loadedNumber = 0;
+
     private boolean[] managedTextures = new boolean[1];
     private boolean[] loadedTextures = new boolean[1];
-    private final Map<Integer, Runnable> loaders = new HashMap<>();
+    private final Map<Integer, Consumer<TextureManager>> loaders = new HashMap<>();
 
-    public void manageTexture(int texture, Runnable loader) {
+    public void manageTexture(int texture, Consumer<TextureManager> loader) {
         while (managedTextures.length <= texture) {
             managedTextures = BufferUtil.reallocate(managedTextures.length * 2, managedTextures);
             loadedTextures = BufferUtil.reallocate(loadedTextures.length * 2, loadedTextures);
@@ -21,6 +25,7 @@ public class TextureManager {
         // Make sure texture is marked as managed only once.
         asert(!loaders.containsKey(texture));
 
+        managedNumber++;
         managedTextures[texture] = true;
         loaders.put(texture, loader);
     }
@@ -37,8 +42,9 @@ public class TextureManager {
         }
 
         // Load the texture.
+        loadedNumber++;
         loadedTextures[texture] = true;
-        loaders.get(texture).run();
+        loaders.get(texture).accept(this);
     }
 
     public void glDeleteTextures(int texture) {
@@ -62,5 +68,13 @@ public class TextureManager {
             managedTextures[texture] = false;
             loadedTextures[texture] = true;
         }
+    }
+
+    public int getManagedNumber() {
+        return managedNumber;
+    }
+
+    public int getLoadedNumber() {
+        return loadedNumber;
     }
 }
