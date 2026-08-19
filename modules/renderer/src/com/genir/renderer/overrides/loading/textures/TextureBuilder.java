@@ -1,5 +1,7 @@
 package com.genir.renderer.overrides.loading.textures;
 
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -18,7 +20,12 @@ public class TextureBuilder {
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         int internalFormat = GL11.GL_RGBA;
 
-        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        // DDSIntegration must be run on rendering thread as
+        // it contains un-intercepted OpenGL calls.
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute((ctx, args, offset) -> {
+            DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        });
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -34,7 +41,9 @@ public class TextureBuilder {
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
 
-        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        context.exec.execute((ctx, args, offset) -> {
+            DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        });
 
         return textureID;
     }

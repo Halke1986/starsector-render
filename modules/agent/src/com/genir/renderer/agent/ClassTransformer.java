@@ -97,13 +97,15 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         } else if (name.startsWith("com.genir.renderer.")) {
             return obfTransformer;
-        }
-
-        // Assume classes loaded by loaders other than system loaders are scripts.
-        if (loader != ClassLoader.getSystemClassLoader() && loader != this.getClass().getClassLoader()) {
+        } else if (loader == ClassLoader.getSystemClassLoader() || loader == this.getClass().getClassLoader()) {
+            // Other core game classes.
+            return null;
+        } else if (name.startsWith("DeCell.VOpt.Commons.Rendering.")) {
+            // Do not replace OpenGL calls in VOpt, as it does run directly on rendering thread.
+            return null;
+        } else {
+            // Do Assume classes loaded by loaders other than system loaders are scripts.
             return scriptTransformer;
         }
-
-        return null;
     }
 }

@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Debug.asert;
 
@@ -62,27 +63,21 @@ public class DDSIntegration {
 
     public static int commitTexture(String path, TextureData texData) {
         int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         final Context context = ContextManager.getThreadContext();
-
-        TextureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
-
-        // Simulate a single call to com.genir.renderer.bridge.commands.GL11.glBindTexture.
-        // Calling the actual method would cause premature texture load, as glBindTexture is
-        // the lazy load trigger.
-        context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-        context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-        context.textureTracker.updateTextureData(0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height);
-        context.exec.execute((ctx, args, offset) -> org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID));
+        context.exec.execute((ctx, args, offset) -> {
+            TextureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
+        });
 
         return textureID;
     }
 
-    // Rendering thread.
+    // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
     private static void commitTextureLazy(String path, TextureData texData, int textureID) {
         int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
 
-//        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -99,9 +94,9 @@ public class DDSIntegration {
         org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, buffer);
 
-//        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
-        Logger.getLogger(DDSIntegration.class).info("Lazy loading [" + path + "]");
+        Logger.getLogger(DDSIntegration.class).info("Loading image DDS override [" + path + "]");
     }
 
     public static ByteBuffer readTextureBytes(TextureData texData) {
@@ -263,14 +258,29 @@ public class DDSIntegration {
             methodBeforeTextureUpload = tclass.getMethod("BeforeTextureUpload", int.class, int.class, int.class, String.class, int.class);
             methodAfterTextureUpload = tclass.getMethod("AfterTextureUpload", int.class, int.class, int.class, String.class, int.class);
 
-            tclass.getMethod("Init").invoke(null);
+            // VOpt Init must be run on rendering thread as
+            // it contains un-intercepted OpenGL calls.
+            final Context context = ContextManager.getThreadContext();
+            final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+            context.exec.wait((ctx, args, offset) -> {
+                try {
+                    tclass.getMethod("Init").invoke(null);
+                } catch (Throwable t) {
+                    asyncException.set(t);
+                }
+            });
+
+            Throwable t = asyncException.get();
+            if (t != null) {
+                throw t;
+            }
 
             logger.info("Initialized DDS integration");
-        } catch (Throwable e) {
+        } catch (Throwable t) {
             methodBeforeTextureUpload = null;
             methodAfterTextureUpload = null;
 
-            logger.error("Failed to initialize DDS integration", e);
+            logger.error("Failed to initialize DDS integration", t);
         }
     }
 }

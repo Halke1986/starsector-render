@@ -12,8 +12,7 @@ public class TextureManager {
     private static boolean[] loadedTextures = new boolean[1];
     private static final Map<Integer, Runnable> loaders = new HashMap<>();
 
-    // Client thread.
-    synchronized public static void manageTexture(int texture, Runnable loader) {
+    public static void manageTexture(int texture, Runnable loader) {
         while (managedTextures.length <= texture) {
             managedTextures = BufferUtil.reallocate(managedTextures.length * 2, managedTextures);
             loadedTextures = BufferUtil.reallocate(loadedTextures.length * 2, loadedTextures);

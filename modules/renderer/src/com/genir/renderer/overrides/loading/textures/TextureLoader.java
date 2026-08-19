@@ -104,7 +104,6 @@ public class TextureLoader {
             if (resource instanceof ResourceHandle handle) {
                 TextureData texData = DDSIntegration.getTexture(handle.getFilePath());
                 if (texData != null) {
-                    logger.info("Loading image DDS override [" + path + "]");
                     return texData;
                 }
             }
