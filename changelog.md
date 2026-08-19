@@ -1,4 +1,8 @@
+v0.8.5rc1
+
 - Optimized game startup time.
+- Added several stability improvements to the rendering engine.
+- Implemented lazy texture loading. DDS textures will now load when required, instead of during game startup. This greatly reduces VRAM usage at the cost of possible stuttering when loading large batches of textures at once. 
 
 v0.8.4
 

@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 public final class Agent {
     public static void premain(String agentArgs, Instrumentation instrumentation) {
         Logger logger = Logger.getLogger(Agent.class);
-        logger.info("Fast Rendering: v0.8.4");
+        logger.info("Fast Rendering: v0.8.5rc1");
 
         // Expected Windows Starsector 0.98a-RC8 checksum: 5dd222b9e266d2ac2d63b3dad4983eb05caaf5a247d7dfb82aaeba47ea774cc8
         String checksum = getSha256(Path.of("starfarer_obf.jar"));
