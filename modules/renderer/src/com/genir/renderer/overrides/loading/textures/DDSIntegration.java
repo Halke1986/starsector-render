@@ -65,7 +65,6 @@ public class DDSIntegration {
 
         final Context context = ContextManager.getThreadContext();
 
-
         TextureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
 
         // Simulate a single call to com.genir.renderer.bridge.commands.GL11.glBindTexture.
@@ -83,7 +82,7 @@ public class DDSIntegration {
     private static void commitTextureLazy(String path, TextureData texData, int textureID) {
         int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
 
-        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+//        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -98,9 +97,9 @@ public class DDSIntegration {
 
         ByteBuffer buffer = readTextureBytes(texData);
         org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height, 0, buffer);
+        org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, buffer);
 
-        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+//        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 
         Logger.getLogger(DDSIntegration.class).info("Lazy loading [" + path + "]");
     }
