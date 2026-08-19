@@ -4,7 +4,6 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.TextureManager;
 import com.genir.renderer.overrides.PathUtil;
 import com.genir.renderer.overrides.loading.ScriptLoader;
 import org.apache.log4j.Logger;
@@ -67,7 +66,7 @@ public class DDSIntegration {
 
         final Context context = ContextManager.getThreadContext();
         context.exec.execute((ctx, args, offset) -> {
-            TextureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
+            ctx.textureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
         });
 
         return textureID;
@@ -76,6 +75,8 @@ public class DDSIntegration {
     // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
     private static void commitTextureLazy(String path, TextureData texData, int textureID) {
         int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
+
+        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
 

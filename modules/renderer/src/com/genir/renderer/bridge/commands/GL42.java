@@ -35,7 +35,7 @@ public class GL42 {
         record glTexStorage2D(int target, int levels, int internalformat, int width, int height) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.textureModified();
+                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL42.glTexStorage2D(target, levels, internalformat, width, height);
             }
         }

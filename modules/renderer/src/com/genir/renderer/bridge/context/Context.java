@@ -16,10 +16,12 @@ public class Context {
 
         if (parent == null) {
             this.isMain = true;
+            this.textureManager = new TextureManager();
             this.shaderTracker = new ShaderTracker();
             this.textureTracker = new TextureTracker();
         } else {
             this.isMain = false;
+            this.textureManager = parent.textureManager;
             this.shaderTracker = parent.shaderTracker;
             this.textureTracker = parent.textureTracker;
         }
@@ -30,6 +32,8 @@ public class Context {
     public final AttribManager attribManager = new AttribManager();
     public final TransformManager transformManager = new TransformManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, transformManager);
+    // Context-shared server state.
+    public final TextureManager textureManager;
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();

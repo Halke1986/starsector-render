@@ -27,7 +27,7 @@ public class GL13 {
         record glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border, BufferPool.ByteBufferSnapshot data) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.textureModified();
+                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL13.glCompressedTexImage2D(target, level, internalformat, width, height, border, data.buffer);
                 data.release();
             }

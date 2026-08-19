@@ -8,11 +8,11 @@ import static com.genir.renderer.debug.Debug.asert;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D;
 
 public class TextureManager {
-    private static boolean[] managedTextures = new boolean[1];
-    private static boolean[] loadedTextures = new boolean[1];
-    private static final Map<Integer, Runnable> loaders = new HashMap<>();
+    private boolean[] managedTextures = new boolean[1];
+    private boolean[] loadedTextures = new boolean[1];
+    private final Map<Integer, Runnable> loaders = new HashMap<>();
 
-    public static void manageTexture(int texture, Runnable loader) {
+    public void manageTexture(int texture, Runnable loader) {
         while (managedTextures.length <= texture) {
             managedTextures = BufferUtil.reallocate(managedTextures.length * 2, managedTextures);
             loadedTextures = BufferUtil.reallocate(loadedTextures.length * 2, loadedTextures);
@@ -25,7 +25,7 @@ public class TextureManager {
         loaders.put(texture, loader);
     }
 
-    synchronized public static void glBindTexture(int target, int texture) {
+    synchronized public void glBindTexture(int target, int texture) {
         // Texture is not managed.
         if (texture >= managedTextures.length || !managedTextures[texture]) {
             return;
@@ -41,23 +41,23 @@ public class TextureManager {
         loaders.get(texture).run();
     }
 
-    public static void glDeleteTextures(int texture) {
+    public void glDeleteTextures(int texture) {
         doNotManageTexture(texture);
     }
 
-    public static void glDeleteTextures(IntBuffer textures) {
+    public void glDeleteTextures(IntBuffer textures) {
         IntBuffer readBuffer = textures.duplicate();
         while (readBuffer.hasRemaining()) {
             glDeleteTextures(readBuffer.get());
         }
     }
 
-    public static void textureModified() {
+    public void textureModified() {
         int textureID = org.lwjgl.opengl.GL11.glGetInteger(GL_TEXTURE_BINDING_2D);
         doNotManageTexture(textureID);
     }
 
-    synchronized private static void doNotManageTexture(int texture) {
+    synchronized private void doNotManageTexture(int texture) {
         if (texture < managedTextures.length) {
             managedTextures[texture] = false;
             loadedTextures[texture] = true;

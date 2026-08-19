@@ -837,9 +837,9 @@ public class GL11 {
             int texture = Float.floatToRawIntBits(args[argsOffset + 2]);
 
             context.attribManager.glBindTexture(target, texture);
-            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+            context.textureManager.glBindTexture(target, texture);
 
-            TextureManager.glBindTexture(target, texture);
+            org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
     }
 
@@ -1279,7 +1279,7 @@ public class GL11 {
         record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.textureModified();
+                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels.buffer);
                 pixels.release();
             }
@@ -1295,7 +1295,7 @@ public class GL11 {
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.textureModified();
+                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
                 pixels.release();
             }
@@ -1311,7 +1311,7 @@ public class GL11 {
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.textureModified();
+                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
                 pixels.release();
             }
@@ -1411,7 +1411,7 @@ public class GL11 {
         record glDeleteTextures(int texture) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.glDeleteTextures(texture);
+                context.textureManager.glDeleteTextures(texture);
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }
@@ -1425,7 +1425,7 @@ public class GL11 {
         record glDeleteTextures(IntBufferSnapshot textures) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                TextureManager.glDeleteTextures(textures.buffer);
+                context.textureManager.glDeleteTextures(textures.buffer);
                 org.lwjgl.opengl.GL11.glDeleteTextures(textures.buffer);
                 textures.release();
             }
@@ -1447,7 +1447,7 @@ public class GL11 {
                     return;
                 }
 
-                TextureManager.textureModified();
+                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
             }
         }
