@@ -67,14 +67,19 @@ public class DDSIntegration {
 
         final Context context = ContextManager.getThreadContext();
         context.exec.execute((ctx, args, offset) -> {
-            ctx.textureManager.manageTexture(textureID, () -> commitTextureLazy(path, texData, textureID));
+            ctx.textureManager.manageTexture(
+                    textureID,
+                    path,
+                    () -> readTextureBytes(texData),
+                    (buffer) -> commitTextureLazy(path, texData, textureID, buffer)
+            );
         });
 
         return textureID;
     }
 
     // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
-    private static String commitTextureLazy(String path, TextureData texData, int textureID) {
+    private static void commitTextureLazy(String path, TextureData texData, int textureID, ByteBuffer buffer) {
         int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
 
         org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
@@ -92,13 +97,10 @@ public class DDSIntegration {
             org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
         }
 
-        ByteBuffer buffer = readTextureBytes(texData);
         org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, buffer);
 
         DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-
-        return path;
     }
 
     public static ByteBuffer readTextureBytes(TextureData texData) {

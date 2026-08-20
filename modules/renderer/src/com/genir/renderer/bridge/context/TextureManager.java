@@ -2,10 +2,12 @@ package com.genir.renderer.bridge.context;
 
 import org.apache.log4j.Logger;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import static com.genir.renderer.debug.Debug.asert;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D;
@@ -18,9 +20,9 @@ public class TextureManager {
     private long loadingDuration = 0;
 
     private State[] texturesState = new State[1];
-    private final Map<Integer, Callable<String>> loaders = new HashMap<>();
+    private final Map<Integer, TextureData> loaders = new HashMap<>();
 
-    public void manageTexture(int texture, Callable<String> loader) {
+    public void manageTexture(int texture, String path, Callable<ByteBuffer> loadFn, Consumer<ByteBuffer> commitFn) {
         while (texturesState.length <= texture) {
             texturesState = BufferUtil.reallocate(State.class, texturesState.length * 2, texturesState);
         }
@@ -30,7 +32,7 @@ public class TextureManager {
 
         managedNumber++;
         texturesState[texture] = State.MANAGED;
-        loaders.put(texture, loader);
+        loaders.put(texture, new TextureData(path, loadFn, commitFn));
     }
 
     // Client thread.
@@ -55,8 +57,12 @@ public class TextureManager {
     synchronized private void loadTexture(int texture) {
         long start = System.nanoTime();
         try {
-            String path = loaders.get(texture).call();
-            logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + path + "]");
+            TextureData texData = loaders.get(texture);
+
+            ByteBuffer buffer = texData.loadFn.call();
+            texData.commitFn.accept(buffer);
+
+            logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + texData.path + "]");
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -97,5 +103,8 @@ public class TextureManager {
         // null -> not managed
         MANAGED,
         LOADED,
+    }
+
+    private record TextureData(String path, Callable<ByteBuffer> loadFn, Consumer<ByteBuffer> commitFn) {
     }
 }
