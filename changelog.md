@@ -1,6 +1,8 @@
+v0.8.5rc2
+
 - Fixed a crash when VramOptimizer/jars/GameFunctions.jar file was not found.
 
-  v0.8.5rc1
+v0.8.5rc1
 
 - Optimized game startup time.
 - Added several stability improvements to the rendering engine.
