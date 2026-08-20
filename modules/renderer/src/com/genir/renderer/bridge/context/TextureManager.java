@@ -1,22 +1,27 @@
 package com.genir.renderer.bridge.context;
 
+import org.apache.log4j.Logger;
+
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.concurrent.Callable;
 
 import static com.genir.renderer.debug.Debug.asert;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D;
 
 public class TextureManager {
+    private final Logger logger = Logger.getLogger(TextureManager.class);
+
     private int managedNumber = 0;
     private int loadedNumber = 0;
+    private long loadingDuration = 0;
 
     private boolean[] managedTextures = new boolean[1];
     private boolean[] loadedTextures = new boolean[1];
-    private final Map<Integer, Consumer<TextureManager>> loaders = new HashMap<>();
+    private final Map<Integer, Callable<String>> loaders = new HashMap<>();
 
-    public void manageTexture(int texture, Consumer<TextureManager> loader) {
+    public void manageTexture(int texture, Callable<String> loader) {
         while (managedTextures.length <= texture) {
             managedTextures = BufferUtil.reallocate(managedTextures.length * 2, managedTextures);
             loadedTextures = BufferUtil.reallocate(loadedTextures.length * 2, loadedTextures);
@@ -42,9 +47,18 @@ public class TextureManager {
         }
 
         // Load the texture.
-        loadedNumber++;
-        loadedTextures[texture] = true;
-        loaders.get(texture).accept(this);
+        long start = System.nanoTime();
+        try {
+            loadedNumber++;
+            loadedTextures[texture] = true;
+
+            String path = loaders.get(texture).call();
+            logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + path + "]");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            loadingDuration += System.nanoTime() - start;
+        }
     }
 
     public void glDeleteTextures(int texture) {
@@ -70,11 +84,10 @@ public class TextureManager {
         }
     }
 
-    public int getManagedNumber() {
-        return managedNumber;
-    }
-
-    public int getLoadedNumber() {
-        return loadedNumber;
+    public void update() {
+        if (loadingDuration != 0) {
+            logger.info("Texture loading time: " + (loadingDuration / 100000) / 10f + "ms");
+            loadingDuration = 0;
+        }
     }
 }

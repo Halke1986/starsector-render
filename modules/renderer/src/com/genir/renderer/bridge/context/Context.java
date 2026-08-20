@@ -63,6 +63,10 @@ public class Context {
             texGenerator.update();
             arrayGenerator.update();
             bufferGenerator.update();
+
+            if (isMain) {
+                textureManager.update();
+            }
         }
     }
 
