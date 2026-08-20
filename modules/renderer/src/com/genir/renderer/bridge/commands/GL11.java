@@ -837,7 +837,6 @@ public class GL11 {
             int texture = Float.floatToRawIntBits(args[argsOffset + 2]);
 
             context.attribManager.glBindTexture(target, texture);
-            context.textureManager.glBindTexture(target, texture);
 
             org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
@@ -876,6 +875,8 @@ public class GL11 {
                 Float.intBitsToFloat(target),
                 Float.intBitsToFloat(texture)
         );
+
+        context.textureManager.glBindTexture(context, target, texture);
     }
 
     public static void glPushAttrib(int mask) {

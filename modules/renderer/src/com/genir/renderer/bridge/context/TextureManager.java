@@ -33,25 +33,28 @@ public class TextureManager {
         loaders.put(texture, loader);
     }
 
-    synchronized public void glBindTexture(int target, int texture) {
-        // Texture is already loaded (or not managed).
+    // Client thread.
+    synchronized public void glBindTexture(Context context, int target, int texture) {
+        // Texture is not managed.
         if (texture >= texturesState.length || texturesState[texture] == null) {
             return;
         }
-
-        // Texture is already loaded (or not managed).
 
         // Texture is already loaded.
         if (texturesState[texture] == State.LOADED) {
             return;
         }
 
+        loadedNumber++;
+        texturesState[texture] = State.LOADED;
+
         // Load the texture.
+        context.exec.execute((ctx, args, offset) -> loadTexture(texture));
+    }
+
+    synchronized private void loadTexture(int texture) {
         long start = System.nanoTime();
         try {
-            loadedNumber++;
-            texturesState[texture] = State.LOADED;
-
             String path = loaders.get(texture).call();
             logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + path + "]");
         } catch (Exception e) {
