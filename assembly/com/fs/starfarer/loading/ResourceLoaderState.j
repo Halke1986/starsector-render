@@ -908,7 +908,7 @@ L1681:  iload_3
 L1682:  aload_2 
 L1683:  invokeinterface InterfaceMethod java/util/List size ()I 1 
 L1688:  if_icmplt L1658 
-L1691:  invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader runScriptLoadingThread ()V
+L1691:  invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader initScriptClassLoader ()V
 L1694:  invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'ö00000' ()V 
 L1697:  invokestatic Method com/fs/starfarer/loading/ShipNameStore o00000 ()V 
 L1700:  invokestatic Method com/fs/starfarer/loading/StarfarerStrings 'super' ()V 

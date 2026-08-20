@@ -253,10 +253,9 @@ public class DDSIntegration {
         Logger logger = Logger.getLogger(DDSIntegration.class);
 
         try {
-            String tClassName = "DeCell.VOpt.Commons.Rendering.Textures";
-            ScriptLoader.addScript(tClassName);
+            ScriptLoader.initScriptClassLoader();
             ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
-            Class<?> tclass = scriptLoader.loadClass(tClassName);
+            Class<?> tclass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.Textures");
 
             methodBeforeTextureUpload = tclass.getMethod("BeforeTextureUpload", int.class, int.class, int.class, String.class, int.class);
             methodAfterTextureUpload = tclass.getMethod("AfterTextureUpload", int.class, int.class, int.class, String.class, int.class);
@@ -278,12 +277,12 @@ public class DDSIntegration {
                 throw t;
             }
 
-            logger.info("Initialized DDS integration");
+            logger.info("Initialized VramOptimizer/jars/GameFunctions.jar integration.");
         } catch (Throwable t) {
             methodBeforeTextureUpload = null;
             methodAfterTextureUpload = null;
 
-            logger.error("Failed to initialize DDS integration", t);
+            logger.error("Failed to initialize VramOptimizer/jars/GameFunctions.jar integration.", t);
         }
     }
 }

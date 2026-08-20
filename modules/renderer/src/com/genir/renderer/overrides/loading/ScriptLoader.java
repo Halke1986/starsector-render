@@ -28,7 +28,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
     private static final Logger logger = Logger.getLogger(ScriptLoader.class);
 
-    public static void addScript(String className) {
+    public static void queueScript(String className) {
         if (className == null) {
             return;
         }
@@ -44,7 +44,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
 
         ResourceLoader.scriptWorkers.execute(() -> {
             try {
-                loadClass(className);
+                loadScript(className);
             } catch (Throwable e) {
                 ResourceLoader.setException(e);
             }
@@ -55,9 +55,9 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         ResourceLoader.mainThreadQueue.add(mainThreadWaitGroup::decrementAndGet);
     }
 
-    private static void loadClass(String className) {
+    private static void loadScript(String className) {
         try {
-            Logger.getLogger(ScriptLoader.class).info("Compiling script [" + className + "]");
+            logger.info("Compiling script [" + className + "]");
 
             // Load classes asynchronously, to optimize away
             // the slow Janino bytecode compilation process.
@@ -66,10 +66,6 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
             // Vanilla throws a RuntimeException when a class fails to load.
             throw new RuntimeException("Error while loading script [" + className + "]", e);
         }
-    }
-
-    public static void runScriptLoadingThread() {
-        initScriptClassLoader();
     }
 
     public static void joinScriptLoadingThread() {
@@ -105,7 +101,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         }
     }
 
-    private static void initScriptClassLoader() {
+    public static void initScriptClassLoader() {
         if (loaderInitialized) {
             return;
         }
