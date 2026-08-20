@@ -17,32 +17,32 @@ public class TextureManager {
     private int loadedNumber = 0;
     private long loadingDuration = 0;
 
-    private boolean[] managedTextures = new boolean[1];
-    private boolean[] loadedTextures = new boolean[1];
+    private State[] texturesState = new State[1];
     private final Map<Integer, Callable<String>> loaders = new HashMap<>();
 
     public void manageTexture(int texture, Callable<String> loader) {
-        while (managedTextures.length <= texture) {
-            managedTextures = BufferUtil.reallocate(managedTextures.length * 2, managedTextures);
-            loadedTextures = BufferUtil.reallocate(loadedTextures.length * 2, loadedTextures);
+        while (texturesState.length <= texture) {
+            texturesState = BufferUtil.reallocate(State.class, texturesState.length * 2, texturesState);
         }
 
         // Make sure texture is marked as managed only once.
         asert(!loaders.containsKey(texture));
 
         managedNumber++;
-        managedTextures[texture] = true;
+        texturesState[texture] = State.MANAGED;
         loaders.put(texture, loader);
     }
 
     synchronized public void glBindTexture(int target, int texture) {
-        // Texture is not managed.
-        if (texture >= managedTextures.length || !managedTextures[texture]) {
+        // Texture is already loaded (or not managed).
+        if (texture >= texturesState.length || texturesState[texture] == null) {
             return;
         }
 
+        // Texture is already loaded (or not managed).
+
         // Texture is already loaded.
-        if (loadedTextures[texture]) {
+        if (texturesState[texture] == State.LOADED) {
             return;
         }
 
@@ -50,7 +50,7 @@ public class TextureManager {
         long start = System.nanoTime();
         try {
             loadedNumber++;
-            loadedTextures[texture] = true;
+            texturesState[texture] = State.LOADED;
 
             String path = loaders.get(texture).call();
             logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + path + "]");
@@ -78,16 +78,21 @@ public class TextureManager {
     }
 
     synchronized private void doNotManageTexture(int texture) {
-        if (texture < managedTextures.length) {
-            managedTextures[texture] = false;
-            loadedTextures[texture] = true;
+        if (texture < texturesState.length) {
+            texturesState[texture] = null;
         }
     }
 
     public void update() {
         if (loadingDuration != 0) {
-            logger.info("Texture loading time: " + (loadingDuration / 100000) / 10f + "ms");
+            logger.info("Texture loading time: " + (loadingDuration / 10000) / 100f + "ms");
             loadingDuration = 0;
         }
+    }
+
+    private enum State {
+        // null -> not managed
+        MANAGED,
+        LOADED,
     }
 }
