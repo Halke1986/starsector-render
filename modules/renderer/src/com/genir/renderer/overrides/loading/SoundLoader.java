@@ -34,11 +34,7 @@ public class SoundLoader {
     public static void queueSound(String path) {
         if (path != null && knownSounds.add(path)) {
             ResourceLoader.soundWorkers.execute(() -> {
-                try {
-                    loadSound(path);
-                } catch (Throwable e) {
-                    ResourceLoader.setException(e);
-                }
+                loadSound(path);
             });
         }
     }

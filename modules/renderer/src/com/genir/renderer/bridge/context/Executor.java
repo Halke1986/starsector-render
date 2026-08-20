@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
@@ -9,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -20,9 +20,9 @@ public class Executor {
     private final Pool framePool = new Pool();
 
     private Future<?> currentSwapFuture = completedFuture(null);
-    private final AtomicReference<Throwable> exception = new AtomicReference<>(null);
+    private final AsyncException exception = new AsyncException();
 
-    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render");
+    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception.getHandler());
 
     private static final Object execMutex = new Object();
 

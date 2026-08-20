@@ -48,11 +48,11 @@ public class TextureLoader {
         ResourceLoader.workers.execute(() -> {
             try {
                 loadTextureAsync(type, path);
-            } catch (Throwable e) {
+            } catch (Throwable t) {
                 if (optional) {
                     knownImages.remove(path);
                 } else {
-                    ResourceLoader.setException(e);
+                   throw t;
                 }
             } finally {
                 mainThreadWaitGroup.decrementAndGet();
@@ -70,8 +70,6 @@ public class TextureLoader {
         ResourceLoader.mainThreadQueue.add(() -> {
             try {
                 commitAndCacheTexture(path, path, texData);
-            } catch (Throwable e) {
-                ResourceLoader.setException(e);
             } finally {
                 mainThreadWaitGroup.decrementAndGet();
             }

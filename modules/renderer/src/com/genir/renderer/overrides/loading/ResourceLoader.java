@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.impl.campaign.procgen.MarkovNames;
 import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamManager;
 import com.fs.starfarer.api.loading.*;
+import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.Display;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
@@ -32,7 +33,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
@@ -40,14 +40,14 @@ import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadin
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
-    private static final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+    private static final AsyncException asyncException = new AsyncException();
 
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            1, "FR-Texture-Loader", new ExceptionHandler());
+            1, "FR-Texture-Loader", asyncException.getHandler());
     public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(
-            3, "FR-Script-Loader", new ExceptionHandler());
+            3, "FR-Script-Loader", asyncException.getHandler());
     public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
-            2, "FR-Sound-Loader", new ExceptionHandler());
+            2, "FR-Sound-Loader", asyncException.getHandler());
 
     private static final ProgressBar barAnimation = new ProgressBar();
 
@@ -96,7 +96,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     }
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
-        ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", new ExceptionHandler());
+        ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException.getHandler());
 
         mainThreadWaitGroup.incrementAndGet();
         mainThreadExec.execute(() -> {
@@ -109,7 +109,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                 // But vanilla is the final judge on what should be loaded.
                 state.queueShipAndWeaponSprites();
             } catch (Throwable e) {
-                setException(e);
+                asyncException.set(e);
             } finally {
                 mainThreadWaitGroup.decrementAndGet();
             }
@@ -259,19 +259,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
     public static void animateBar(Sprite bar) {
         barAnimation.animate(bar);
-    }
-
-    public static void setException(Throwable e) {
-        if (e != null) {
-            asyncException.compareAndSet(null, e);
-        }
-    }
-
-    private static class ExceptionHandler implements Thread.UncaughtExceptionHandler {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            setException(e);
-        }
     }
 
     private static class SkipVanillaInitEpilogue extends RuntimeException {

@@ -1,5 +1,6 @@
 package com.genir.renderer.debug;
 
+import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import static com.genir.renderer.debug.samplers.ClassHistogramSampler.takeHistog
 public class SamplerRunner {
     public static final SamplerRunner samplerRunner = new SamplerRunner();
 
-    private final AtomicReference<Throwable> asyncException = new AtomicReference<>();
+    private final AsyncException asyncException = new AsyncException();
 
     public void update() {
         Throwable t = asyncException.get();
@@ -33,7 +34,7 @@ public class SamplerRunner {
         new File(histogramDir).mkdirs();
         new File(leakDir).mkdirs();
 
-        ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-sampler", new ExceptionHandler(asyncException));
+        ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-sampler", asyncException.getHandler());
 
         exec.execute(() -> {
             while (true) {

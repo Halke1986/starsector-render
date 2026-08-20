@@ -43,11 +43,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         scripts.add(className);
 
         ResourceLoader.scriptWorkers.execute(() -> {
-            try {
-                loadScript(className);
-            } catch (Throwable e) {
-                ResourceLoader.setException(e);
-            }
+            loadScript(className);
         });
 
         // Submit empty job to main thread to progress the loading bar.
