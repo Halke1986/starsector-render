@@ -17,16 +17,21 @@ public class ProgressBar {
     private static int h = 0;
 
     public static void renderBackground(proxy.com.fs.starfarer.campaign.save.ProgressBar bar) {
-        if (bar != currentBar) {
-            if (texID != 0) {
-                com.genir.renderer.bridge.commands.GL11.glDeleteTextures(texID);
+        try {
+            if (bar != currentBar) {
+                if (texID != 0) {
+                    com.genir.renderer.bridge.commands.GL11.glDeleteTextures(texID);
+                }
+
+                storeBackground();
+                currentBar = bar;
             }
 
-            storeBackground();
-            currentBar = bar;
+            drawBackground();
+        } catch (Exception ignored) {
+            // Exceptions during progress bar rendering may be
+            // interpreted by the game as save file corruption.
         }
-
-        drawBackground();
     }
 
     public static void clear() {

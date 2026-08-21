@@ -1,4 +1,5 @@
 - Reduced lazy texture loading lag.
+- Fixed a bug that occasionally prevented saved games from being loaded.
 
 v0.8.5rc2
 

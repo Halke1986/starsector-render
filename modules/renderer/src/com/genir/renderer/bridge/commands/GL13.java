@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.BufferPool;
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.TextureManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 
 import java.nio.ByteBuffer;
