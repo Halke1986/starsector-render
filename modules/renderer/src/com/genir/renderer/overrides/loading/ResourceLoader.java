@@ -43,7 +43,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     private static final AsyncException asyncException = new AsyncException();
 
     public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            1, "FR-Texture-Loader", asyncException.getHandler());
+            3, "FR-Texture-Loader", asyncException.getHandler());
     public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(
             3, "FR-Script-Loader", asyncException.getHandler());
     public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(

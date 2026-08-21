@@ -1,3 +1,5 @@
+- Reduced lazy texture loading lag.
+
 v0.8.5rc2
 
 - Fixed a crash when VramOptimizer/jars/GameFunctions.jar file was not found.

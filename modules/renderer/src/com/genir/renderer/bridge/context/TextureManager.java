@@ -1,5 +1,7 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.async.AsyncException;
+import com.genir.renderer.async.ExecutorFactory;
 import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -7,6 +9,8 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import static com.genir.renderer.debug.Debug.asert;
@@ -22,6 +26,10 @@ public class TextureManager {
     private State[] texturesState = new State[1];
     private final Map<Integer, TextureData> loaders = new HashMap<>();
 
+    private static final AsyncException asyncException = new AsyncException();
+    private final ExecutorService workers = ExecutorFactory.newExecutor(
+            4, "FR-Texture-Lazy-Loader", asyncException.getHandler());
+
     public void manageTexture(int texture, String path, Callable<ByteBuffer> loadFn, Consumer<ByteBuffer> commitFn) {
         while (texturesState.length <= texture) {
             texturesState = BufferUtil.reallocate(State.class, texturesState.length * 2, texturesState);
@@ -32,6 +40,7 @@ public class TextureManager {
 
         managedNumber++;
         texturesState[texture] = State.MANAGED;
+
         loaders.put(texture, new TextureData(path, loadFn, commitFn));
     }
 
@@ -50,19 +59,31 @@ public class TextureManager {
         loadedNumber++;
         texturesState[texture] = State.LOADED;
 
-        // Load the texture.
-        context.exec.execute((ctx, args, offset) -> loadTexture(texture));
+        TextureData texData = loaders.get(texture);
+        logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + texData.path + "]");
+
+        // Load texture.
+        Future<ByteBuffer> bufferFuture = workers.submit(() -> {
+            try {
+                return texData.loadFn.call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // Commit texture.
+        context.exec.execute((ctx, args, offset) -> {
+            commitTexture(texture, bufferFuture);
+        });
     }
 
-    synchronized private void loadTexture(int texture) {
+    synchronized private void commitTexture(int texture, Future<ByteBuffer> bufferFuture) {
         long start = System.nanoTime();
         try {
+            ByteBuffer buffer = bufferFuture.get();
+
             TextureData texData = loaders.get(texture);
-
-            ByteBuffer buffer = texData.loadFn.call();
             texData.commitFn.accept(buffer);
-
-            logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + texData.path + "]");
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -97,6 +118,10 @@ public class TextureManager {
             logger.info("Texture loading time: " + (loadingDuration / 10000) / 100f + "ms");
             loadingDuration = 0;
         }
+    }
+
+    public void shutdown() {
+        workers.shutdown();
     }
 
     private enum State {

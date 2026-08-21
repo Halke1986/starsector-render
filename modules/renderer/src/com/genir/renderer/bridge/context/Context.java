@@ -73,5 +73,9 @@ public class Context {
     public void shutdown() {
         // Runs on main thread.
         exec.shutdown();
+
+        if (isMain) {
+            textureManager.shutdown();
+        }
     }
 }
