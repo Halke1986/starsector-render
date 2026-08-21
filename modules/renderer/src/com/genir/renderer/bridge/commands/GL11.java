@@ -6,9 +6,7 @@ import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.ClientAttribTracker;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ListManager;
-import com.genir.renderer.bridge.context.TextureManager;
 import com.genir.renderer.bridge.context.stall.AttribState;
-import com.genir.renderer.bridge.context.stall.TextureTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.bridge.interfaces.Recordable;
@@ -1618,44 +1616,82 @@ public class GL11 {
      * Blocking.
      */
     public static int glGetInteger(int pname) {
-        final Context context = getThreadContext();
+        record glGetInteger(int pname, int expected) implements GLCommand, GLGetter<Integer> {
+            @Override
+            public Integer call(Context context) {
+                return org.lwjgl.opengl.GL11.glGetInteger(pname);
+            }
 
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(pname);
+                asertEqual(expected, actual);
+            }
+        }
+
+        final Context context = getThreadContext();
+        Integer expected = null;
+        boolean shouldAssert = false;
+
+        // Values simulated on the rendering thread.
         switch (pname) {
-            // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-                return context.attribTracker.getTextureBindingID();
+                expected = context.attribTracker.getTextureBindingID();
+                shouldAssert = true;
+                break;
+
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
-                return context.attribTracker.getMatrixMode();
+                expected = context.attribTracker.getMatrixMode();
+                // Rendering thread matrixMode does not have to match
+                // the value observeed by the client thread.
+                shouldAssert = false;
+                break;
+
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
-                return context.attribTracker.getActiveTexture();
+                expected = context.attribTracker.getActiveTexture();
+                shouldAssert = true;
+                break;
+
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
-                return context.attribTracker.getArrayBufferBinding();
+                expected = context.attribTracker.getArrayBufferBinding();
+                shouldAssert = true;
+                break;
+
             case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
-                return context.attribTracker.getCurrentProgram();
+                expected = context.attribTracker.getCurrentProgram();
+                shouldAssert = true;
+                break;
+
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
-                return context.attribTracker.getFramebufferBinding();
+                expected = context.attribTracker.getFramebufferBinding();
+                shouldAssert = true;
+                break;
+
             case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
-                return context.attribTracker.getVertexArrayBinding();
+                expected = context.attribTracker.getVertexArrayBinding();
+                shouldAssert = true;
+                break;
 
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
             case ATIMeminfo.GL_TEXTURE_FREE_MEMORY_ATI:
-                Integer cached = context.glStateCache.getOtherInteger(pname);
-                if (cached != null) {
-                    return cached;
-                }
+                expected = context.glStateCache.getOtherInteger(pname);
+                shouldAssert = false;
+                break;
         }
 
         // Fallback to blocking GL call.
-        record glGetInteger(int pname) implements GLGetter<Integer> {
-            @Override
-            public Integer call(Context context) {
-                return org.lwjgl.opengl.GL11.glGetInteger(pname);
-            }
+        if (expected == null) {
+            return context.exec.get(new glGetInteger(pname, 0));
         }
 
-        return context.exec.get(new glGetInteger(pname));
+        if (shouldAssert) {
+            context.exec.execute(new glGetInteger(pname, expected));
+        }
+
+        return expected;
     }
 
     public static void glGetInteger(int pname, IntBuffer params) {
