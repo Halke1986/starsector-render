@@ -184,7 +184,11 @@ public class DDSIntegration {
                         absolutePath = absolutePath.resolve(PathUtil.mods).resolve(modDir).resolve(relPath);
                     }
 
-                    String ddsImagePath = ".." + dds.getString("DDSFilePath");
+                    // DDSFilePath is a mods-dir suffix like '/mods/DDSCache/..'. Convert to absolute.
+                    Path ddsFilePath = Path.of(dds.getString("DDSFilePath"));
+                    Path ddsImagePath = Path.of(PathUtil.mods)
+                            .toAbsolutePath()
+                            .resolve(ddsFilePath.subpath(1, ddsFilePath.getNameCount()));
 
                     TextureData texData = readTextureData(dds);
                     texData.ddsImagePath = Path.of(ddsImagePath);
