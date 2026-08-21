@@ -8,7 +8,8 @@ import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamManager;
 import com.fs.starfarer.api.loading.*;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.bridge.commands.Display;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import proxy.com.fs.graphics.Sprite;
@@ -34,6 +35,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.genir.renderer.bridge.commands.Display.processMessages;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
 
@@ -75,26 +77,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         awaitTermination(soundWorkers);
     }
 
-    private static void initEpilogue() throws Exception {
-        // Script loading thread is started in 'init_vanilla'.
-        joinScriptLoadingThread();
-
-        MarkovNames.loadIfNeeded();
-        for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
-            mod.onApplicationLoad();
-        }
-
-        ImpactSound.ImpactSound_init();
-        new Version();
-        new SmoothParticle(Color.BLACK, 10.0F);
-        new Fps();
-        AtmosphereRenderer.AtmosphereRenderer_init();
-        ScreenshotUtil.ScreenshotUtil_init();
-        ShipArrowRenderer.ShipArrowRenderer_init();
-        SlipstreamManager.validateConfigs();
-        Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
-    }
-
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
         ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException.getHandler());
 
@@ -125,7 +107,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
                 if (getThreadContext().exec.isIdle()) {
                     state.renderProgress(0);
-                    Display.update(true);
+                    com.genir.renderer.bridge.commands.Display.update(true);
                 }
 
             } catch (InterruptedException e) {
@@ -168,12 +150,39 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         barAnimation.forwardOnly = true;
         while (barAnimation.barIsNotFull()) {
             state.renderProgress(0);
-            Display.update();
+            com.genir.renderer.bridge.commands.Display.update();
             Thread.sleep(10);
         }
 
         // Skip a redundant section of vanilla resource loading.
         throw new SkipVanillaInitEpilogue();
+    }
+
+    private static void initEpilogue() throws Exception {
+        // Script loading thread is started in 'init_vanilla'.
+        joinScriptLoadingThread();
+
+        MarkovNames.loadIfNeeded();
+
+        for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
+            mod.onApplicationLoad();
+
+            final Context context = ContextManager.getThreadContext();
+            context.exec.wait((ctx, args, offset) -> {
+                org.lwjgl.opengl.Display.processMessages();
+                org.lwjgl.opengl.GL11.glFinish();
+            });
+        }
+
+        ImpactSound.ImpactSound_init();
+        new Version();
+        new SmoothParticle(Color.BLACK, 10.0F);
+        new Fps();
+        AtmosphereRenderer.AtmosphereRenderer_init();
+        ScreenshotUtil.ScreenshotUtil_init();
+        ShipArrowRenderer.ShipArrowRenderer_init();
+        SlipstreamManager.validateConfigs();
+        com.genir.renderer.bridge.commands.Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
     }
 
     public static void loadResource(String type, String path) {
