@@ -38,6 +38,15 @@ public class ListManager {
         return isReplay;
     }
 
+    public boolean isRecording(GLCommand command, float[] args, int argsOffset) {
+        if (isRecording()) {
+            record(command, args, argsOffset);
+            return true;
+        }
+
+        return false;
+    }
+
     public void record(GLCommand command, float[] args, int argsOffset) {
         newList.add(command);
 

@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ListManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Recordable;
 
@@ -12,11 +11,8 @@ public class GL14 {
         record glBlendEquation(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                ListManager listManager = context.listManager;
-                if (listManager.isRecording()) {
-                    listManager.record(this, args, argsOffset);
+                if (context.listManager.isRecording(this, args, argsOffset))
                     return;
-                }
 
                 context.attribManager.glBlendEquation(mode);
             }
@@ -29,11 +25,8 @@ public class GL14 {
     private record GlBlendFuncSeparate() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            ListManager listManager = context.listManager;
-            if (listManager.isRecording()) {
-                listManager.record(this, args, argsOffset);
+            if (context.listManager.isRecording(this, args, argsOffset))
                 return;
-            }
 
             int sfactorRGB = Float.floatToRawIntBits(args[argsOffset + 1]);
             int dfactorRGB = Float.floatToRawIntBits(args[argsOffset + 2]);
