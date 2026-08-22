@@ -47,7 +47,7 @@ public class TextureManager {
     // Client thread.
     synchronized public void glBindTexture(Context context, int target, int texture) {
         // Texture is not managed.
-        if (texture >= texturesState.length || texturesState[texture] == null) {
+        if (texture < 0 || texture >= texturesState.length || texturesState[texture] == null) {
             return;
         }
 
@@ -108,7 +108,7 @@ public class TextureManager {
     }
 
     synchronized private void doNotManageTexture(int texture) {
-        if (texture < texturesState.length) {
+        if (texture >= 0 && texture < texturesState.length) {
             texturesState[texture] = null;
         }
     }
