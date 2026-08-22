@@ -4,8 +4,6 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.TextureManager;
-import com.genir.renderer.overrides.PathUtil;
 import com.genir.renderer.overrides.loading.ScriptLoader;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -36,6 +34,9 @@ import static com.genir.renderer.debug.Debug.asert;
  * vanilla texture loading is replaced with the much faster DDS texture loading.
  */
 public class DDSIntegration {
+    private static final String PWD = System.getProperty("user.dir");
+    private static final String MODS = System.getProperty("com.fs.starfarer.settings.paths.mods");
+
     private static Map<Path, TextureData> cache = null;
 
     private static Method methodBeforeTextureUpload = null;
@@ -137,7 +138,7 @@ public class DDSIntegration {
         List<File> metadataFiles = new ArrayList<>();
 
         // Iterate over dds cache.
-        Path ddsDir = Path.of(PathUtil.mods).resolve("DDSCache");
+        Path ddsDir = Path.of(MODS).resolve("DDSCache");
         try (DirectoryStream<Path> ddsDirStream = Files.newDirectoryStream(ddsDir)) {
             for (Path ddsModDirPath : ddsDirStream) {
                 if (!ddsModDirPath.toFile().isDirectory()) {
@@ -177,18 +178,21 @@ public class DDSIntegration {
                     String relPath = dds.getString("RelativeImagePath");
                     String modDir = dds.getString("ModFolderName");
 
-                    Path absolutePath = Path.of(PathUtil.pwd);
+                    Path originalImagePath = Path.of(PWD);
                     if (Objects.equals(modDir, "starsector-core")) {
-                        absolutePath = absolutePath.resolve(relPath);
+                        originalImagePath = originalImagePath.resolve(relPath);
                     } else {
-                        absolutePath = absolutePath.resolve(PathUtil.mods).resolve(modDir).resolve(relPath);
+                        originalImagePath = originalImagePath.resolve(MODS).resolve(modDir).resolve(relPath);
                     }
 
-                    String ddsImagePath = ".." + dds.getString("DDSFilePath");
+                    // DDSFilePath is a mods-dir suffix like '/mods/DDSCache/..'. Convert to absolute.
+                    Path ddsImagePath = Path.of(dds.getString("DDSFilePath"));
+                    ddsImagePath = ddsImagePath.subpath(1, ddsImagePath.getNameCount());
+                    ddsImagePath = Path.of(MODS).resolve(ddsImagePath);
 
                     TextureData texData = readTextureData(dds);
-                    texData.ddsImagePath = Path.of(ddsImagePath);
-                    cache.put(absolutePath.normalize(), texData);
+                    texData.ddsImagePath = ddsImagePath.normalize();
+                    cache.put(originalImagePath.normalize(), texData);
                 }
             } catch (Exception e) {
                 Logger.getLogger(DDSIntegration.class).info(e);

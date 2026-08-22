@@ -1,5 +1,6 @@
 - Reduced lazy texture loading lag.
 - Fixed a bug that occasionally prevented saved games from being loaded.
+- Improved file path handling on Linux and Mac. Implemented in cooperation with wing.
 
 v0.8.5rc2
 

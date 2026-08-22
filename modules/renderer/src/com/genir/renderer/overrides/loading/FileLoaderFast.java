@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.genir.renderer.overrides.PathUtil;
 import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import org.apache.log4j.Logger;
 import proxy.com.fs.util.FileLoader.ResourceLocation;
@@ -9,12 +8,17 @@ import proxy.com.fs.util.container.Pair;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class FileLoaderFast {
     private final static String DIRECTORY = "DIRECTORY";
     private final static String CLASSPATH = "CLASSPATH";
     private final static String ABSOLUTE_AND_CWD = "ABSOLUTE_AND_CWD";
+
+    private final String PWD = normalize(System.getProperty("user.dir"));
+    private final String MODS = normalize(System.getProperty("com.fs.starfarer.settings.paths.mods"));
+    private final String SAVES = normalize(System.getProperty("com.fs.starfarer.settings.paths.saves"));
 
     private final List<ResourceLocation> allLocations;
     private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
@@ -51,12 +55,12 @@ public class FileLoaderFast {
     }
 
     public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) {
-        String resourceKey = PathUtil.normalize(path);
+        String resourceKey = normalize(path);
 
         // Vanilla may pass absolute path when it loads core game resource.
-        boolean isAbsolute = resourceKey.startsWith(PathUtil.pwd);
+        boolean isAbsolute = resourceKey.startsWith(PWD);
         if (isAbsolute) {
-            resourceKey = PathUtil.normalize(resourceKey.substring(PathUtil.pwd.length()));
+            resourceKey = normalize(resourceKey.substring(PWD.length()));
         }
 
         List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
@@ -103,7 +107,7 @@ public class FileLoaderFast {
     }
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean useAbsolutePath) {
-        dir = PathUtil.normalize(dir);
+        dir = normalize(dir);
         List<FileHandle> knownDirectories = cachedFiles.get(dir);
         if (knownDirectories == null) {
             return new ArrayList<>();
@@ -164,7 +168,7 @@ public class FileLoaderFast {
     private String getLocationPath(ResourceLocation location) {
         return switch (location.ResourceLocation_type.toString()) {
             case "DIRECTORY" -> location.ResourceLocation_path;
-            case "ABSOLUTE_AND_CWD" -> PathUtil.pwd;
+            case "ABSOLUTE_AND_CWD" -> PWD;
             default -> null;
         };
     }
@@ -175,6 +179,42 @@ public class FileLoaderFast {
         }
 
         return Objects.equals(location.ResourceLocation_path, "../starfarer.res/res");
+    }
+
+    private String normalize(String path) {
+        // Remove leading slash.
+        if (path.startsWith("/")) {
+            path = path.substring("/".length());
+        }
+
+        if (path.startsWith("\\")) {
+            path = path.substring("\\".length());
+        }
+
+        // Normalize path.
+        path = Paths.get(path).normalize().toString();
+
+        // Convert path format.
+        path = path.replace("\\", "/");
+
+        // Remove trailing slash.
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - "/".length());
+        }
+
+        // Remove trailing dot. It is required because of paths like
+        // "graphics/portraits/dwergr.png." introduced by
+        // Reborn as a Space Mercenary v0.0.4
+        if (path.endsWith(".")) {
+            path = path.substring(0, path.length() - ".".length());
+        }
+
+        // Lowercase file path, to avoid case sensitivity
+        // issues. Not sure if this works on Linux or MacOS.
+        // Machina Void Shipyards Armaa Expansion Patch is one
+        // mod that would otherwise trigger a false-negative
+        // file search result
+        return path.toLowerCase(Locale.ROOT);
     }
 
     /**
@@ -204,7 +244,7 @@ public class FileLoaderFast {
                     String fileName = fileHandle.file.getPath();
 
                     // String location path, leaving only the file name.
-                    String resourceKey = PathUtil.normalize(fileName.replace(locationPath, ""));
+                    String resourceKey = normalize(fileName.replace(locationPath, ""));
                     if (resourceKey.isEmpty()) {
                         continue;
                     }
@@ -230,8 +270,8 @@ public class FileLoaderFast {
 
                 case ABSOLUTE_AND_CWD:
                     enumeratePath(locationPath, fileCollector, location); // Game assets.
-                    enumeratePath(locationPath.resolve(PathUtil.saves), fileCollector, location); // Saved games.
-                    enumeratePath(locationPath.resolve(PathUtil.mods).resolve("enabled_mods.json"), fileCollector, location); // Enabled mods list.
+                    enumeratePath(locationPath.resolve(SAVES), fileCollector, location); // Saved games.
+                    enumeratePath(locationPath.resolve(MODS).resolve("enabled_mods.json"), fileCollector, location); // Enabled mods list.
                     enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, location); // Mikohime Java mod.
 
                     break;
