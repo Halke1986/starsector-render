@@ -82,6 +82,15 @@ public class Executor {
     }
 
     /**
+     * Execute command immediately.
+     * This method should be called from rendering thread.
+     */
+
+    public void executeNow(Runnable command) {
+        command.run();
+    }
+
+    /**
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
@@ -175,7 +184,7 @@ public class Executor {
                     executeCommands(frameToExecute);
 
                     try {
-                        GL11.glFlush();
+                        com.genir.renderer.bridge.servercmds.GL11.glFlush(context);
                     } catch (RuntimeException ignored) {
                         // Handle glFlush() called on a thread
                         // where GL context was not yet created.

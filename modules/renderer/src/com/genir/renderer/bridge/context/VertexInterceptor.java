@@ -27,6 +27,7 @@ public class VertexInterceptor {
     private static final int TEX1_FLAG = 8;
     private static final int NORMAL_FLAG = 16;
 
+    private final Context context;
     private final TransformManager transformManager;
     private final AttribManager attribManager;
 
@@ -67,7 +68,8 @@ public class VertexInterceptor {
     private ByteBuffer vertexPointer = BufferUtils.createByteBuffer(0);
     private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
 
-    public VertexInterceptor(AttribManager attribManager, TransformManager transformManager) {
+    public VertexInterceptor(Context context, AttribManager attribManager, TransformManager transformManager) {
+        this.context = context;
         this.attribManager = attribManager;
         this.transformManager = transformManager;
     }
@@ -205,7 +207,7 @@ public class VertexInterceptor {
             vertexBatch.clear();
 
             attribManager.forceReorderedDrawContext(ctx);
-            GL11.glDrawArrays(batchMode, 0, batchCount);
+            com.genir.renderer.bridge.servercmds.GL11.glDrawArrays(context, batchMode, 0, batchCount);
         }
 
         // Restore client selected attributes to avoid client-server state desync.
@@ -239,46 +241,46 @@ public class VertexInterceptor {
         // Vertex array.
         final ArraySnapshot vs = snapshot.vertex();
         if (vs != null) {
-            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+            com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_VERTEX_ARRAY);
 
             if (vs.snapshot() != null) {
                 vertexPointer = restoreSnapshot(vs, vertexPointer);
-                GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
+                com.genir.renderer.bridge.servercmds.GL11.glVertexPointer(context, vs.size(), vs.type(), vs.stride(), vertexPointer);
             }
         } else {
-            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+            com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_VERTEX_ARRAY);
         }
 
         // Texture array.
         final ArraySnapshot ts = snapshot.texCoord();
         if (ts != null) {
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_TEXTURE_COORD_ARRAY);
 
             if (ts.snapshot() != null) {
                 texCoordPointer = restoreSnapshot(ts, texCoordPointer);
-                GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
+                com.genir.renderer.bridge.servercmds.GL11.glTexCoordPointer(context, ts.size(), ts.type(), ts.stride(), texCoordPointer);
             }
         } else {
-            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_TEXTURE_COORD_ARRAY);
         }
 
         // Color array.
         final ArraySnapshot cs = snapshot.color();
         if (cs != null) {
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_COLOR_ARRAY);
 
             if (cs.snapshot() != null) {
                 colorPointer = restoreSnapshot(cs, colorPointer);
-                GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
+                com.genir.renderer.bridge.servercmds.GL11.glColorPointer(context, cs.size(), cs.type(), cs.stride(), colorPointer);
             }
         } else {
             // Define color if GL_COLOR_ARRAY is disabled.
-            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-            GL11.glColor4f(red, green, blue, alpha);
+            com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_COLOR_ARRAY);
+            com.genir.renderer.bridge.servercmds.GL11.glColor4f(context, red, green, blue, alpha);
         }
 
         // Normal array.
-        GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+        com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_NORMAL_ARRAY);
 
         // Move model transformation from CPU to GPU.
         // The vertex array is stored in object/local space rather than pre-transformed
@@ -316,7 +318,7 @@ public class VertexInterceptor {
         primaryVertexPointer.put(0, vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyDrawAttribs();
-        GL11.glDrawArrays(mode, 0, count);
+        com.genir.renderer.bridge.servercmds.GL11.glDrawArrays(context, mode, 0, count);
     }
 
     private void prepareVertexPointers(int count, int requiredFlags) {
@@ -335,56 +337,56 @@ public class VertexInterceptor {
 
         if (resized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
+                com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_VERTEX_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glVertexPointer(context, VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
             } else {
-                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_VERTEX_ARRAY);
             }
         }
 
         if (resized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
+                com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_COLOR_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glColorPointer(context, COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_COLOR_ARRAY);
             }
         }
 
         if (resized || (arrayFlags & TEX_FLAG) != (requiredFlags & TEX_FLAG)) {
             int prevActiveTex = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
-            GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
+            com.genir.renderer.bridge.servercmds.GL13.glClientActiveTexture(context, GL13.GL_TEXTURE0);
 
             if ((requiredFlags & TEX_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+                com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_TEXTURE_COORD_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glTexCoordPointer(context, TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_TEXTURE_COORD_ARRAY);
             }
 
-            GL13.glClientActiveTexture(prevActiveTex);
+            com.genir.renderer.bridge.servercmds.GL13.glClientActiveTexture(context, prevActiveTex);
         }
 
         if (resized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
             int prevActiveTex = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
-            GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
+            com.genir.renderer.bridge.servercmds.GL13.glClientActiveTexture(context, GL13.GL_TEXTURE1);
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                GL11.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
+                com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_TEXTURE_COORD_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glTexCoordPointer(context, TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_TEXTURE_COORD_ARRAY);
             }
 
-            GL13.glClientActiveTexture(prevActiveTex);
+            com.genir.renderer.bridge.servercmds.GL13.glClientActiveTexture(context, prevActiveTex);
         }
 
         if (resized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
+                com.genir.renderer.bridge.servercmds.GL11.glEnableClientState(context, GL11.GL_NORMAL_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glNormalPointer(context, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+                com.genir.renderer.bridge.servercmds.GL11.glDisableClientState(context, GL11.GL_NORMAL_ARRAY);
             }
         }
 

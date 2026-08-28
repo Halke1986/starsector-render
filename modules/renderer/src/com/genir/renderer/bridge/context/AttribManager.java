@@ -3,8 +3,6 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL40;
 
 import java.util.Map;
 import java.util.Stack;
@@ -16,11 +14,17 @@ import static com.genir.renderer.debug.Debug.asertEqual;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
+    private final Context context;
+
     private final AttribState expected = new AttribState();
     private final AttribState actual = new AttribState();
 
     private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
     private final Stack<AttribState.Snapshot> actualStack = new Stack<>();
+
+    public AttribManager(Context context) {
+        this.context = context;
+    }
 
     public boolean interceptEnable(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
@@ -77,7 +81,7 @@ public class AttribManager {
         if (actual.matrixMode != expected.matrixMode) {
             actual.matrixMode = expected.matrixMode;
 
-            GL11.glMatrixMode(expected.matrixMode);
+            com.genir.renderer.bridge.servercmds.GL11.glMatrixMode(context, expected.matrixMode);
         }
     }
 
@@ -87,7 +91,7 @@ public class AttribManager {
         if (actual.matrixMode != mode) {
             actual.matrixMode = mode;
 
-            GL11.glMatrixMode(mode);
+            com.genir.renderer.bridge.servercmds.GL11.glMatrixMode(context, mode);
         }
     }
 
@@ -194,7 +198,7 @@ public class AttribManager {
 
         // Set texture unit 0 before applying changes.
         if (actual.activeTexture != GL13.GL_TEXTURE0) {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            com.genir.renderer.bridge.servercmds.GL13.glActiveTexture(context, GL13.GL_TEXTURE0);
         }
 
         if (actual.enableTexture2DUnit0 != enable) {
@@ -205,14 +209,14 @@ public class AttribManager {
         if (enable) {
             if (actual.texture2DUnit0 != texture) {
                 actual.texture2DUnit0 = texture;
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+                com.genir.renderer.bridge.servercmds.GL11.glBindTexture(context, GL11.GL_TEXTURE_2D, texture);
             }
         }
 
         // Cleanup texture unit.
         asertEqual(actual.activeTexture, expected.activeTexture, null);
         if (actual.activeTexture != GL13.GL_TEXTURE0) {
-            GL13.glActiveTexture(actual.activeTexture);
+            com.genir.renderer.bridge.servercmds.GL13.glActiveTexture(context, actual.activeTexture);
         }
     }
 
@@ -238,13 +242,19 @@ public class AttribManager {
                 actual.blend.sfactorAlpha = blendFactors.sfactorAlpha;
                 actual.blend.dfactorAlpha = blendFactors.dfactorAlpha;
 
-                GL14.glBlendFuncSeparate(blendFactors.sfactorRGB, blendFactors.dfactorRGB, blendFactors.sfactorAlpha, blendFactors.dfactorAlpha);
+                com.genir.renderer.bridge.servercmds.GL14.glBlendFuncSeparate(
+                        context,
+                        blendFactors.sfactorRGB,
+                        blendFactors.dfactorRGB,
+                        blendFactors.sfactorAlpha,
+                        blendFactors.dfactorAlpha
+                );
             }
 
             if (actual.blendEquation != blendEquation) {
                 actual.blendEquation = blendEquation;
 
-                GL14.glBlendEquation(blendEquation);
+                com.genir.renderer.bridge.servercmds.GL14.glBlendEquation(context, blendEquation);
             }
 
             // Apply the buffer-specific blend settings. No comparison with
@@ -253,13 +263,20 @@ public class AttribManager {
             if (blendi != null) {
                 for (Map.Entry<Integer, AttribState.BlendFactors> entry : blendi.entrySet()) {
                     AttribState.BlendFactors blend = entry.getValue();
-                    GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
+                    com.genir.renderer.bridge.servercmds.GL40.glBlendFuncSeparatei(
+                            context,
+                            entry.getKey(),
+                            blend.sfactorRGB,
+                            blend.dfactorRGB,
+                            blend.sfactorAlpha,
+                            blend.dfactorAlpha
+                    );
                 }
             }
 
             if (blendEquationi != null) {
                 for (Map.Entry<Integer, Integer> entry : blendEquationi.entrySet()) {
-                    GL40.glBlendEquationi(entry.getKey(), entry.getValue());
+                    com.genir.renderer.bridge.servercmds.GL40.glBlendEquationi(context, entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -281,9 +298,9 @@ public class AttribManager {
 
     private void execGlEnableDisable(int cap, boolean value) {
         if (value) {
-            GL11.glEnable(cap);
+            com.genir.renderer.bridge.servercmds.GL11.glEnable(context, cap);
         } else {
-            GL11.glDisable(cap);
+            com.genir.renderer.bridge.servercmds.GL11.glDisable(context, cap);
         }
     }
 }

@@ -7,14 +7,17 @@ import org.lwjgl.util.vector.Matrix4f;
 import java.nio.FloatBuffer;
 
 public class TransformManager {
+    private final Context context;
     private final AttribManager attribManager;
+
     private final MatrixStack modelView = new MatrixStack();
 
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private boolean cpuMode = true;
     private final Matrix4f identity = new Matrix4f();
 
-    public TransformManager(AttribManager attribManager) {
+    public TransformManager(Context context, AttribManager attribManager) {
+        this.context = context;
         this.attribManager = attribManager;
         this.identity.setIdentity();
     }
@@ -26,7 +29,7 @@ public class TransformManager {
 
         // Disable GPU model view transformation.
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
+        com.genir.renderer.bridge.servercmds.GL11.glLoadIdentity(context);
 
         cpuMode = true;
     }
@@ -39,7 +42,7 @@ public class TransformManager {
         // Synchronize GPU model view state.
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
         modelView.getMatrix().storeTranspose(matrixBuffer.clear());
-        GL11.glMultMatrix(matrixBuffer.flip());
+        com.genir.renderer.bridge.servercmds.GL11.glMultMatrix(context, matrixBuffer.flip());
 
         cpuMode = false;
     }
@@ -59,7 +62,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glPushMatrix();
+            com.genir.renderer.bridge.servercmds.GL11.glPushMatrix(context);
         }
     }
 
@@ -70,7 +73,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glPopMatrix();
+            com.genir.renderer.bridge.servercmds.GL11.glPopMatrix(context);
         }
     }
 
@@ -81,7 +84,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glLoadIdentity();
+            com.genir.renderer.bridge.servercmds.GL11.glLoadIdentity(context);
         }
     }
 
@@ -92,7 +95,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glTranslatef(x, y, z);
+            com.genir.renderer.bridge.servercmds.GL11.glTranslatef(context, x, y, z);
         }
     }
 
@@ -103,7 +106,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glRotatef(angle, x, y, z);
+            com.genir.renderer.bridge.servercmds.GL11.glRotatef(context, angle, x, y, z);
         }
     }
 
@@ -114,7 +117,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glScalef(x, y, z);
+            com.genir.renderer.bridge.servercmds.GL11.glScalef(context, x, y, z);
         }
     }
 
@@ -125,7 +128,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glMultMatrix(m);
+            com.genir.renderer.bridge.servercmds.GL11.glMultMatrix(context, m);
         }
     }
 
@@ -136,7 +139,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glLoadMatrix(m);
+            com.genir.renderer.bridge.servercmds.GL11.glLoadMatrix(context, m);
         }
     }
 
@@ -147,7 +150,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glOrtho(left, right, bottom, top, zNear, zFar);
+            com.genir.renderer.bridge.servercmds.GL11.glOrtho(context, left, right, bottom, top, zNear, zFar);
         }
     }
 
