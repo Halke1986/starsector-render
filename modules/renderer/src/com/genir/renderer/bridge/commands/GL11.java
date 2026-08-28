@@ -224,7 +224,7 @@ public class GL11 {
             float r = args[argsOffset + 2];
             float q = args[argsOffset + 3];
 
-            return "glColor4f[s=" + s + ", t=" + t + ", r=" + r + ", q=" + q + "]";
+            return "glTexCoord4f[s=" + s + ", t=" + t + ", r=" + r + ", q=" + q + "]";
         }
     }
 

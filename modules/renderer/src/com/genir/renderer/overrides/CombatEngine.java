@@ -2,6 +2,7 @@ package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.VertexInterceptor;
 import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.overrides.loading.FileLoader;
 
@@ -99,12 +100,12 @@ public class CombatEngine {
         engine.getRenderer().renderOnly(engine.getViewport(), layer);
 
         final Context context = getThreadContext();
-        context.exec.execute(context.vertexInterceptor::commitLayer);
+        context.exec.execute(new VertexInterceptor.commitLayer());
     }
 
     private static void renderLayer(String layer) {
         final Context context = getThreadContext();
-        context.exec.execute((ctx, args, offset) -> ctx.vertexInterceptor.setReorderDraw(true));
+        context.exec.execute(new VertexInterceptor.setReorderDraw(true));
 
         switch (layer) {
             case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
@@ -124,9 +125,7 @@ public class CombatEngine {
             case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
 
-        context.exec.execute((ctx, args, offset) -> {
-            ctx.vertexInterceptor.setReorderDraw(false);
-            ctx.vertexInterceptor.commitLayer(ctx, args, offset);
-        });
+        context.exec.execute(new VertexInterceptor.setReorderDraw(false));
+        context.exec.execute(new VertexInterceptor.commitLayer());
     }
 }

@@ -47,7 +47,7 @@ public class AttribManager {
     // Set server-side attributes required by the bridge, which may be
     // different from attributes selected by the client.
     public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
-        applyTexture(ctx.enableTexture2D, ctx.texture2D);
+        applyTexture(ctx.enableTexture2D, ctx.texture2D, false);
 
         AttribState.BlendFactors blendFactors = new AttribState.BlendFactors();
         blendFactors.sfactorRGB = ctx.blendSfactor;
@@ -66,11 +66,17 @@ public class AttribManager {
         applyScissor(false);
     }
 
+    public void reorderedDrawContextCleanup() {
+        // Resynchronize server and client texture state after a reordered draw may have caused them to diverge.
+        // Apply the texture state exactly, bypassing any statechange optimizations normally used by applyTexture().
+        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0, true);
+    }
+
     // Apply server-side attributes selected by the client.
     public void applyDrawAttribs() {
         applyStencil(expected.enableStencilTest);
         applyAlpha(expected.enableAlphaTest);
-        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0);
+        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0, false);
         applyBlend(expected.enableBlend, expected.blend, expected.blendEquation, expected.blendi, expected.blendEquationi);
         applyLighting(expected.enableLighting);
         applyScissor(expected.enableScissorTest);
@@ -190,9 +196,11 @@ public class AttribManager {
         }
     }
 
-    public void applyTexture(boolean enable, int texture) {
+    public void applyTexture(boolean enable, int texture, boolean applyExact) {
+        boolean syncTextrue = enable || applyExact;
+
         // No changes required.
-        if ((actual.enableTexture2DUnit0 == enable) && (!enable || actual.texture2DUnit0 == texture)) {
+        if ((actual.enableTexture2DUnit0 == enable) && (!syncTextrue || actual.texture2DUnit0 == texture)) {
             return;
         }
 
@@ -206,7 +214,7 @@ public class AttribManager {
             execGlEnableDisable(GL11.GL_TEXTURE_2D, enable);
         }
 
-        if (enable) {
+        if (syncTextrue) {
             if (actual.texture2DUnit0 != texture) {
                 actual.texture2DUnit0 = texture;
                 com.genir.renderer.bridge.servercmds.GL11.glBindTexture(context, GL11.GL_TEXTURE_2D, texture);

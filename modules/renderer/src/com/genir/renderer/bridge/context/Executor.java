@@ -24,6 +24,7 @@ public class Executor {
 
     private Future<?> currentSwapFuture = completedFuture(null);
     private final AsyncException exception = new AsyncException();
+    private boolean isExceptionRecovery = false;
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception.getHandler());
     private static final Object execMutex = new Object();
@@ -102,10 +103,15 @@ public class Executor {
         return (T) result[0];
     }
 
-    private record GetWrapper(GLGetter<?> task, Object[] result) implements GLCommand {
+    private record GetWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             result[0] = task.call(context);
+        }
+
+        @Override
+        public String debugString(Context context, float[] args, int argsOffset) {
+            return task.toString();
         }
     }
 
@@ -223,6 +229,7 @@ public class Executor {
         if (t != null) {
             currentFrame = new Frame();
             currentSwapFuture = completedFuture(null);
+            isExceptionRecovery = true;
 
             throw new RuntimeException(t);
         }
