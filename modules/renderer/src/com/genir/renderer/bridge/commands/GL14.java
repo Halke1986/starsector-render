@@ -22,30 +22,17 @@ public class GL14 {
         context.exec.execute(new glBlendEquation(mode));
     }
 
-    private record GlBlendFuncSeparate() implements GLCommand, Recordable { // Heap optimized
-        @Override
-        public void run(Context context, float[] args, int argsOffset) {
-            if (context.listManager.isRecording(this, args, argsOffset))
-                return;
-
-            int sfactorRGB = Float.floatToRawIntBits(args[argsOffset + 0]);
-            int dfactorRGB = Float.floatToRawIntBits(args[argsOffset + 1]);
-            int sfactorAlpha = Float.floatToRawIntBits(args[argsOffset + 2]);
-            int dfactorAlpha = Float.floatToRawIntBits(args[argsOffset + 3]);
-
-            context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
-        }
-    }
-
-    static GlBlendFuncSeparate glBlendFuncSeparateCommand = new GlBlendFuncSeparate();
-
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        getThreadContext().exec.execute(
-                glBlendFuncSeparateCommand,
-                Float.intBitsToFloat(sfactorRGB),
-                Float.intBitsToFloat(dfactorRGB),
-                Float.intBitsToFloat(sfactorAlpha),
-                Float.intBitsToFloat(dfactorAlpha)
-        );
+        record glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                if (context.listManager.isRecording(this, args, argsOffset))
+                    return;
+
+                context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+            }
+        }
+
+        getThreadContext().exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
     }
 }

@@ -3,6 +3,7 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
+import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import org.apache.log4j.Logger;
@@ -25,7 +26,6 @@ public class Executor {
     private final AsyncException exception = new AsyncException();
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception.getHandler());
-
     private static final Object execMutex = new Object();
 
     public Executor(Context context) {
@@ -230,7 +230,11 @@ public class Executor {
             } catch (AssertionError ass) {
                 Logger logger = Logger.getLogger(Executor.class);
                 for (int j = Math.max(0, i - 10000); j <= i; j++) {
-                    logger.info(commands[j]);
+                    if (commands[j] instanceof DebugString dbg) {
+                        logger.info(dbg.debugString(context, args, j * ARGS_NUM));
+                    } else {
+                        logger.info(commands[j]);
+                    }
                 }
 
                 throw ass;

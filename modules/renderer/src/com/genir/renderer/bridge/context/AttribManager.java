@@ -144,6 +144,10 @@ public class AttribManager {
         actual.glActiveTexture(mode);
     }
 
+    public void glBlendFunc(int sfactorRGB, int dfactorRGB) {
+        expected.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorRGB, dfactorRGB);
+    }
+
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
         expected.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
     }
