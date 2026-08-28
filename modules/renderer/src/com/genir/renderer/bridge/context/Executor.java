@@ -5,6 +5,7 @@ import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.ExecutionException;
@@ -224,10 +225,16 @@ public class Executor {
 
         // Run all scheduled commands.
         for (int i = 0; i < frame.commandsSize; i++) {
-            GLCommand command = commands[i];
+            try {
+                commands[i].run(context, args, i * ARGS_NUM);
+            } catch (AssertionError ass) {
+                Logger logger = Logger.getLogger(Executor.class);
+                for (int j = Math.max(0, i - 10000); j <= i; j++) {
+                    logger.info(commands[j]);
+                }
 
-            // Logger.getLogger(Executor.class).info(unwrapCommand(command));
-            command.run(context, args, i * ARGS_NUM);
+                throw ass;
+            }
         }
     }
 

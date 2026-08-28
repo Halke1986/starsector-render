@@ -802,6 +802,7 @@ public class GL11 {
             args[1] = Float.intBitsToFloat(texture);
             listManager.record(glBindTextureClientCommand, args, 0);
         } else {
+            context.attribTracker.getTextureBinding(target);
             glBindTextureClientCommand.runImpl(context, target, texture);
         }
 
