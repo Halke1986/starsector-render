@@ -76,7 +76,7 @@ public class GL11 {
     /**
      * Draw.
      */
-    private record GlBegin() implements GLCommand, Recordable, DebugString { // Heap optimized
+    public record GlBegin() implements GLCommand, Recordable, DebugString { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             if (context.listManager.isRecording(this, args, argsOffset))
@@ -102,7 +102,7 @@ public class GL11 {
         );
     }
 
-    private record GlEnd() implements GLCommand, Recordable, DebugString { // Heap optimized
+    public record GlEnd() implements GLCommand, Recordable, DebugString { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             if (context.listManager.isRecording(this, args, argsOffset))

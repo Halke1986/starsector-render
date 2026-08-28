@@ -2,13 +2,14 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.commands.GL11;
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import org.apache.log4j.Logger;
-import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -18,6 +19,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class Executor {
     private final Context context;
+    private final Logger logger = Logger.getLogger(Executor.class);
 
     private Frame currentFrame = new Frame();
     private final Pool framePool = new Pool();
@@ -28,6 +30,10 @@ public class Executor {
 
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception.getHandler());
     private static final Object execMutex = new Object();
+
+    private ExecutionRecord[] serverHistory = {new ExecutionRecord()};
+    private int historyIdx = 0;
+    private int commandIdx = 0;
 
     public Executor(Context context) {
         this.context = context;
@@ -88,6 +94,21 @@ public class Executor {
      */
 
     public void executeNow(Runnable command) {
+        if (historyIdx >= serverHistory.length) {
+            serverHistory = Arrays.copyOf(serverHistory, serverHistory.length * 2);
+
+            for (int i = 0; i < serverHistory.length; i++) {
+                if (serverHistory[i] == null) {
+                    serverHistory[i] = new ExecutionRecord();
+                }
+            }
+        }
+
+        ExecutionRecord record = serverHistory[historyIdx];
+        record.commandIdx = commandIdx;
+        record.serverCommand = command;
+        historyIdx++;
+
         command.run();
     }
 
@@ -239,22 +260,68 @@ public class Executor {
         GLCommand[] commands = frame.commands;
         float[] args = frame.args;
 
+        commandIdx = 0;
+        historyIdx = 0;
+
         // Run all scheduled commands.
-        for (int i = 0; i < frame.commandsSize; i++) {
+        for (; commandIdx < frame.commandsSize; commandIdx++) {
             try {
-                commands[i].run(context, args, i * ARGS_NUM);
+                commands[commandIdx].run(context, args, commandIdx * ARGS_NUM);
             } catch (AssertionError ass) {
-                Logger logger = Logger.getLogger(Executor.class);
-                for (int j = Math.max(0, i - 10000); j <= i; j++) {
-                    if (commands[j] instanceof DebugString dbg) {
-                        logger.info(dbg.debugString(context, args, j * ARGS_NUM));
-                    } else {
-                        logger.info(commands[j]);
-                    }
+                // Do not interrupt application graceful shutdown with
+                // assertion errors, as this could lead to a permanent freeze.
+                if (isExceptionRecovery) {
+                    continue;
                 }
 
+                logExecutionHistory(frame, commandIdx);
                 throw ass;
             }
+        }
+    }
+
+    private void logExecutionHistory(Frame frame, int lastCommand) {
+        GLCommand[] commands = frame.commands;
+        float[] args = frame.args;
+        int start = 0;//Math.max(0, commandIdx - 10000);
+        int h = 0;
+
+        boolean beginEndBlock = false;
+
+        for (int i = start; i <= lastCommand; i++) {
+            if (commands[i] instanceof GL11.GlBegin) {
+                beginEndBlock = true;
+                logCommand(commands[i], args, i * ARGS_NUM);
+                continue;
+            }
+
+            if (commands[i] instanceof GL11.GlEnd) {
+                logger.info("...");
+                beginEndBlock = false;
+            }
+
+            if (beginEndBlock) {
+                continue;
+            }
+
+            logCommand(commands[i], args, i * ARGS_NUM);
+
+            while (h < historyIdx && serverHistory[h].commandIdx < i) {
+                h++;
+            }
+
+            while (h < historyIdx && serverHistory[h].commandIdx == i) {
+                logger.info("server: " + serverHistory[h].serverCommand);
+                h++;
+            }
+        }
+    }
+
+    private void logCommand(Object command, float[] args, int argsOffset) {
+        if (command instanceof DebugString dbg) {
+            logger.info(dbg.debugString(context, args, argsOffset));
+        } else {
+            logger.info(command);
         }
     }
 
@@ -275,5 +342,10 @@ public class Executor {
      */
     public boolean isIdle() {
         return currentSwapFuture.isDone();
+    }
+
+    private static class ExecutionRecord {
+        int commandIdx = 0;
+        Object serverCommand = null;
     }
 }
