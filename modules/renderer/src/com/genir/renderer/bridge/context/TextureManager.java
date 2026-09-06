@@ -4,6 +4,7 @@ import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.overrides.loading.textures.TextureData;
 import org.apache.log4j.Logger;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -50,7 +51,8 @@ public class TextureManager {
         loaders.put(texture, new TextureCallbacks(texData, loadFn, commitFn));
     }
 
-    // Client thread.
+    // Runs on the client thread to allow asynchronous texture file loading
+    // before the rendering thread processes the glBindTexture request.
     synchronized public void glBindTexture(Context context, int target, int texture) {
         // Texture is not managed.
         if (texture < 0 || texture >= texturesState.length || texturesState[texture] == null) {
@@ -80,22 +82,57 @@ public class TextureManager {
 
         // Commit texture.
         context.exec.execute((ctx, args, offset) -> {
-            commitTexture(texture, bufferFuture);
+            commitTexture(ctx, texture, bufferFuture);
         });
     }
 
-    synchronized private void commitTexture(int texture, Future<ByteBuffer> bufferFuture) {
+    private void commitTexture(Context context, int texture, Future<ByteBuffer> bufferFuture) {
         long start = System.nanoTime();
         try {
             ByteBuffer buffer = bufferFuture.get();
 
             TextureCallbacks texData = loaders.get(texture);
             texData.commitFn.accept(buffer);
+
+            // Experiments indicate that the OpenGL driver defers most texture upload work
+            // until a draw call. Force that work here to measure the total upload latency.
+            forceDraw();
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            loadingDuration += System.nanoTime() - start;
+            long thisTextureDuration = System.nanoTime() - start;
+            loadingDuration += thisTextureDuration;
+
+            if (context.renderingProfilerFrame != null) {
+                context.renderingProfilerFrame.addLazyTime(thisTextureDuration);
+            }
         }
+    }
+
+    private void forceDraw() {
+        GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_ENABLE_BIT);
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        // Ensure the texture is not visible
+        // to not corrupt the game animation.
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE);
+
+        GL11.glBegin(GL11.GL_TRIANGLES);
+
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex2f(-1.0f, -1.0f);
+
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex2f(1.0f, -1.0f);
+
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex2f(-1.0f, 1.0f);
+
+        GL11.glEnd();
+
+        GL11.glPopAttrib();
     }
 
     public void glDeleteTextures(int texture) {

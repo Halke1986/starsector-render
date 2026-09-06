@@ -141,6 +141,7 @@ public class Profiler {
         private long renderSum = 0;
         private long stallSum = 0;
         private long nSwapSum = 0;
+        private long lazySum = 0;
 
         public Frame(int id) {
             this.id = id;
@@ -170,6 +171,10 @@ public class Profiler {
             nSwapSum += duration;
         }
 
+        public void addLazyTime(long duration) {
+            lazySum += duration;
+        }
+
         public void commit() {
             if (!profiler.isProfiling()) {
                 return;
@@ -188,6 +193,7 @@ public class Profiler {
             // Rendering thread.
             e.rendr = renderSum;
             e.nswap = nSwapSum;
+            e.lazy_ = lazySum;
 
             e.commit();
         }
@@ -203,5 +209,6 @@ public class Profiler {
         public long stall;
         public long rendr; // Rendering thread work time.
         public long nswap; // OpenGL buffer swap.
+        public long lazy_; // Lazy texture loading.
     }
 }
