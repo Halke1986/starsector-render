@@ -1,3 +1,5 @@
+- Improved logging and profiling of lazy texture upload.
+
 v0.8.7
 
 - Added glGetTexParameteri method. Suggested by DeCell.
