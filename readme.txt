@@ -16,6 +16,10 @@ REQUIREMENTS
 - Starsector 0.98a-RC8 Windows.
 - Quad-core CPU recommended. On single-core or dual-core CPUs, performance may decrease.
 
+MOD INTEGRATION
+
+- When used with VRAM Optimizer, Fast Rendering uploads textures only when needed, further reducing VRAM usage compared to using VRAM Optimizer alone.
+
 INCOMPATIBLE MODS
 
 - Official version of Combat Misc Utilities (CMUtils).
