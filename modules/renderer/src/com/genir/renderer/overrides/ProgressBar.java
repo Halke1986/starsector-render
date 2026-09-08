@@ -19,10 +19,6 @@ public class ProgressBar {
     public static void renderBackground(proxy.com.fs.starfarer.campaign.save.ProgressBar bar) {
         try {
             if (bar != currentBar) {
-                if (texID != 0) {
-                    com.genir.renderer.bridge.commands.GL11.glDeleteTextures(texID);
-                }
-
                 storeBackground();
                 currentBar = bar;
             }
@@ -34,18 +30,19 @@ public class ProgressBar {
         }
     }
 
-    public static void clear() {
-        // Zero the texture, so that the texture ID doesn't
-        // get erroneously deleted in a new context.
-        texID = 0;
-    }
-
     private static void storeBackground() {
+        if (texID == 0) {
+            // Allocate the texture.
+            texID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
+        } else {
+            // Free the texture for reuse.
+            com.genir.renderer.bridge.commands.GL11.glDeleteTextures(texID);
+        }
+
         w = Display.getWidth();
         h = Display.getHeight();
 
-        // Allocate and define texture.
-        texID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
+
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 
         com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);

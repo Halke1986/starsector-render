@@ -4,7 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import com.genir.renderer.overrides.ProgressBar;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -31,7 +30,6 @@ public class Display {
             }
         }
 
-        ProgressBar.clear();
         final Context context = ContextManager.createMainContext();
         context.exec.wait(new create(pixel_format));
     }
