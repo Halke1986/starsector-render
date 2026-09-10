@@ -44,6 +44,11 @@ public class TextureTracker { // Context-shared object.
             return false;
         }
 
+        // Unbinding a texture.
+        if (texture == 0){
+            return true;
+        }
+
         int[] boundTextures = this.textureTargets;
 
         // New texture in new range.

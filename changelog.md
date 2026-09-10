@@ -1,4 +1,5 @@
 - Improved logging and profiling of lazy texture upload.
+- Fixed an assertion error that could occur when unbinding OpenGL textures. Reported by Breamic and br857g.
 
 v0.8.7
 
