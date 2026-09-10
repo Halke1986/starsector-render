@@ -2,9 +2,8 @@ package com.genir.renderer.async;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AsyncException {
+public class AsyncException implements Thread.UncaughtExceptionHandler {
     private final AtomicReference<Throwable> asyncException = new AtomicReference<>(null);
-    private final ExceptionHandler handler = new ExceptionHandler();
 
     public void set(Throwable e) {
         if (e != null) {
@@ -24,14 +23,8 @@ public class AsyncException {
         return asyncException.getAndSet(newValue);
     }
 
-    public ExceptionHandler getHandler() {
-        return handler;
-    }
-
-    public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            set(e);
-        }
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        set(e);
     }
 }

@@ -50,6 +50,7 @@ public class GL32 {
         // Execute commands, so other rendering threads waiting for this
         // glSync can proceed and do not deadlock on a get or wait call.
         context.exec.swapFrames();
+
         return new GLSync(future, context);
     }
 
@@ -58,10 +59,10 @@ public class GL32 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 try {
-                    // Wait until sync point is created in the detached rendering thread.
+                    // Wait until sync point is created in a detached rendering thread.
                     org.lwjgl.opengl.GLSync impl = sync.future().get();
 
-                    // Wait until sync point is executed in the detached rendering thread.
+                    // Wait until sync point is executed in a detached rendering thread.
                     org.lwjgl.opengl.GL32.glWaitSync(impl, flags, timeout);
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
@@ -78,7 +79,9 @@ public class GL32 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 try {
+                    // Wait until sync point is created in a detached rendering thread.
                     org.lwjgl.opengl.GLSync impl = sync.future().get();
+
                     org.lwjgl.opengl.GL32.glDeleteSync(impl);
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
@@ -87,6 +90,6 @@ public class GL32 {
         }
 
         final Context context = getThreadContext();
-        context.exec.execute(new glDeleteSync(sync));
+        context.exec.executeSync(new glDeleteSync(sync), sync);
     }
 }

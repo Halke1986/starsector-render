@@ -22,10 +22,14 @@ public class Executor {
     private final Pool framePool = new Pool();
 
     private Future<?> currentSwapFuture = completedFuture(null);
-    private final AsyncException exception = new AsyncException();
+
+    // Exception handling.
+    private final AsyncException asyncException = new AsyncException();
+    private final ExceptionHandler exceptionHandler = new ExceptionHandler();
+    private boolean isStateCorrupted = false;
     private boolean isExceptionRecovery = false;
 
-    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception);
+    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exceptionHandler);
     private static final Object execMutex = new Object();
 
     public Executor(Context context) {
@@ -162,7 +166,7 @@ public class Executor {
 
             try {
                 // Executor is in invalid state. Cancel all scheduled commands.
-                if (exception.get() != null) {
+                if (isStateCorrupted) {
                     return;
                 }
 
@@ -190,8 +194,8 @@ public class Executor {
                 // Return the frame object for reuse.
                 frameToExecute.clear();
                 framePool.put(frameToExecute);
-            } catch (Throwable t) {
-                exception.set(t);
+            } catch (Throwable e) {
+                exceptionHandler.setException(e);
             } finally {
                 // Profile render work.
                 if (context.renderingProfilerFrame != null) {
@@ -215,11 +219,13 @@ public class Executor {
     }
 
     private void rethrowAndClearException() {
-        Throwable t = exception.getAndSet(null);
+        Throwable t = asyncException.getAndSet(null);
         if (t != null) {
-            currentFrame = new Frame();
-            currentSwapFuture = completedFuture(null);
-            isExceptionRecovery = true;
+            // Clear the state corruption flag on the render thread to ensure that all commands
+            // issued between the exception's occurrence and its rethrow are cancelled.
+            execActual.submit(() -> {
+                isStateCorrupted = false;
+            });
 
             throw new RuntimeException(t);
         }
@@ -254,5 +260,18 @@ public class Executor {
      */
     public boolean isIdle() {
         return currentSwapFuture.isDone();
+    }
+
+    private class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            setException(e);
+        }
+
+        public void setException(Throwable e) {
+            asyncException.set(e);
+            isStateCorrupted = true;
+            isExceptionRecovery = true;
+        }
     }
 }
