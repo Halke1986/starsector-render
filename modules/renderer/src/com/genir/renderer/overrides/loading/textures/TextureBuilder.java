@@ -23,9 +23,12 @@ public class TextureBuilder {
         // DDSIntegration must be run on rendering thread as
         // it contains un-intercepted OpenGL calls.
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute((ctx, args, offset) -> {
-            DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-        });
+
+        if (DDSIntegration.hasBeforeTextureUpload()) {
+            context.exec.execute((ctx, args, offset) -> {
+                DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+            });
+        }
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -41,9 +44,11 @@ public class TextureBuilder {
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
 
-        context.exec.execute((ctx, args, offset) -> {
-            DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-        });
+        if (DDSIntegration.hasAfterTextureUpload()) {
+            context.exec.execute((ctx, args, offset) -> {
+                DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+            });
+        }
 
         return textureID;
     }

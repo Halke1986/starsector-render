@@ -39,8 +39,9 @@ public class DDSIntegration {
 
     private static Map<Path, TextureData> cache = null;
 
-    private static Method methodBeforeTextureUpload = null;
-    private static Method methodAfterTextureUpload = null;
+    private static Method methodBeforeTextureUpload = null; // deprecated since VRAM Optimizer 1.0.38
+    private static Method methodAfterTextureUpload = null; // deprecated since VRAM Optimizer 1.0.38
+    private static Method methodUploadDDSTexture = null;
 
     public static void initialize() {
         if (!vramOptimizerEnabled()) {
@@ -72,7 +73,7 @@ public class DDSIntegration {
                     textureID,
                     texData,
                     () -> readTextureBytes(texData),
-                    (buffer) -> commitTextureLazy(texData, textureID, buffer)
+                    (bytes) -> commitTextureLazy(texData, textureID, bytes)
             );
         });
 
@@ -83,13 +84,32 @@ public class DDSIntegration {
     }
 
     // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
-    private static void commitTextureLazy(TextureData texData, int textureID, ByteBuffer buffer) {
+    private static void commitTextureLazy(TextureData texData, int textureID, byte[] bytes) {
+        if (hasUploadDDSTexture()) {
+            int err = uploadDDSTexture(textureID, bytes);
+            if (err != 0) {
+                throw new RuntimeException(String.valueOf(err));
+            }
+
+            return;
+        }
+
+        // Fallback to deprecated VRAM Optimizer integration.
+        int ddsHeaderLength = 148;
+        int imageSize = bytes.length - ddsHeaderLength;
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length - ddsHeaderLength);
+        buffer.put(bytes, ddsHeaderLength, imageSize);
+        buffer.clear();
+
         String path = texData.imagePath.toString();
         int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
 
         org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        if (hasBeforeTextureUpload()) {
+            beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        }
 
         boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
         if (generateMipmap) {
@@ -105,24 +125,17 @@ public class DDSIntegration {
         org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, buffer);
 
-        DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        if (hasAfterTextureUpload()) {
+            afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
+        }
     }
 
-    public static ByteBuffer readTextureBytes(TextureData texData) {
+    public static byte[] readTextureBytes(TextureData texData) {
         try {
             asert(texData.isDDS());
             asert(texData.buffer == null);
 
-            byte[] bytes = Files.readAllBytes(texData.ddsImagePath);
-
-            int ddsHeaderLength = 148;
-            int imageSize = bytes.length - ddsHeaderLength;
-
-            ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length - ddsHeaderLength);
-            buffer.put(bytes, ddsHeaderLength, imageSize);
-            buffer.clear();
-
-            return buffer;
+            return Files.readAllBytes(texData.ddsImagePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -237,11 +250,27 @@ public class DDSIntegration {
         return texData;
     }
 
-    public static void beforeTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
-        if (methodBeforeTextureUpload == null) {
-            return;
-        }
+    public static boolean hasUploadDDSTexture() {
+        return methodUploadDDSTexture != null;
+    }
 
+    public static boolean hasBeforeTextureUpload() {
+        return methodBeforeTextureUpload != null;
+    }
+
+    public static boolean hasAfterTextureUpload() {
+        return methodAfterTextureUpload != null;
+    }
+
+    public static int uploadDDSTexture(int textureID, byte[] fileBytes) {
+        try {
+            return (Integer) methodUploadDDSTexture.invoke(null, textureID, fileBytes);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void beforeTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
         try {
             methodBeforeTextureUpload.invoke(null, width, height, textureID, texturePath, textureType);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -250,10 +279,6 @@ public class DDSIntegration {
     }
 
     public static void afterTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
-        if (methodAfterTextureUpload == null) {
-            return;
-        }
-
         try {
             methodAfterTextureUpload.invoke(null, width, height, textureID, texturePath, textureType);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -264,13 +289,24 @@ public class DDSIntegration {
     private static void initIntegrationHandles() {
         Logger logger = Logger.getLogger(DDSIntegration.class);
 
-        try {
-            ScriptLoader.initScriptClassLoader();
-            ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
-            Class<?> tclass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.Textures");
+        ScriptLoader.initScriptClassLoader();
+        ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
 
-            methodBeforeTextureUpload = tclass.getMethod("BeforeTextureUpload", int.class, int.class, int.class, String.class, int.class);
-            methodAfterTextureUpload = tclass.getMethod("AfterTextureUpload", int.class, int.class, int.class, String.class, int.class);
+        try {
+            Class<?> loadingClass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.TextureLoading");
+            methodUploadDDSTexture = loadingClass.getMethod("UploadDDSTexture", int.class, byte[].class);
+
+            logger.info("Initialized VramOptimizer UploadDDSTexture method.");
+            return;
+        } catch (Throwable e) {
+            logger.error("Failed to initialize VramOptimizer UploadDDSTexture method.", e);
+        }
+
+        // Fallback to deprecated VRAM Optimizer integration.
+        try {
+            Class<?> texturesClass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.Textures");
+            methodBeforeTextureUpload = texturesClass.getMethod("BeforeTextureUpload", int.class, int.class, int.class, String.class, int.class);
+            methodAfterTextureUpload = texturesClass.getMethod("AfterTextureUpload", int.class, int.class, int.class, String.class, int.class);
 
             // VOpt Init must be run on rendering thread as
             // it contains un-intercepted OpenGL calls.
@@ -278,7 +314,7 @@ public class DDSIntegration {
             final AtomicReference<Throwable> asyncException = new AtomicReference<>();
             context.exec.wait((ctx, args, offset) -> {
                 try {
-                    tclass.getMethod("Init").invoke(null);
+                    texturesClass.getMethod("Init").invoke(null);
                 } catch (Throwable t) {
                     asyncException.set(t);
                 }
@@ -289,12 +325,12 @@ public class DDSIntegration {
                 throw t;
             }
 
-            logger.info("Initialized VramOptimizer/jars/GameFunctions.jar integration.");
+            logger.info("Initialized VramOptimizer BeforeTextureUpload and AfterTextureUpload methods.");
         } catch (Throwable t) {
             methodBeforeTextureUpload = null;
             methodAfterTextureUpload = null;
 
-            logger.error("Failed to initialize VramOptimizer/jars/GameFunctions.jar integration.", t);
+            logger.error("Failed to initialize VramOptimizer BeforeTextureUpload and AfterTextureUpload methods.", t);
         }
     }
 }

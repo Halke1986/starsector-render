@@ -6,7 +6,6 @@ import com.genir.renderer.overrides.loading.textures.TextureData;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -30,14 +29,14 @@ public class TextureManager {
     private int loadedNumber = 0;
     private long loadingDuration = 0;
 
-    private State[] texturesState = new State[1];
+    private TextureState[] texturesState = new TextureState[1];
     private final Map<Integer, TextureCallbacks> loaders = new HashMap<>();
 
     private static final AsyncException asyncException = new AsyncException();
     private final ExecutorService workers = ExecutorFactory.newExecutor(
             4, "FR-Texture-Lazy-Loader", asyncException.getHandler());
 
-    public void manageTexture(int texture, TextureData texData, Callable<ByteBuffer> loadFn, Consumer<ByteBuffer> commitFn) {
+    public void manageTexture(int texture, TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
         while (texturesState.length <= texture) {
             texturesState = Arrays.copyOf(texturesState, texturesState.length * 2);
         }
@@ -46,7 +45,7 @@ public class TextureManager {
         asert(!loaders.containsKey(texture));
 
         managedNumber++;
-        texturesState[texture] = State.MANAGED;
+        texturesState[texture] = TextureState.UNLOADED;
 
         loaders.put(texture, new TextureCallbacks(texData, loadFn, commitFn));
     }
@@ -60,19 +59,19 @@ public class TextureManager {
         }
 
         // Texture is already loaded.
-        if (texturesState[texture] == State.LOADED) {
+        if (texturesState[texture] == TextureState.LOADED) {
             return;
         }
 
         loadedNumber++;
-        texturesState[texture] = State.LOADED;
+        texturesState[texture] = TextureState.LOADED;
 
         TextureCallbacks callbacks = loaders.get(texture);
         Path path = PWD.relativize(callbacks.texData.imagePath);
         logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + path + "]");
 
         // Load texture.
-        Future<ByteBuffer> bufferFuture = workers.submit(() -> {
+        Future<byte[]> bufferFuture = workers.submit(() -> {
             try {
                 return callbacks.loadFn.call();
             } catch (Exception e) {
@@ -86,13 +85,13 @@ public class TextureManager {
         });
     }
 
-    private void commitTexture(Context context, int texture, Future<ByteBuffer> bufferFuture) {
+    private void commitTexture(Context context, int texture, Future<byte[]> bufferFuture) {
         long start = System.nanoTime();
         try {
-            ByteBuffer buffer = bufferFuture.get();
+            byte[] bytes = bufferFuture.get();
 
             TextureCallbacks texData = loaders.get(texture);
-            texData.commitFn.accept(buffer);
+            texData.commitFn.accept(bytes);
 
             // Experiments indicate that the OpenGL driver defers most texture upload work
             // until a draw call. Force that work here to measure the total upload latency.
@@ -169,12 +168,12 @@ public class TextureManager {
         workers.shutdown();
     }
 
-    private enum State {
+    public enum TextureState {
         // null -> not managed
-        MANAGED,
+        UNLOADED,
         LOADED,
     }
 
-    private record TextureCallbacks(TextureData texData, Callable<ByteBuffer> loadFn, Consumer<ByteBuffer> commitFn) {
+    private record TextureCallbacks(TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
     }
 }
