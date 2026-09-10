@@ -5,17 +5,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ExecutorFactory {
-    public static ExecutorService newSingleThreadExecutor(String name, AsyncException exceptionHandler) {
-        return newExecutor(1, name, exceptionHandler);
+    public static ExecutorService newSingleThreadExecutor(String name, Thread.UncaughtExceptionHandler ueh) {
+        return newExecutor(1, name, ueh);
     }
 
-    public static ExecutorService newExecutor(int threadNumber, String name, AsyncException exceptionHandler) {
+    public static ExecutorService newExecutor(int threadNumber, String name, Thread.UncaughtExceptionHandler ueh) {
         return Executors.newFixedThreadPool(threadNumber, runnable -> {
             Thread t = new Thread(runnable);
             t.setDaemon(true);
 
-            if (exceptionHandler != null) {
-                t.setUncaughtExceptionHandler(exceptionHandler.getHandler());
+            if (ueh != null) {
+                t.setUncaughtExceptionHandler(ueh);
             }
 
             t.setName(t.getName() + "-" + name);

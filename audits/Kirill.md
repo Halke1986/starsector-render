@@ -101,9 +101,14 @@ IS EASY AND I WILL APPLY IT JUST IN CASE.
 
 - **WP-A-7** — `swapFramesAndSync` submits frame B and then waits on frame A; if A fails,
   B has already been submitted and can execute against invalid GL state.
+  
+PARTIALLY CORRECT. FRAME B DOES CHECK FOR FRAME A RESULT AND ABORTS EXECUTION IF FRAME A FAILED.
+THE MECHANISM IS HOWEVER SUBJECT TO A RACE CONDITION.
+ 
 - **WP-A-8** — recovery replaces `currentFrame` after the client-side mirrors have already
   advanced, and then suppresses all subsequent assertion failures. The pipeline keeps
   running in a state the mirrors no longer describe.
+  
 - **WP-A-9** — `glShaderSource` stores the caller's `CharSequence` by reference and reads
   it later on the executor thread. A caller that reuses a `StringBuilder` compiles whatever
   the buffer holds at replay time, not at call time.
