@@ -2,6 +2,7 @@ package com.genir.renderer.debug;
 
 import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix3f;
 
@@ -12,7 +13,32 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static org.lwjgl.input.Keyboard.*;
+
 public class Debug {
+    private static long crashRequested = 0;
+
+    public static void crashOnDemand() {
+        if (!org.lwjgl.input.Keyboard.isCreated()) {
+            return;
+        }
+
+        boolean ctrl = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL);
+        boolean c = Keyboard.isKeyDown(KEY_C);
+
+        if (ctrl && c) {
+            // Debounce.
+            long timestamp = System.currentTimeMillis();
+            if (timestamp - crashRequested < 1000) {
+                return;
+            }
+
+            crashRequested = timestamp;
+
+            throw new RuntimeException("crash requested");
+        }
+    }
+
     public static void checkStack() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 

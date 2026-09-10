@@ -108,6 +108,8 @@ THE MECHANISM IS HOWEVER SUBJECT TO A RACE CONDITION.
 - **WP-A-8** — recovery replaces `currentFrame` after the client-side mirrors have already
   advanced, and then suppresses all subsequent assertion failures. The pipeline keeps
   running in a state the mirrors no longer describe.
+
+THIS ONE I DON'T UNDERSTAND.
   
 - **WP-A-9** — `glShaderSource` stores the caller's `CharSequence` by reference and reads
   it later on the executor thread. A caller that reuses a `StringBuilder` compiles whatever
