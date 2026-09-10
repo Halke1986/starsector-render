@@ -1,3 +1,5 @@
+v0.8.8
+
 - Fixed an assertion error that could occur when unbinding OpenGL textures. Reported by Breamic and br857g.
 - Added support for VRAM Optimizer 1.0.38. Texture lazy upload lag is now substantially reduced.
 - Improved logging and profiling of lazy texture upload.
