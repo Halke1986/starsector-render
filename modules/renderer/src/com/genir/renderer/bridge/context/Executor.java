@@ -25,7 +25,7 @@ public class Executor {
     private final AsyncException exception = new AsyncException();
     private boolean isExceptionRecovery = false;
 
-    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception.getHandler());
+    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exception);
     private static final Object execMutex = new Object();
 
     public Executor(Context context) {

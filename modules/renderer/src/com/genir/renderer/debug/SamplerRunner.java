@@ -34,7 +34,7 @@ public class SamplerRunner {
         new File(histogramDir).mkdirs();
         new File(leakDir).mkdirs();
 
-        ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-sampler", asyncException.getHandler());
+        ExecutorService exec = ExecutorFactory.newExecutor(1, "FR-sampler", asyncException);
 
         exec.execute(() -> {
             while (true) {

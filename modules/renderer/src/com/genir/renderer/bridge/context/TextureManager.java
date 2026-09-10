@@ -33,8 +33,7 @@ public class TextureManager {
     private final Map<Integer, TextureCallbacks> loaders = new HashMap<>();
 
     private static final AsyncException asyncException = new AsyncException();
-    private final ExecutorService workers = ExecutorFactory.newExecutor(
-            4, "FR-Texture-Lazy-Loader", asyncException.getHandler());
+    private final ExecutorService workers = ExecutorFactory.newExecutor(4, "FR-Texture-Lazy-Loader", asyncException);
 
     public void manageTexture(int texture, TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
         while (texturesState.length <= texture) {

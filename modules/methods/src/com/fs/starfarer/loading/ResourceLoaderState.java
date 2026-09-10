@@ -14,7 +14,7 @@ public class ResourceLoaderState {
     }
 
     public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {
-        ResourceLoader.loadResource(flags.name(), path);
+        ResourceLoader.queueResource(flags.name(), path);
     }
 
     public void renderProgress(float var1) {

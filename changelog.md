@@ -1,3 +1,5 @@
+- Improved exception handling during game startup.
+
 v0.8.8
 
 - Fixed an assertion error that could occur when unbinding OpenGL textures. Reported by Breamic and br857g.

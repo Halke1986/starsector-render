@@ -38,6 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.genir.renderer.async.ExecutorFactory.awaitTermination;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
 
@@ -46,12 +47,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AsyncException asyncException = new AsyncException();
 
-    public static final ExecutorService workers = ExecutorFactory.newExecutor(
-            3, "FR-Texture-Loader", asyncException.getHandler());
-    public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(
-            3, "FR-Script-Loader", asyncException.getHandler());
-    public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(
-            2, "FR-Sound-Loader", asyncException.getHandler());
+    public static final ExecutorService workers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
+    public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
+    public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);
 
     private static final ProgressBar barAnimation = new ProgressBar();
 
@@ -72,6 +70,14 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             // section of vanilla init.
         }
 
+        // Fill the progress bar.
+        barAnimation.forwardOnly = true;
+        while (barAnimation.barIsNotFull()) {
+            state.renderProgress(0);
+            com.genir.renderer.bridge.commands.Display.update();
+            Thread.sleep(10);
+        }
+
         // Run skipped vanilla ResourceLoader init epilogue.
         initEpilogue();
 
@@ -80,7 +86,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     }
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
-        ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException.getHandler());
+        ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException);
 
         mainThreadWaitGroup.incrementAndGet();
         mainThreadExec.execute(() -> {
@@ -112,8 +118,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                     com.genir.renderer.bridge.commands.Display.update(true);
                 }
 
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            } catch (Throwable e) {
+                asyncException.set(e);
             }
         } while (mainThreadWaitGroup.get() > 0 && asyncException.get() == null);
 
@@ -146,16 +152,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         awaitTermination(workers);
         awaitTermination(scriptWorkers);
 
-        FileLoader.initModLoading();
-
-        // Fill the progress bar.
-        barAnimation.forwardOnly = true;
-        while (barAnimation.barIsNotFull()) {
-            state.renderProgress(0);
-            com.genir.renderer.bridge.commands.Display.update();
-            Thread.sleep(10);
-        }
-
         // Skip a redundant section of vanilla resource loading.
         throw new SkipVanillaInitEpilogue();
     }
@@ -166,6 +162,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         MarkovNames.loadIfNeeded();
 
+        // Initialize mods.
+        FileLoader.initModLoading();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
             mod.onApplicationLoad();
 
@@ -176,6 +174,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             });
         }
 
+        // Initialize misc vanilla features.
         ImpactSound.ImpactSound_init();
         new Version();
         new SmoothParticle(Color.BLACK, 10.0F);
@@ -195,7 +194,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         }
     }
 
-    public static void loadResource(String type, String path) {
+    public static void queueResource(String type, String path) {
         if (path == null) {
             return;
         }
@@ -218,14 +217,6 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                     throw new RuntimeException(e);
                 }
                 break;
-        }
-    }
-
-    private static void awaitTermination(ExecutorService exec) {
-        try {
-            exec.awaitTermination(30, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
