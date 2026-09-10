@@ -1,11 +1,11 @@
 package com.genir.renderer.overrides.loading;
 
+import proxy.com.fs.util.FileLoader.ResourceLocation;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import proxy.com.fs.util.FileLoader.ResourceLocation;
 
 import static com.genir.renderer.overrides.loading.FileLoader.readStringVanilla;
 
