@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.context.stall;
 
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,17 +51,17 @@ public class StateCache {
     }
 
     synchronized public void update() { // Render thread
-        glStringExtensions = GL11.glGetString(GL11.GL_EXTENSIONS);
-        contextCapabilities = GLContext.getCapabilities();
+        glStringExtensions = org.lwjgl.opengl.GL11.glGetString(GL11.GL_EXTENSIONS);
+        contextCapabilities = org.lwjgl.opengl.GLContext.getCapabilities();
 
         for (var entry : otherIntegers.entrySet()) {
             Integer key = entry.getKey();
-            otherIntegers.put(key, GL11.glGetInteger(key));
+            otherIntegers.put(key, org.lwjgl.opengl.GL11.glGetInteger(key));
         }
 
         for (var entry : otherStrings.entrySet()) {
             Integer key = entry.getKey();
-            otherStrings.put(key, GL11.glGetString(key));
+            otherStrings.put(key, org.lwjgl.opengl.GL11.glGetString(key));
         }
     }
 }

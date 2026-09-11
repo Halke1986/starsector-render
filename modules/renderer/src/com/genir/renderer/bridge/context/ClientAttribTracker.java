@@ -27,17 +27,17 @@ public class ClientAttribTracker {
     }
 
     public void glEnableClientState(int cap) {
-        asert(cap == org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY ||
-                cap == org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY ||
-                cap == org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
+        asert(cap == GL11.GL_VERTEX_ARRAY ||
+                cap == GL11.GL_TEXTURE_COORD_ARRAY ||
+                cap == GL11.GL_COLOR_ARRAY);
 
         setState(cap, true);
     }
 
     public void glDisableClientState(int cap) {
-        asert(cap == org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY ||
-                cap == org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY ||
-                cap == org.lwjgl.opengl.GL11.GL_COLOR_ARRAY);
+        asert(cap == GL11.GL_VERTEX_ARRAY ||
+                cap == GL11.GL_TEXTURE_COORD_ARRAY ||
+                cap == GL11.GL_COLOR_ARRAY);
 
         setState(cap, false);
     }

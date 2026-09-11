@@ -82,17 +82,17 @@ public class AttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int pname = switch (target) {
-                    case org.lwjgl.opengl.GL11.GL_TEXTURE_2D -> GL11.GL_TEXTURE_BINDING_2D;
-                    case org.lwjgl.opengl.GL11.GL_TEXTURE_1D -> GL11.GL_TEXTURE_BINDING_1D;
-                    case org.lwjgl.opengl.GL12.GL_TEXTURE_3D -> GL12.GL_TEXTURE_BINDING_3D;
-                    case org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP -> GL13.GL_TEXTURE_BINDING_CUBE_MAP;
-                    case org.lwjgl.opengl.GL30.GL_TEXTURE_1D_ARRAY -> GL30.GL_TEXTURE_BINDING_1D_ARRAY;
-                    case org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY -> GL30.GL_TEXTURE_BINDING_2D_ARRAY;
-                    case org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE -> GL31.GL_TEXTURE_BINDING_RECTANGLE;
-                    case org.lwjgl.opengl.GL31.GL_TEXTURE_BUFFER -> GL31.GL_TEXTURE_BINDING_BUFFER;
-                    case org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE -> GL32.GL_TEXTURE_BINDING_2D_MULTISAMPLE;
-                    case org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> GL32.GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY;
-                    case org.lwjgl.opengl.GL40.GL_TEXTURE_CUBE_MAP_ARRAY -> GL40.GL_TEXTURE_BINDING_CUBE_MAP_ARRAY;
+                    case GL11.GL_TEXTURE_2D -> GL11.GL_TEXTURE_BINDING_2D;
+                    case GL11.GL_TEXTURE_1D -> GL11.GL_TEXTURE_BINDING_1D;
+                    case GL12.GL_TEXTURE_3D -> GL12.GL_TEXTURE_BINDING_3D;
+                    case GL13.GL_TEXTURE_CUBE_MAP -> GL13.GL_TEXTURE_BINDING_CUBE_MAP;
+                    case GL30.GL_TEXTURE_1D_ARRAY -> GL30.GL_TEXTURE_BINDING_1D_ARRAY;
+                    case GL30.GL_TEXTURE_2D_ARRAY -> GL30.GL_TEXTURE_BINDING_2D_ARRAY;
+                    case GL31.GL_TEXTURE_RECTANGLE -> GL31.GL_TEXTURE_BINDING_RECTANGLE;
+                    case GL31.GL_TEXTURE_BUFFER -> GL31.GL_TEXTURE_BINDING_BUFFER;
+                    case GL32.GL_TEXTURE_2D_MULTISAMPLE -> GL32.GL_TEXTURE_BINDING_2D_MULTISAMPLE;
+                    case GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> GL32.GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY;
+                    case GL40.GL_TEXTURE_CUBE_MAP_ARRAY -> GL40.GL_TEXTURE_BINDING_CUBE_MAP_ARRAY;
                     default -> 0;
                 };
 
@@ -110,7 +110,7 @@ public class AttribTracker {
         record getActiveTexture(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
                 asertEqual(expected, actual, this);
             }
         }
@@ -124,7 +124,7 @@ public class AttribTracker {
         record getLineWidth(float expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                float actual = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL11.GL_LINE_WIDTH);
+                float actual = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_LINE_WIDTH);
                 asertEqual(expected, actual, this);
             }
         }
@@ -138,7 +138,7 @@ public class AttribTracker {
         record getArrayBufferBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
                 asertEqual(expected, actual, this);
             }
         }
@@ -152,7 +152,7 @@ public class AttribTracker {
         record getFramebufferBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
                 asertEqual(expected, actual, this);
             }
         }
@@ -166,7 +166,7 @@ public class AttribTracker {
         record getVertexArrayBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
                 asertEqual(expected, actual, this);
             }
         }
@@ -181,7 +181,7 @@ public class AttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
-                org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL11.GL_VIEWPORT, actual);
+                org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_VIEWPORT, actual);
 
                 asertEqual(expected.x(), actual.get(), this);
                 asertEqual(expected.y(), actual.get(), this);
@@ -199,7 +199,7 @@ public class AttribTracker {
         record getCurrentProgram(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
                 asertEqual(expected, actual, this);
             }
         }

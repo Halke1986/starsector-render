@@ -1,37 +1,10 @@
 package com.genir.renderer.bridge.opengl;
 
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.ShortBuffer;
-
-import org.lwjgl.BufferChecks;
-import org.lwjgl.MemoryUtil;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.GLContext;
+
+import java.nio.*;
 
 public final class GL44 {
-    public static final int GL_MAX_VERTEX_ATTRIB_STRIDE = 33509;
-    public static final int GL_MAP_PERSISTENT_BIT = 64;
-    public static final int GL_MAP_COHERENT_BIT = 128;
-    public static final int GL_DYNAMIC_STORAGE_BIT = 256;
-    public static final int GL_CLIENT_STORAGE_BIT = 512;
-    public static final int GL_BUFFER_IMMUTABLE_STORAGE = 33311;
-    public static final int GL_BUFFER_STORAGE_FLAGS = 33312;
-    public static final int GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT = 16384;
-    public static final int GL_CLEAR_TEXTURE = 37733;
-    public static final int GL_LOCATION_COMPONENT = 37706;
-    public static final int GL_TRANSFORM_FEEDBACK_BUFFER_INDEX = 37707;
-    public static final int GL_TRANSFORM_FEEDBACK_BUFFER_STRIDE = 37708;
-    public static final int GL_QUERY_RESULT_NO_WAIT = 37268;
-    public static final int GL_QUERY_BUFFER = 37266;
-    public static final int GL_QUERY_BUFFER_BINDING = 37267;
-    public static final int GL_QUERY_BUFFER_BARRIER_BIT = 32768;
-    public static final int GL_MIRROR_CLAMP_TO_EDGE = 34627;
-
     public static void glBufferStorage(int target, ByteBuffer data, int flags) {
         com.genir.renderer.bridge.commands.GL44.glBufferStorage(target, data, flags);
     }

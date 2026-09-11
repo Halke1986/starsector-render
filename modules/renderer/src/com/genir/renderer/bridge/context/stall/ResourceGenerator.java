@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge.context.stall;
 
-
 import com.genir.renderer.bridge.context.Executor;
 
 import java.nio.IntBuffer;

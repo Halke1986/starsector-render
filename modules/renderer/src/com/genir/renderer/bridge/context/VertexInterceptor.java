@@ -120,7 +120,7 @@ public class VertexInterceptor {
     }
 
     public void glMultiTexCoord2f(int target, float s, float t) {
-        asertEqual(org.lwjgl.opengl.GL13.GL_TEXTURE1, target, null);
+        asertEqual(GL13.GL_TEXTURE1, target, null);
 
         this.texS1 = s;
         this.texT1 = t;
@@ -206,7 +206,7 @@ public class VertexInterceptor {
             vertexBatch.clear();
 
             attribManager.forceReorderedDrawContext(ctx);
-            GL11.glDrawArrays(batchMode, 0, batchCount);
+            org.lwjgl.opengl.GL11.glDrawArrays(batchMode, 0, batchCount);
         }
 
         // Restore client selected attributes to avoid client-server state desync.
@@ -240,46 +240,46 @@ public class VertexInterceptor {
         // Vertex array.
         final ArraySnapshot vs = snapshot.vertex();
         if (vs != null) {
-            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
             if (vs.snapshot() != null) {
                 vertexPointer = restoreSnapshot(vs, vertexPointer);
-                GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
+                org.lwjgl.opengl.GL11.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
             }
         } else {
-            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         }
 
         // Texture array.
         final ArraySnapshot ts = snapshot.texCoord();
         if (ts != null) {
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
             if (ts.snapshot() != null) {
                 texCoordPointer = restoreSnapshot(ts, texCoordPointer);
-                GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
+                org.lwjgl.opengl.GL11.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
             }
         } else {
-            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         }
 
         // Color array.
         final ArraySnapshot cs = snapshot.color();
         if (cs != null) {
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
             if (cs.snapshot() != null) {
                 colorPointer = restoreSnapshot(cs, colorPointer);
-                GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
+                org.lwjgl.opengl.GL11.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
             }
         } else {
             // Define color if GL_COLOR_ARRAY is disabled.
-            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-            GL11.glColor4f(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
         }
 
         // Normal array.
-        GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 
         // Move model transformation from CPU to GPU.
         // The vertex array is stored in object/local space rather than pre-transformed
@@ -336,56 +336,56 @@ public class VertexInterceptor {
 
         if (resized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
+                org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+                org.lwjgl.opengl.GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
             } else {
-                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+                org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
             }
         }
 
         if (resized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
+                org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+                org.lwjgl.opengl.GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
             }
         }
 
         if (resized || (arrayFlags & TEX_FLAG) != (requiredFlags & TEX_FLAG)) {
             int prevActiveTex = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
-            GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
+            org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 
             if ((requiredFlags & TEX_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+                org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                org.lwjgl.opengl.GL11.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
 
-            GL13.glClientActiveTexture(prevActiveTex);
+            org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
         if (resized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
             int prevActiveTex = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
-            GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
+            org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                GL11.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
+                org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                org.lwjgl.opengl.GL11.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
 
-            GL13.glClientActiveTexture(prevActiveTex);
+            org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
         if (resized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
-                GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
+                org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+                org.lwjgl.opengl.GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
             } else {
-                GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+                org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }
         }
 

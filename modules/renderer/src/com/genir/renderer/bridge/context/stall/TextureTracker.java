@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import org.lwjgl.opengl.*;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -21,17 +22,17 @@ public class TextureTracker { // Context-shared object.
     // Return true only when the binding request is correct and would not cause OpenGL error.
     public boolean glBindTexture(int target, int texture) {
         switch (target) {
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_2D:
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_1D:
-            case org.lwjgl.opengl.GL12.GL_TEXTURE_3D:
-            case org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP:
-            case org.lwjgl.opengl.GL30.GL_TEXTURE_1D_ARRAY:
-            case org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY:
-            case org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE:
-            case org.lwjgl.opengl.GL31.GL_TEXTURE_BUFFER:
-            case org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE:
-            case org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-            case org.lwjgl.opengl.GL40.GL_TEXTURE_CUBE_MAP_ARRAY:
+            case GL11.GL_TEXTURE_2D:
+            case GL11.GL_TEXTURE_1D:
+            case GL12.GL_TEXTURE_3D:
+            case GL13.GL_TEXTURE_CUBE_MAP:
+            case GL30.GL_TEXTURE_1D_ARRAY:
+            case GL30.GL_TEXTURE_2D_ARRAY:
+            case GL31.GL_TEXTURE_RECTANGLE:
+            case GL31.GL_TEXTURE_BUFFER:
+            case GL32.GL_TEXTURE_2D_MULTISAMPLE:
+            case GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+            case GL40.GL_TEXTURE_CUBE_MAP_ARRAY:
                 break;
 
             // Unhandled texture type.
@@ -141,9 +142,9 @@ public class TextureTracker { // Context-shared object.
         }
 
         switch (pname) {
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_WIDTH:
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_HEIGHT:
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_INTERNAL_FORMAT:
+            case GL11.GL_TEXTURE_WIDTH:
+            case GL11.GL_TEXTURE_HEIGHT:
+            case GL11.GL_TEXTURE_INTERNAL_FORMAT:
                 break;
             default:
                 return null;
@@ -157,13 +158,13 @@ public class TextureTracker { // Context-shared object.
 
         // Do not assert internal format. Drivers are allowed to return
         // different format than was provided during texture creation.
-        if (pname == org.lwjgl.opengl.GL11.GL_TEXTURE_INTERNAL_FORMAT) {
+        if (pname == GL11.GL_TEXTURE_INTERNAL_FORMAT) {
             return data.internalformat;
         }
 
         Integer result = switch (pname) {
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_WIDTH -> data.width;
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_HEIGHT -> data.height;
+            case GL11.GL_TEXTURE_WIDTH -> data.width;
+            case GL11.GL_TEXTURE_HEIGHT -> data.height;
             default -> null;
         };
 
