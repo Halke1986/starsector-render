@@ -54,14 +54,14 @@ public class Tesselation {
 
     private static void renderPolygons(List<Polygon> polygons) {
         for (Polygon polygon : polygons) {
-            com.genir.renderer.bridge.commands.GL11.glBegin(polygon.type);
+            com.genir.renderer.bridge.opengl.GL11.glBegin(polygon.type);
 
             for (Vector2f vertex : polygon.vertices) {
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(vertex.x, vertex.y);
-                com.genir.renderer.bridge.commands.GL11.glColor3f(1, 1, 1);
+                com.genir.renderer.bridge.opengl.GL11.glVertex2f(vertex.x, vertex.y);
+                com.genir.renderer.bridge.opengl.GL11.glColor3f(1, 1, 1);
             }
 
-            com.genir.renderer.bridge.commands.GL11.glEnd();
+            com.genir.renderer.bridge.opengl.GL11.glEnd();
         }
     }
 
