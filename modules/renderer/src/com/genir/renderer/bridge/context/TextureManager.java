@@ -66,7 +66,7 @@ public class TextureManager {
 
         TextureCallbacks callbacks = loaders.get(texture);
         Path path = PWD.relativize(callbacks.texData.imagePath);
-        logger.info("Loading image DDS override " + loadedNumber + "/" + managedNumber + " [" + path + "]");
+        logger.info("Loading texture " + loadedNumber + "/" + managedNumber + " id:" + texture + " [" + path + "]");
 
         // Load texture.
         Future<byte[]> bufferFuture = workers.submit(() -> {
