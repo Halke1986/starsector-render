@@ -1,9 +1,6 @@
 package com.genir.renderer.bridge.context.stall;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -335,17 +332,17 @@ public class AttribState {
 
     public static int textureKey(int target, int activeTexture) {
         int x = switch (target) {
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_2D -> 0;
-            case org.lwjgl.opengl.GL11.GL_TEXTURE_1D -> 1;
-            case org.lwjgl.opengl.GL12.GL_TEXTURE_3D -> 2;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP -> 3;
-            case org.lwjgl.opengl.GL30.GL_TEXTURE_1D_ARRAY -> 4;
-            case org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY -> 5;
-            case org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE -> 6;
-            case org.lwjgl.opengl.GL31.GL_TEXTURE_BUFFER -> 7;
-            case org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE -> 8;
-            case org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> 9;
-            case org.lwjgl.opengl.GL40.GL_TEXTURE_CUBE_MAP_ARRAY -> 10;
+            case GL11.GL_TEXTURE_2D -> 0;
+            case GL11.GL_TEXTURE_1D -> 1;
+            case GL12.GL_TEXTURE_3D -> 2;
+            case GL13.GL_TEXTURE_CUBE_MAP -> 3;
+            case GL30.GL_TEXTURE_1D_ARRAY -> 4;
+            case GL30.GL_TEXTURE_2D_ARRAY -> 5;
+            case GL31.GL_TEXTURE_RECTANGLE -> 6;
+            case GL31.GL_TEXTURE_BUFFER -> 7;
+            case GL32.GL_TEXTURE_2D_MULTISAMPLE -> 8;
+            case GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> 9;
+            case GL40.GL_TEXTURE_CUBE_MAP_ARRAY -> 10;
 
             default -> -1;
         };
@@ -361,38 +358,38 @@ public class AttribState {
 
     private static int textureUnitKey(int activeTexture) {
         return switch (activeTexture) {
-            case org.lwjgl.opengl.GL13.GL_TEXTURE0 -> 0;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE1 -> 1;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE2 -> 2;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE3 -> 3;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE4 -> 4;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE5 -> 5;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE6 -> 6;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE7 -> 7;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE8 -> 8;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE9 -> 9;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE10 -> 10;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE11 -> 11;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE12 -> 12;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE13 -> 13;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE14 -> 14;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE15 -> 15;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE16 -> 16;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE17 -> 17;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE18 -> 18;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE19 -> 19;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE20 -> 20;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE21 -> 21;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE22 -> 22;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE23 -> 23;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE24 -> 24;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE25 -> 25;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE26 -> 26;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE27 -> 27;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE28 -> 28;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE29 -> 29;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE30 -> 30;
-            case org.lwjgl.opengl.GL13.GL_TEXTURE31 -> 31;
+            case GL13.GL_TEXTURE0 -> 0;
+            case GL13.GL_TEXTURE1 -> 1;
+            case GL13.GL_TEXTURE2 -> 2;
+            case GL13.GL_TEXTURE3 -> 3;
+            case GL13.GL_TEXTURE4 -> 4;
+            case GL13.GL_TEXTURE5 -> 5;
+            case GL13.GL_TEXTURE6 -> 6;
+            case GL13.GL_TEXTURE7 -> 7;
+            case GL13.GL_TEXTURE8 -> 8;
+            case GL13.GL_TEXTURE9 -> 9;
+            case GL13.GL_TEXTURE10 -> 10;
+            case GL13.GL_TEXTURE11 -> 11;
+            case GL13.GL_TEXTURE12 -> 12;
+            case GL13.GL_TEXTURE13 -> 13;
+            case GL13.GL_TEXTURE14 -> 14;
+            case GL13.GL_TEXTURE15 -> 15;
+            case GL13.GL_TEXTURE16 -> 16;
+            case GL13.GL_TEXTURE17 -> 17;
+            case GL13.GL_TEXTURE18 -> 18;
+            case GL13.GL_TEXTURE19 -> 19;
+            case GL13.GL_TEXTURE20 -> 20;
+            case GL13.GL_TEXTURE21 -> 21;
+            case GL13.GL_TEXTURE22 -> 22;
+            case GL13.GL_TEXTURE23 -> 23;
+            case GL13.GL_TEXTURE24 -> 24;
+            case GL13.GL_TEXTURE25 -> 25;
+            case GL13.GL_TEXTURE26 -> 26;
+            case GL13.GL_TEXTURE27 -> 27;
+            case GL13.GL_TEXTURE28 -> 28;
+            case GL13.GL_TEXTURE29 -> 29;
+            case GL13.GL_TEXTURE30 -> 30;
+            case GL13.GL_TEXTURE31 -> 31;
 
             default -> -1;
         };

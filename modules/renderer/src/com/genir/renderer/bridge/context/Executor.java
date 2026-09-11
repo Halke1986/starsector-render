@@ -6,7 +6,6 @@ import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -184,7 +183,7 @@ public class Executor {
                     executeCommands(frameToExecute);
 
                     try {
-                        GL11.glFlush();
+                        org.lwjgl.opengl.GL11.glFlush();
                     } catch (RuntimeException ignored) {
                         // Handle glFlush() called on a thread
                         // where GL context was not yet created.

@@ -17,7 +17,6 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import static com.genir.renderer.debug.Debug.asert;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D;
 
 public class TextureManager {
     // TODO AttribManager handles glDeleteTextures.
@@ -108,29 +107,29 @@ public class TextureManager {
     }
 
     private void forceDraw() {
-        GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_ENABLE_BIT);
+        org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_ENABLE_BIT);
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         // Ensure the texture is not visible
         // to not corrupt the game animation.
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE);
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
+        org.lwjgl.opengl.GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE);
 
-        GL11.glBegin(GL11.GL_TRIANGLES);
+        org.lwjgl.opengl.GL11.glBegin(GL11.GL_TRIANGLES);
 
-        GL11.glTexCoord2f(0.0f, 0.0f);
-        GL11.glVertex2f(-1.0f, -1.0f);
+        org.lwjgl.opengl.GL11.glTexCoord2f(0.0f, 0.0f);
+        org.lwjgl.opengl.GL11.glVertex2f(-1.0f, -1.0f);
 
-        GL11.glTexCoord2f(1.0f, 0.0f);
-        GL11.glVertex2f(1.0f, -1.0f);
+        org.lwjgl.opengl.GL11.glTexCoord2f(1.0f, 0.0f);
+        org.lwjgl.opengl.GL11.glVertex2f(1.0f, -1.0f);
 
-        GL11.glTexCoord2f(0.0f, 1.0f);
-        GL11.glVertex2f(-1.0f, 1.0f);
+        org.lwjgl.opengl.GL11.glTexCoord2f(0.0f, 1.0f);
+        org.lwjgl.opengl.GL11.glVertex2f(-1.0f, 1.0f);
 
-        GL11.glEnd();
+        org.lwjgl.opengl.GL11.glEnd();
 
-        GL11.glPopAttrib();
+        org.lwjgl.opengl.GL11.glPopAttrib();
     }
 
     public void glDeleteTextures(int texture) {
@@ -145,7 +144,7 @@ public class TextureManager {
     }
 
     public void textureModified() {
-        int textureID = org.lwjgl.opengl.GL11.glGetInteger(GL_TEXTURE_BINDING_2D);
+        int textureID = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
         doNotManageTexture(textureID);
     }
 

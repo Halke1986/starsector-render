@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Releasable;
+import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,13 +57,13 @@ public class ListManager {
         newList.args[listArgsOffset + 2] = args[argsOffset + 2];
         newList.args[listArgsOffset + 3] = args[argsOffset + 3];
 
-        if (mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE) {
+        if (mode == GL11.GL_COMPILE_AND_EXECUTE) {
             mode = 0;
             isReplay = true;
             try {
                 command.run(context, args, argsOffset);
             } finally {
-                mode = org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE;
+                mode = GL11.GL_COMPILE_AND_EXECUTE;
                 isReplay = false;
             }
         }
@@ -76,7 +77,7 @@ public class ListManager {
 
     public void glNewList(int list, int mode) {
         asert(!isRecording());
-        asert(mode == org.lwjgl.opengl.GL11.GL_COMPILE || mode == org.lwjgl.opengl.GL11.GL_COMPILE_AND_EXECUTE);
+        asert(mode == GL11.GL_COMPILE || mode == GL11.GL_COMPILE_AND_EXECUTE);
 
         this.mode = mode;
 

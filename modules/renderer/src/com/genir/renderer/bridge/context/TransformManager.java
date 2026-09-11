@@ -26,7 +26,7 @@ public class TransformManager {
 
         // Disable GPU model view transformation.
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
+        org.lwjgl.opengl.GL11.glLoadIdentity();
 
         cpuMode = true;
     }
@@ -39,7 +39,7 @@ public class TransformManager {
         // Synchronize GPU model view state.
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
         modelView.getMatrix().storeTranspose(matrixBuffer.clear());
-        GL11.glMultMatrix(matrixBuffer.flip());
+        org.lwjgl.opengl.GL11.glMultMatrix(matrixBuffer.flip());
 
         cpuMode = false;
     }
@@ -59,7 +59,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glPushMatrix();
+            org.lwjgl.opengl.GL11.glPushMatrix();
         }
     }
 
@@ -70,7 +70,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glPopMatrix();
+            org.lwjgl.opengl.GL11.glPopMatrix();
         }
     }
 
@@ -81,7 +81,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glLoadIdentity();
+            org.lwjgl.opengl.GL11.glLoadIdentity();
         }
     }
 
@@ -92,7 +92,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glTranslatef(x, y, z);
+            org.lwjgl.opengl.GL11.glTranslatef(x, y, z);
         }
     }
 
@@ -103,7 +103,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glRotatef(angle, x, y, z);
+            org.lwjgl.opengl.GL11.glRotatef(angle, x, y, z);
         }
     }
 
@@ -114,7 +114,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glScalef(x, y, z);
+            org.lwjgl.opengl.GL11.glScalef(x, y, z);
         }
     }
 
@@ -125,7 +125,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glMultMatrix(m);
+            org.lwjgl.opengl.GL11.glMultMatrix(m);
         }
     }
 
@@ -136,7 +136,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glLoadMatrix(m);
+            org.lwjgl.opengl.GL11.glLoadMatrix(m);
         }
     }
 
@@ -147,7 +147,7 @@ public class TransformManager {
 
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
-            GL11.glOrtho(left, right, bottom, top, zNear, zFar);
+            org.lwjgl.opengl.GL11.glOrtho(left, right, bottom, top, zNear, zFar);
         }
     }
 

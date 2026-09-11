@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Executor;
-import org.lwjgl.opengl.GL20;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class ShaderTracker { // Context-shared object.
 
         final Executor exec = getContextExecutor();
         return locations.computeIfAbsent(name.toString(), k ->
-                exec.get(context -> GL20.glGetUniformLocation(program, name))
+                exec.get(context -> org.lwjgl.opengl.GL20.glGetUniformLocation(program, name))
         );
     }
 
@@ -39,7 +38,7 @@ public class ShaderTracker { // Context-shared object.
 
         final Executor exec = getContextExecutor();
         return parameters.computeIfAbsent(pname, k ->
-                exec.get(context -> GL20.glGetProgrami(program, pname))
+                exec.get(context -> org.lwjgl.opengl.GL20.glGetProgrami(program, pname))
         );
     }
 
