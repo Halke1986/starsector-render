@@ -1,4 +1,5 @@
 - Improved exception handling during game startup.
+- Added support for official, non-bootlegged CMUtils.
 
 v0.8.8
 

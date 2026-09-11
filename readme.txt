@@ -22,7 +22,6 @@ MOD INTEGRATION
 
 INCOMPATIBLE MODS
 
-- Official version of Combat Misc Utilities (CMUtils).
 - Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
 
 INSTALLATION

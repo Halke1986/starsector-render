@@ -28,6 +28,7 @@ public class VertexInterceptor {
     private static final int TEX1_FLAG = 8;
     private static final int NORMAL_FLAG = 16;
 
+    // GL State.
     private final TransformManager transformManager;
     private final AttribManager attribManager;
 
@@ -84,6 +85,10 @@ public class VertexInterceptor {
     private void setReorderDraw(boolean reorder) {
         reorderDraw = reorder;
     }
+
+    //
+    // GL calls.
+    //
 
     public void glBegin(int mode) {
         this.mode = mode;
@@ -187,7 +192,18 @@ public class VertexInterceptor {
         cachedVertices++;
     }
 
+    //
+    // Draw.
+    //
+
     private void commitLayer() {
+        if (reorderBuffer.isEmpty()) {
+            return;
+        }
+
+        // Array draws cannot be used when array buffer is bound.
+        attribManager.forceArrayBufferBinding(0);
+
         for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
             FloatBuffer vertexBatch = entry.getValue();
             if (vertexBatch.position() == 0) {
@@ -211,6 +227,7 @@ public class VertexInterceptor {
 
         // Restore client selected attributes to avoid client-server state desync.
         attribManager.reorderedDrawContextCleanup();
+        attribManager.applyArrayBufferBinding();
     }
 
     private void storeReorderedDraw(int mode, int count) {
@@ -313,11 +330,17 @@ public class VertexInterceptor {
         if (hasTexture1) flags |= TEX1_FLAG;
         if (hasNormal) flags |= NORMAL_FLAG;
 
+        // Array draws cannot be used when array buffer is bound.
+        attribManager.forceArrayBufferBinding(0);
+
         prepareVertexPointers(count, flags);
         primaryVertexPointer.put(0, vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyDrawAttribs();
-        GL11.glDrawArrays(mode, 0, count);
+        org.lwjgl.opengl.GL11.glDrawArrays(mode, 0, count);
+
+        // Restore client selected attributes to avoid client-server state desync.
+        attribManager.applyArrayBufferBinding();
     }
 
     private void prepareVertexPointers(int count, int requiredFlags) {
@@ -353,7 +376,7 @@ public class VertexInterceptor {
         }
 
         if (resized || (arrayFlags & TEX_FLAG) != (requiredFlags & TEX_FLAG)) {
-            int prevActiveTex = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
+            int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 
             if ((requiredFlags & TEX_FLAG) != 0) {
@@ -367,7 +390,7 @@ public class VertexInterceptor {
         }
 
         if (resized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
-            int prevActiveTex = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
+            int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
