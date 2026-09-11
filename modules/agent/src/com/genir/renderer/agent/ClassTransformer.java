@@ -13,8 +13,8 @@ public class ClassTransformer implements ClassFileTransformer {
     private final ConstantTransformer starfarerTransformer = new ConstantTransformer(
             // Replace OpenGL calls.
             Map.of(
-                    "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11",
-                    "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14",
+                    "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/opengl/GL11",
+                    "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/opengl/GL14",
                     "org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display",
                     "org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"
             ),
@@ -22,14 +22,6 @@ public class ClassTransformer implements ClassFileTransformer {
             // Replace class loader for loading scripts.
             Map.of(
                     "org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader"
-            ),
-
-            // Allow vanilla access to OpenGL display lists.
-            Map.of(
-                    "glGenLists", "glGenLists_restricted",
-                    "glNewList", "glNewList_restricted",
-                    "glEndList", "glEndList_restricted",
-                    "glCallList", "glCallList_restricted"
             ),
 
             // Obfuscate assembled overrides.
@@ -48,8 +40,8 @@ public class ClassTransformer implements ClassFileTransformer {
     private final ConstantTransformer lwjglTransformer = new ConstantTransformer(
             // Replace OpenGL calls.
             Map.of(
-                    "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/commands/GL11",
-                    "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/commands/GL14"
+                    "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/opengl/GL11",
+                    "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/opengl/GL14"
             )
     );
 
