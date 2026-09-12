@@ -3,46 +3,17 @@ package com.genir.renderer.agent;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
-import java.util.Map;
 
 public class ClassTransformer implements ClassFileTransformer {
-    private final ConstantTransformer obfTransformer = new ConstantTransformer(ObfTransformations.transformations);
-
-    private final ConstantTransformer scriptTransformer = new ConstantTransformer(ScriptTransformations.transformations);
-
+    private final ConstantTransformer obfTransformer = new ConstantTransformer(Transformations.obfuscation);
+    private final ConstantTransformer scriptTransformer = new ConstantTransformer(Transformations.opengl);
+    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Transformations.xstream);
+    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Transformations.lwjgl);
     private final ConstantTransformer starfarerTransformer = new ConstantTransformer(
-            // Replace OpenGL calls.
-            Map.of(
-                    "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/opengl/GL11",
-                    "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/opengl/GL14",
-                    "org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display",
-                    "org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"
-            ),
-
-            // Replace class loader for loading scripts.
-            Map.of(
-                    "org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader"
-            ),
-
-            // Obfuscate assembled overrides.
-            ObfTransformations.transformations,
-
-            IllegalTransformations.transformations
-    );
-
-    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(
-            // Use memory-optimized Path implementation
-            Map.of(
-                    "com/thoughtworks/xstream/io/path/Path", "com/genir/renderer/overrides/xstream/Path"
-            )
-    );
-
-    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(
-            // Replace OpenGL calls.
-            Map.of(
-                    "org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/opengl/GL11",
-                    "org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/opengl/GL14"
-            )
+            Transformations.opengl,  // Replace OpenGL calls.
+            Transformations.scriptLoader,  // Replace class loader for loading scripts.
+            Transformations.obfuscation, // Obfuscate assembled overrides.
+            IllegalTransformations.transformations  // Sanitize illegal obf symbols.
     );
 
     @Override
