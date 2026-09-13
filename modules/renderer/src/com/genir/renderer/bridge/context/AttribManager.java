@@ -5,7 +5,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 
 import static com.genir.renderer.debug.Debug.asertEqual;
@@ -277,20 +279,29 @@ public class AttribManager {
                 org.lwjgl.opengl.GL14.glBlendEquation(blendEquation);
             }
 
-            // Apply the buffer-specific blend settings. No comparison with
-            // the actual state is performed for simplicity and because the
-            // buffer-specific settings are not in the hot path.
+            // Apply the buffer-specific blend settings.
             if (blendi != null) {
+                // No comparison with the actual state is performed for simplicity
+                // and because the buffer-specific settings are not in the hot path.
                 for (Map.Entry<Integer, AttribState.BlendFactors> entry : blendi.entrySet()) {
                     AttribState.BlendFactors blend = entry.getValue();
                     org.lwjgl.opengl.GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
                 }
             }
 
-            // TODO Optimize
             if (blendEquationi != null) {
+                if (actual.blendEquationi == null) {
+                    actual.blendEquationi = new HashMap<>();
+                }
+
                 for (Map.Entry<Integer, Integer> entry : blendEquationi.entrySet()) {
-                    org.lwjgl.opengl.GL40.glBlendEquationi(entry.getKey(), entry.getValue());
+                    Integer key = entry.getKey();
+                    Integer value = entry.getValue();
+
+                    if (!Objects.equals(actual.blendEquationi.get(key), value)) {
+                        actual.blendEquationi.put(key, value);
+                        org.lwjgl.opengl.GL40.glBlendEquationi(key, value);
+                    }
                 }
             }
         }
