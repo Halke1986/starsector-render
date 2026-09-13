@@ -6,6 +6,7 @@ import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.ShortBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.interfaces.GLGetter;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -62,6 +63,7 @@ public class GL15 {
         }
 
         final Context context = getThreadContext();
+        context.bufferManager.glBindBuffer(target, buffer);
         context.attribTracker.glBindBuffer(target, buffer);
         context.exec.execute(new glBindBuffer(target, buffer));
     }
@@ -191,18 +193,21 @@ public class GL15 {
     }
 
     public static boolean glUnmapBuffer(int target) {
-        record glUnmapBuffer(int target) implements GLCommand {
+        final Context context = getThreadContext();
+
+        boolean handled = context.bufferManager.glUnmapBuffer(target);
+        if (handled) {
+            return true;
+        }
+
+        // Fall back to OpenGL glUnmapBuffer if bufferManager cannot handle the buffer.
+        record glUnmapBuffer(int target) implements GLGetter<Boolean> {
             @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL15.glUnmapBuffer(target);
+            public Boolean call(Context context) {
+                return org.lwjgl.opengl.GL15.glUnmapBuffer(target);
             }
         }
 
-        final Context context = getThreadContext();
-        context.exec.execute(new glUnmapBuffer(target));
-
-        // Assume the operation was successful, to avoid asynchronous stalls.
-        // The caller, BoxUtil, does not read the returned value anyway.
-        return true;
+        return context.exec.get(new glUnmapBuffer(target));
     }
 }

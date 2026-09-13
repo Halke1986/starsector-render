@@ -287,6 +287,7 @@ public class AttribManager {
                 }
             }
 
+            // TODO Optimize
             if (blendEquationi != null) {
                 for (Map.Entry<Integer, Integer> entry : blendEquationi.entrySet()) {
                     org.lwjgl.opengl.GL40.glBlendEquationi(entry.getKey(), entry.getValue());

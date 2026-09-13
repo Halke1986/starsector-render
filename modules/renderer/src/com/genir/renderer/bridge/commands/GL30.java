@@ -185,15 +185,16 @@ public class GL30 {
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
-        record glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) implements GLGetter<ByteBuffer> {
-            @Override
-            public ByteBuffer call(Context context) {
-                return org.lwjgl.opengl.GL30.glMapBufferRange(target, offset, length, access, old_buffer);
-            }
+        int handledAccess = org.lwjgl.opengl.GL30.GL_MAP_WRITE_BIT
+                | org.lwjgl.opengl.GL30.GL_MAP_UNSYNCHRONIZED_BIT
+                | org.lwjgl.opengl.GL30.GL_MAP_INVALIDATE_RANGE_BIT;
+
+        if ((access & ~handledAccess) != 0) {
+            throw new UnsupportedOperationException("Unsupported GL30.glMapBufferRange access flags: " + access);
         }
 
         final Context context = getThreadContext();
-        return context.exec.get(new glMapBufferRange(target, offset, length, access, old_buffer));
+        return context.bufferManager.glMapBufferRange(target, offset, length, access, old_buffer);
     }
 
     public static int glGetInteger(int value, int index) {

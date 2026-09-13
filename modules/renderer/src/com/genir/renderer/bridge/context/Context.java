@@ -53,6 +53,7 @@ public class Context {
     // Context-shared client state.
     public final ShaderTracker shaderTracker;
     public final TextureTracker textureTracker;
+    public final BufferManager bufferManager = new BufferManager();
 
     public void update() {
         // Runs on rendering thread.
