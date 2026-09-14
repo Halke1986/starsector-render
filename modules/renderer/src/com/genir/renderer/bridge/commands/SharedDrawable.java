@@ -37,30 +37,27 @@ public class SharedDrawable implements Drawable {
                 try {
                     impl.makeCurrent();
                     context.update();
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                } catch (LWJGLException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
 
-        final Context context = ContextManager.createAuxContext();
+        final Context context = ContextManager.createAuxContext(impl);
         context.exec.wait(new makeCurrent(impl));
     }
 
     @Override
     public void destroy() {
-        record destroy(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
+        record destroy() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                impl.destroy();
+                context.destroy();
             }
         }
 
-        final Context context = ContextManager.getThreadContext();
-        context.exec.wait(new destroy(impl));
-        ContextManager.destroyAuxContext();
+        final Context context = ContextManager.removeAuxContext();
+        context.exec.wait(new destroy());
     }
 
     @Override

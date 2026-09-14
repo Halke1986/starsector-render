@@ -12,10 +12,10 @@ import static com.genir.renderer.debug.Debug.asert;
 public class ContextManager {
     private static Context mainContext = null;
     private static Thread mainThread = null;
-    private static final Map<Thread, Context> auxContext = new HashMap<>();
+    private static final Map<Thread, Context> auxContexts = new HashMap<>();
 
     public static Context getThreadContext() {
-        if (auxContext.isEmpty()) {
+        if (auxContexts.isEmpty()) {
             return mainContext;
         }
 
@@ -24,34 +24,35 @@ public class ContextManager {
             return mainContext;
         }
 
-        return auxContext.get(Thread.currentThread());
+        return auxContexts.get(Thread.currentThread());
     }
 
     synchronized public static Context createMainContext() {
-        mainContext = new Context(null);
+        mainContext = new Context();
         mainThread = Thread.currentThread();
 
         return mainContext;
     }
 
-    synchronized public static void destroyMainContext() {
-        mainContext.shutdown();
-
-        mainContext = null;
-        mainThread = null;
+    synchronized public static Context removeMainContext() {
+        try {
+            return mainContext;
+        } finally {
+            mainContext = null;
+            mainThread = null;
+        }
     }
 
-    synchronized public static Context createAuxContext() {
-        asert(auxContext.get(Thread.currentThread()) == null);
+    synchronized public static Context createAuxContext(org.lwjgl.opengl.SharedDrawable drawable) {
+        asert(auxContexts.get(Thread.currentThread()) == null);
 
-        Context context = new Context(mainContext);
-        auxContext.put(Thread.currentThread(), context);
+        Context context = new Context(mainContext, drawable);
+        auxContexts.put(Thread.currentThread(), context);
 
         return context;
     }
 
-    synchronized public static void destroyAuxContext() {
-        Context context = auxContext.remove(Thread.currentThread());
-        context.shutdown();
+    synchronized public static Context removeAuxContext() {
+        return auxContexts.remove(Thread.currentThread());
     }
 }

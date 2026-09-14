@@ -12,8 +12,6 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
-
 public class Display {
     public static void create(PixelFormat pixel_format) {
         record create(PixelFormat pixel_format) implements GLCommand {
@@ -38,13 +36,12 @@ public class Display {
         record destroy() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.Display.destroy();
+                context.destroy();
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.removeMainContext();
         context.exec.wait(new destroy());
-        ContextManager.destroyMainContext();
     }
 
     public static void update(boolean processMessages) {
@@ -62,7 +59,7 @@ public class Display {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new update(processMessages));
         context.exec.swapFramesAndSync();
     }
@@ -106,7 +103,7 @@ public class Display {
             return;
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.wait(new setVSyncEnabled(sync));
     }
 
@@ -130,7 +127,7 @@ public class Display {
             return;
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.wait(new setFullscreen(fullscreen));
     }
 
@@ -143,7 +140,7 @@ public class Display {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new processMessages());
         context.exec.swapFramesAndSync();
     }
@@ -156,7 +153,7 @@ public class Display {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new sync(fps));
     }
 
@@ -168,7 +165,7 @@ public class Display {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new getDrawable());
     }
 

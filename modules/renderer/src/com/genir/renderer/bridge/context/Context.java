@@ -3,28 +3,39 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.debug.Profiler;
 import org.apache.log4j.Logger;
+import org.lwjgl.LWJGLException;
+
+import static com.genir.renderer.debug.Debug.asert;
 
 public class Context {
     public final boolean isMain;
+    boolean isDestroyed = false;
+    private final org.lwjgl.opengl.SharedDrawable sharedDrawable;
 
     public Profiler.Frame nextProfilerFrame = null;
     public Profiler.Frame mainProfilerFrame = null;
     public Profiler.Frame renderingProfilerFrame = null;
 
-    public Context(Context parent) {
-        Logger.getLogger(Context.class).info("Created new virtual OpenGL context.");
+    public Context() {
+        Logger.getLogger(Context.class).info("Created new virtual main OpenGL context.");
 
-        if (parent == null) {
-            this.isMain = true;
-            this.textureManager = new TextureManager();
-            this.shaderTracker = new ShaderTracker();
-            this.textureTracker = new TextureTracker();
-        } else {
-            this.isMain = false;
-            this.textureManager = parent.textureManager;
-            this.shaderTracker = parent.shaderTracker;
-            this.textureTracker = parent.textureTracker;
-        }
+        this.isMain = true;
+        this.sharedDrawable = null;
+
+        this.textureManager = new TextureManager();
+        this.shaderTracker = new ShaderTracker();
+        this.textureTracker = new TextureTracker();
+    }
+
+    public Context(Context parent, org.lwjgl.opengl.SharedDrawable sharedDrawable) {
+        Logger.getLogger(Context.class).info("Created new virtual aux OpenGL context.");
+
+        this.isMain = false;
+        this.sharedDrawable = sharedDrawable;
+
+        this.textureManager = parent.textureManager;
+        this.shaderTracker = parent.shaderTracker;
+        this.textureTracker = parent.textureTracker;
     }
 
     // Server state. Runs on rendering thread.
@@ -57,6 +68,9 @@ public class Context {
 
     public void update() {
         // Runs on rendering thread.
+
+        asert(!isDestroyed);
+
         if (org.lwjgl.opengl.Display.isCreated()) {
             stallDetector.update();
             glStateCache.update();
@@ -71,12 +85,38 @@ public class Context {
         }
     }
 
-    public void shutdown() {
-        // Runs on main thread.
-        exec.shutdown();
+    public void restoreCurrent() {
+        // Runs on rendering thread.
+
+        asert(!isDestroyed);
+
+        try {
+            if (isMain) {
+                org.lwjgl.opengl.Display.makeCurrent();
+            } else {
+                sharedDrawable.makeCurrent();
+            }
+        } catch (LWJGLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void destroy() {
+        // Runs on rendering thread.
+
+        asert(!isDestroyed);
+        isDestroyed = true;
 
         if (isMain) {
             textureManager.shutdown();
         }
+
+        if (isMain) {
+            org.lwjgl.opengl.Display.destroy();
+        } else {
+            sharedDrawable.destroy();
+        }
+
+        exec.shutdown();
     }
 }
