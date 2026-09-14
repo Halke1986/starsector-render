@@ -105,18 +105,24 @@ public class Context {
         // Runs on rendering thread.
 
         asert(!isDestroyed);
-        isDestroyed = true;
 
-        if (isMain) {
-            textureManager.shutdown();
+        try {
+            if (isMain) {
+                textureManager.shutdown();
+            }
+
+            if (isMain) {
+                org.lwjgl.opengl.Display.destroy();
+            } else {
+                sharedDrawable.destroy();
+            }
+
+            exec.shutdown();
+        } finally {
+            // Allow other methods to be called during context destruction.
+            // NOTE: This allows incorrect re-entrant destroy() call.
+            isDestroyed = true;
         }
-
-        if (isMain) {
-            org.lwjgl.opengl.Display.destroy();
-        } else {
-            sharedDrawable.destroy();
-        }
-
-        exec.shutdown();
     }
 }
+
