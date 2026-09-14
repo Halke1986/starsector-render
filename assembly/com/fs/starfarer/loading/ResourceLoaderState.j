@@ -1299,7 +1299,7 @@ L2469:  aload 12
 L2471:  invokeinterface InterfaceMethod java/util/Iterator hasNext ()Z 1 
 L2476:  ifne L2443 
 L2479:  invokestatic Method com/fs/graphics/L 'Ò00000' ()V 
-L2482:  invokestatic Method com/genir/renderer/overrides/loading/ScriptLoader joinScriptLoadingThread ()V
+L2482:  invokestatic Method com/fs/starfarer/loading/scripts/ScriptStore 'Ô00000' ()V
 L2485:  invokestatic Method com/fs/starfarer/api/impl/campaign/procgen/MarkovNames loadIfNeeded ()V 
 L2488:  invokestatic Method com/fs/starfarer/launcher/ModManager getInstance ()Lcom/fs/starfarer/launcher/ModManager; 
 L2491:  invokevirtual Method com/fs/starfarer/launcher/ModManager getEnabledModPlugins ()Ljava/util/List; 

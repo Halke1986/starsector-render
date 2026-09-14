@@ -64,7 +64,7 @@ public class ScriptLoader { // com.fs.starfarer.loading.scripts.ScriptStore
         }
     }
 
-    public static void joinScriptLoadingThread() {
+    public static void loadModClasses() {
         Set<String> plugins = ScriptStore.ScriptStore_getPluginSet();
         scripts.addAll(plugins);
 

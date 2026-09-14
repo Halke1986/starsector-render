@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.genir.renderer.async.ExecutorFactory.awaitTermination;
 import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
-import static com.genir.renderer.overrides.loading.ScriptLoader.joinScriptLoadingThread;
+import static com.genir.renderer.overrides.loading.ScriptLoader.loadModClasses;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
@@ -157,13 +157,11 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     }
 
     private static void initEpilogue() throws Exception {
-        // Script loading thread is started in 'init_vanilla'.
-        joinScriptLoadingThread();
-
         MarkovNames.loadIfNeeded();
 
         // Initialize mods.
         FileLoader.initModLoading();
+        loadModClasses();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
             mod.onApplicationLoad();
 
