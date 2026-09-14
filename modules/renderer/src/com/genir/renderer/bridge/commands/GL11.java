@@ -1814,11 +1814,9 @@ public class GL11 {
             public void run(Context context, float[] args, int argsOffset) {
                 int compressed = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(org.lwjgl.opengl.GL11.GL_TEXTURE_2D, 0, org.lwjgl.opengl.GL13.GL_TEXTURE_COMPRESSED);
                 if (compressed == org.lwjgl.opengl.GL11.GL_TRUE) {
-                    // Allocate additional storge beyond the actual image as a workaround for AMD driver crash
-                    // when reading data of a compressed texture with dimensions not divisible by 4.
-                    FloatBuffer resizedPixels = BufferUtils.createFloatBuffer(pixels.remaining() * 2);
-                    org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, resizedPixels);
-                    pixels.put(pixels.position(), resizedPixels, 0, pixels.remaining());
+                    // Emulate glGetTexImage as a workaround for AMD driver crash
+                    // when reading data of a compressed texture.
+                    context.textureReadManager.glGetTexImage(context, target, level, format, type, pixels);
                 } else {
                     org.lwjgl.opengl.GL11.glGetTexImage(target, level, format, type, pixels);
                 }

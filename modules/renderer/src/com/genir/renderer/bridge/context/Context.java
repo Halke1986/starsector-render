@@ -43,6 +43,7 @@ public class Context {
     public final AttribManager attribManager = new AttribManager();
     public final TransformManager transformManager = new TransformManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, transformManager);
+    public final TextureReadManager textureReadManager = new TextureReadManager();
     // Context-shared server state.
     public final TextureManager textureManager;
 
@@ -110,6 +111,8 @@ public class Context {
             if (isMain) {
                 textureManager.shutdown();
             }
+
+            textureReadManager.shutdown(this);
 
             if (isMain) {
                 org.lwjgl.opengl.Display.destroy();

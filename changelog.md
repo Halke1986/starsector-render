@@ -1,5 +1,6 @@
 - Improved exception handling during game startup.
 - Added support for official, non-bootlegged CMUtils.
+- Added a workaround for AMD driver crash when reading compressed textures.
 
 v0.8.8
 
