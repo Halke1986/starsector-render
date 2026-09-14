@@ -1,6 +1,9 @@
+v0.8.9
+
 - Improved exception handling during game startup.
 - Added support for official, non-bootlegged CMUtils.
 - Added a workaround for AMD driver crash when reading compressed textures.
+- Fixed an asynchronous pipeline stall crash when using BoxUtil. Reported by SSLNDYL.
 
 v0.8.8
 
