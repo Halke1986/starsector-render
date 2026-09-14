@@ -7,115 +7,115 @@ import java.nio.ShortBuffer;
 
 public final class GL30 {
     public static String glGetStringi(int name, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetStringi");
     }
 
     public static void glClearBuffer(int buffer, int drawbuffer, FloatBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glClearBuffer");
     }
 
     public static void glClearBuffer(int buffer, int drawbuffer, IntBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glClearBuffer");
     }
 
     public static void glClearBufferu(int buffer, int drawbuffer, IntBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glClearBufferu");
     }
 
     public static void glClearBufferfi(int buffer, int drawbuffer, float depth, int stencil) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glClearBufferfi");
     }
 
     public static void glVertexAttribI1i(int index, int x) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI1i");
     }
 
     public static void glVertexAttribI2i(int index, int x, int y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI2i");
     }
 
     public static void glVertexAttribI3i(int index, int x, int y, int z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI3i");
     }
 
     public static void glVertexAttribI4i(int index, int x, int y, int z, int w) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4i");
     }
 
     public static void glVertexAttribI1ui(int index, int x) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI1ui");
     }
 
     public static void glVertexAttribI2ui(int index, int x, int y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI2ui");
     }
 
     public static void glVertexAttribI3ui(int index, int x, int y, int z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI3ui");
     }
 
     public static void glVertexAttribI4ui(int index, int x, int y, int z, int w) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4ui");
     }
 
     public static void glVertexAttribI1(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI1");
     }
 
     public static void glVertexAttribI2(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI2");
     }
 
     public static void glVertexAttribI3(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI3");
     }
 
     public static void glVertexAttribI4(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4");
     }
 
     public static void glVertexAttribI1u(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI1u");
     }
 
     public static void glVertexAttribI2u(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI2u");
     }
 
     public static void glVertexAttribI3u(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI3u");
     }
 
     public static void glVertexAttribI4u(int index, IntBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4u");
     }
 
     public static void glVertexAttribI4(int index, ByteBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4");
     }
 
     public static void glVertexAttribI4(int index, ShortBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4");
     }
 
     public static void glVertexAttribI4u(int index, ByteBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4u");
     }
 
     public static void glVertexAttribI4u(int index, ShortBuffer v) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribI4u");
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, ByteBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribIPointer");
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, IntBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribIPointer");
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, ShortBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glVertexAttribIPointer");
     }
 
     public static void glVertexAttribIPointer(int index, int size, int type, int stride, long buffer_buffer_offset) {
@@ -123,11 +123,11 @@ public final class GL30 {
     }
 
     public static void glGetVertexAttribI(int index, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetVertexAttribI");
     }
 
     public static void glGetVertexAttribIu(int index, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetVertexAttribIu");
     }
 
     public static void glUniform1ui(int location, int v0) {
@@ -143,51 +143,51 @@ public final class GL30 {
     }
 
     public static void glUniform4ui(int location, int v0, int v1, int v2, int v3) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glUniform4ui");
     }
 
     public static void glUniform1u(int location, IntBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glUniform1u");
     }
 
     public static void glUniform2u(int location, IntBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glUniform2u");
     }
 
     public static void glUniform3u(int location, IntBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glUniform3u");
     }
 
     public static void glUniform4u(int location, IntBuffer value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glUniform4u");
     }
 
     public static void glGetUniformu(int program, int location, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetUniformu");
     }
 
     public static void glBindFragDataLocation(int program, int colorNumber, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glBindFragDataLocation");
     }
 
     public static void glBindFragDataLocation(int program, int colorNumber, CharSequence name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glBindFragDataLocation");
     }
 
     public static int glGetFragDataLocation(int program, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetFragDataLocation");
     }
 
     public static int glGetFragDataLocation(int program, CharSequence name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetFragDataLocation");
     }
 
     public static void glBeginConditionalRender(int id, int mode) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glBeginConditionalRender");
     }
 
     public static void glEndConditionalRender() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glEndConditionalRender");
     }
 
     public static ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
@@ -195,15 +195,15 @@ public final class GL30 {
     }
 
     public static void glFlushMappedBufferRange(int target, long offset, long length) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glFlushMappedBufferRange");
     }
 
     public static void glClampColor(int target, int clamp) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glClampColor");
     }
 
     public static boolean glIsRenderbuffer(int renderbuffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30glIsRenderbuffer.");
     }
 
     public static void glBindRenderbuffer(int target, int renderbuffer) {
@@ -211,7 +211,7 @@ public final class GL30 {
     }
 
     public static void glDeleteRenderbuffers(IntBuffer renderbuffers) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glDeleteRenderbuffers");
     }
 
     public static void glDeleteRenderbuffers(int renderbuffer) {
@@ -231,7 +231,7 @@ public final class GL30 {
     }
 
     public static void glGetRenderbufferParameter(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetRenderbufferParameter");
     }
 
     /**
@@ -243,11 +243,11 @@ public final class GL30 {
     }
 
     public static int glGetRenderbufferParameteri(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetRenderbufferParameteri");
     }
 
     public static boolean glIsFramebuffer(int framebuffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glIsFramebuffer");
     }
 
     public static void glBindFramebuffer(int target, int framebuffer) {
@@ -255,7 +255,7 @@ public final class GL30 {
     }
 
     public static void glDeleteFramebuffers(IntBuffer framebuffers) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glDeleteFramebuffers");
     }
 
     public static void glDeleteFramebuffers(int framebuffer) {
@@ -263,7 +263,7 @@ public final class GL30 {
     }
 
     public static void glGenFramebuffers(IntBuffer framebuffers) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGenFramebuffers");
     }
 
     public static int glGenFramebuffers() {
@@ -275,7 +275,7 @@ public final class GL30 {
     }
 
     public static void glFramebufferTexture1D(int target, int attachment, int textarget, int texture, int level) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glFramebufferTexture1D");
     }
 
     public static void glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
@@ -283,7 +283,7 @@ public final class GL30 {
     }
 
     public static void glFramebufferTexture3D(int target, int attachment, int textarget, int texture, int level, int zoffset) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glFramebufferTexture3D");
     }
 
     public static void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
@@ -291,7 +291,7 @@ public final class GL30 {
     }
 
     public static void glGetFramebufferAttachmentParameter(int target, int attachment, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetFramebufferAttachmentParameter");
     }
 
     /**
@@ -303,7 +303,7 @@ public final class GL30 {
     }
 
     public static int glGetFramebufferAttachmentParameteri(int target, int attachment, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetFramebufferAttachmentParameteri");
     }
 
     public static void glGenerateMipmap(int target) {
@@ -311,7 +311,7 @@ public final class GL30 {
     }
 
     public static void glRenderbufferStorageMultisample(int target, int samples, int internalformat, int width, int height) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glRenderbufferStorageMultisample");
     }
 
     public static void glBlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
@@ -319,55 +319,55 @@ public final class GL30 {
     }
 
     public static void glTexParameterI(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTexParameterI");
     }
 
     public static void glTexParameterIi(int target, int pname, int param) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTexParameterIi");
     }
 
     public static void glTexParameterIu(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTexParameterIu");
     }
 
     public static void glTexParameterIui(int target, int pname, int param) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTexParameterIui");
     }
 
     public static void glGetTexParameterI(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetTexParameterI");
     }
 
     public static int glGetTexParameterIi(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetTexParameterIi");
     }
 
     public static void glGetTexParameterIu(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetTexParameterIu");
     }
 
     public static int glGetTexParameterIui(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetTexParameterIui");
     }
 
     public static void glFramebufferTextureLayer(int target, int attachment, int texture, int level, int layer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glFramebufferTextureLayer");
     }
 
     public static void glColorMaski(int buf, boolean r, boolean g, boolean b, boolean a) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glColorMaski");
     }
 
     public static void glGetBoolean(int value, int index, ByteBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetBoolean");
     }
 
     public static boolean glGetBoolean(int value, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetBoolean");
     }
 
     public static void glGetInteger(int value, int index, IntBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetInteger");
     }
 
     public static int glGetInteger(int value, int index) {
@@ -375,19 +375,19 @@ public final class GL30 {
     }
 
     public static void glEnablei(int target, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glEnablei");
     }
 
     public static void glDisablei(int target, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glDisablei");
     }
 
     public static boolean glIsEnabledi(int target, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glIsEnabledi");
     }
 
     public static void glBindBufferRange(int target, int index, int buffer, long offset, long size) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glBindBufferRange");
     }
 
     public static void glBindBufferBase(int target, int index, int buffer) {
@@ -395,27 +395,27 @@ public final class GL30 {
     }
 
     public static void glBeginTransformFeedback(int primitiveMode) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glBeginTransformFeedback");
     }
 
     public static void glEndTransformFeedback() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glEndTransformFeedback");
     }
 
     public static void glTransformFeedbackVaryings(int program, int count, ByteBuffer varyings, int bufferMode) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTransformFeedbackVaryings");
     }
 
     public static void glTransformFeedbackVaryings(int program, CharSequence[] varyings, int bufferMode) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTransformFeedbackVaryings");
     }
 
     public static void glGetTransformFeedbackVarying(int program, int index, IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glTransformFeedbackVaryings");
     }
 
     public static String glGetTransformFeedbackVarying(int program, int index, int bufSize, IntBuffer size, IntBuffer type) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGetTransformFeedbackVarying");
     }
 
     public static void glBindVertexArray(int array) {
@@ -423,7 +423,7 @@ public final class GL30 {
     }
 
     public static void glDeleteVertexArrays(IntBuffer arrays) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glDeleteVertexArrays");
     }
 
     public static void glDeleteVertexArrays(int array) {
@@ -431,7 +431,7 @@ public final class GL30 {
     }
 
     public static void glGenVertexArrays(IntBuffer arrays) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glGenVertexArrays");
     }
 
     public static int glGenVertexArrays() {
@@ -439,6 +439,6 @@ public final class GL30 {
     }
 
     public static boolean glIsVertexArray(int array) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glIsVertexArray");
     }
 }

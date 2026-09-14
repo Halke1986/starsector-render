@@ -6,7 +6,7 @@ import java.nio.*;
 
 public final class GL32 {
     public static void glGetBufferParameter(int target, int pname, LongBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetBufferParameter");
     }
 
     /**
@@ -18,79 +18,79 @@ public final class GL32 {
     }
 
     public static long glGetBufferParameteri64(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetBufferParameteri64");
     }
 
     public static void glDrawElementsBaseVertex(int mode, ByteBuffer indices, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsBaseVertex");
     }
 
     public static void glDrawElementsBaseVertex(int mode, IntBuffer indices, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsBaseVertex");
     }
 
     public static void glDrawElementsBaseVertex(int mode, ShortBuffer indices, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsBaseVertex");
     }
 
     public static void glDrawElementsBaseVertex(int mode, int indices_count, int type, long indices_buffer_offset, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsBaseVertex");
     }
 
     public static void glDrawRangeElementsBaseVertex(int mode, int start, int end, ByteBuffer indices, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawRangeElementsBaseVertex");
     }
 
     public static void glDrawRangeElementsBaseVertex(int mode, int start, int end, IntBuffer indices, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawRangeElementsBaseVertex");
     }
 
     public static void glDrawRangeElementsBaseVertex(int mode, int start, int end, ShortBuffer indices, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawRangeElementsBaseVertex");
     }
 
     public static void glDrawRangeElementsBaseVertex(int mode, int start, int end, int indices_count, int type, long indices_buffer_offset, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawRangeElementsBaseVertex");
     }
 
     public static void glDrawElementsInstancedBaseVertex(int mode, ByteBuffer indices, int primcount, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawRangeElementsBaseVertex");
     }
 
     public static void glDrawElementsInstancedBaseVertex(int mode, IntBuffer indices, int primcount, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsInstancedBaseVertex");
     }
 
     public static void glDrawElementsInstancedBaseVertex(int mode, ShortBuffer indices, int primcount, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsInstancedBaseVertex");
     }
 
     public static void glDrawElementsInstancedBaseVertex(int mode, int indices_count, int type, long indices_buffer_offset, int primcount, int basevertex) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glDrawElementsInstancedBaseVertex");
     }
 
     public static void glProvokingVertex(int mode) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glProvokingVertex");
     }
 
     public static void glTexImage2DMultisample(int target, int samples, int internalformat, int width, int height, boolean fixedsamplelocations) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glTexImage2DMultisample");
     }
 
     public static void glTexImage3DMultisample(int target, int samples, int internalformat, int width, int height, int depth, boolean fixedsamplelocations) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glTexImage3DMultisample");
     }
 
     public static void glGetMultisample(int pname, int index, FloatBuffer val) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetMultisample");
     }
 
     public static void glSampleMaski(int index, int mask) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glSampleMaski");
     }
 
     public static void glFramebufferTexture(int target, int attachment, int texture, int level) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glFramebufferTexture");
     }
 
     public static GLSync glFenceSync(int condition, int flags) {
@@ -98,7 +98,7 @@ public final class GL32 {
     }
 
     public static boolean glIsSync(GLSync sync) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glIsSync");
     }
 
     public static void glDeleteSync(GLSync sync) {
@@ -106,7 +106,7 @@ public final class GL32 {
     }
 
     public static int glClientWaitSync(GLSync sync, int flags, long timeout) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glClientWaitSync");
     }
 
     public static void glWaitSync(GLSync sync, int flags, long timeout) {
@@ -114,7 +114,7 @@ public final class GL32 {
     }
 
     public static void glGetInteger64(int pname, LongBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetInteger64");
     }
 
     public static long glGetInteger64(int pname) {
@@ -122,7 +122,7 @@ public final class GL32 {
     }
 
     public static void glGetInteger64(int value, int index, LongBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetInteger64");
     }
 
     public static long glGetInteger64(int value, int index) {
@@ -130,7 +130,7 @@ public final class GL32 {
     }
 
     public static void glGetSync(com.genir.renderer.bridge.commands.GLSync sync, int pname, IntBuffer length, IntBuffer values) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetSync");
     }
 
     /**
@@ -142,6 +142,6 @@ public final class GL32 {
     }
 
     public static int glGetSynci(GLSync sync, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL32.glGetSynci");
     }
 }

@@ -10,7 +10,7 @@ public final class GL31 {
     }
 
     public static void glDrawElementsInstanced(int mode, ByteBuffer indices, int primcount) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glDrawElementsInstanced");
     }
 
     public static void glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) {
@@ -18,7 +18,7 @@ public final class GL31 {
     }
 
     public static void glDrawElementsInstanced(int mode, ShortBuffer indices, int primcount) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glDrawElementsInstanced");
     }
 
     public static void glDrawElementsInstanced(int mode, int indices_count, int type, long indices_buffer_offset, int primcount) {
@@ -30,7 +30,7 @@ public final class GL31 {
     }
 
     public static void glPrimitiveRestartIndex(int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glPrimitiveRestartIndex");
     }
 
     public static void glTexBuffer(int target, int internalformat, int buffer) {
@@ -38,15 +38,15 @@ public final class GL31 {
     }
 
     public static void glGetUniformIndices(int program, ByteBuffer uniformNames, IntBuffer uniformIndices) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformIndices");
     }
 
     public static void glGetUniformIndices(int program, CharSequence[] uniformNames, IntBuffer uniformIndices) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformIndices");
     }
 
     public static void glGetActiveUniforms(int program, IntBuffer uniformIndices, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniforms");
     }
 
     /**
@@ -58,19 +58,19 @@ public final class GL31 {
     }
 
     public static int glGetActiveUniformsi(int program, int uniformIndex, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformsi");
     }
 
     public static void glGetActiveUniformName(int program, int uniformIndex, IntBuffer length, ByteBuffer uniformName) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformName");
     }
 
     public static String glGetActiveUniformName(int program, int uniformIndex, int bufSize) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformName");
     }
 
     public static int glGetUniformBlockIndex(int program, ByteBuffer uniformBlockName) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformBlockIndex");
     }
 
     public static int glGetUniformBlockIndex(int program, CharSequence uniformBlockName) {
@@ -78,7 +78,7 @@ public final class GL31 {
     }
 
     public static void glGetActiveUniformBlock(int program, int uniformBlockIndex, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlock");
     }
 
     /**
@@ -94,11 +94,11 @@ public final class GL31 {
     }
 
     public static void glGetActiveUniformBlockName(int program, int uniformBlockIndex, IntBuffer length, ByteBuffer uniformBlockName) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlockName");
     }
 
     public static String glGetActiveUniformBlockName(int program, int uniformBlockIndex, int bufSize) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlockName");
     }
 
     public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {
