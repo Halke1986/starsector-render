@@ -29,6 +29,15 @@ public class BufferManager {
     }
 
     public ByteBuffer glMapBufferRange(int target, long offset, long length, int access, ByteBuffer old_buffer) {
+        int handledAccess = org.lwjgl.opengl.GL30.GL_MAP_WRITE_BIT
+                | org.lwjgl.opengl.GL30.GL_MAP_UNSYNCHRONIZED_BIT
+                | org.lwjgl.opengl.GL30.GL_MAP_INVALIDATE_RANGE_BIT;
+
+        if ((access & ~handledAccess) != 0) {
+            // Unsupported access type.
+            return null;
+        }
+
         Binding binding = bufferBinding.get(target);
         if (binding == null) {
             // No buffer bound to target.
