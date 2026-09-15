@@ -6,8 +6,6 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.genir.renderer.bridge.commands.GL15.glBufferSubData;
-
 /**
  * BufferManager avoids the stalls of GL30.glMapBufferRange by
  * emulating its behavior with GL15.glBufferSubData.
@@ -68,7 +66,7 @@ public class BufferManager {
         }
 
         // Write the mapped range to the buffer.
-        glBufferSubData(target, binding.offset, binding.range);
+        com.genir.renderer.bridge.commands.GL15.glBufferSubData(target, binding.offset, binding.range);
         binding.range = null;
         binding.offset = 0;
 
