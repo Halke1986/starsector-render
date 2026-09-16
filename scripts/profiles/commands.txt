@@ -1,0 +1,4 @@
+jfr print profile-1761210262.jfr > prof.txt
+cat prof.txt | grep frame > frame.txt
+
+java -jar ~/starfarer/fgraph/fgraph.jar -ot folded -f filtered.jfr | ~/starfarer/FlameGraph/flamegraph.pl > flame1.svg
