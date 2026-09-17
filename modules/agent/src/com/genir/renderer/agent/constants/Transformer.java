@@ -1,19 +1,21 @@
-package com.genir.renderer.agent;
+package com.genir.renderer.agent.constants;
+
+import com.genir.renderer.agent.ClassName;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 
-public class ClassTransformer implements ClassFileTransformer {
-    private final ConstantTransformer obfTransformer = new ConstantTransformer(Transformations.obfuscation);
-    private final ConstantTransformer scriptTransformer = new ConstantTransformer(Transformations.opengl);
-    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Transformations.xstream);
-    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Transformations.lwjgl);
+public class Transformer implements ClassFileTransformer {
+    private final ConstantTransformer obfTransformer = new ConstantTransformer(Rules.obfuscation);
+    private final ConstantTransformer scriptTransformer = new ConstantTransformer(Rules.opengl);
+    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Rules.xstream);
+    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Rules.lwjgl);
     private final ConstantTransformer starfarerTransformer = new ConstantTransformer(
-            Transformations.opengl,  // Replace OpenGL calls.
-            Transformations.scriptLoader,  // Replace class loader for loading scripts.
-            Transformations.obfuscation, // Obfuscate assembled overrides.
-            IllegalTransformations.transformations  // Sanitize illegal obf symbols.
+            Rules.opengl,  // Replace OpenGL calls.
+            Rules.scriptLoader,  // Replace class loader for loading scripts.
+            Rules.obfuscation, // Obfuscate assembled overrides.
+            IllegalRules.transformations  // Sanitize illegal obf symbols.
     );
 
     @Override

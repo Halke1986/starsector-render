@@ -19,7 +19,8 @@ public final class Agent {
         String checksum = getSha256(Path.of("starfarer_obf.jar"));
         logger.info("starfarer_obf.jar SHA-256 checksum: " + checksum);
 
-        instrumentation.addTransformer(new ClassTransformer(), false);
+        instrumentation.addTransformer(new com.genir.renderer.agent.bytecode.Transformer(), false);
+        instrumentation.addTransformer(new com.genir.renderer.agent.constants.Transformer(), false);
     }
 
     public static String getSha256(Path path) {

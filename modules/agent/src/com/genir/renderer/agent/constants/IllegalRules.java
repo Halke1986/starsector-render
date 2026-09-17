@@ -1,9 +1,9 @@
-package com.genir.renderer.agent;
+package com.genir.renderer.agent.constants;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class IllegalTransformations {
+public class IllegalRules {
     public final static Map<String, String> transformations = makeTransformations();
 
     static Map<String, String> makeTransformations() {

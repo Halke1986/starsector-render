@@ -1,7 +1,7 @@
 package com.fs.starfarer.combat;
 
-import com.fs.graphics.LayeredRenderer;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import proxy.com.fs.graphics.LayeredRenderer;
 import proxy.com.fs.graphics.particle.DynamicParticleGroup;
 import proxy.com.fs.starfarer.combat.CombatViewport;
 import proxy.com.fs.starfarer.renderers.FloatingTextManager;

@@ -1,4 +1,4 @@
-package com.genir.renderer.agent;
+package com.genir.renderer.agent.constants;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;

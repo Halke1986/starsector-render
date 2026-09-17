@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="overrides:jar">
+    <output-path>$PROJECT_DIR$/jars/compile</output-path>
+    <root id="archive" name="fr.overrides.jar">
+      <element id="module-output" name="overrides" />
+    </root>
+  </artifact>
+</component>

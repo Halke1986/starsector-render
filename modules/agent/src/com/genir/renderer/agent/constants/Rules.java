@@ -1,10 +1,10 @@
-package com.genir.renderer.agent;
+package com.genir.renderer.agent.constants;
 
 import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class Transformations {
+public class Rules {
     public static Map<String, String> scriptLoader = Map.<String, String>ofEntries(
             // Use memory-optimized Path implementation.
             entry("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
@@ -65,6 +65,7 @@ public class Transformations {
             entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
             entry("proxy/com/fs/graphics/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
             entry("proxy/com/fs/starfarer/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
+            entry("proxy/com/fs/graphics/LayeredRenderer", "com/fs/graphics/LayeredRenderer"),
 
             // Obfuscated classes
             entry("proxy/com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),
