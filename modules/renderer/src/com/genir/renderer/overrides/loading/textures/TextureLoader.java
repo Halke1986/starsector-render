@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides.loading.textures;
 
 import com.genir.renderer.overrides.GameState;
+import com.genir.renderer.overrides.StaticState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
 import com.genir.renderer.overrides.loading.ResourceLoader;
@@ -16,73 +17,89 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import static com.genir.renderer.overrides.loading.ResourceLoader.mainThreadWaitGroup;
-
+/**
+ * Overrides com.fs.graphics.TextureLoader
+ */
 public class TextureLoader {
-    private static final Set<String> knownImages = ConcurrentHashMap.newKeySet();
-    private static final Logger logger = Logger.getLogger(TextureLoader.class);
+    /**
+     * STUB
+     */
+    public TextureHandler loadTexture_vanilla(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
+        return null;
+    }
 
-    public static void queueImage(String type, String path) {
+    /**
+     * ADDED METHOD
+     */
+    public void queueImage(String type, String path) {
         queueImage(type, path, false);
     }
 
-    public static void queueImageOptional(String type, String path) {
+    /**
+     * ADDED METHOD
+     */
+    public void queueImageOptional(String type, String path) {
         queueImage(type, path, true);
     }
 
-    private static void queueImage(String type, String path, boolean optional) {
+    /**
+     * ADDED METHOD
+     */
+    private void queueImage(String type, String path, boolean optional) {
         // Starsector will call `queueImage` when performing devMode asset reload.
         // The call is spurious and should be ignored.
         if (GameState.gameInitialized) {
             return;
         }
 
-        if (path == null || path.isEmpty() || !knownImages.add(path)) {
+        if (path == null || path.isEmpty() || !StaticState.textureLoaderKnownImages.add(path)) {
             return;
         }
 
-        mainThreadWaitGroup.incrementAndGet();
+        ResourceLoader.mainThreadWaitGroup.incrementAndGet();
         ResourceLoader.workers.execute(() -> {
             try {
                 loadTextureAsync(type, path);
             } catch (Throwable t) {
                 if (optional) {
-                    knownImages.remove(path);
+                    StaticState.textureLoaderKnownImages.remove(path);
                 } else {
                     throw t;
                 }
             } finally {
-                mainThreadWaitGroup.decrementAndGet();
+                ResourceLoader.mainThreadWaitGroup.decrementAndGet();
             }
         });
     }
 
     /**
+     * ADDED METHOD
+     * <p>
      * Texture loading during multi-threaded resource loading phase.
      */
-    private static void loadTextureAsync(String type, String path) {
+    private void loadTextureAsync(String type, String path) {
         TextureData texData = loadTextureData(type, path);
 
-        mainThreadWaitGroup.incrementAndGet();
+        ResourceLoader.mainThreadWaitGroup.incrementAndGet();
         ResourceLoader.mainThreadQueue.add(() -> {
             try {
                 commitAndCacheTexture(path, path, texData);
             } finally {
-                mainThreadWaitGroup.decrementAndGet();
+                ResourceLoader.mainThreadWaitGroup.decrementAndGet();
             }
         });
     }
 
     /**
+     * REPLACED METHOD
+     * <p>
      * Texture loading during single-threaded gameplay phase.
      */
-    public static TextureHandler loadTexture(Object delegate, TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
+    public TextureHandler TextureLoader_loadTexture(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
         // Delegate uncommon cases to vanilla.
         if (target != null || var3 != GL11.GL_TEXTURE_2D || var4 != GL11.GL_RGBA || var5 != GL11.GL_LINEAR || var6 != GL11.GL_LINEAR || generateSubImage) {
-            return ((proxy.com.fs.graphics.TextureLoader) delegate).loadTexture_vanilla(target, path, var3, var4, var5, var6, generateSubImage);
+            return loadTexture_vanilla(target, path, var3, var4, var5, var6, generateSubImage);
         }
 
         TextureData texData = loadTextureData("", path);
@@ -90,7 +107,10 @@ public class TextureLoader {
         return newVanillaTextureHandler(null, path, texData, textureID);
     }
 
-    private static TextureData loadTextureData(String type, String path) {
+    /**
+     * ADDED METHOD
+     */
+    private TextureData loadTextureData(String type, String path) {
         try {
             // Load image metadata.
             InputStream resource = FileLoader.loadInputStream(path, true);
@@ -109,7 +129,7 @@ public class TextureLoader {
             }
 
             // Fall back to vanilla image loading.
-            logger.info("Loading image [" + path + "]");
+            Logger.getLogger(TextureLoader.class).info("Loading image [" + path + "]");
 
             BufferedImage image;
             try (BufferedInputStream stream = new BufferedInputStream(resource)) {
@@ -126,7 +146,10 @@ public class TextureLoader {
         }
     }
 
-    private static int commitTexture(String path, TextureData texData) {
+    /**
+     * ADDED METHOD
+     */
+    private int commitTexture(String path, TextureData texData) {
         if (texData.isDDS()) {
             return DDSIntegration.commitTexture(texData);
         } else {
@@ -135,9 +158,11 @@ public class TextureLoader {
     }
 
     /**
+     * ADDED METHOD
+     * <p>
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
-    private static void commitAndCacheTexture(String name, String path, TextureData texData) {
+    private void commitAndCacheTexture(String name, String path, TextureData texData) {
         try {
             int textureID = commitTexture(path, texData);
 
@@ -148,7 +173,10 @@ public class TextureLoader {
         }
     }
 
-    private static TextureHandler newVanillaTextureHandler(String name, String path, TextureData texData, int textureID) {
+    /**
+     * ADDED METHOD
+     */
+    private TextureHandler newVanillaTextureHandler(String name, String path, TextureData texData, int textureID) {
         TextureHandler handler = new TextureHandler(GL11.GL_TEXTURE_2D, textureID, path);
 
         handler.TextureHandler_setStringID(name);

@@ -15,6 +15,7 @@ import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import proxy.com.fs.graphics.Sprite;
+import proxy.com.fs.graphics.TextureRepository;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.graphics.particle.SmoothParticle;
 import proxy.com.fs.graphics.util.Fps;
@@ -201,7 +202,8 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             case "TEXTURE":
             case "TEXTURE_OPTIONAL":
             case "TEXTURE_ALPHA_ADDER":
-                TextureLoader.queueImage(type, path);
+                TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
+                textureLoader.queueImage(type, path);
                 break;
             case "SOUND":
                 if (Global.getSettings().isSoundEnabled()) {
@@ -219,50 +221,57 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     }
 
     public static void queueWeaponSprite(WeaponSpecAPI weaponSpec) {
-        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointSpriteName());
-        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretSpriteName());
-        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointUnderSpriteName());
-        TextureLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretUnderSpriteName());
+        TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
+
+        textureLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointSpriteName());
+        textureLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretSpriteName());
+        textureLoader.queueImageOptional("TEXTURE", weaponSpec.getHardpointUnderSpriteName());
+        textureLoader.queueImageOptional("TEXTURE", weaponSpec.getTurretUnderSpriteName());
 
         if (weaponSpec instanceof BeamWeaponSpecAPI beamWeaponSpec) {
-            TextureLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getHardpointGlowSpriteName());
-            TextureLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getTurretGlowSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getHardpointGlowSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", beamWeaponSpec.getTurretGlowSpriteName());
 
             queueWeaponAnimation(weaponSpec);
         } else if (weaponSpec instanceof ProjectileWeaponSpecAPI projectileWeaponSpec) {
-            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGlowSpriteName());
-            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGlowSpriteName());
-            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGunSpriteName());
-            TextureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGunSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGlowSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGlowSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getHardpointGunSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", projectileWeaponSpec.getTurretGunSpriteName());
 
             queueWeaponAnimation(weaponSpec);
         }
     }
 
     private static void queueWeaponAnimation(WeaponSpecAPI weaponSpec) {
+        TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
+
         String turretTex = weaponSpec.getTurretSpriteName().replaceAll("00\\.png", "");
         String hardpointText = weaponSpec.getHardpointSpriteName().replaceAll("00\\.png", "");
 
         for (int i = 1; i < ((BaseWeaponSpec) weaponSpec).getNumFrames(); ++i) {
-            TextureLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", turretTex, i));
-            TextureLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", hardpointText, i));
+            textureLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", turretTex, i));
+            textureLoader.queueImageOptional("TEXTURE", String.format("%s%02d.png", hardpointText, i));
         }
     }
 
     public static void queueProjectileSprite(Object abstractProjectileSpec) {
+        TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
+
         if (abstractProjectileSpec instanceof MissileSpecAPI missileSpec) {
-            TextureLoader.queueImageOptional("TEXTURE", missileSpec.getHullSpec().getSpriteName());
-            TextureLoader.queueImageOptional("TEXTURE", missileSpec.getGlowSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", missileSpec.getHullSpec().getSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", missileSpec.getGlowSpriteName());
         } else if (abstractProjectileSpec instanceof ProjectileSpecAPI projectileSpec) {
-            TextureLoader.queueImageOptional("TEXTURE", projectileSpec.getBulletSpriteName());
-            TextureLoader.queueImageOptional("TEXTURE", projectileSpec.getFringeTex());
-            TextureLoader.queueImageOptional("TEXTURE", projectileSpec.getCoreTex());
+            textureLoader.queueImageOptional("TEXTURE", projectileSpec.getBulletSpriteName());
+            textureLoader.queueImageOptional("TEXTURE", projectileSpec.getFringeTex());
+            textureLoader.queueImageOptional("TEXTURE", projectileSpec.getCoreTex());
         }
     }
 
     public static void queueShipSprite(ShipHullSpec hullSpec) {
+        TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
         String texture = ((ShipHullSpecAPI) hullSpec).getSpriteName();
-        TextureLoader.queueImageOptional("TEXTURE", texture);
+        textureLoader.queueImageOptional("TEXTURE", texture);
     }
 
     public static void animateBar(Sprite bar) {

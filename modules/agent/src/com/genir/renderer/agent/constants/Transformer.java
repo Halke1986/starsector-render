@@ -7,7 +7,7 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 
 public class Transformer implements ClassFileTransformer {
-    private final ConstantTransformer obfTransformer = new ConstantTransformer(Rules.obfuscation);
+    private final ConstantTransformer frTransformer = new ConstantTransformer(Rules.obfuscation, Rules.overrides);
     private final ConstantTransformer scriptTransformer = new ConstantTransformer(Rules.opengl);
     private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Rules.xstream);
     private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Rules.lwjgl);
@@ -61,7 +61,7 @@ public class Transformer implements ClassFileTransformer {
         } else if (name.startsWith("com.genir.renderer.agent.")) {
             return null;
         } else if (name.startsWith("com.genir.renderer.")) {
-            return obfTransformer;
+            return frTransformer;
         } else if (loader == ClassLoader.getSystemClassLoader() || loader == this.getClass().getClassLoader()) {
             // Other core game classes.
             return null;

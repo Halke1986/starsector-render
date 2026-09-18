@@ -14,16 +14,25 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+/**
+ * Overrides com.fs.graphics.LayeredRenderer
+ */
 public class LayeredRenderer<T extends Enum<T>, V> {
-    // STUB
+    /**
+     * STUB
+     */
     private Class<T> layerEnumClass;
 
-    // STUB
+    /**
+     * STUB
+     */
     private List<LayeredRenderable<T, V>> getList(T var1) {
         return null;
     }
 
-    // REPLACED METHOD
+    /**
+     * REPLACED METHOD
+     */
     public void renderExcluding(V viewport, T... exclude) {
         EnumSet<T> allLayers = EnumSet.allOf(this.layerEnumClass);
         List<T> excludedLayers = Arrays.asList(exclude);
@@ -37,7 +46,9 @@ public class LayeredRenderer<T extends Enum<T>, V> {
         }
     }
 
-    // REPLACED METHOD
+    /**
+     * REPLACED METHOD
+     */
     public void renderOnly(V viewport, T layer) {
         // Cast parameters to actual used types.
         renderOnly(
@@ -46,7 +57,9 @@ public class LayeredRenderer<T extends Enum<T>, V> {
                 (List) getList(layer));
     }
 
-    // ADDED METHOD
+    /**
+     * ADDED METHOD
+     */
     private void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
         if (entities == null) {
             return;
@@ -67,7 +80,9 @@ public class LayeredRenderer<T extends Enum<T>, V> {
         }
     }
 
-    // ADDED METHOD
+    /**
+     * ADDED METHOD
+     */
     private boolean isSwarm(LayeredRenderable<CombatEngineLayers, CombatViewport> entity) {
         if (entity instanceof CustomCombatEntity) {
             CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();

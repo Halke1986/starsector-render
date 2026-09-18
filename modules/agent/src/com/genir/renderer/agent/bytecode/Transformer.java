@@ -34,8 +34,8 @@ public class Transformer implements ClassFileTransformer {
             switch (className) {
                 case "com/fs/graphics/LayeredRenderer":
                     return layeredRenderable(classfileBuffer);
-//                case "com/fs/graphics/TextureLoader":
-//                    return textureLoader(classfileBuffer);
+                case "com/fs/graphics/TextureLoader":
+                    return textureLoader(classfileBuffer);
             }
 
             return null;
@@ -53,29 +53,22 @@ public class Transformer implements ClassFileTransformer {
 
         transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
 
-//        transformer.addMethod(
-//                "renderOnly",
-//                "(Lproxy/com/fs/starfarer/combat/CombatViewport;Lcom/fs/starfarer/api/combat/CombatEngineLayers;Ljava/util/List;)V"
-//        );
-//        transformer.addMethod(
-//                "isSwarm",
-//                "(Lproxy/com/fs/graphics/LayeredRenderable;)Z"
-//        );
-
         return transformer.targetBytes;
     }
 
-//    private byte[] textureLoader(byte[] targetBytes) {
-//        var transformer = new BytecodeTransformer(targetBytes, "com/genir/renderer/overrides/TextureLoader");
-//
-//        transformer.renameMethod(
-//                "o00000",
-//                "loadTexture_vanilla",
-//                "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object"
-//        );
-//
-//        return transformer.targetBytes;
-//    }
+    private byte[] textureLoader(byte[] targetBytes) {
+        var transformer = new BytecodeTransformer(targetBytes);
+
+        transformer.renameMethod(
+                "o00000",
+                "loadTexture_vanilla",
+                "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;"
+        );
+
+        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/textures/TextureLoader"));
+
+        return transformer.targetBytes;
+    }
 
     private byte[] loadDonor(String className) {
         try {
