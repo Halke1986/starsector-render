@@ -43,6 +43,9 @@ public class Transformer implements ClassFileTransformer {
                 case "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect":
                     roilingSwarmEffect(transformer);
                     break;
+                case "com/fs/starfarer/campaign/rules/oOOO":
+                    expression(transformer);
+                    break;
 
                 default:
                     return null;
@@ -76,6 +79,12 @@ public class Transformer implements ClassFileTransformer {
         transformer.removeMethod("getNumActiveMembers", "()I");
 
         transformer.mergeClass(loadDonor("com/genir/renderer/overrides/RoilingSwarmEffect"));
+    }
+
+    private void expression(BytecodeTransformer transformer) {
+        transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
+
+        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Expression"));
     }
 
     private byte[] loadDonor(String className) {
