@@ -1,13 +1,11 @@
 rm -rf                           "$SS_PATH/starsector-core/fr.jar"
 rm -rf                           "$SS_PATH/starsector-core/fr.agent.jar"
-rm -rf                           "$SS_PATH/starsector-core/fr.overrides.jar"
 rm -rf                           "$SS_PATH/starsector-core/fr.bat"
 rm -rf                           "$SS_PATH/starsector-core/fr.noterminal.bat"
 rm -rf                           "$SS_PATH/starsector-core/fr.vmparams"
 
 cp ./jars/final/fr.jar           "$SS_PATH/starsector-core/fr.jar"
 cp ./jars/compile/fr.agent.jar   "$SS_PATH/starsector-core/fr.agent.jar"
-cp ./jars/compile/fr.overrides.jar "$SS_PATH/starsector-core/fr.overrides.jar"
 cp ./fr.bat                      "$SS_PATH/starsector-core/fr.bat"
 cp ./fr.noterminal.bat           "$SS_PATH/starsector-core/fr.noterminal.bat"
 cp ./fr.vmparams                 "$SS_PATH/starsector-core/fr.vmparams"
