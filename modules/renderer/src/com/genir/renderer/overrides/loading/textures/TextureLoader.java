@@ -53,7 +53,7 @@ public class TextureLoader {
             return;
         }
 
-        if (path == null || path.isEmpty() || !StaticState.textureLoaderKnownImages.add(path)) {
+        if (path == null || path.isEmpty() || !StaticState.tlKnownImages.add(path)) {
             return;
         }
 
@@ -63,7 +63,7 @@ public class TextureLoader {
                 loadTextureAsync(type, path);
             } catch (Throwable t) {
                 if (optional) {
-                    StaticState.textureLoaderKnownImages.remove(path);
+                    StaticState.tlKnownImages.remove(path);
                 } else {
                     throw t;
                 }

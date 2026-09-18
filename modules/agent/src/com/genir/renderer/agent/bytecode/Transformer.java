@@ -35,16 +35,26 @@ public class Transformer implements ClassFileTransformer {
 
             switch (className) {
                 case "com/fs/graphics/LayeredRenderer":
-                    layeredRenderable(transformer);
+                    transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
+                    transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
+                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
                     break;
                 case "com/fs/graphics/TextureLoader":
-                    textureLoader(transformer);
+                    transformer.renameMethod("o00000", "loadTexture_vanilla",
+                            "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
+                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/textures/TextureLoader"));
                     break;
                 case "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect":
-                    roilingSwarmEffect(transformer);
+                    transformer.removeMethod("getNumActiveMembers", "()I");
+                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/RoilingSwarmEffect"));
                     break;
                 case "com/fs/starfarer/campaign/rules/oOOO":
-                    expression(transformer);
+                    transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
+                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Expression"));
+                    break;
+                case "com/fs/starfarer/campaign/save/B":
+                    transformer.removeMethod("o00000", "(Ljava/lang/String;F)V");
+                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/ProgressBar"));
                     break;
 
                 default:
@@ -56,35 +66,6 @@ public class Transformer implements ClassFileTransformer {
             // TODO do something useful with the exception
             throw t;
         }
-    }
-
-    private void layeredRenderable(BytecodeTransformer transformer) {
-        transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
-        transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
-
-        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
-    }
-
-    private void textureLoader(BytecodeTransformer transformer) {
-        transformer.renameMethod(
-                "o00000",
-                "loadTexture_vanilla",
-                "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;"
-        );
-
-        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/textures/TextureLoader"));
-    }
-
-    private void roilingSwarmEffect(BytecodeTransformer transformer) {
-        transformer.removeMethod("getNumActiveMembers", "()I");
-
-        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/RoilingSwarmEffect"));
-    }
-
-    private void expression(BytecodeTransformer transformer) {
-        transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
-
-        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Expression"));
     }
 
     private byte[] loadDonor(String className) {

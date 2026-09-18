@@ -161,6 +161,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/LayeredRenderer", "com/fs/graphics/LayeredRenderer"),
             entry("com/genir/renderer/overrides/loading/textures/TextureLoader", "com/fs/graphics/TextureLoader"),
             entry("com/genir/renderer/overrides/RoilingSwarmEffect", "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect"),
-            entry("com/genir/renderer/overrides/Expression", "com/fs/starfarer/campaign/rules/oOOO")
+            entry("com/genir/renderer/overrides/Expression", "com/fs/starfarer/campaign/rules/oOOO"),
+            entry("com/genir/renderer/overrides/ProgressBar", "com/fs/starfarer/campaign/save/B")
     );
 }
