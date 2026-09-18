@@ -153,4 +153,8 @@ public class Rules {
             entry("SoundBuffer_freq", "Ò00000"),
             entry("SoundBuffer_channels", "o00000")
     );
+
+    public static Map<String, String> overrides = Map.<String, String>ofEntries(
+            entry("com/genir/renderer/overrides/LayeredRenderer", "com/fs/graphics/LayeredRenderer")
+    );
 }

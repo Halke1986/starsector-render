@@ -1,9 +1,18 @@
 package com.genir.renderer.agent.bytecode;
 
+import com.genir.renderer.agent.ClassName;
+import com.genir.renderer.agent.constants.ConstantTransformer;
+import com.genir.renderer.agent.constants.Rules;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class Transformer implements ClassFileTransformer {
+    private final ConstantTransformer overrideTransformer = new ConstantTransformer(
+            Rules.obfuscation, Rules.overrides);
+
     @Override
     public byte[] transform(
             ClassLoader loader,
@@ -22,12 +31,11 @@ public class Transformer implements ClassFileTransformer {
             return null;
         }
         try {
-
             switch (className) {
                 case "com/fs/graphics/LayeredRenderer":
                     return layeredRenderable(classfileBuffer);
-                case "com/fs/graphics/TextureLoader":
-                    return textureLoader(classfileBuffer);
+//                case "com/fs/graphics/TextureLoader":
+//                    return textureLoader(classfileBuffer);
             }
 
             return null;
@@ -38,41 +46,44 @@ public class Transformer implements ClassFileTransformer {
     }
 
     private byte[] layeredRenderable(byte[] targetBytes) {
-        var transformer = new BytecodeTransformer(targetBytes, "com/genir/renderer/overrides/LayeredRenderer");
+        var transformer = new BytecodeTransformer(targetBytes);
 
-        transformer.replaceMethod(
-                "renderOnly",
-                "renderOnly",
-                "(Ljava/lang/Object;Ljava/lang/Enum;)V",
-                "(Ljava/lang/Object;Ljava/lang/Enum;)V"
-        );
-        transformer.replaceMethod(
-                "renderExcluding",
-                "renderExcluding",
-                "(Ljava/lang/Object;[Ljava/lang/Enum;)V",
-                "(Ljava/lang/Object;[Ljava/lang/Enum;)V"
-        );
-        transformer.addMethod(
-                "renderOnly",
-                "(Lproxy/com/fs/starfarer/combat/CombatViewport;Lcom/fs/starfarer/api/combat/CombatEngineLayers;Ljava/util/List;)V"
-        );
-        transformer.addMethod(
-                "isSwarm",
-                "(Lproxy/com/fs/graphics/LayeredRenderable;)Z"
-        );
+        transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
+        transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
+
+        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
+
+//        transformer.addMethod(
+//                "renderOnly",
+//                "(Lproxy/com/fs/starfarer/combat/CombatViewport;Lcom/fs/starfarer/api/combat/CombatEngineLayers;Ljava/util/List;)V"
+//        );
+//        transformer.addMethod(
+//                "isSwarm",
+//                "(Lproxy/com/fs/graphics/LayeredRenderable;)Z"
+//        );
 
         return transformer.targetBytes;
     }
 
-    private byte[] textureLoader(byte[] targetBytes) {
-        var transformer = new BytecodeTransformer(targetBytes, "com/genir/renderer/overrides/TextureLoader");
+//    private byte[] textureLoader(byte[] targetBytes) {
+//        var transformer = new BytecodeTransformer(targetBytes, "com/genir/renderer/overrides/TextureLoader");
+//
+//        transformer.renameMethod(
+//                "o00000",
+//                "loadTexture_vanilla",
+//                "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object"
+//        );
+//
+//        return transformer.targetBytes;
+//    }
 
-        transformer.renameMethod(
-                "o00000",
-                "loadTexture_vanilla",
-                "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object"
-        );
-
-        return transformer.targetBytes;
+    private byte[] loadDonor(String className) {
+        try {
+            ClassLoader loader = this.getClass().getClassLoader();
+            InputStream stream = loader.getResourceAsStream(ClassName.internal(className));
+            return overrideTransformer.apply(stream.readAllBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
