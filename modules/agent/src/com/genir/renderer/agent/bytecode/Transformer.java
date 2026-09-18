@@ -31,34 +31,38 @@ public class Transformer implements ClassFileTransformer {
             return null;
         }
         try {
+            var transformer = new BytecodeTransformer(classfileBuffer);
+
             switch (className) {
                 case "com/fs/graphics/LayeredRenderer":
-                    return layeredRenderable(classfileBuffer);
+                    layeredRenderable(transformer);
+                    break;
                 case "com/fs/graphics/TextureLoader":
-                    return textureLoader(classfileBuffer);
+                    textureLoader(transformer);
+                    break;
+                case "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect":
+                    roilingSwarmEffect(transformer);
+                    break;
+
+                default:
+                    return null;
             }
 
-            return null;
+            return transformer.targetBytes;
         } catch (Throwable t) {
             // TODO do something useful with the exception
             throw t;
         }
     }
 
-    private byte[] layeredRenderable(byte[] targetBytes) {
-        var transformer = new BytecodeTransformer(targetBytes);
-
+    private void layeredRenderable(BytecodeTransformer transformer) {
         transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
         transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
 
         transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
-
-        return transformer.targetBytes;
     }
 
-    private byte[] textureLoader(byte[] targetBytes) {
-        var transformer = new BytecodeTransformer(targetBytes);
-
+    private void textureLoader(BytecodeTransformer transformer) {
         transformer.renameMethod(
                 "o00000",
                 "loadTexture_vanilla",
@@ -66,8 +70,12 @@ public class Transformer implements ClassFileTransformer {
         );
 
         transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/textures/TextureLoader"));
+    }
 
-        return transformer.targetBytes;
+    private void roilingSwarmEffect(BytecodeTransformer transformer) {
+        transformer.removeMethod("getNumActiveMembers", "()I");
+
+        transformer.mergeClass(loadDonor("com/genir/renderer/overrides/RoilingSwarmEffect"));
     }
 
     private byte[] loadDonor(String className) {
