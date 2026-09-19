@@ -82,8 +82,6 @@ public class Rules {
             entry("proxy/com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             entry("proxy/com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
             entry("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
-            entry("proxy/com/fs/starfarer/combat/collision/Bounds", "com/fs/starfarer/combat/E/o0OO"),
-            entry("proxy/com/fs/starfarer/combat/collision/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
             entry("proxy/sound/SoundStore", "sound/C"),
             entry("sound/SoundStore", "sound/C"), // Methods repo duplicate
             entry("proxy/sound/Track", "sound/O0OO"),
@@ -163,6 +161,8 @@ public class Rules {
             entry("com/genir/renderer/overrides/Expression", "com/fs/starfarer/campaign/rules/oOOO"),
             entry("com/genir/renderer/overrides/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             entry("com/genir/renderer/overrides/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
-            entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o")
+            entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
+            entry("com/genir/renderer/overrides/Bounds", "com/fs/starfarer/combat/E/o0OO"),
+            entry("com/genir/renderer/overrides/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o")
     );
 }

@@ -1,15 +1,26 @@
-package proxy.com.fs.starfarer.combat.collision;
+package com.genir.renderer.overrides;
 
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
 
-// $FF: renamed from: com.fs.starfarer.combat.E.o0OO
+/**
+ * OVERRIDES com.fs.starfarer.combat.collision.Bounds
+ */
 public class Bounds {
+    /**
+     * STUB
+     */
     public List<Segment> origSegments;
+
+    /**
+     * ADDED FIELD
+     */
     public Object cachedPolygons;
 
-    // $FF: renamed from: com.fs.starfarer.combat.E.o0OO.o
+    /**
+     * STUB
+     */
     public static class Segment {
         public Vector2f p1;
         public Vector2f p2;

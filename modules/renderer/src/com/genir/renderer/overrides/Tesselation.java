@@ -4,7 +4,6 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.GLUtessellator;
 import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 import org.lwjgl.util.vector.Vector2f;
-import proxy.com.fs.starfarer.combat.collision.Bounds;
 
 import java.util.ArrayList;
 import java.util.List;

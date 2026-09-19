@@ -84,6 +84,9 @@ public class Transformer implements ClassFileTransformer {
                         "(Lcom/fs/starfarer/combat/ai/admiral/G$o;FLjava/util/List;Ljava/util/List;Z)Lcom/fs/starfarer/campaign/fleet/FleetMember;");
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/DeploymentManager"));
                 break;
+            case "com/fs/starfarer/combat/E/o0OO":
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Bounds"));
+                break;
         }
     }
 }
