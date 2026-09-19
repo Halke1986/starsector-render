@@ -1,7 +1,6 @@
 package com.genir.renderer.overrides.loading.textures;
 
 import com.genir.renderer.overrides.GameState;
-import com.genir.renderer.overrides.StaticState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
 import com.genir.renderer.overrides.loading.ResourceLoader;
@@ -17,11 +16,18 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Overrides com.fs.graphics.TextureLoader
  */
 public class TextureLoader {
+    /**
+     * ADDED FIELDS
+     */
+    private Set<String> knownImages;
+
     /**
      * STUB
      */
@@ -53,7 +59,11 @@ public class TextureLoader {
             return;
         }
 
-        if (path == null || path.isEmpty() || !StaticState.tlKnownImages.add(path)) {
+        if (knownImages == null) {
+            knownImages = ConcurrentHashMap.newKeySet();
+        }
+
+        if (path == null || path.isEmpty() || !knownImages.add(path)) {
             return;
         }
 
@@ -63,7 +73,7 @@ public class TextureLoader {
                 loadTextureAsync(type, path);
             } catch (Throwable t) {
                 if (optional) {
-                    StaticState.tlKnownImages.remove(path);
+                    knownImages.remove(path);
                 } else {
                     throw t;
                 }
