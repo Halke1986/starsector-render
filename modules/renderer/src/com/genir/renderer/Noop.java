@@ -14,4 +14,8 @@ public class Noop {
     // invokestatic Method com/genir/renderer/Noop noop (Ljava/lang/String;)V
     public static void noop(String var0) {
     }
+
+    public static void breakpoint() {
+        int x = 0;
+    }
 }

@@ -68,6 +68,7 @@ public class Rules {
             entry("proxy/com/fs/graphics/LayeredRenderer", "com/fs/graphics/LayeredRenderer"),
 
             // Obfuscated classes
+            // TODO cleanup
             entry("proxy/com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),
             entry("proxy/com/fs/graphics/AlphaAdder", "com/fs/graphics/do"),
             entry("proxy/com/fs/graphics/font/FontRepository", "com/fs/graphics/A/D"),
@@ -81,8 +82,6 @@ public class Rules {
             entry("proxy/com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             entry("proxy/com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
             entry("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
-            entry("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
-            entry("proxy/com/fs/starfarer/combat/ai/admiral/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
             entry("proxy/com/fs/starfarer/combat/collision/Bounds", "com/fs/starfarer/combat/E/o0OO"),
             entry("proxy/com/fs/starfarer/combat/collision/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
             entry("proxy/sound/SoundStore", "sound/C"),
@@ -162,6 +161,8 @@ public class Rules {
             entry("com/genir/renderer/overrides/loading/textures/TextureLoader", "com/fs/graphics/TextureLoader"),
             entry("com/genir/renderer/overrides/RoilingSwarmEffect", "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect"),
             entry("com/genir/renderer/overrides/Expression", "com/fs/starfarer/campaign/rules/oOOO"),
-            entry("com/genir/renderer/overrides/ProgressBar", "com/fs/starfarer/campaign/save/B")
+            entry("com/genir/renderer/overrides/ProgressBar", "com/fs/starfarer/campaign/save/B"),
+            entry("com/genir/renderer/overrides/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
+            entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o")
     );
 }

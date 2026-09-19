@@ -32,36 +32,13 @@ public class Transformer implements ClassFileTransformer {
         }
         try {
             var transformer = new BytecodeTransformer(classfileBuffer);
+            applyTransform(className, transformer);
 
-            switch (className) {
-                case "com/fs/graphics/LayeredRenderer":
-                    transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
-                    transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
-                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
-                    break;
-                case "com/fs/graphics/TextureLoader":
-                    transformer.renameMethod("o00000", "loadTexture_vanilla",
-                            "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
-                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/textures/TextureLoader"));
-                    break;
-                case "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect":
-                    transformer.removeMethod("getNumActiveMembers", "()I");
-                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/RoilingSwarmEffect"));
-                    break;
-                case "com/fs/starfarer/campaign/rules/oOOO":
-                    transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
-                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Expression"));
-                    break;
-                case "com/fs/starfarer/campaign/save/B":
-                    transformer.removeMethod("o00000", "(Ljava/lang/String;F)V");
-                    transformer.mergeClass(loadDonor("com/genir/renderer/overrides/ProgressBar"));
-                    break;
-
-                default:
-                    return null;
+            if (transformer.transformApplied) {
+                return transformer.targetBytes;
+            } else {
+                return null;
             }
-
-            return transformer.targetBytes;
         } catch (Throwable t) {
             // TODO do something useful with the exception
             throw t;
@@ -75,6 +52,38 @@ public class Transformer implements ClassFileTransformer {
             return overrideTransformer.apply(stream.readAllBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void applyTransform(String className, BytecodeTransformer transformer) {
+        switch (className) {
+            case "com/fs/graphics/LayeredRenderer":
+                transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
+                transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/LayeredRenderer"));
+                break;
+            case "com/fs/graphics/TextureLoader":
+                transformer.renameMethod("o00000", "loadTexture_vanilla",
+                        "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/textures/TextureLoader"));
+                break;
+            case "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect":
+                transformer.removeMethod("getNumActiveMembers", "()I");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/RoilingSwarmEffect"));
+                break;
+            case "com/fs/starfarer/campaign/rules/oOOO":
+                transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Expression"));
+                break;
+            case "com/fs/starfarer/campaign/save/B":
+                transformer.removeMethod("o00000", "(Ljava/lang/String;F)V");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/ProgressBar"));
+                break;
+            case "com/fs/starfarer/combat/ai/admiral/G":
+                transformer.renameMethod("o00000", "pickReinforcement_vanilla",
+                        "(Lcom/fs/starfarer/combat/ai/admiral/G$o;FLjava/util/List;Ljava/util/List;Z)Lcom/fs/starfarer/campaign/fleet/FleetMember;");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/DeploymentManager"));
+                break;
         }
     }
 }

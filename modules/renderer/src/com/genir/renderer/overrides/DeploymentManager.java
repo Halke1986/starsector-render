@@ -5,16 +5,41 @@ import proxy.com.fs.starfarer.campaign.fleet.FleetMember;
 
 import java.util.List;
 
+import static com.genir.renderer.Noop.breakpoint;
+
+/**
+ * Fixed a vanilla bug where enemy ships were deployed progressively from smallest to largest.
+ * Enemy fleets now maintain a balanced composition throughout the entire battle.
+ * <p>
+ * TODO remove in next patch, where vanilla is supposed to fix the issue as well.
+ */
 public class DeploymentManager {
-    public static FleetMember pickReinforcement(
-            proxy.com.fs.starfarer.combat.ai.admiral.DeploymentManager instance,
-            proxy.com.fs.starfarer.combat.ai.admiral.DeploymentManager.ReinforcementType reinforcementType,
+    /**
+     * STUB
+     */
+    public FleetMember pickReinforcement_vanilla(
+            ReinforcementType reinforcementType,
             float deploymentPointLimit,
             List<FleetMember> reserves,
             List<FleetMember> reinforcements,
             boolean firstAttempt
     ) {
-        FleetMember vanillaPick = instance.DeploymentManager_pickReinforcement_vanilla(
+        return null;
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public FleetMember DeploymentManager_pickReinforcement(
+            ReinforcementType reinforcementType,
+            float deploymentPointLimit,
+            List<FleetMember> reserves,
+            List<FleetMember> reinforcements,
+            boolean firstAttempt
+    ) {
+        breakpoint();
+
+        FleetMember vanillaPick = pickReinforcement_vanilla(
                 reinforcementType, deploymentPointLimit, reserves, reinforcements, firstAttempt);
 
         if (vanillaPick == null) {
@@ -43,13 +68,22 @@ public class DeploymentManager {
         return pick;
     }
 
-    // 32-bit integer -> 32-bit integer hash (good avalanche; deterministic)
-    private static int intHash(int x) {
+    /**
+     * ADDED METHOD
+     */
+    private int intHash(int x) {
+        // 32-bit integer -> 32-bit integer hash (good avalanche; deterministic)
         x ^= x >>> 16;
         x *= 0x7feb352d;
         x ^= x >>> 15;
         x *= 0x846ca68b;
         x ^= x >>> 16;
         return x;
+    }
+
+    /**
+     * STUB
+     */
+    public enum ReinforcementType {
     }
 }
