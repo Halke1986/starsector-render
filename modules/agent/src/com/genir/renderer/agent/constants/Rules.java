@@ -143,6 +143,7 @@ public class Rules {
             entry("TextureRepository_getTextureLoader", "String"),
             entry("Expression_list", "ö00000"),
             entry("Expression_map", "float"),
+            entry("Tesselator_renderAsPolygon", "o00000"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -163,6 +164,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),
             entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
             entry("com/genir/renderer/overrides/Bounds", "com/fs/starfarer/combat/E/o0OO"),
-            entry("com/genir/renderer/overrides/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o")
+            entry("com/genir/renderer/overrides/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
+            entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator")
     );
 }

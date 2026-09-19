@@ -87,6 +87,10 @@ public class Transformer implements ClassFileTransformer {
             case "com/fs/starfarer/combat/E/o0OO":
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Bounds"));
                 break;
+            case "com/fs/starfarer/util/Tesselator":
+                transformer.removeMethod("o00000", "(Lcom/fs/starfarer/combat/E/o0OO;FFF)V");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Tesselator"));
+                break;
         }
     }
 }

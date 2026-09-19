@@ -2,23 +2,31 @@ package com.genir.renderer.overrides;
 
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.GLUtessellator;
-import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tesselation {
-    public static void renderAsPolygon(Bounds bounds, float r, float g, float b) {
+/**
+ * OVERRIDES com.fs.starfarer.util.Tesselator
+ */
+public class Tesselator {
+    /**
+     * REPLACED METHOD
+     */
+    public static void Tesselator_renderAsPolygon(Bounds bounds, float r, float g, float b) {
         if (bounds.cachedPolygons == null) {
             List<Vector2f> vertices = getBoundVertices(bounds);
             bounds.cachedPolygons = tesselateBounds(vertices);
         }
 
-        renderPolygons((List<Polygon>) bounds.cachedPolygons);
+        renderPolygons((List<TesselatorCallback.Polygon>) bounds.cachedPolygons);
     }
 
-    public static List<Vector2f> getBoundVertices(Bounds bounds) {
+    /**
+     * ADDED METHOD
+     */
+    private static List<Vector2f> getBoundVertices(Bounds bounds) {
         List<Bounds.Segment> segments = bounds.origSegments;
         List<Vector2f> vertices = new ArrayList<>(segments.size());
 
@@ -29,7 +37,10 @@ public class Tesselation {
         return vertices;
     }
 
-    private static List<Polygon> tesselateBounds(List<Vector2f> vertices) {
+    /**
+     * ADDED METHOD
+     */
+    private static List<TesselatorCallback.Polygon> tesselateBounds(List<Vector2f> vertices) {
         GLUtessellator tesselator = GLU.gluNewTess();
         TesselatorCallback callback = new TesselatorCallback();
 
@@ -51,8 +62,11 @@ public class Tesselation {
         return callback.polygons;
     }
 
-    private static void renderPolygons(List<Polygon> polygons) {
-        for (Polygon polygon : polygons) {
+    /**
+     * ADDED METHOD
+     */
+    private static void renderPolygons(List<TesselatorCallback.Polygon> polygons) {
+        for (TesselatorCallback.Polygon polygon : polygons) {
             com.genir.renderer.bridge.opengl.GL11.glBegin(polygon.type);
 
             for (Vector2f vertex : polygon.vertices) {
@@ -62,30 +76,5 @@ public class Tesselation {
 
             com.genir.renderer.bridge.opengl.GL11.glEnd();
         }
-    }
-
-    private static class TesselatorCallback extends GLUtessellatorCallbackAdapter {
-        List<Polygon> polygons = new ArrayList<>();
-        private Polygon polygon = null;
-
-        public void begin(int type) {
-            polygon = new Polygon(type, new ArrayList<>());
-        }
-
-        public void end() {
-            polygons.add(polygon);
-        }
-
-        public void combine(double[] coords, Object[] data, float[] weight, Object[] outData) {
-            outData[0] = new double[]{coords[0], coords[1], coords[2]};
-        }
-
-        public void vertex(Object vertex) {
-            double[] coords = (double[]) vertex;
-            polygon.vertices.add(new Vector2f((float) coords[0], (float) coords[1]));
-        }
-    }
-
-    private record Polygon(int type, List<Vector2f> vertices) {
     }
 }
