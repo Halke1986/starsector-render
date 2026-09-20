@@ -115,6 +115,10 @@ public class Transformer implements ClassFileTransformer {
                 transformer.removeMethod("Object", "(Ljava/lang/String;)V"); // ScriptLoader_queueScript
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/ScriptStore"));
                 break;
+            case "com/fs/starfarer/combat/CombatEngine":
+                transformer.removeMethod("render", "(Z)V");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/CombatEngine"));
+                break;
         }
     }
 }

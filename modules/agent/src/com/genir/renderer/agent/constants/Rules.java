@@ -150,7 +150,8 @@ public class Rules {
             entry("SoundStore_trackMap", "OO0000"),
             entry("SoundBuffer_buffer", "Object"),
             entry("SoundBuffer_freq", "Ò00000"),
-            entry("SoundBuffer_channels", "o00000")
+            entry("SoundBuffer_channels", "o00000"),
+            entry("CombatEngine_hitParticlesGroup", "OÔ0000")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -167,6 +168,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C"),
             entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
             entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C"),
-            entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore")
+            entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
+            entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine")
     );
 }

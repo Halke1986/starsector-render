@@ -2,115 +2,267 @@ package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.VertexInterceptor;
+import proxy.com.fs.graphics.LayeredRenderer;
+import proxy.com.fs.graphics.particle.DynamicParticleGroup;
+import proxy.com.fs.starfarer.combat.CombatViewport;
+import proxy.com.fs.starfarer.renderers.FloatingTextManager;
+import proxy.com.fs.starfarer.renderers.damage.DebrisParticleSystem;
+import proxy.com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
 
-import static com.fs.starfarer.api.combat.CombatEngineLayers.*;
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
+import static com.genir.renderer.Noop.breakpoint;
 
+/**
+ * OVERRIDES com.fs.starfarer.combat.CombatEngine
+ */
 public class CombatEngine {
-    public static void render(boolean var1, com.fs.starfarer.combat.CombatEngine engine) {
-        if (engine.isDestroyed()) {
+    /**
+     * STUB
+     */
+    private DynamicParticleGroup CombatEngine_hitParticlesGroup = null;
+
+    /**
+     * STUB
+     */
+    public boolean isDestroyed() {
+        return false;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getSmoothParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getSwirlyNebulaParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getNegativeSwirlyNebulaParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getNebulaSmoothParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getNebulaParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getNegativeNebulaParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getNebulaSmokeParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getNegativeParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getExplosionParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getSmokeParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getGlowyContrailParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DynamicParticleGroup getSmokyContrailParticles() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public ExplosionParticleSystem getExplosionSystem() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public DebrisParticleSystem getDebrisSystem() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public LayeredRenderer<CombatEngineLayers, CombatViewport> getRenderer() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public CombatViewport getViewport() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public FloatingTextManager getFloatingTextManager() {
+        return null;
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void render(boolean enableFloatingText) {
+        if (isDestroyed()) {
             return;
         }
 
-        unlockParticleLimit(engine);
+        unlockParticleLimit();
 
-        renderLayer(engine, "GlowyContrailParticles");
-        renderLayer(engine, "SmokyContrailParticles");
-        renderLayer(engine, BELOW_PLANETS);
-        renderLayer(engine, PLANET_LAYER);
-        renderLayer(engine, ABOVE_PLANETS);
-        renderLayer(engine, CLOUD_LAYER);
-        renderLayer(engine, BELOW_SHIPS_LAYER);
-        renderLayer(engine, UNDER_SHIPS_LAYER);
-        renderLayer(engine, ASTEROIDS_LAYER);
-        renderLayer(engine, CAPITAL_SHIPS_LAYER);
-        renderLayer(engine, CRUISERS_LAYER);
-        renderLayer(engine, DESTROYERS_LAYER);
-        renderLayer(engine, FRIGATES_LAYER);
-        renderLayer(engine, BELOW_PHASED_SHIPS_LAYER);
-        renderLayer(engine, PHASED_SHIPS_LAYER);
-        renderLayer(engine, STATION_WEAPONS_LAYER);
-        renderLayer(engine, CONTRAILS_LAYER);
-        renderLayer(engine, FIGHTERS_LAYER);
-        renderLayer(engine, BELOW_INDICATORS_LAYER);
-        renderLayer(engine, FF_INDICATORS_LAYER);
-        renderLayer(engine, ABOVE_SHIPS_LAYER);
-        renderLayer(engine, ABOVE_SHIPS_AND_MISSILES_LAYER);
-        renderLayer(engine, "DebrisSystem");
-        renderLayer(engine, "ExplosionSystem");
-        renderLayer(engine, "SmoothParticles");
-        renderLayer(engine, "NebulaParticles");
-        renderLayer(engine, "NebulaSmoothParticles");
-        renderLayer(engine, "SwirlyNebulaParticles");
-        renderLayer(engine, "ExplosionParticles");
-        renderLayer(engine, "SmokeParticles");
-        renderLayer(engine, "NebulaSmokeParticles");
-        renderLayer(engine, "HitParticles");
-        renderLayer(engine, "NegativeParticles");
-        renderLayer(engine, "NegativeNebulaParticles");
-        renderLayer(engine, "NegativeSwirlyNebulaParticles");
-        renderLayer(engine, ABOVE_PARTICLES_LOWER);
-        renderLayer(engine, ABOVE_PARTICLES);
-        renderLayer(engine, JUST_BELOW_WIDGETS);
+        renderLayer("GlowyContrailParticles");
+        renderLayer("SmokyContrailParticles");
+        renderLayer(CombatEngineLayers.BELOW_PLANETS);
+        renderLayer(CombatEngineLayers.PLANET_LAYER);
+        renderLayer(CombatEngineLayers.ABOVE_PLANETS);
+        renderLayer(CombatEngineLayers.CLOUD_LAYER);
+        renderLayer(CombatEngineLayers.BELOW_SHIPS_LAYER);
+        renderLayer(CombatEngineLayers.UNDER_SHIPS_LAYER);
+        renderLayer(CombatEngineLayers.ASTEROIDS_LAYER);
+        renderLayer(CombatEngineLayers.CAPITAL_SHIPS_LAYER);
+        renderLayer(CombatEngineLayers.CRUISERS_LAYER);
+        renderLayer(CombatEngineLayers.DESTROYERS_LAYER);
+        renderLayer(CombatEngineLayers.FRIGATES_LAYER);
+        renderLayer(CombatEngineLayers.BELOW_PHASED_SHIPS_LAYER);
+        renderLayer(CombatEngineLayers.PHASED_SHIPS_LAYER);
+        renderLayer(CombatEngineLayers.STATION_WEAPONS_LAYER);
+        renderLayer(CombatEngineLayers.CONTRAILS_LAYER);
+        renderLayer(CombatEngineLayers.FIGHTERS_LAYER);
+        renderLayer(CombatEngineLayers.BELOW_INDICATORS_LAYER);
+        renderLayer(CombatEngineLayers.FF_INDICATORS_LAYER);
+        renderLayer(CombatEngineLayers.ABOVE_SHIPS_LAYER);
+        renderLayer(CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER);
+        renderLayer("DebrisSystem");
+        renderLayer("ExplosionSystem");
+        renderLayer("SmoothParticles");
+        renderLayer("NebulaParticles");
+        renderLayer("NebulaSmoothParticles");
+        renderLayer("SwirlyNebulaParticles");
+        renderLayer("ExplosionParticles");
+        renderLayer("SmokeParticles");
+        renderLayer("NebulaSmokeParticles");
+        renderLayer("HitParticles");
+        renderLayer("NegativeParticles");
+        renderLayer("NegativeNebulaParticles");
+        renderLayer("NegativeSwirlyNebulaParticles");
+        renderLayer(CombatEngineLayers.ABOVE_PARTICLES_LOWER);
+        renderLayer(CombatEngineLayers.ABOVE_PARTICLES);
+        renderLayer(CombatEngineLayers.JUST_BELOW_WIDGETS);
 
-        if (var1) {
-            engine.renderFloatingTextManager();
+        if (enableFloatingText) {
+            getFloatingTextManager().FloatingTextManager_render(1.0F);
         }
     }
 
-    private static void renderLayer(com.fs.starfarer.combat.CombatEngine engine, CombatEngineLayers layer) {
-        engine.getRenderer().renderOnly(engine.getViewport(), layer);
+    /**
+     * ADDED METHOD
+     */
+    private void renderLayer(CombatEngineLayers layer) {
+        getRenderer().renderOnly(getViewport(), layer);
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new VertexInterceptor.commitLayer());
     }
 
-    private static void renderLayer(com.fs.starfarer.combat.CombatEngine engine, String layer) {
-        final Context context = getThreadContext();
+    /**
+     * ADDED METHOD
+     */
+    private void renderLayer(String layer) {
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new VertexInterceptor.setReorderDraw(true));
 
         switch (layer) {
-            case "GlowyContrailParticles" -> engine.getGlowyContrailParticles().render(0F, 0F);
-            case "SmokyContrailParticles" -> engine.getSmokyContrailParticles().render(0F, 0F);
-            case "DebrisSystem" -> engine.getDebrisSystem().render(0F, 0F);
-            case "ExplosionSystem" -> engine.getExplosionSystem().render(0F, 0F);
-            case "SmoothParticles" -> engine.getSmoothParticles().render(0F, 0F);
-            case "NebulaParticles" -> engine.getNebulaParticles().render(0F, 0F);
-            case "NebulaSmoothParticles" -> engine.getNebulaSmoothParticles().render(0F, 0F);
-            case "SwirlyNebulaParticles" -> engine.getSwirlyNebulaParticles().render(0F, 0F);
-            case "ExplosionParticles" -> engine.getExplosionParticles().render(0F, 0F);
-            case "SmokeParticles" -> engine.getSmokeParticles().render(0F, 0F);
-            case "NebulaSmokeParticles" -> engine.getNebulaSmokeParticles().render(0F, 0F);
-            case "HitParticles" -> engine.getHitParticlesGroup().render(0F, 0F);
-            case "NegativeParticles" -> engine.getNegativeParticles().render(0F, 0F);
-            case "NegativeNebulaParticles" -> engine.getNegativeNebulaParticles().render(0F, 0F);
-            case "NegativeSwirlyNebulaParticles" -> engine.getNegativeSwirlyNebulaParticles().render(0F, 0F);
+            case "GlowyContrailParticles" -> getGlowyContrailParticles().render(0F, 0F);
+            case "SmokyContrailParticles" -> getSmokyContrailParticles().render(0F, 0F);
+            case "DebrisSystem" -> getDebrisSystem().render(0F, 0F);
+            case "ExplosionSystem" -> getExplosionSystem().render(0F, 0F);
+            case "SmoothParticles" -> getSmoothParticles().render(0F, 0F);
+            case "NebulaParticles" -> getNebulaParticles().render(0F, 0F);
+            case "NebulaSmoothParticles" -> getNebulaSmoothParticles().render(0F, 0F);
+            case "SwirlyNebulaParticles" -> getSwirlyNebulaParticles().render(0F, 0F);
+            case "ExplosionParticles" -> getExplosionParticles().render(0F, 0F);
+            case "SmokeParticles" -> getSmokeParticles().render(0F, 0F);
+            case "NebulaSmokeParticles" -> getNebulaSmokeParticles().render(0F, 0F);
+            case "HitParticles" -> CombatEngine_hitParticlesGroup.render(0F, 0F);
+            case "NegativeParticles" -> getNegativeParticles().render(0F, 0F);
+            case "NegativeNebulaParticles" -> getNegativeNebulaParticles().render(0F, 0F);
+            case "NegativeSwirlyNebulaParticles" -> getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
 
         context.exec.execute(new VertexInterceptor.setReorderDraw(false));
         context.exec.execute(new VertexInterceptor.commitLayer());
     }
 
-    private static void unlockParticleLimit(com.fs.starfarer.combat.CombatEngine engine) {
+    /**
+     * ADDED METHOD
+     */
+    private void unlockParticleLimit() {
         int NO_LIMIT = Integer.MAX_VALUE;
 
-        if (engine.getGlowyContrailParticles().getLimit() == NO_LIMIT) {
+        if (getGlowyContrailParticles().getLimit() == NO_LIMIT) {
             return;
         }
 
-        engine.getGlowyContrailParticles().setLimit(NO_LIMIT);
-        engine.getSmokyContrailParticles().setLimit(NO_LIMIT);
-        engine.getSmoothParticles().setLimit(NO_LIMIT);
-        engine.getNebulaParticles().setLimit(NO_LIMIT);
-        engine.getNebulaSmoothParticles().setLimit(NO_LIMIT);
-        engine.getSwirlyNebulaParticles().setLimit(NO_LIMIT);
-        engine.getExplosionParticles().setLimit(NO_LIMIT);
-        engine.getSmokeParticles().setLimit(NO_LIMIT);
-        engine.getNebulaSmokeParticles().setLimit(NO_LIMIT);
-        engine.getHitParticlesGroup().setLimit(NO_LIMIT);
-        engine.getNegativeParticles().setLimit(NO_LIMIT);
-        engine.getNegativeNebulaParticles().setLimit(NO_LIMIT);
-        engine.getNegativeSwirlyNebulaParticles().setLimit(NO_LIMIT);
+        getGlowyContrailParticles().setLimit(NO_LIMIT);
+        getSmokyContrailParticles().setLimit(NO_LIMIT);
+        getSmoothParticles().setLimit(NO_LIMIT);
+        getNebulaParticles().setLimit(NO_LIMIT);
+        getNebulaSmoothParticles().setLimit(NO_LIMIT);
+        getSwirlyNebulaParticles().setLimit(NO_LIMIT);
+        getExplosionParticles().setLimit(NO_LIMIT);
+        getSmokeParticles().setLimit(NO_LIMIT);
+        getNebulaSmokeParticles().setLimit(NO_LIMIT);
+        CombatEngine_hitParticlesGroup.setLimit(NO_LIMIT);
+        getNegativeParticles().setLimit(NO_LIMIT);
+        getNegativeNebulaParticles().setLimit(NO_LIMIT);
+        getNegativeSwirlyNebulaParticles().setLimit(NO_LIMIT);
     }
 }
