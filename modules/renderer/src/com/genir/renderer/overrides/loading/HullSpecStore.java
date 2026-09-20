@@ -4,8 +4,6 @@ import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 
 import java.util.Map;
 
-import static com.genir.renderer.Noop.breakpoint;
-
 /**
  * OVERRIDES com.fs.starfarer.loading.HullSpecStore
  */
@@ -20,8 +18,6 @@ public class HullSpecStore {
      */
     public static void HullSpecStore_addHullSpec(String name, ShipHullSpec hullSpec) {
         ResourceLoader.queueShipSprite(hullSpec);
-
-        breakpoint();
 
         // Vanilla logic.
         if (HullSpecStore_hulls.containsKey(name)) {
