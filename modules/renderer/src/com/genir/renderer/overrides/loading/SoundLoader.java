@@ -49,7 +49,7 @@ public class SoundLoader {
         SoundStore soundStore = getSoundStore();
         if (!soundStore.getIsOpenALInitialized2()) {
             return;
-        } else if (!soundStore.SoundStore_getIsInitialized()) {
+        } else if (!soundStore.getIsInitialized()) {
             throw new RuntimeException("Can't load sounds until SoundStore is init(). Use the container init() method.");
         }
 
@@ -135,7 +135,7 @@ public class SoundLoader {
      */
     private static void loadWav(String path, InputStream stream, SoundStore soundStore) throws IOException {
         synchronized (mapLock) {
-            soundStore.SoundStore_loadWav(path, stream);
+            soundStore.loadWav(path, stream);
         }
     }
 

@@ -26,7 +26,7 @@ public class SoundStore {
     /**
      * STUB
      */
-    Track SoundStore_loadWav(String var1, InputStream var2) throws IOException {
+    Track SoundStore_loadWav(String name, InputStream stream) throws IOException {
         return null;
     }
 
@@ -35,6 +35,22 @@ public class SoundStore {
      */
     boolean SoundStore_getIsInitialized() {
         return false;
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    public Track loadWav(String name, InputStream stream) throws IOException {
+        // public wrapper around the method.
+        return SoundStore_loadWav(name, stream);
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    public boolean getIsInitialized() {
+        // public wrapper around the method.
+        return SoundStore_getIsInitialized();
     }
 
     /**
