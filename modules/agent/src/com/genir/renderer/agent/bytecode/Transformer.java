@@ -123,6 +123,11 @@ public class Transformer implements ClassFileTransformer {
                 transformer.removeMethod("super", "(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/g;)V");
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/HullSpecStore"));
                 break;
+            case "com/fs/starfarer/loading/Q":
+                transformer.removeMethod("super", "(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;)V"); // WeaponSpecStore_addWeaponSpec
+                transformer.removeMethod("super", "(Ljava/lang/String;Ljava/lang/Object;)V"); // WeaponSpecStore_addProjectileSpec
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/WeaponSpecStore"));
+                break;
         }
     }
 }

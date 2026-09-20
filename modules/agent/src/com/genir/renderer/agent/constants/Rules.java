@@ -143,6 +143,8 @@ public class Rules {
             entry("Expression_map", "float"),
             entry("Tesselator_renderAsPolygon", "o00000"),
             entry("HullSpecStore_addHullSpec", "super"),
+            entry("WeaponSpecStore_addWeaponSpec", "super"),
+            entry("WeaponSpecStore_addProjectileSpec", "super"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -153,7 +155,9 @@ public class Rules {
             entry("SoundBuffer_freq", "Ò00000"),
             entry("SoundBuffer_channels", "o00000"),
             entry("CombatEngine_hitParticlesGroup", "OÔ0000"),
-            entry("HullSpecStore_hulls", "o00000")
+            entry("HullSpecStore_hulls", "o00000"),
+            entry("WeaponSpecStore_weapons", "new"),
+            entry("WeaponSpecStore_projectiles", "o00000")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -172,6 +176,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C"),
             entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
             entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
-            entry("com/genir/renderer/overrides/loading/HullSpecStore", "com/fs/starfarer/loading/oO0O")
+            entry("com/genir/renderer/overrides/loading/HullSpecStore", "com/fs/starfarer/loading/oO0O"),
+            entry("com/genir/renderer/overrides/loading/WeaponSpecStore", "com/fs/starfarer/loading/Q")
     );
 }
