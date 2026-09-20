@@ -52,7 +52,6 @@ public class Rules {
             entry("proxy/com/fs/graphics/TextureLoader", "com/fs/graphics/TextureLoader"),
             entry("proxy/com/fs/starfarer/combat/entities/CustomCombatEntity", "com/fs/starfarer/combat/entities/CustomCombatEntity"),
             entry("proxy/com/fs/starfarer/combat/CombatViewport", "com/fs/starfarer/combat/CombatViewport"),
-            entry("proxy/com/fs/starfarer/loading/scripts/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
             entry("proxy/com/fs/starfarer/loading/specs/BaseWeaponSpec", "com/fs/starfarer/loading/specs/BaseWeaponSpec"),
             entry("proxy/com/fs/starfarer/renderers/damage/DebrisParticleSystem", "com/fs/starfarer/renderers/damage/DebrisParticleSystem"),
             entry("proxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem", "com/fs/starfarer/renderers/damage/ExplosionParticleSystem"),
@@ -97,6 +96,7 @@ public class Rules {
             entry("ScriptStore_getSecureClassLoader", "Object"),
             entry("ScriptStore_getScriptList", "Õ00000"),
             entry("ScriptStore_getPluginSet", "Ò00000"),
+            entry("ScriptLoader_queueScript", "Object"),
             entry("SpecStore_init", "ÓO0000"),
             entry("ResourceLocation_type", "super"),
             entry("ResourceLocation_path", "Ó00000"),
@@ -166,6 +166,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
             entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C"),
             entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
-            entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C")
+            entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C"),
+            entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore")
     );
 }

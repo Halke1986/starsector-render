@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.overrides.loading.ScriptLoader;
+import com.genir.renderer.overrides.loading.ScriptStore;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -289,7 +289,7 @@ public class DDSIntegration {
     private static void initIntegrationHandles() {
         Logger logger = Logger.getLogger(DDSIntegration.class);
 
-        ScriptLoader.initScriptClassLoader();
+        ScriptStore.initScriptClassLoader();
         ClassLoader scriptLoader = Global.getSettings().getScriptClassLoader();
 
         try {

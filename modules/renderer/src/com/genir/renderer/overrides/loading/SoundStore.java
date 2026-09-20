@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import static com.genir.renderer.Noop.breakpoint;
-
 /**
  * OVERRIDES sound.SoundStore
  */

@@ -31,7 +31,6 @@ import proxy.com.fs.starfarer.util.ScreenshotUtil;
 
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -39,10 +38,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.genir.renderer.async.ExecutorFactory.awaitTermination;
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
-import static com.genir.renderer.overrides.loading.ScriptLoader.loadModClasses;
 
 public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
@@ -84,7 +79,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         initEpilogue();
 
         soundWorkers.shutdown();
-        awaitTermination(soundWorkers);
+        ExecutorFactory.awaitTermination(soundWorkers);
     }
 
     public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
@@ -115,7 +110,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
                     r.run();
                 }
 
-                if (getThreadContext().exec.isIdle()) {
+                if (ContextManager.getThreadContext().exec.isIdle()) {
                     state.renderProgress(0);
                     com.genir.renderer.bridge.commands.Display.update(true);
                 }
@@ -134,10 +129,10 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
             scriptWorkers.shutdownNow();
             soundWorkers.shutdownNow();
 
-            awaitTermination(mainThreadExec);
-            awaitTermination(workers);
-            awaitTermination(scriptWorkers);
-            awaitTermination(soundWorkers);
+            ExecutorFactory.awaitTermination(mainThreadExec);
+            ExecutorFactory.awaitTermination(workers);
+            ExecutorFactory.awaitTermination(scriptWorkers);
+            ExecutorFactory.awaitTermination(soundWorkers);
 
             if (t instanceof Exception e) {
                 throw e;
@@ -150,9 +145,9 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         workers.shutdown();
         scriptWorkers.shutdown();
 
-        awaitTermination(mainThreadExec);
-        awaitTermination(workers);
-        awaitTermination(scriptWorkers);
+        ExecutorFactory.awaitTermination(mainThreadExec);
+        ExecutorFactory.awaitTermination(workers);
+        ExecutorFactory.awaitTermination(scriptWorkers);
 
         // Skip a redundant section of vanilla resource loading.
         throw new SkipVanillaInitEpilogue();
@@ -163,7 +158,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         // Initialize mods.
         FileLoader.FileLoader_getInstance().initModLoading();
-        loadModClasses();
+        ScriptStore.loadModClasses();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
             mod.onApplicationLoad();
 
@@ -187,7 +182,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
 
         // Initliaze Fast Rendering functionality.
         GameState.gameInitialized = true;
-        getThreadContext().stallDetector.enableDetection();
+        ContextManager.getThreadContext().stallDetector.enableDetection();
         FileLoader.FileLoader_getInstance().initGameplay();
         if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
             SamplerRunner.samplerRunner.start();
