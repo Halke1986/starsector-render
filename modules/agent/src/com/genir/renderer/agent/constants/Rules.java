@@ -64,7 +64,6 @@ public class Rules {
             entry("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
             entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
             entry("proxy/com/fs/graphics/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
-            entry("proxy/com/fs/starfarer/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
             entry("proxy/com/fs/graphics/LayeredRenderer", "com/fs/graphics/LayeredRenderer"),
 
             // Obfuscated classes
@@ -164,6 +163,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/Bounds", "com/fs/starfarer/combat/E/o0OO"),
             entry("com/genir/renderer/overrides/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
             entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
-            entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C")
+            entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C"),
+            entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils")
     );
 }

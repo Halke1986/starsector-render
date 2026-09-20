@@ -94,6 +94,13 @@ public class Transformer implements ClassFileTransformer {
             case "sound/C":
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/SoundStore"));
                 break;
+            case "com/fs/starfarer/loading/LoadingUtils":
+                transformer.renameMethod("Õ00000", "filesWithExtensionInDirectoryAbsolute_vanilla",
+                        "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;");
+                transformer.renameMethod("super", "filesWithExtensionInDirectory_vanilla",
+                        "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/LoadingUtils"));
+                break;
         }
     }
 }

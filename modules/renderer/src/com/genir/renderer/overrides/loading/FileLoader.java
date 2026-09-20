@@ -9,8 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla;
-
 public class FileLoader {
     private static FileLoaderFast fastLoader = null;
     private static boolean isModLoading = false;
@@ -54,7 +52,7 @@ public class FileLoader {
             return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
         }
 
-        return proxy.com.fs.starfarer.loading.LoadingUtils.LoadingUtils_filesWithExtensionInDirectory_vanilla(dir, extension);
+        return LoadingUtils.filesWithExtensionInDirectory_vanilla(dir, extension);
     }
 
     public static List<String> filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
@@ -62,7 +60,7 @@ public class FileLoader {
             return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
         }
 
-        return LoadingUtils_filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
+        return LoadingUtils.filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
     }
 
     public static String readPathAsString(String path) throws IOException {
