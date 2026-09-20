@@ -91,6 +91,9 @@ public class Transformer implements ClassFileTransformer {
                 transformer.removeMethod("o00000", "(Lcom/fs/starfarer/combat/E/o0OO;FFF)V");
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/Tesselator"));
                 break;
+            case "sound/C":
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/SoundStore"));
+                break;
         }
     }
 }

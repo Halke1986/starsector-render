@@ -82,8 +82,6 @@ public class Rules {
             entry("proxy/com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             entry("proxy/com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
             entry("proxy/com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
-            entry("proxy/sound/SoundStore", "sound/C"),
-            entry("sound/SoundStore", "sound/C"), // Methods repo duplicate
             entry("proxy/sound/Track", "sound/O0OO"),
             entry("proxy/sound/SoundBuffer", "sound/G"),
             entry("proxy/sound/OggLoader", "sound/O0oO"),
@@ -165,6 +163,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", "com/fs/starfarer/combat/ai/admiral/G$o"),
             entry("com/genir/renderer/overrides/Bounds", "com/fs/starfarer/combat/E/o0OO"),
             entry("com/genir/renderer/overrides/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
-            entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator")
+            entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
+            entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C")
     );
 }

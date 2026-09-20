@@ -4,7 +4,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import proxy.sound.OggLoader;
 import proxy.sound.SoundBuffer;
-import proxy.sound.SoundStore;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
