@@ -99,7 +99,17 @@ public class Transformer implements ClassFileTransformer {
                         "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;");
                 transformer.renameMethod("super", "filesWithExtensionInDirectory_vanilla",
                         "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;");
+                transformer.renameMethod("super", "readStreamAsString_vanilla",
+                        "(Ljava/io/InputStream;)Ljava/lang/String;");
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/LoadingUtils"));
+                break;
+            case "com/fs/util/C":
+                transformer.removeMethod("Ô00000", "(Ljava/lang/String;)Ljava/io/InputStream;");
+                transformer.renameMethod("Ó00000", "FileLoader_loadInputStream_vanilla",
+                        "(Ljava/lang/String;Z)Ljava/io/InputStream;");
+                transformer.renameMethod("new", "FileLoader_loadInputStreams_vanilla",
+                        "(Ljava/lang/String;)Ljava/util/List;");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/FileLoader"));
                 break;
         }
     }

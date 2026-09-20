@@ -69,7 +69,8 @@ public class SoundLoader {
     }
 
     private static BufferedInputStream openStream(String path) throws IOException {
-        InputStream stream = FileLoader.loadInputStream(path, true);
+        FileLoader fileLoader = FileLoader.FileLoader_getInstance();
+        InputStream stream = fileLoader.FileLoader_loadInputStream(path, true);
         if (stream == null) {
             throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load");
         }

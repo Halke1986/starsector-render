@@ -5,117 +5,131 @@ import proxy.com.fs.util.container.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * OVERRIDES com.fs.util.FileLoader
+ */
 public class FileLoader {
-    private static FileLoaderFast fastLoader = null;
-    private static boolean isModLoading = false;
+    /**
+     * STUBS
+     */
+    // $FF: renamed from: String java.lang.String
+    public String FileLoader_locationFilter;
+    // $FF: renamed from: super boolean
+    public static boolean FileLoader_withoutMods;
 
-    public static InputStream loadInputStream(String path, boolean searchMods) throws IOException {
+    /**
+     * ADDED FIELDS
+     */
+    private FileLoaderFast fastLoader;
+    private boolean isModLoading;
+
+    /**
+     * STUB
+     */
+    public List<Pair<ResourceLocation, InputStream>> FileLoader_loadInputStreams_vanilla(String var1) throws IOException {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public InputStream FileLoader_loadInputStream_vanilla(String var1, boolean var2) throws IOException {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public static FileLoader FileLoader_getInstance() {
+        return null;
+    }
+
+    /**
+     * STUB
+     */
+    public synchronized List<ResourceLocation> FileLoader_getResourceList() {
+        return null;
+    }
+
+    /**
+     * REPLACED METHOD
+     * <p>
+     * Replaced to remove redundant synchronized section.
+     */
+    public InputStream FileLoader_loadInputStreamWithMods(String path) throws IOException {
+        return FileLoader_loadInputStream(path, true);
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public InputStream FileLoader_loadInputStream(String path, boolean searchMods) throws IOException {
         if (fastLoader != null && !isModLoading) {
             return fastLoader.loadInputStream(path, null, false);
         }
-
-        var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
 
         if (fastLoader != null) {
             try {
                 // String and boolean state are used only by mods,
                 // after the multithreaded part of game loading.
-                String locationFilter = loaderInstance.ResourceLoader_locationFilter;
-                boolean skipMods = !searchMods || proxy.com.fs.util.FileLoader.ResourceLoader_withoutMods;
+                boolean skipMods = !searchMods || FileLoader_withoutMods;
 
-                return fastLoader.loadInputStream(path, locationFilter, skipMods);
+                return fastLoader.loadInputStream(path, FileLoader_locationFilter, skipMods);
             } finally {
-                loaderInstance.ResourceLoader_locationFilter = null;
-                proxy.com.fs.util.FileLoader.ResourceLoader_withoutMods = false;
+                FileLoader_locationFilter = null;
+                FileLoader_withoutMods = false;
             }
         }
 
         // Fallback to vanilla method.
-        return loaderInstance.FileLoader_loadInputStream_vanilla(path, searchMods);
+        return FileLoader_loadInputStream_vanilla(path, searchMods);
     }
 
-    public static List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) throws IOException {
+    /**
+     * REPLACED METHOD
+     */
+    public List<Pair<ResourceLocation, InputStream>> FileLoader_loadInputStreams(String path) throws IOException {
         if (fastLoader != null) {
             return fastLoader.loadInputStreams(path);
         }
 
-        var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
-        return loaderInstance.FileLoader_loadInputStreams_vanilla(path);
-    }
-
-    public static List<String> filesWithExtensionInDirectory(String dir, String extension) {
-        if (fastLoader != null) {
-            return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
-        }
-
-        return LoadingUtils.filesWithExtensionInDirectory_vanilla(dir, extension);
-    }
-
-    public static List<String> filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
-        if (fastLoader != null) {
-            return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
-        }
-
-        return LoadingUtils.filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
-    }
-
-    public static String readPathAsString(String path) throws IOException {
-        return readStreamAsString(loadInputStream(path, true));
-    }
-
-    public static String readStreamAsString(InputStream stream) throws IOException {
-        if (stream instanceof ResourceHandle resourceHandle) {
-            return resourceHandle.getString();
-        }
-
-        return readStringVanilla(stream);
+        return FileLoader_loadInputStreams_vanilla(path);
     }
 
     /**
-     * Vanilla implementation of string reading.
-     * The implementation is lenient and will ignore invalid UTF-8 characters.
+     * ADDED METHOD
      */
-    public static String readStringVanilla(InputStream var0) throws IOException {
-        byte[] var1 = new byte[1048576];
-        StringBuilder var2 = new StringBuilder();
-
-        try (var0) {
-            int var9;
-            while ((var9 = var0.read(var1)) != -1) {
-                var2.append(new String(var1, 0, var9, StandardCharsets.UTF_8));
-            }
-        } catch (UnsupportedEncodingException ignored) {
-        }
-
-        return var2.toString().replaceAll("\\r", "");
+    public FileLoaderFast getFastLoader() {
+        return fastLoader;
     }
 
     /**
+     * ADDED METHOD
+     * <p>
      * Resource loading is the multi-threaded phase where game assets are loaded. It requires the most optimization.
      */
-    public static void initResourceLoading() {
-        var loaderInstance = proxy.com.fs.util.FileLoader.ResourceLoader_getInstance();
-        List<ResourceLocation> locations = loaderInstance.ResourceLoader_getResourceList();
-
-        fastLoader = new FileLoaderFast(locations);
+    public void initResourceLoading() {
+        fastLoader = new FileLoaderFast(FileLoader_getResourceList());
     }
 
     /**
+     * ADDED METHOD
+     * <p>
      * Mod loading is the single-threaded phase where mods are initialized. It requires the IO optimization,
      * but uses more features than vanilla resource loading.
      */
-    public static void initModLoading() {
+    public void initModLoading() {
         isModLoading = true;
     }
 
     /**
+     * ADDED METHOD
+     * <p>
      * Gameplay requires no optimization. Drop the caches to free resources.
      */
-    public static void initGameplay() {
+    public void initGameplay() {
         isModLoading = false;
         fastLoader = null;
     }

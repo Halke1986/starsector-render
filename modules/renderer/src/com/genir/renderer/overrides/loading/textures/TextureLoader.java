@@ -123,7 +123,8 @@ public class TextureLoader {
     private TextureData loadTextureData(String type, String path) {
         try {
             // Load image metadata.
-            InputStream resource = FileLoader.loadInputStream(path, true);
+            FileLoader fileLoader = FileLoader.FileLoader_getInstance();
+            InputStream resource = fileLoader.FileLoader_loadInputStream(path, true);
             if (resource == null) {
                 throw new NullPointerException();
             }

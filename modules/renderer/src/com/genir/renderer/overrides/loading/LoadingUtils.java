@@ -23,30 +23,55 @@ public class LoadingUtils {
     }
 
     /**
+     * STUB
+     */
+    // $FF: renamed from: super (java.io.InputStream) java.lang.String
+    public static String readStreamAsString_vanilla(InputStream stream) throws IOException {
+        return null;
+    }
+
+    /**
      * REPLACED METHOD
      */
     public static List<String> LoadingUtils_filesWithExtensionInDirectory(String dir, String extension) {
-        return FileLoader.filesWithExtensionInDirectory(dir, extension);
+        FileLoaderFast fastLoader = FileLoader.FileLoader_getInstance().getFastLoader();
+        if (fastLoader != null) {
+            return fastLoader.filesWithExtensionInDirectory(dir, extension, false);
+        }
+
+        return filesWithExtensionInDirectory_vanilla(dir, extension);
     }
 
     /**
      * REPLACED METHOD
      */
     public static List<String> LoadingUtils_filesWithExtensionInDirectoryAbsolute(String dir, String extension) {
-        return FileLoader.filesWithExtensionInDirectoryAbsolute(dir, extension);
-    }
+        FileLoaderFast fastLoader = FileLoader.FileLoader_getInstance().getFastLoader();
+        if (fastLoader != null) {
+            return fastLoader.filesWithExtensionInDirectory(dir, extension, true);
+        }
 
-    /**
-     * REPLACED METHOD
-     */
-    public static String LoadingUtils_readPathAsString(String path) throws IOException {
-        return FileLoader.readPathAsString(path);
+        return filesWithExtensionInDirectoryAbsolute_vanilla(dir, extension);
     }
 
     /**
      * REPLACED METHOD
      */
     public static String LoadingUtils_readStreamAsString(InputStream stream) throws IOException {
-        return FileLoader.readStreamAsString(stream);
+        // Read cached string.
+        if (stream instanceof ResourceHandle resourceHandle) {
+            return resourceHandle.getString();
+        }
+
+        return readStreamAsString_vanilla(stream);
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public static String LoadingUtils_readPathAsString(String path) throws IOException {
+        FileLoader fileLoader = FileLoader.FileLoader_getInstance();
+        InputStream stream = fileLoader.FileLoader_loadInputStream(path, true);
+        return LoadingUtils_readStreamAsString(stream);
     }
 }

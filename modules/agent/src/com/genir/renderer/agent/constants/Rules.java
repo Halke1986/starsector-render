@@ -100,13 +100,14 @@ public class Rules {
             entry("SpecStore_init", "ÓO0000"),
             entry("ResourceLocation_type", "super"),
             entry("ResourceLocation_path", "Ó00000"),
-            entry("ResourceLoader_locationFilter", "String"),
-            entry("ResourceLoader_withoutMods", "super"),
-            entry("ResourceLoader_getInstance", "Ó00000"),
-            entry("ResourceLoader_getResourceList", "Ô00000"),
             entry("ResourceLocation_isMod", "String"),
+            entry("FileLoader_locationFilter", "String"),
+            entry("FileLoader_withoutMods", "super"),
+            entry("FileLoader_getInstance", "Ó00000"),
+            entry("FileLoader_getResourceList", "Ô00000"),
             entry("FileLoader_loadInputStreams", "new"),
             entry("FileLoader_loadInputStream", "Ó00000"),
+            entry("FileLoader_loadInputStreamWithMods", "Ô00000"),
             entry("FloatingTextManager_render", "super"),
             entry("ProgressBar_setDescription", "Ò00000"),
             entry("ProgressBar_render", "o00000"),
@@ -164,6 +165,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/Bounds$Segment", "com/fs/starfarer/combat/E/o0OO$o"),
             entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
             entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C"),
-            entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils")
+            entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
+            entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C")
     );
 }

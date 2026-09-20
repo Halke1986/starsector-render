@@ -31,6 +31,7 @@ import proxy.com.fs.starfarer.util.ScreenshotUtil;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -55,7 +56,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
     private static final ProgressBar barAnimation = new ProgressBar();
 
     public static void init(Object stateObject, Map var1) throws Exception {
-        FileLoader.initResourceLoading();
+        FileLoader.FileLoader_getInstance().initResourceLoading();
 
         var state = (proxy.com.fs.starfarer.loading.ResourceLoaderState) stateObject;
 
@@ -161,7 +162,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         MarkovNames.loadIfNeeded();
 
         // Initialize mods.
-        FileLoader.initModLoading();
+        FileLoader.FileLoader_getInstance().initModLoading();
         loadModClasses();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
             mod.onApplicationLoad();
@@ -187,7 +188,7 @@ public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
         // Initliaze Fast Rendering functionality.
         GameState.gameInitialized = true;
         getThreadContext().stallDetector.enableDetection();
-        FileLoader.initGameplay();
+        FileLoader.FileLoader_getInstance().initGameplay();
         if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
             SamplerRunner.samplerRunner.start();
         }
