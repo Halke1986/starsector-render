@@ -5,6 +5,9 @@ import com.fs.starfarer.api.Global;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * OVERRIDES com.fs.starfarer.campaign.rules.Expression
+ */
 public class Expression {
     /**
      * STUB
