@@ -58,7 +58,6 @@ public class Rules {
             entry("proxy/com/fs/starfarer/settings/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
             entry("proxy/com/fs/util/container/repo/ObjectRepository", "com/fs/util/container/repo/ObjectRepository"),
             entry("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
-            entry("proxy/com/fs/starfarer/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             entry("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
             entry("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
             entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
@@ -98,6 +97,7 @@ public class Rules {
             entry("ScriptStore_getPluginSet", "Ò00000"),
             entry("ScriptLoader_queueScript", "Object"),
             entry("SpecStore_init", "ÓO0000"),
+            entry("SpecStore_loadingSoundSets", "ÖO0000"),
             entry("ResourceLocation_type", "super"),
             entry("ResourceLocation_path", "Ó00000"),
             entry("ResourceLocation_isMod", "String"),
@@ -177,6 +177,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
             entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
             entry("com/genir/renderer/overrides/loading/HullSpecStore", "com/fs/starfarer/loading/oO0O"),
-            entry("com/genir/renderer/overrides/loading/WeaponSpecStore", "com/fs/starfarer/loading/Q")
+            entry("com/genir/renderer/overrides/loading/WeaponSpecStore", "com/fs/starfarer/loading/Q"),
+            entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore")
     );
 }

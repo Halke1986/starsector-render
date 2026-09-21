@@ -21,7 +21,6 @@ import proxy.com.fs.graphics.particle.SmoothParticle;
 import proxy.com.fs.graphics.util.Fps;
 import proxy.com.fs.starfarer.Version;
 import proxy.com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
-import proxy.com.fs.starfarer.loading.SpecStore;
 import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
 import proxy.com.fs.starfarer.renderers.AtmosphereRenderer;
