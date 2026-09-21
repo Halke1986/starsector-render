@@ -30,7 +30,7 @@ public class SoundLoader {
 
     public static void queueSound(String path) {
         if (path != null && knownSounds.add(path)) {
-            ResourceLoader.soundWorkers.execute(() -> {
+            ResourceLoaderState.soundWorkers.execute(() -> {
                 loadSound(path);
             });
         }

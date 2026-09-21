@@ -38,7 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ResourceLoader { // com.fs.starfarer.loading.ResourceLoaderState
+public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderState
     public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
     public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
     private static final AsyncException asyncException = new AsyncException();

@@ -17,7 +17,7 @@ public class HullSpecStore {
      * REPLACED METHOD
      */
     public static void HullSpecStore_addHullSpec(String name, ShipHullSpec hullSpec) {
-        ResourceLoader.queueShipSprite(hullSpec);
+        ResourceLoaderState.queueShipSprite(hullSpec);
 
         // Vanilla logic.
         if (HullSpecStore_hulls.containsKey(name)) {

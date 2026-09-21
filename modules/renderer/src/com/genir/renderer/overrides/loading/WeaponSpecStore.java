@@ -19,7 +19,7 @@ public class WeaponSpecStore {
      * REPLACED METHOD
      */
     public static void WeaponSpecStore_addWeaponSpec(String name, BaseWeaponSpec weaponSpec) {
-        ResourceLoader.queueWeaponSprite((WeaponSpecAPI) weaponSpec);
+        ResourceLoaderState.queueWeaponSprite((WeaponSpecAPI) weaponSpec);
 
         // Vanilla logic.
         if (WeaponSpecStore_weapons.containsKey(name)) {
@@ -33,7 +33,7 @@ public class WeaponSpecStore {
      * REPLACED METHOD
      */
     public static void WeaponSpecStore_addProjectileSpec(String name, Object projectileSpec) {
-        ResourceLoader.queueProjectileSprite(projectileSpec);
+        ResourceLoaderState.queueProjectileSprite(projectileSpec);
 
         // Vanilla logic.
         if (WeaponSpecStore_projectiles.containsKey(name)) {

@@ -1,7 +1,6 @@
 package com.fs.starfarer.loading;
 
 import com.fs.starfarer.api.combat.ShipwideAIFlags;
-import com.genir.renderer.overrides.loading.ResourceLoader;
 import proxy.com.fs.graphics.Sprite;
 
 import java.util.Map;
@@ -10,11 +9,11 @@ public class ResourceLoaderState {
     private Sprite bar;
 
     public void init(Map var1) throws Exception {
-        com.genir.renderer.overrides.loading.ResourceLoader.init(this, var1);
+        com.genir.renderer.overrides.loading.ResourceLoaderState.init(this, var1);
     }
 
     public void queueResource(ShipwideAIFlags.AIFlags flags, String path, int weight) {
-        ResourceLoader.queueResource(flags.name(), path);
+        com.genir.renderer.overrides.loading.ResourceLoaderState.queueResource(flags.name(), path);
     }
 
     public void renderProgress(float var1) {
@@ -26,7 +25,7 @@ public class ResourceLoaderState {
 //        this.title.renderAtCenter(var3 / 2.0F, var4 / 2.0F + var2 + 5.0F);
 //        this.barBg.renderAtCenter(var3 / 2.0F, var4 / 2.0F);
 //        this.bar.renderRegionAtCenter(var3 / 2.0F, var4 / 2.0F, 0.0F, 0.0F, var1, 1.0F);
-        ResourceLoader.animateBar(bar);
+        com.genir.renderer.overrides.loading.ResourceLoaderState.animateBar(bar);
 //        class_1757.method_17857();
 //        Display.update();
     }

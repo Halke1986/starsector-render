@@ -3,7 +3,7 @@ package com.genir.renderer.overrides.loading.textures;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
-import com.genir.renderer.overrides.loading.ResourceLoader;
+import com.genir.renderer.overrides.loading.ResourceLoaderState;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 import proxy.com.fs.graphics.AlphaAdder;
@@ -67,8 +67,8 @@ public class TextureLoader {
             return;
         }
 
-        ResourceLoader.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoader.workers.execute(() -> {
+        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
+        ResourceLoaderState.workers.execute(() -> {
             try {
                 loadTextureAsync(type, path);
             } catch (Throwable t) {
@@ -78,7 +78,7 @@ public class TextureLoader {
                     throw t;
                 }
             } finally {
-                ResourceLoader.mainThreadWaitGroup.decrementAndGet();
+                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
             }
         });
     }
@@ -91,12 +91,12 @@ public class TextureLoader {
     private void loadTextureAsync(String type, String path) {
         TextureData texData = loadTextureData(type, path);
 
-        ResourceLoader.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoader.mainThreadQueue.add(() -> {
+        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
+        ResourceLoaderState.mainThreadQueue.add(() -> {
             try {
                 commitAndCacheTexture(path, path, texData);
             } finally {
-                ResourceLoader.mainThreadWaitGroup.decrementAndGet();
+                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
             }
         });
     }

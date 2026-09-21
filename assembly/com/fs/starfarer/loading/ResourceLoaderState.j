@@ -49,7 +49,7 @@ L21:
         aload_1
         invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState$o name ()Ljava/lang/String;
         aload_2
-        invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader queueResource (Ljava/lang/String;Ljava/lang/String;)V
+        invokestatic Method com/genir/renderer/overrides/loading/ResourceLoaderState queueResource (Ljava/lang/String;Ljava/lang/String;)V
 L0:     aload_2 
 L1:     ifnull L13 
 L4:     ldc '' 
@@ -94,7 +94,7 @@ L4:
     .code stack 2 locals 2
 L0:     aload_0
 L1:     aload_1
-L2:     invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader init (Ljava/lang/Object;Ljava/util/Map;)V
+L2:     invokestatic Method com/genir/renderer/overrides/loading/ResourceLoaderState init (Ljava/lang/Object;Ljava/util/Map;)V
 L5:     return
 L6:
         .linenumbertable
@@ -922,7 +922,7 @@ L1713:  i2f
 L1714:  fdiv 
 L1715:  invokevirtual Method com/fs/starfarer/loading/ResourceLoaderState renderProgress (F)V 
 L1718:  aload_0 
-L1719:  invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader initSpecStore (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
+L1719:  invokestatic Method com/genir/renderer/overrides/loading/ResourceLoaderState initSpecStore (Lcom/fs/starfarer/loading/ResourceLoaderState;)V
 L1722:  aload_0
 L1723:  fconst_2 
 L1724:  aload_0 
@@ -1880,7 +1880,7 @@ L75:    fconst_1
 L76:    invokevirtual Method com/fs/graphics/Sprite renderRegionAtCenter (FFFFFF)V
         aload_0
         getfield Field com/fs/starfarer/loading/ResourceLoaderState bar Lcom/fs/graphics/Sprite;
-        invokestatic Method com/genir/renderer/overrides/loading/ResourceLoader animateBar (Lcom/fs/graphics/Sprite;)V
+        invokestatic Method com/genir/renderer/overrides/loading/ResourceLoaderState animateBar (Lcom/fs/graphics/Sprite;)V
 L79:    invokestatic Method com/fs/graphics/util/B 'Õ00000' ()V 
 L85:    return
 L86:    
