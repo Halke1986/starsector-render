@@ -1,6 +1,7 @@
 - Added handling for file paths ending with a whitespace, as introduced by Persean Separatist 0.9.0. Issue reported by lChronosl.
+- Fixed an assertion error that could occur when querying OpenGL shader parameters. Reported by cake.
 
-- v0.8.9
+v0.8.9
 
 - Improved exception handling during game startup.
 - Added support for official, non-bootlegged CMUtils.

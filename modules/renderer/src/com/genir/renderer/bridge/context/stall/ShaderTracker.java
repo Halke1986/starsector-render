@@ -10,12 +10,7 @@ public class ShaderTracker { // Context-shared object.
     private final Map<Integer, Map<String, Integer>> uniformLocations = new HashMap<>();
     private final Map<Integer, Map<Integer, Integer>> programParameters = new HashMap<>();
 
-    //
-    // GL calls.
-    //
-
-    synchronized public void glLinkProgram(int program) {
-        // Clean previous program data.
+    synchronized public void invalidateCache(int program) {
         uniformLocations.remove(program);
         programParameters.remove(program);
     }
