@@ -191,6 +191,10 @@ public class FileLoaderFast {
             path = path.substring("\\".length());
         }
 
+        // Trim whitespace to prevent Paths.normalize() from throwing on
+        // trailing spaces introduced by Persean Separatist 0.9.0.
+        path = path.trim();
+
         // Normalize path.
         path = Paths.get(path).normalize().toString();
 

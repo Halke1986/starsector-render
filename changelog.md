@@ -1,4 +1,6 @@
-v0.8.9
+- Added handling for file paths ending with a whitespace, as introduced by Persean Separatist 0.9.0. Issue reported by lChronosl.
+
+- v0.8.9
 
 - Improved exception handling during game startup.
 - Added support for official, non-bootlegged CMUtils.
