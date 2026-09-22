@@ -64,21 +64,22 @@ public class DDSIntegration {
     }
 
     public static int commitTexture(TextureData texData) {
+        int target = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
         int textureID = com.genir.renderer.bridge.opengl.GL11.glGenTextures();
         com.genir.renderer.bridge.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute((ctx, args, offset) -> {
-            ctx.textureManager.manageTexture(
-                    textureID,
-                    texData,
-                    () -> readTextureBytes(texData),
-                    (bytes) -> commitTextureLazy(texData, textureID, bytes)
-            );
-        });
+        context.textureManager.manageTexture(
+                context,
+                target,
+                textureID,
+                texData,
+                () -> readTextureBytes(texData),
+                (bytes) -> commitTextureLazy(texData, textureID, bytes)
+        );
 
         // Notify texture tracker of the texture definition.
-        context.textureTracker.updateTextureData(context, GL11.GL_TEXTURE_2D, 0, GL42.GL_COMPRESSED_RGBA_BPTC_UNORM, texData.width, texData.height);
+        context.textureTracker.updateTextureData(context, GL11.GL_TEXTURE_2D, 0, target, texData.width, texData.height);
 
         return textureID;
     }

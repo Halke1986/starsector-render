@@ -6,7 +6,6 @@ import com.genir.renderer.overrides.loading.textures.TextureData;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +24,7 @@ public class TextureManager {
     private int managedNumber = 0;
     private int loadedNumber = 0;
     private long loadingDuration = 0;
+    private boolean assetLoadingFinished = false;
 
     private TextureState[] texturesState = new TextureState[1];
     private final Map<Integer, TextureCallbacks> loaders = new HashMap<>();
@@ -32,7 +32,9 @@ public class TextureManager {
     private static final AsyncException asyncException = new AsyncException();
     private final ExecutorService workers = ExecutorFactory.newExecutor(4, "FR-Texture-Lazy-Loader", asyncException);
 
-    public void manageTexture(int texture, TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
+    // Runs on the client thread to allow asynchronous texture file loading
+    // before the rendering thread processes the glBindTexture request.
+    synchronized public void manageTexture(Context context, int target, int texture, TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
         while (texturesState.length <= texture) {
             texturesState = Arrays.copyOf(texturesState, texturesState.length * 2);
         }
@@ -44,10 +46,16 @@ public class TextureManager {
         texturesState[texture] = TextureState.UNLOADED;
 
         loaders.put(texture, new TextureCallbacks(texData, loadFn, commitFn));
+
+        if (assetLoadingFinished) {
+            // Upload textures defined after the asset loading phase immediately.
+            // Textures defined by mods at runtime are likely to be displayed immediately,
+            // without advance notice that would allow reliable lazy uploading.
+            glBindTexture(context, target, texture);
+        }
     }
 
-    // Runs on the client thread to allow asynchronous texture file loading
-    // before the rendering thread processes the glBindTexture request.
+    // Runs on the client thread. Triggers texture lazy upload.
     synchronized public void glBindTexture(Context context, int target, int texture) {
         // Texture is not managed.
         if (texture < 0 || texture >= texturesState.length || texturesState[texture] == null) {
@@ -79,6 +87,10 @@ public class TextureManager {
         context.exec.execute((ctx, args, offset) -> {
             commitTexture(ctx, texture, bufferFuture);
         });
+    }
+
+    public void assetLoadingFinished() {
+        assetLoadingFinished = true;
     }
 
     private void commitTexture(Context context, int texture, Future<byte[]> bufferFuture) {
