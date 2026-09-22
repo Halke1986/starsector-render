@@ -15,8 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
-import static com.genir.renderer.debug.Debug.asert;
-
 public class TextureManager {
     private final Logger logger = Logger.getLogger(TextureManager.class);
     private final Path PWD = Path.of(System.getProperty("user.dir"));
@@ -39,37 +37,44 @@ public class TextureManager {
             texturesState = Arrays.copyOf(texturesState, texturesState.length * 2);
         }
 
-        // Make sure texture is marked as managed only once.
-        asert(!loaders.containsKey(texture));
+        // Upload textures defined after the asset loading phase immediately.
+        // Textures defined by mods at runtime are likely to be displayed immediately,
+        // without advance notice that would allow reliable lazy uploading.
+        if (assetLoadingFinished) {
+            uploadTexture(context, texture);
+            return;
+        }
 
-        managedNumber++;
-        texturesState[texture] = TextureState.UNLOADED;
+        // Perform an eager upload for non-managed textures.
+        if (texturesState[texture] == TextureState.DO_NOT_MANAGE) {
+            uploadTexture(context, texture);
+            return;
+        }
+
+        // Schedule texture for lazy upload.
+        if (texturesState[texture] == null) {
+            managedNumber++;
+            texturesState[texture] = TextureState.UNLOADED;
+        }
 
         loaders.put(texture, new TextureCallbacks(texData, loadFn, commitFn));
-
-        if (assetLoadingFinished) {
-            // Upload textures defined after the asset loading phase immediately.
-            // Textures defined by mods at runtime are likely to be displayed immediately,
-            // without advance notice that would allow reliable lazy uploading.
-            glBindTexture(context, target, texture);
-        }
     }
 
     // Runs on the client thread. Triggers texture lazy upload.
     synchronized public void glBindTexture(Context context, int target, int texture) {
-        // Texture is not managed.
-        if (texture < 0 || texture >= texturesState.length || texturesState[texture] == null) {
+        if (texture < 0 || texture >= texturesState.length || texturesState[texture] != TextureState.UNLOADED) {
+            // Texture is not scheduled for lazy upload.
             return;
         }
 
-        // Texture is already loaded.
-        if (texturesState[texture] == TextureState.LOADED) {
-            return;
-        }
-
+        // Lazy load is performed only once per texture.
+        texturesState[texture] = TextureState.DO_NOT_MANAGE;
         loadedNumber++;
-        texturesState[texture] = TextureState.LOADED;
 
+        uploadTexture(context, texture);
+    }
+
+    private void uploadTexture(Context context, int texture) {
         TextureCallbacks callbacks = loaders.get(texture);
         Path path = PWD.relativize(callbacks.texData.imagePath);
         logger.info("Loading texture " + loadedNumber + "/" + managedNumber + " id:" + texture + " [" + path + "]");
@@ -152,10 +157,12 @@ public class TextureManager {
     }
 
     synchronized private void doNotManageTexture(int texture) {
-        if (texture >= 0 && texture < texturesState.length) {
-            texturesState[texture] = null;
-            loaders.remove(texture);
+        while (texturesState.length <= texture) {
+            texturesState = Arrays.copyOf(texturesState, texturesState.length * 2);
         }
+
+        texturesState[texture] = TextureState.DO_NOT_MANAGE;
+        loaders.remove(texture);
     }
 
     public void update() {
@@ -172,7 +179,7 @@ public class TextureManager {
     public enum TextureState {
         // null -> not managed
         UNLOADED,
-        LOADED,
+        DO_NOT_MANAGE,
     }
 
     private record TextureCallbacks(TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
