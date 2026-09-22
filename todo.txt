@@ -1,6 +1,7 @@
 BUGS
 
-
+boxutil 1.5.4 timing issue
+async stall in shader query
 
 IMPROVEMENTS
 
@@ -8,3 +9,7 @@ game is responsive when loading mods
 flicker after alt-tab
 audits
 faster json
+finish FileLoaderExact and test with vulpoids
+
+particle engine PR
+glib forcing lazy load
