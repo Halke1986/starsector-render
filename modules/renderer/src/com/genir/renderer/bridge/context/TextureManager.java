@@ -19,8 +19,6 @@ import java.util.function.Consumer;
 import static com.genir.renderer.debug.Debug.asert;
 
 public class TextureManager {
-    // TODO AttribManager handles glDeleteTextures.
-
     private final Logger logger = Logger.getLogger(TextureManager.class);
     private final Path PWD = Path.of(System.getProperty("user.dir"));
 
@@ -134,13 +132,6 @@ public class TextureManager {
 
     public void glDeleteTextures(int texture) {
         doNotManageTexture(texture);
-    }
-
-    public void glDeleteTextures(IntBuffer textures) {
-        IntBuffer readBuffer = textures.duplicate();
-        while (readBuffer.hasRemaining()) {
-            glDeleteTextures(readBuffer.get());
-        }
     }
 
     public void textureModified() {

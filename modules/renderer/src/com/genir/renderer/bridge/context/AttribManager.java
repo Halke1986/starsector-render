@@ -17,6 +17,8 @@ import static com.genir.renderer.debug.Debug.asertEqual;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
+    // TODO AttribManager handles glDeleteTextures.
+
     private final AttribState expected = new AttribState();
     private final AttribState actual = new AttribState();
 

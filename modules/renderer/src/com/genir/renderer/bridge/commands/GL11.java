@@ -1772,7 +1772,6 @@ public class GL11 {
         record glGetTexLevelParameteri(int target, int level, int pname) implements GLGetter<Integer> {
             @Override
             public Integer call(Context context) {
-                int x = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
                 return org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
             }
         }
