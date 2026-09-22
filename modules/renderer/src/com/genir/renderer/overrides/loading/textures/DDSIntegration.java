@@ -92,6 +92,13 @@ public class DDSIntegration {
                 throw new RuntimeException(String.valueOf(err));
             }
 
+            // Revert to default vanilla texture config after DDS texture was uploaded.
+            // This is because DDS upload disables GPU mipmap generation. When subsequent
+            // code re-defines the texture with uncompressed data, this results in
+            // compressed/uncompressed mismatch for mipmap levels and subsequently,
+            // failure to draw the texture.
+            configureVanillaTexture();
+
             return;
         }
 
@@ -112,16 +119,7 @@ public class DDSIntegration {
             beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
         }
 
-        boolean generateMipmap = texData.width <= 1024 && texData.height <= 1024;
-        if (generateMipmap) {
-            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
-        } else {
-            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 0);
-        }
+        configureVanillaTexture();
 
         org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, buffer);
@@ -129,6 +127,14 @@ public class DDSIntegration {
         if (hasAfterTextureUpload()) {
             afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
         }
+    }
+
+    private static void configureVanillaTexture() {
+        // Vanilla does not generate mipmaps if either texture dimension exceeds 1024 pixels.
+        // The rationale is undocumented, and Fast Rendering does not apply this restriction.
+        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
     }
 
     public static byte[] readTextureBytes(TextureData texData) {
