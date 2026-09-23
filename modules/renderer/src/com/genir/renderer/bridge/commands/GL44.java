@@ -3,12 +3,11 @@ package com.genir.renderer.bridge.commands;
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL44 {
     public static void glBufferStorage(int target, ByteBuffer data, int flags) {
@@ -20,7 +19,7 @@ public class GL44 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.exec.execute(new glBufferStorage(target, snapshot, flags));
     }
@@ -34,7 +33,7 @@ public class GL44 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.exec.execute(new glBufferStorage(target, snapshot, flags));
     }
@@ -47,7 +46,7 @@ public class GL44 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glBufferStorage(target, size, flags));
     }
 }

@@ -1,10 +1,9 @@
 package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Recordable;
-
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
@@ -18,7 +17,7 @@ public class GL14 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glBlendEquation(mode));
     }
 
@@ -33,6 +32,6 @@ public class GL14 {
             }
         }
 
-        getThreadContext().exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
+        ContextManager.getThreadContext().exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
     }
 }

@@ -1,9 +1,8 @@
 package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL41 {
     public static void glProgramUniform1i(int program, int location, int v0) {
@@ -14,7 +13,7 @@ public class GL41 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glProgramUniform1i(program, location, v0));
     }
 
@@ -26,7 +25,7 @@ public class GL41 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glProgramUniform1f(program, location, v0));
     }
 
@@ -38,7 +37,7 @@ public class GL41 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glProgramUniform2f(program, location, v0, v1));
     }
 
@@ -50,7 +49,7 @@ public class GL41 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glClearDepthf(d));
     }
 
@@ -62,7 +61,7 @@ public class GL41 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glDepthRangef(n, f));
     }
 }

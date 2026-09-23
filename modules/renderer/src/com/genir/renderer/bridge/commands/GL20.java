@@ -3,6 +3,7 @@ package com.genir.renderer.bridge.commands;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
@@ -10,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class GL20 {
@@ -22,7 +22,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.shaderTracker.invalidateCache(program);
         context.exec.execute(new glAttachShader(program, shader));
     }
@@ -35,7 +35,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glCompileShader(shader));
     }
 
@@ -47,7 +47,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glCreateProgram());
     }
 
@@ -59,7 +59,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glCreateShader(type));
     }
 
@@ -71,7 +71,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.shaderTracker.invalidateCache(program);
         context.exec.execute(new glDeleteProgram(program));
     }
@@ -84,7 +84,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glDeleteShader(shader));
     }
 
@@ -96,7 +96,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.wait(new glGetAttachedShaders(program, count, shaders));
     }
 
@@ -108,7 +108,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.wait(new glGetProgramInfoLog(program, length, infoLog));
     }
 
@@ -120,7 +120,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetProgramInfoLog(program, maxLength));
     }
 
@@ -132,7 +132,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.wait(new glGetShaderInfoLog(shader, length, infoLog));
     }
 
@@ -144,7 +144,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetShaderInfoLog(shader, maxLength));
     }
 
@@ -156,7 +156,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetShaderi(shader, pname));
     }
 
@@ -170,8 +170,8 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
-        final int expected = getThreadContext().shaderTracker.glGetUniformLocation(program, name);
+        final Context context = ContextManager.getThreadContext();
+        final int expected = ContextManager.getThreadContext().shaderTracker.glGetUniformLocation(program, name);
         context.exec.execute(new glGetUniformLocation(program, name.toString(), expected));
         return expected;
     }
@@ -186,8 +186,8 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
-        final int expected = getThreadContext().shaderTracker.glGetProgrami(program, pname);
+        final Context context = ContextManager.getThreadContext();
+        final int expected = ContextManager.getThreadContext().shaderTracker.glGetProgrami(program, pname);
         context.exec.execute(new glGetProgrami(program, pname, expected));
         return expected;
     }
@@ -200,7 +200,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.shaderTracker.invalidateCache(program);
         context.exec.execute(new glLinkProgram(program));
     }
@@ -213,7 +213,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glShaderSource(shader, string));
     }
 
@@ -225,7 +225,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform1f(location, v0));
     }
 
@@ -237,7 +237,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform1i(location, v0));
     }
 
@@ -250,7 +250,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
         context.exec.execute(new glUniform1(location, snapshot));
     }
@@ -263,7 +263,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform2f(location, v0, v1));
     }
 
@@ -275,7 +275,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform2i(location, v0, v1));
     }
 
@@ -288,7 +288,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
         context.exec.execute(new glUniform2(location, snapshot));
     }
@@ -301,7 +301,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform3f(location, v0, v1, v2));
     }
 
@@ -313,7 +313,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform3i(location, v0, v1, v2));
     }
 
@@ -326,7 +326,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
         context.exec.execute(new glUniform3(location, snapshot));
     }
@@ -339,7 +339,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform4f(location, v0, v1, v2, v3));
     }
 
@@ -351,7 +351,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform4i(location, v0, v1, v2, v3));
     }
 
@@ -364,7 +364,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
         context.exec.execute(new glUniform4(location, snapshot));
     }
@@ -387,7 +387,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.attribTracker.glUseProgram(program);
         context.exec.execute(new glUseProgram(program));
     }
@@ -400,7 +400,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.shaderTracker.invalidateCache(program);
         context.exec.execute(new glValidateProgram(program));
     }
@@ -413,7 +413,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.shaderTracker.invalidateCache(program);
         context.exec.execute(new glDetachShader(program, shader));
     }
@@ -426,7 +426,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glDisableVertexAttribArray(index));
     }
 
@@ -438,7 +438,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glEnableVertexAttribArray(index));
     }
 
@@ -451,7 +451,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(matrices);
         context.exec.execute(new glUniformMatrix4(location, transpose, snapshot));
     }
@@ -465,7 +465,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(matrices);
         context.exec.execute(new glUniformMatrix3(location, transpose, snapshot));
     }
@@ -478,7 +478,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glVertexAttribPointer(index, size, type, normalized, stride, buffer_buffer_offset));
     }
 
@@ -491,7 +491,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final IntBufferSnapshot snapshot = context.bufferPool.snapshot(buffers);
         context.exec.execute(new glDrawBuffers(snapshot));
     }
@@ -504,7 +504,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glDrawBuffers(buffer));
     }
 
@@ -516,7 +516,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetAttribLocation(program, name));
     }
 
@@ -528,7 +528,7 @@ public class GL20 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glIsProgram(program));
     }
 }

@@ -1,9 +1,8 @@
 package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL42 {
     public static void glMemoryBarrier(int barriers) {
@@ -14,7 +13,7 @@ public class GL42 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glMemoryBarrier(barriers));
     }
 
@@ -26,7 +25,7 @@ public class GL42 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glBindImageTexture(unit, texture, level, layered, layer, access, format));
     }
 
@@ -39,7 +38,7 @@ public class GL42 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.textureTracker.updateTextureData(context, target, 0, internalformat, width, height);
         context.exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
     }

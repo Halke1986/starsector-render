@@ -8,7 +8,6 @@ import com.genir.renderer.bridge.interfaces.GLCommand;
 import java.nio.ByteBuffer;
 
 import static com.genir.renderer.bridge.commands.GL11.glTexCoord2f;
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL13 {
     public static void glActiveTexture(int mode) {
@@ -20,7 +19,7 @@ public class GL13 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.attribTracker.glActiveTexture(mode);
         context.exec.execute(new glActiveTexture(mode));
     }
@@ -35,7 +34,7 @@ public class GL13 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final BufferPool.ByteBufferSnapshot snapshot = context.bufferPool.snapshot(data);
         context.textureTracker.updateTextureData(context, target, level, internalformat, width, height);
         context.exec.execute(new glCompressedTexImage2D(target, level, internalformat, width, height, border, snapshot));
