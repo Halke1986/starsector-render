@@ -161,35 +161,13 @@ public class GL20 {
     }
 
     public static int glGetUniformLocation(int program, CharSequence name) {
-        record glGetUniformLocation(int program, CharSequence name, int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                // Assert the simulated value reflects the OpenGL state.
-                int actual = org.lwjgl.opengl.GL20.glGetUniformLocation(program, name);
-                asertEqual(expected, actual, this);
-            }
-        }
-
         final Context context = ContextManager.getThreadContext();
-        final int expected = ContextManager.getThreadContext().shaderTracker.glGetUniformLocation(program, name);
-        context.exec.execute(new glGetUniformLocation(program, name.toString(), expected));
-        return expected;
+        return context.shaderTracker.glGetUniformLocation(program, name);
     }
 
     public static int glGetProgrami(int program, int pname) {
-        record glGetProgrami(int program, int pname, int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                // Assert the simulated value reflects the OpenGL state.
-                int actual = org.lwjgl.opengl.GL20.glGetProgrami(program, pname);
-                asertEqual(expected, actual, this);
-            }
-        }
-
         final Context context = ContextManager.getThreadContext();
-        final int expected = ContextManager.getThreadContext().shaderTracker.glGetProgrami(program, pname);
-        context.exec.execute(new glGetProgrami(program, pname, expected));
-        return expected;
+        return context.shaderTracker.glGetProgrami(program, pname);
     }
 
     public static void glLinkProgram(int program) {
@@ -400,8 +378,12 @@ public class GL20 {
             }
         }
 
+        // glValidateProgram should not invalidate shaderTracker cache.
+        // Assume the value returned by glValidateProgram is always the
+        // same for a given program, even though it's not the case in
+        // general. Assertion in shaderTracker should verify the assumption.
+
         final Context context = ContextManager.getThreadContext();
-        context.shaderTracker.invalidateCache(program);
         context.exec.execute(new glValidateProgram(program));
     }
 
