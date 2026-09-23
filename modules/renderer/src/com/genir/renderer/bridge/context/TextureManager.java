@@ -25,7 +25,7 @@ public class TextureManager {
     private boolean assetLoadingFinished = false;
 
     private TextureState[] texturesState = new TextureState[1];
-    private final Map<Integer, TextureCallbacks> loaders = new HashMap<>();
+    private final Map<Integer, TextureCallbacks> loadersCache = new HashMap<>();
 
     private static final AsyncException asyncException = new AsyncException();
     private final ExecutorService workers = ExecutorFactory.newExecutor(4, "FR-Texture-Lazy-Loader", asyncException);
@@ -37,17 +37,21 @@ public class TextureManager {
             texturesState = Arrays.copyOf(texturesState, texturesState.length * 2);
         }
 
+        TextureCallbacks loaders = new TextureCallbacks(texData, loadFn, commitFn);
+
         // Upload textures defined after the asset loading phase immediately.
         // Textures defined by mods at runtime are likely to be displayed immediately,
         // without advance notice that would allow reliable lazy uploading.
         if (assetLoadingFinished) {
-            uploadTexture(context, texture);
+            logger.info("Loading DDS texture  [" + PWD.relativize(texData.imagePath) + "]");
+            uploadTexture(context, texture, loaders);
             return;
         }
 
         // Perform an eager upload for non-managed textures.
         if (texturesState[texture] == TextureState.DO_NOT_MANAGE) {
-            uploadTexture(context, texture);
+            logger.info("Loading DDS texture  [" + PWD.relativize(texData.imagePath) + "]");
+            uploadTexture(context, texture, loaders);
             return;
         }
 
@@ -57,7 +61,7 @@ public class TextureManager {
             texturesState[texture] = TextureState.UNLOADED;
         }
 
-        loaders.put(texture, new TextureCallbacks(texData, loadFn, commitFn));
+        loadersCache.put(texture, loaders);
     }
 
     // Runs on the client thread. Triggers texture lazy upload.
@@ -71,18 +75,19 @@ public class TextureManager {
         texturesState[texture] = TextureState.DO_NOT_MANAGE;
         loadedNumber++;
 
-        uploadTexture(context, texture);
+        TextureCallbacks loaders = loadersCache.remove(texture);
+
+        Path path = PWD.relativize(loaders.texData.imagePath);
+        logger.info("Loading DDS texture " + loadedNumber + "/" + managedNumber + " [" + path + "]");
+
+        uploadTexture(context, texture, loaders);
     }
 
-    private void uploadTexture(Context context, int texture) {
-        TextureCallbacks callbacks = loaders.get(texture);
-        Path path = PWD.relativize(callbacks.texData.imagePath);
-        logger.info("Loading texture " + loadedNumber + "/" + managedNumber + " id:" + texture + " [" + path + "]");
-
+    private void uploadTexture(Context context, int texture, TextureCallbacks loaders) {
         // Load texture.
         Future<byte[]> bufferFuture = workers.submit(() -> {
             try {
-                return callbacks.loadFn.call();
+                return loaders.loadFn.call();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -90,21 +95,15 @@ public class TextureManager {
 
         // Commit texture.
         context.exec.execute((ctx, args, offset) -> {
-            commitTexture(ctx, texture, bufferFuture);
+            commitTexture(ctx, texture, bufferFuture, loaders);
         });
     }
 
-    public void assetLoadingFinished() {
-        assetLoadingFinished = true;
-    }
-
-    private void commitTexture(Context context, int texture, Future<byte[]> bufferFuture) {
+    private void commitTexture(Context context, int texture, Future<byte[]> bufferFuture, TextureCallbacks loaders) {
         long start = System.nanoTime();
         try {
             byte[] bytes = bufferFuture.get();
-
-            TextureCallbacks texData = loaders.get(texture);
-            texData.commitFn.accept(bytes);
+            loaders.commitFn.accept(bytes);
 
             // Experiments indicate that the OpenGL driver defers most texture upload work
             // until a draw call. Force that work here to measure the total upload latency.
@@ -147,6 +146,10 @@ public class TextureManager {
         org.lwjgl.opengl.GL11.glPopAttrib();
     }
 
+    public void assetLoadingFinished() {
+        assetLoadingFinished = true;
+    }
+
     public void glDeleteTextures(int texture) {
         doNotManageTexture(texture);
     }
@@ -162,7 +165,7 @@ public class TextureManager {
         }
 
         texturesState[texture] = TextureState.DO_NOT_MANAGE;
-        loaders.remove(texture);
+        loadersCache.remove(texture);
     }
 
     public void update() {

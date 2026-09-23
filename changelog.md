@@ -1,3 +1,5 @@
+- Fixed a NullPointerException when loading textures. Reported by Coffee Cat.
+
 v0.8.10rc1
 
 - Added handling for file paths ending with a whitespace, as introduced by Persean Separatist 0.9.0. Issue reported by lChronosl.
