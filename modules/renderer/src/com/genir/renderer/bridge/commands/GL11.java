@@ -423,12 +423,15 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
-                context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+                context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
 
                 if (!context.listManager.isReplaying()) {
                     this.release();
                 }
+            }
+
+            public void runDraw() {
+                org.lwjgl.opengl.GL11.glDrawArrays(mode, first, count);
             }
 
             @Override
@@ -449,12 +452,15 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                Runnable glDrawArrays = () -> org.lwjgl.opengl.GL11.glDrawElements(mode, indices.buffer);
-                context.vertexInterceptor.drawRecordedArrays(glDrawArrays, snapshot);
+                context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
 
                 if (!context.listManager.isReplaying()) {
                     this.release();
                 }
+            }
+
+            public void runDraw() {
+                org.lwjgl.opengl.GL11.glDrawElements(mode, indices.buffer);
             }
 
             @Override
