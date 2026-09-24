@@ -21,6 +21,11 @@ public class Transformations {
             entry("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/opengl/GL14")
     );
 
+    public static Map<String, String> glDrainErrors = Map.<String, String>ofEntries(
+            // Use non-blocking glGetError replacement.
+            entry("glGetError", "glDrainErrors")
+    );
+
     public static Map<String, String> opengl = Map.<String, String>ofEntries(
             // Replace all OpenGL calls.
             entry("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/opengl/GL11"),

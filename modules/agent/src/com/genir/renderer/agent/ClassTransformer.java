@@ -66,6 +66,9 @@ public class ClassTransformer implements ClassFileTransformer {
         } else if (name.startsWith("DeCell.VOpt.Commons.Rendering.")) {
             // Do not replace OpenGL calls in VOpt, as it does run directly on rendering thread.
             return null;
+        } else if (name.contains("FSD_PlatingHitRenderer") || name.contains("FSD_CocxisDrivePlatingRenderer")) {
+            // Workaround for FarsightDrive async stall on repeated glGetError calls.
+            return new ConstantTransformer(Transformations.opengl, Transformations.glDrainErrors);
         } else {
             // Do Assume classes loaded by loaders other than system loaders are scripts.
             return scriptTransformer;

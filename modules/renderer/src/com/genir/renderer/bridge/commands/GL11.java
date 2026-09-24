@@ -9,6 +9,7 @@ import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.ListManager;
 import com.genir.renderer.bridge.context.stall.AttribState;
 import com.genir.renderer.bridge.interfaces.*;
+import org.apache.log4j.Logger;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -1856,5 +1857,26 @@ public class GL11 {
     public static boolean glIsTexture(int texture) {
         final Context context = ContextManager.getThreadContext();
         return context.textureTracker.glIsTexture(context, texture);
+    }
+
+    /**
+     * Custom.
+     */
+
+    // Non-blocking replacement for glGetError used in
+    // code that does not consult the returned values.
+    public static int glDrainErrors() {
+        record glDrainError() implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                while (org.lwjgl.opengl.GL11.glGetError() != 0) {
+                }
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glDrainError());
+
+        return 0;
     }
 }

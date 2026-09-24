@@ -1,3 +1,5 @@
+- Fixed an asynchronous pipeline stall crash when using FarsightDrive. Reported by Hierophant.Slayer.
+
 v0.8.10rc2
 
 - Fixed a NullPointerException when loading textures. Reported by Coffee Cat.
