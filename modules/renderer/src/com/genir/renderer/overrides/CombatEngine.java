@@ -11,8 +11,6 @@ import proxy.com.fs.starfarer.renderers.FloatingTextManager;
 import proxy.com.fs.starfarer.renderers.damage.DebrisParticleSystem;
 import proxy.com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
 
-import static com.genir.renderer.Noop.breakpoint;
-
 /**
  * OVERRIDES com.fs.starfarer.combat.CombatEngine
  */

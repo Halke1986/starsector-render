@@ -140,6 +140,10 @@ public class Transformer implements ClassFileTransformer {
                 transformer.removeMethod("renderProgress", "(F)V");
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/ResourceLoaderState"));
                 break;
+            case "com/fs/starfarer/combat/CombatState":
+                transformer.renameMethod("reloadAssets", "reloadAssets_vanilla", "()V");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/CombatState"));
+                break;
         }
     }
 }

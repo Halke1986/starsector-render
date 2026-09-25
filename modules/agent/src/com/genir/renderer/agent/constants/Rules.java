@@ -185,6 +185,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C"),
             entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
             entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
+            entry("com/genir/renderer/overrides/CombatState", "com/fs/starfarer/combat/CombatState"),
             entry("com/genir/renderer/overrides/loading/HullSpecStore", "com/fs/starfarer/loading/oO0O"),
             entry("com/genir/renderer/overrides/loading/WeaponSpecStore", "com/fs/starfarer/loading/Q"),
             entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
