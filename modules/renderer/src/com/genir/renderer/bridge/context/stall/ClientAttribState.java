@@ -1,5 +1,6 @@
-package com.genir.renderer.bridge.context;
+package com.genir.renderer.bridge.context.stall;
 
+import com.genir.renderer.bridge.context.ArrayPointer;
 import org.lwjgl.opengl.GL11;
 
 public class ClientAttribState {

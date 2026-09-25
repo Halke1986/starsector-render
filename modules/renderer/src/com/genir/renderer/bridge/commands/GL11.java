@@ -3,13 +3,12 @@ package com.genir.renderer.bridge.commands;
 import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
-import com.genir.renderer.bridge.context.ClientAttribTracker;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.ListManager;
 import com.genir.renderer.bridge.context.stall.AttribState;
+import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.*;
-import org.apache.log4j.Logger;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 

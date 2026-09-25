@@ -11,8 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static com.genir.renderer.debug.Debug.asertEqual;
-
 public class GL20 {
     public static void glAttachShader(int program, int shader) {
         record glAttachShader(int program, int shader) implements GLCommand {

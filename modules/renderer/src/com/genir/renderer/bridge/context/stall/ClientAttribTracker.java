@@ -1,5 +1,6 @@
-package com.genir.renderer.bridge.context;
+package com.genir.renderer.bridge.context.stall;
 
+import com.genir.renderer.bridge.context.*;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
@@ -18,7 +19,7 @@ public class ClientAttribTracker {
     public final ClientAttribState state = new ClientAttribState();
     private final Stack<Snapshot> stateStack = new Stack<>();
 
-    ClientAttribTracker(BufferPool bufferPool, Executor exec) {
+    public ClientAttribTracker(BufferPool bufferPool, Executor exec) {
         this.bufferPool = bufferPool;
         this.exec = exec;
     }

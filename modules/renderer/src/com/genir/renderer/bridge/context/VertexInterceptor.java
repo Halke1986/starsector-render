@@ -1,5 +1,6 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;

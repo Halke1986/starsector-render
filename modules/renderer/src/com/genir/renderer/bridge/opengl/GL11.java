@@ -1,9 +1,5 @@
 package com.genir.renderer.bridge.opengl;
 
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.interfaces.GLCommand;
-
 import java.nio.*;
 
 public final class GL11 {
