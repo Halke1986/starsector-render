@@ -22,6 +22,7 @@ MOD INTEGRATION
 
 INCOMPATIBLE MODS
 
+- BoxUtil 1.6.0 and later.
 - Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
 
 INSTALLATION
