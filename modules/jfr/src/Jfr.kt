@@ -33,6 +33,7 @@ fun filterThread(e: RecordedEvent): Boolean {
     val threadBlacklist: List<String> = listOf(
         "AWT-Windows",
         "RMI TCP",
+        "AWT-XAWT",
         "Thread-12",
         "Thread-13",
         "Thread-14",

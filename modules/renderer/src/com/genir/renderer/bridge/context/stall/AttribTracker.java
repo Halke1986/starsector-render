@@ -35,6 +35,10 @@ public class AttribTracker {
         this.exec = exec;
     }
 
+    //
+    // Getters.
+    //
+
     public boolean getEnableStencilTest() {
         // No assertion required. Client and
         // server state are allowed to diverge.
