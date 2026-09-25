@@ -1,4 +1,5 @@
 - Fixed an asynchronous pipeline stall crash when using FarsightDrive. Reported by Hierophant.Slayer.
+- Fixed a bug in OpenGL Array Buffer handling, that could result in a crash when using CMUtils. Reported by cake.
 
 v0.8.10rc2
 
