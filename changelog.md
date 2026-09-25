@@ -1,3 +1,21 @@
+v0.8.10rc3
+
+- Fixed an asynchronous pipeline stall crash when using FarsightDrive. Reported by Hierophant.Slayer.
+- Fixed a bug in OpenGL array buffer handling that could cause a crash when using CMUtils. Reported by cake.
+- Added support for windowLocationX/Y is Starsector settings.json. Issue reported by Bass.
+
+v0.8.10rc2
+
+- Fixed a NullPointerException when loading textures. Reported by Coffee Cat.
+- Fixed an assertion error that could occur when querying OpenGL shader parameters. Reported by cake.
+
+v0.8.10rc1
+
+- Added handling for file paths ending with a whitespace, as introduced by Persean Separatist 0.9.0. Issue reported by lChronosl.
+- Enabled mipmap generation for all textures.
+- Fixed Vulpoids dynamic portraits not rendering correctly when using VRAM Optimizer. Reported by Rrewin.
+- Improved lazy texture logic to ensure no conflict between uploads. 
+
 v0.8.9
 
 - Improved exception handling during game startup.

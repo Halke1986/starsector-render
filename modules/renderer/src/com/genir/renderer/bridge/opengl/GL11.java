@@ -1270,4 +1270,12 @@ public final class GL11 {
     public static void glViewport(int x, int y, int width, int height) {
         com.genir.renderer.bridge.commands.GL11.glViewport(x, y, width, height);
     }
+
+    /**
+     * Custom.
+     */
+
+    public static int glDrainErrors() {
+        return com.genir.renderer.bridge.commands.GL11.glDrainErrors();
+    }
 }

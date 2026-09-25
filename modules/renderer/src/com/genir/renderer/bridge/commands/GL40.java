@@ -2,12 +2,11 @@ package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
 import java.nio.IntBuffer;
-
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL40 {
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {
@@ -18,7 +17,7 @@ public class GL40 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetSubroutineIndex(program, shadertype, name));
     }
 
@@ -30,7 +29,7 @@ public class GL40 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetSubroutineUniformLocation(program, shadertype, name));
     }
 
@@ -43,7 +42,7 @@ public class GL40 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         final IntBufferSnapshot snapshot = context.bufferPool.snapshot(indices);
         context.exec.execute(new glUniformSubroutinesu(shadertype, snapshot));
     }
@@ -56,7 +55,7 @@ public class GL40 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glPatchParameteri(pname, value));
     }
 
@@ -68,7 +67,7 @@ public class GL40 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glBlendEquationi(buf, mode));
     }
 
@@ -80,7 +79,7 @@ public class GL40 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 

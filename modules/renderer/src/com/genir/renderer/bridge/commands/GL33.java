@@ -1,9 +1,8 @@
 package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
 
 public class GL33 {
     public static void glVertexAttribDivisor(int index, int divisor) {
@@ -14,7 +13,7 @@ public class GL33 {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glVertexAttribDivisor(index, divisor));
     }
 }

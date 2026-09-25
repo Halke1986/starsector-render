@@ -180,9 +180,12 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         com.genir.renderer.bridge.commands.Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
 
         // Initliaze Fast Rendering functionality.
+        final Context context = ContextManager.getThreadContext();
+        context.stallDetector.enableDetection();
         GameState.gameInitialized = true;
         ContextManager.getThreadContext().stallDetector.enableDetection();
         FileLoader.FileLoader_getInstance().initGameplay();
+        context.textureManager.assetLoadingFinished();
         if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
             SamplerRunner.samplerRunner.start();
         }

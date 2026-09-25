@@ -8,8 +8,6 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.Drawable;
 
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
-
 public class SharedDrawable implements Drawable {
     private final org.lwjgl.opengl.SharedDrawable impl;
 
@@ -25,7 +23,7 @@ public class SharedDrawable implements Drawable {
             }
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
         impl = context.exec.get(new SharedDrawableConstructor(drawable));
     }
 

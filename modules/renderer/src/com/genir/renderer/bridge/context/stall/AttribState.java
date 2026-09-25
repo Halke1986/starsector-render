@@ -9,9 +9,6 @@ import java.util.Map;
 // reference:
 // https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glPushAttrib.xml
 public class AttribState {
-    // GL_CLIENT_VERTEX_ARRAY_BIT
-    public int arrayBufferBinding = 0;
-
     // GL_COLOR_BUFFER_BIT
     public boolean enableAlphaTest = false;   // GL11.GL_ALPHA_TEST, also GL_ENABLE_BIT
     public boolean enableBlend = false;       // GL11.GL_BLEND, also GL_ENABLE_BIT
@@ -99,12 +96,6 @@ public class AttribState {
 
     public void glLineWidth(float width) {
         lineWidth = width;
-    }
-
-    public void glBindBuffer(int target, int buffer) {
-        if (target == GL15.GL_ARRAY_BUFFER) {
-            arrayBufferBinding = buffer;
-        }
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
@@ -259,10 +250,6 @@ public class AttribState {
 
         if ((attribMask & GL11.GL_LINE_BIT) != 0) {
             lineWidth = source.lineWidth;
-        }
-
-        if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
-            arrayBufferBinding = source.arrayBufferBinding;
         }
 
         if ((attribMask & GL11.GL_COLOR_BUFFER_BIT) != 0) {

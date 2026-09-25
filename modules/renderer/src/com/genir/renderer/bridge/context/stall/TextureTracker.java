@@ -46,7 +46,7 @@ public class TextureTracker { // Context-shared object.
         }
 
         // Unbinding a texture.
-        if (texture == 0){
+        if (texture == 0) {
             return true;
         }
 

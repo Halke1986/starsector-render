@@ -35,6 +35,10 @@ public class AttribTracker {
         this.exec = exec;
     }
 
+    //
+    // Getters.
+    //
+
     public boolean getEnableStencilTest() {
         // No assertion required. Client and
         // server state are allowed to diverge.
@@ -131,20 +135,6 @@ public class AttribTracker {
 
         float result = state.lineWidth;
         exec.execute(new getLineWidth(result));
-        return result;
-    }
-
-    public int getArrayBufferBinding() {
-        record getArrayBufferBinding(int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
-                asertEqual(expected, actual, this);
-            }
-        }
-
-        int result = state.arrayBufferBinding;
-        exec.execute(new getArrayBufferBinding(result));
         return result;
     }
 
@@ -256,10 +246,6 @@ public class AttribTracker {
 
     public void glLineWidth(float width) {
         state.glLineWidth(width);
-    }
-
-    public void glBindBuffer(int target, int buffer) {
-        state.glBindBuffer(target, buffer);
     }
 
     public void glBindFramebuffer(int target, int framebuffer) {

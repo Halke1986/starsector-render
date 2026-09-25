@@ -1,9 +1,12 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
@@ -201,9 +204,6 @@ public class VertexInterceptor {
             return;
         }
 
-        // Array draws cannot be used when array buffer is bound.
-        attribManager.forceArrayBufferBinding(0);
-
         for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
             FloatBuffer vertexBatch = entry.getValue();
             if (vertexBatch.position() == 0) {
@@ -227,7 +227,6 @@ public class VertexInterceptor {
 
         // Restore client selected attributes to avoid client-server state desync.
         attribManager.reorderedDrawContextCleanup();
-        attribManager.applyArrayBufferBinding();
     }
 
     private void storeReorderedDraw(int mode, int count) {
@@ -330,34 +329,52 @@ public class VertexInterceptor {
         if (hasTexture1) flags |= TEX1_FLAG;
         if (hasNormal) flags |= NORMAL_FLAG;
 
-        // Array draws cannot be used when array buffer is bound.
-        attribManager.forceArrayBufferBinding(0);
-
         prepareVertexPointers(count, flags);
         primaryVertexPointer.put(0, vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyDrawAttribs();
         org.lwjgl.opengl.GL11.glDrawArrays(mode, 0, count);
-
-        // Restore client selected attributes to avoid client-server state desync.
-        attribManager.applyArrayBufferBinding();
     }
 
     private void prepareVertexPointers(int count, int requiredFlags) {
-        boolean resized = false;
+        boolean wasResized = false;
         int capacityRequired = count * STRIDE;
         if (primaryVertexPointer.capacity() < capacityRequired) {
             primaryVertexPointer = BufferUtils.createFloatBuffer(capacityRequired);
-            resized = true;
+            wasResized = true;
         }
 
-        if (!resized && arrayFlags == requiredFlags) {
+        if (!wasResized && arrayFlags == requiredFlags) {
             return;
         }
 
+        try {
+            prepareVertexPointersGL(count, wasResized, requiredFlags);
+        } catch (OpenGLException e) {
+            if (!e.getMessage().equals("Cannot use Buffers when Array Buffer Object is enabled")) {
+                // Unknown exception.
+                throw e;
+            }
+
+            // CMUtils may leave an array buffer bound during game initialization.
+            // Unbind it and retry vertex pointer setup.
+            // This rarely occurs, so handle it through exception handling rather
+            // than tracking OpenGL state, keeping the code simpler.
+            int bufferBinding = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
+            org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+            prepareVertexPointersGL(count, wasResized, requiredFlags);
+
+            org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, bufferBinding);
+        }
+
+        arrayFlags = requiredFlags;
+    }
+
+    private void prepareVertexPointersGL(int count, boolean wasResized, int requiredFlags) {
         FloatBuffer p = primaryVertexPointer;
 
-        if (resized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
+        if (wasResized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
                 org.lwjgl.opengl.GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
@@ -366,7 +383,7 @@ public class VertexInterceptor {
             }
         }
 
-        if (resized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
+        if (wasResized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
                 org.lwjgl.opengl.GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
@@ -375,7 +392,7 @@ public class VertexInterceptor {
             }
         }
 
-        if (resized || (arrayFlags & TEX_FLAG) != (requiredFlags & TEX_FLAG)) {
+        if (wasResized || (arrayFlags & TEX_FLAG) != (requiredFlags & TEX_FLAG)) {
             int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 
@@ -389,7 +406,7 @@ public class VertexInterceptor {
             org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
-        if (resized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
+        if (wasResized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
             int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
 
@@ -403,7 +420,7 @@ public class VertexInterceptor {
             org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
-        if (resized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
+        if (wasResized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 org.lwjgl.opengl.GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
@@ -411,8 +428,6 @@ public class VertexInterceptor {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }
         }
-
-        arrayFlags = requiredFlags;
     }
 
     public record setReorderDraw(boolean reorder) implements GLCommand {

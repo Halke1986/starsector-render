@@ -3,7 +3,6 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +16,8 @@ import static com.genir.renderer.debug.Debug.asertEqual;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
+    // TODO AttribManager handles glDeleteTextures.
+
     private final AttribState expected = new AttribState();
     private final AttribState actual = new AttribState();
 
@@ -98,25 +99,6 @@ public class AttribManager {
         }
     }
 
-    // Apply array buffer binding selected by the client.
-    public void applyArrayBufferBinding() {
-        if (actual.arrayBufferBinding != expected.arrayBufferBinding) {
-            actual.arrayBufferBinding = expected.arrayBufferBinding;
-
-            org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, expected.arrayBufferBinding);
-        }
-    }
-
-    // Set array buffer binding required by the bridge, which may be
-    // different from binding selected by the client.
-    public void forceArrayBufferBinding(int buffer) {
-        if (actual.arrayBufferBinding != buffer) {
-            actual.arrayBufferBinding = buffer;
-
-            org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
-        }
-    }
-
     //
     // GL calls.
     //
@@ -166,12 +148,6 @@ public class AttribManager {
         // Texture unit is not permanently overriden.
         expected.glActiveTexture(mode);
         actual.glActiveTexture(mode);
-    }
-
-    public void glBindBuffer(int target, int buffer) {
-        // Buffer binding is not permanently overriden.
-        expected.glBindBuffer(target, buffer);
-        actual.glBindBuffer(target, buffer);
     }
 
     public void glBlendFunc(int sfactorRGB, int dfactorRGB) {

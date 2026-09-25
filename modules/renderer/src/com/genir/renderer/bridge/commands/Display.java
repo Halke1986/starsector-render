@@ -227,4 +227,8 @@ public class Display {
     public static void setTitle(String newTitle) {
         org.lwjgl.opengl.Display.setTitle(newTitle);
     }
+
+    public static void setLocation(int new_x, int new_y) {
+        org.lwjgl.opengl.Display.setLocation(new_x, new_y);
+    }
 }
