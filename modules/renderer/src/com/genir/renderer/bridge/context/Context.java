@@ -56,7 +56,7 @@ public class Context {
     // Context-local client state. Runs on main thread.
     public final float[] commandArgs = new float[4];
     public final AttribTracker attribTracker = new AttribTracker(exec);
-    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool);
+    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
     // Context-local client state, that can however be safely run per-context.
     public final ListManager clientListManager = new ListManager(this);
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);

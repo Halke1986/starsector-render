@@ -1,21 +1,26 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 
 import java.nio.Buffer;
 import java.util.Stack;
 
 import static com.genir.renderer.debug.Debug.asert;
+import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class ClientAttribTracker {
+    private final Executor exec;
     private final BufferPool bufferPool;
 
     public final ClientAttribState state = new ClientAttribState();
     private final Stack<Snapshot> stateStack = new Stack<>();
 
-    ClientAttribTracker(BufferPool bufferPool) {
+    ClientAttribTracker(BufferPool bufferPool, Executor exec) {
         this.bufferPool = bufferPool;
+        this.exec = exec;
     }
 
     //
@@ -27,6 +32,20 @@ public class ClientAttribTracker {
                 state.enableVertexArray ? state.vertexPointer.getSnapshot(bufferPool) : null,
                 state.enableTexCoordArray ? state.texCoordPointer.getSnapshot(bufferPool) : null,
                 state.enableColorArray ? state.colorPointer.getSnapshot(bufferPool) : null);
+    }
+
+    public int getArrayBufferBinding() {
+        record getArrayBufferBinding(int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
+                asertEqual(expected, actual, this);
+            }
+        }
+
+        int result = state.arrayBufferBinding;
+        exec.execute(new getArrayBufferBinding(result));
+        return result;
     }
 
     //
@@ -98,6 +117,12 @@ public class ClientAttribTracker {
 
     public void glVertexPointer(int size, int type, int stride, Long pointer) {
         state.vertexPointer = new ArrayPointer(size, type, stride, null);
+    }
+
+    public void glBindBuffer(int target, int buffer) {
+        if (target == GL15.GL_ARRAY_BUFFER) {
+            state.arrayBufferBinding = buffer;
+        }
     }
 
     private void setState(int cap, boolean value) {

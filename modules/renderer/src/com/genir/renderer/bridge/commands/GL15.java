@@ -55,15 +55,13 @@ public class GL15 {
         record glBindBuffer(int target, int buffer) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.attribManager.glBindBuffer(target, buffer);
-
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
         context.bufferManager.glBindBuffer(target, buffer);
-        context.attribTracker.glBindBuffer(target, buffer);
+        context.clientAttribTracker.glBindBuffer(target, buffer);
         context.exec.execute(new glBindBuffer(target, buffer));
     }
 

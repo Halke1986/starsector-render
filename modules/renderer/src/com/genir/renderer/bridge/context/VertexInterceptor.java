@@ -201,9 +201,6 @@ public class VertexInterceptor {
             return;
         }
 
-        // Array draws cannot be used when array buffer is bound.
-        attribManager.forceArrayBufferBinding(0);
-
         for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
             FloatBuffer vertexBatch = entry.getValue();
             if (vertexBatch.position() == 0) {
@@ -227,7 +224,6 @@ public class VertexInterceptor {
 
         // Restore client selected attributes to avoid client-server state desync.
         attribManager.reorderedDrawContextCleanup();
-        attribManager.applyArrayBufferBinding();
     }
 
     private void storeReorderedDraw(int mode, int count) {
@@ -330,17 +326,11 @@ public class VertexInterceptor {
         if (hasTexture1) flags |= TEX1_FLAG;
         if (hasNormal) flags |= NORMAL_FLAG;
 
-        // Array draws cannot be used when array buffer is bound.
-        attribManager.forceArrayBufferBinding(0);
-
         prepareVertexPointers(count, flags);
         primaryVertexPointer.put(0, vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyDrawAttribs();
         org.lwjgl.opengl.GL11.glDrawArrays(mode, 0, count);
-
-        // Restore client selected attributes to avoid client-server state desync.
-        attribManager.applyArrayBufferBinding();
     }
 
     private void prepareVertexPointers(int count, int requiredFlags) {
