@@ -1,5 +1,7 @@
+v0.8.10rc3
+
 - Fixed an asynchronous pipeline stall crash when using FarsightDrive. Reported by Hierophant.Slayer.
-- Fixed a bug in OpenGL Array Buffer handling, that could result in a crash when using CMUtils. Reported by cake.
+- Fixed a bug in OpenGL array buffer handling that could cause a crash when using CMUtils. Reported by cake.
 - Added support for windowLocationX/Y is Starsector settings.json. Issue reported by Bass.
 
 v0.8.10rc2
