@@ -1,6 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
-import proxy.sound.Track;
+import sound.Track;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,11 +1,25 @@
 package com.genir.renderer.overrides.loading;
 
+import com.fs.graphics.Sprite;
+import com.fs.graphics.TextureRepository;
+import com.fs.graphics.font.FontRepository;
+import com.fs.graphics.particle.SmoothParticle;
+import com.fs.graphics.util.Fps;
+import com.fs.graphics.util.Rendering;
+import com.fs.starfarer.Version;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModPlugin;
 import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.impl.campaign.procgen.MarkovNames;
 import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamManager;
 import com.fs.starfarer.api.loading.*;
+import com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
+import com.fs.starfarer.loading.specs.BaseWeaponSpec;
+import com.fs.starfarer.loading.specs.ShipHullSpec;
+import com.fs.starfarer.renderers.AtmosphereRenderer;
+import com.fs.starfarer.renderers.ShipArrowRenderer;
+import com.fs.starfarer.settings.StarfarerSettings;
+import com.fs.starfarer.util.ScreenshotUtil;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.Context;
@@ -14,20 +28,6 @@ import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
-import proxy.com.fs.graphics.Sprite;
-import proxy.com.fs.graphics.TextureRepository;
-import proxy.com.fs.graphics.font.FontRepository;
-import proxy.com.fs.graphics.particle.SmoothParticle;
-import proxy.com.fs.graphics.util.Fps;
-import proxy.com.fs.graphics.util.Rendering;
-import proxy.com.fs.starfarer.Version;
-import proxy.com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
-import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
-import proxy.com.fs.starfarer.loading.specs.ShipHullSpec;
-import proxy.com.fs.starfarer.renderers.AtmosphereRenderer;
-import proxy.com.fs.starfarer.renderers.ShipArrowRenderer;
-import proxy.com.fs.starfarer.settings.StarfarerSettings;
-import proxy.com.fs.starfarer.util.ScreenshotUtil;
 
 import java.awt.*;
 import java.io.IOException;
@@ -38,8 +38,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.genir.renderer.Noop.breakpoint;
 
 /**
  * OVERRIDES com.fs.starfarer.loading.ResourceLoaderState

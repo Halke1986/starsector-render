@@ -1,9 +1,9 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.loading.scripts.SecureClassLoader;
+import com.fs.util.container.repo.ObjectRepository;
 import org.apache.log4j.Logger;
-import proxy.com.fs.starfarer.loading.scripts.SecureClassLoader;
-import proxy.com.fs.util.container.repo.ObjectRepository;
 
 import java.io.File;
 import java.net.MalformedURLException;

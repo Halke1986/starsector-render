@@ -1,14 +1,14 @@
 package com.genir.renderer.overrides.loading.textures;
 
+import com.fs.graphics.AlphaAdder;
+import com.fs.graphics.TextureHandler;
+import com.fs.graphics.TextureRepository;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
 import com.genir.renderer.overrides.loading.ResourceLoaderState;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
-import proxy.com.fs.graphics.AlphaAdder;
-import proxy.com.fs.graphics.TextureHandler;
-import proxy.com.fs.graphics.TextureRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

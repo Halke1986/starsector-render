@@ -1,14 +1,14 @@
 package com.genir.renderer.overrides;
 
+import com.fs.graphics.LayeredRenderable;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
+import com.fs.starfarer.combat.CombatViewport;
+import com.fs.starfarer.combat.entities.CustomCombatEntity;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.VertexInterceptor;
-import proxy.com.fs.graphics.LayeredRenderable;
-import proxy.com.fs.starfarer.combat.CombatViewport;
-import proxy.com.fs.starfarer.combat.entities.CustomCombatEntity;
 
 import java.util.Arrays;
 import java.util.EnumSet;

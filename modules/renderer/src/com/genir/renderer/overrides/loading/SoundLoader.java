@@ -2,8 +2,8 @@ package com.genir.renderer.overrides.loading;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
-import proxy.sound.OggLoader;
-import proxy.sound.SoundBuffer;
+import sound.OggLoader;
+import sound.SoundBuffer;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

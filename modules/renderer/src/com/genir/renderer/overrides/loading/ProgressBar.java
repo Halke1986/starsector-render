@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
+import com.fs.graphics.Sprite;
 import com.fs.starfarer.api.Global;
-import proxy.com.fs.graphics.Sprite;
 
 import java.util.Random;
 

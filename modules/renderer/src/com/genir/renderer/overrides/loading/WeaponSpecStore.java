@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.starfarer.api.loading.WeaponSpecAPI;
-import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
+import com.fs.starfarer.loading.specs.BaseWeaponSpec;
 
 import java.util.Map;
 

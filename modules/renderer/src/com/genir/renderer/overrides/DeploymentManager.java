@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides;
 
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import proxy.com.fs.starfarer.campaign.fleet.FleetMember;
+import com.fs.starfarer.campaign.fleet.FleetMember;
 
 import java.util.List;
 

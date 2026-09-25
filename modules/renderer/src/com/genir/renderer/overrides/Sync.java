@@ -1,11 +1,11 @@
 package com.genir.renderer.overrides;
 
+import com.fs.starfarer.settings.StarfarerSettings;
 import com.genir.renderer.bridge.commands.Display;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.debug.SamplerRunner;
-import proxy.com.fs.starfarer.settings.StarfarerSettings;
 
 import static com.genir.renderer.debug.Debug.asert;
 

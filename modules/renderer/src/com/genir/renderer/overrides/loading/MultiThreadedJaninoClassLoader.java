@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
+import com.fs.starfarer.loading.JavaSourceFinder;
 import org.codehaus.janino.JavaSourceClassLoader;
-import proxy.com.fs.starfarer.loading.JavaSourceFinder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

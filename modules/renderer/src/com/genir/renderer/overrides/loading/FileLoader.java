@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
-import proxy.com.fs.util.FileLoader.ResourceLocation;
-import proxy.com.fs.util.container.Pair;
+import com.fs.util.FileLoader.ResourceLocation;
+import com.fs.util.container.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;

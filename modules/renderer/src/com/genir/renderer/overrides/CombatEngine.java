@@ -1,15 +1,15 @@
 package com.genir.renderer.overrides;
 
+import com.fs.graphics.LayeredRenderer;
+import com.fs.graphics.particle.DynamicParticleGroup;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
+import com.fs.starfarer.combat.CombatViewport;
+import com.fs.starfarer.renderers.FloatingTextManager;
+import com.fs.starfarer.renderers.damage.DebrisParticleSystem;
+import com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.VertexInterceptor;
-import proxy.com.fs.graphics.LayeredRenderer;
-import proxy.com.fs.graphics.particle.DynamicParticleGroup;
-import proxy.com.fs.starfarer.combat.CombatViewport;
-import proxy.com.fs.starfarer.renderers.FloatingTextManager;
-import proxy.com.fs.starfarer.renderers.damage.DebrisParticleSystem;
-import proxy.com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
 
 /**
  * OVERRIDES com.fs.starfarer.combat.CombatEngine
