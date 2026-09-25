@@ -19,8 +19,12 @@ public final class Agent {
         String checksum = getSha256(Path.of("starfarer_obf.jar"));
         logger.info("starfarer_obf.jar SHA-256 checksum: " + checksum);
 
-        instrumentation.addTransformer(new com.genir.renderer.agent.bytecode.Transformer(), false);
+        // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
+        // Donor bytecode is not loaded here, so its constants must be transformed by its respective loader.
+        // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.
         instrumentation.addTransformer(new com.genir.renderer.agent.constants.Transformer(), false);
+
+        instrumentation.addTransformer(new com.genir.renderer.agent.bytecode.Transformer(), false);
     }
 
     public static String getSha256(Path path) {

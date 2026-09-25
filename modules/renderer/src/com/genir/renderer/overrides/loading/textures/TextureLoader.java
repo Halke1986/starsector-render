@@ -67,6 +67,8 @@ public class TextureLoader {
             return;
         }
 
+        ResourceLoaderState.initStaticFields();
+
         ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
         ResourceLoaderState.workers.execute(() -> {
             try {
@@ -89,6 +91,8 @@ public class TextureLoader {
      * Texture loading during multi-threaded resource loading phase.
      */
     private void loadTextureAsync(String type, String path) {
+        ResourceLoaderState.initStaticFields();
+
         TextureData texData = loadTextureData(type, path);
 
         ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();

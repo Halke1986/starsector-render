@@ -7,6 +7,9 @@ public class Sprite {
     public void renderRegion(float x, float y, float tx, float ty, float tdx, float tdy) {
     }
 
+    public void renderAtCenter(float var1, float var2) {
+    }
+
     public float getHeight() {
         return 0;
     }

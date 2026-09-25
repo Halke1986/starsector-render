@@ -5,13 +5,13 @@ import proxy.com.fs.graphics.Sprite;
 
 import java.util.Random;
 
-class ProgressBar {
+public class ProgressBar {
     private final boolean[] barSegments = new boolean[200];
     private final Random rand = new Random();
 
-    boolean forwardOnly = false;
+    public boolean forwardOnly = false;
 
-    void animate(Sprite bar) {
+    public void animate(Sprite bar) {
         float x = Global.getSettings().getScreenWidth() / 2;
         float y = Global.getSettings().getScreenHeight() / 2;
 
@@ -56,7 +56,7 @@ class ProgressBar {
         }
     }
 
-    boolean barIsNotFull() {
+    public boolean barIsNotFull() {
         for (boolean barSegment : barSegments) {
             if (!barSegment) {
                 return true;

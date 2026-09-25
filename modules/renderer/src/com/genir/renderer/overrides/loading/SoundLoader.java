@@ -29,6 +29,8 @@ public class SoundLoader {
     );
 
     public static void queueSound(String path) {
+        ResourceLoaderState.initStaticFields();
+
         if (path != null && knownSounds.add(path)) {
             ResourceLoaderState.soundWorkers.execute(() -> {
                 loadSound(path);
@@ -93,7 +95,7 @@ public class SoundLoader {
                 break;
             default:
                 throw new RuntimeException("Only wav and ogg are currently supported.");
-            }
+        }
     }
 
     private static void loadOgg(String path, InputStream stream, SoundStore soundStore) throws IOException {

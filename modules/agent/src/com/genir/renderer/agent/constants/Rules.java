@@ -62,7 +62,6 @@ public class Rules {
             entry("proxy/com/fs/starfarer/renderers/damage/ExplosionParticleSystem", "com/fs/starfarer/renderers/damage/ExplosionParticleSystem"),
             entry("proxy/com/fs/starfarer/settings/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
             entry("proxy/com/fs/util/container/repo/ObjectRepository", "com/fs/util/container/repo/ObjectRepository"),
-            entry("proxy/com/fs/starfarer/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             entry("proxy/com/fs/util/container/Pair", "com/fs/util/container/Pair"),
             entry("proxy/com/fs/starfarer/campaign/fleet/FleetMember", "com/fs/starfarer/campaign/fleet/FleetMember"),
             entry("proxy/com/fs/starfarer/Version", "com/fs/starfarer/Version"),
@@ -92,6 +91,7 @@ public class Rules {
             entry("proxy/com/fs/starfarer/util/ScreenshotUtil", "com/fs/starfarer/util/return"),
             entry("proxy/com/fs/starfarer/renderers/ShipArrowRenderer", "com/fs/starfarer/renderers/O"),
             entry("proxy/com/fs/starfarer/combat/entities/ship/damage/ImpactSound", "com/fs/starfarer/combat/entities/ship/A/I"),
+            entry("proxy/com/fs/graphics/util/Rendering", "com/fs/graphics/util/B"),
 
             // Obfuscated methods
             entry("TextureRepository_addTexture", "super"),
@@ -100,6 +100,7 @@ public class Rules {
             entry("ScriptStore_getSecureClassLoader", "Object"),
             entry("ScriptStore_getScriptList", "Õ00000"),
             entry("ScriptStore_getPluginSet", "Ò00000"),
+            entry("ScriptLoader_startScriptLoadingThread", "int"),
             entry("ScriptLoader_queueScript", "Object"),
             entry("SpecStore_init", "ÓO0000"),
             entry("SpecStore_loadingSoundSets", "ÖO0000"),
@@ -150,6 +151,9 @@ public class Rules {
             entry("HullSpecStore_addHullSpec", "super"),
             entry("WeaponSpecStore_addWeaponSpec", "super"),
             entry("WeaponSpecStore_addProjectileSpec", "super"),
+            entry("Rendering_begin", "return"),
+            entry("Rendering_setupProjection", "o00000"),
+            entry("Rendering_end", "Õ00000"),
 
             // Obfuscated fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -183,6 +187,8 @@ public class Rules {
             entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
             entry("com/genir/renderer/overrides/loading/HullSpecStore", "com/fs/starfarer/loading/oO0O"),
             entry("com/genir/renderer/overrides/loading/WeaponSpecStore", "com/fs/starfarer/loading/Q"),
-            entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore")
+            entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
+            entry("com/genir/renderer/overrides/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
+            entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o")
     );
 }

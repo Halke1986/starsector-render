@@ -39,7 +39,6 @@ public class ScriptStore {
     /**
      * STUB
      */
-    // $FF: renamed from: Õ00000 () java.util.List
     public static List<String> ScriptStore_getScriptList() {
         return null;
     }
@@ -47,9 +46,17 @@ public class ScriptStore {
     /**
      * STUB
      */
-    // $FF: renamed from: Ò00000 () java.util.Set
     public static Set<String> ScriptStore_getPluginSet() {
         return null;
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public static void ScriptLoader_startScriptLoadingThread() throws Exception {
+        // This method is called by ResourceLoaderState.init_vanilla().
+
+        initScriptClassLoader();
     }
 
     /**
@@ -68,6 +75,8 @@ public class ScriptStore {
         }
 
         scripts.add(className);
+
+        ResourceLoaderState.initStaticFields();
 
         ResourceLoaderState.scriptWorkers.execute(() -> {
             loadScript(className);

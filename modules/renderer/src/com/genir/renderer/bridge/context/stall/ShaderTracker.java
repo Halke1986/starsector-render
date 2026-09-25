@@ -19,8 +19,6 @@ public class ShaderTracker { // Context-shared object.
     synchronized public void invalidateCache(int program) {
         Logger.getLogger(ShaderTracker.class).info("invalidateCache " + program);
 
-        Debug.logStack();
-
         uniformLocations.remove(program);
         programParameters.remove(program);
     }

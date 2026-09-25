@@ -2,6 +2,7 @@ package com.genir.renderer.agent.bytecode;
 
 import com.genir.renderer.agent.ClassName;
 import com.genir.renderer.agent.constants.ConstantTransformer;
+import com.genir.renderer.agent.constants.IllegalRules;
 import com.genir.renderer.agent.constants.Rules;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.security.ProtectionDomain;
 
 public class Transformer implements ClassFileTransformer {
     private final ConstantTransformer overrideTransformer = new ConstantTransformer(
-            Rules.obfuscation, Rules.overrides);
+            Rules.obfuscation, Rules.overrides, IllegalRules.transformations);
 
     @Override
     public byte[] transform(
@@ -132,6 +133,12 @@ public class Transformer implements ClassFileTransformer {
                 transformer.renameMethod("ÓO0000", "init_vanilla", "(Lcom/fs/starfarer/loading/ResourceLoaderState;)V");
                 transformer.renameMethod("ÖO0000", "loadingSoundSets_vanilla", "(Lcom/fs/starfarer/loading/ResourceLoaderState;)V");
                 transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/SpecStore"));
+                break;
+            case "com/fs/starfarer/loading/ResourceLoaderState":
+                transformer.renameMethod("init", "init_vanilla", "(Ljava/util/Map;)V");
+                transformer.removeMethod("queueResource", "(Lcom/fs/starfarer/loading/ResourceLoaderState$o;Ljava/lang/String;I)V");
+                transformer.removeMethod("renderProgress", "(F)V");
+                transformer.mergeClass(loadDonor("com/genir/renderer/overrides/loading/ResourceLoaderState"));
                 break;
         }
     }

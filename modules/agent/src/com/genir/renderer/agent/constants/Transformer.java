@@ -70,7 +70,7 @@ public class Transformer implements ClassFileTransformer {
             return null;
         } else if (name.contains("FSD_PlatingHitRenderer") || name.contains("FSD_CocxisDrivePlatingRenderer")) {
             // Workaround for FarsightDrive async stall on repeated glGetError calls.
-            return new ConstantTransformer(Transformations.opengl, Transformations.glDrainErrors);
+            return new ConstantTransformer(Rules.opengl, Rules.glDrainErrors);
         } else {
             // Do Assume classes loaded by loaders other than system loaders are scripts.
             return scriptTransformer;

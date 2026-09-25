@@ -19,6 +19,7 @@ import proxy.com.fs.graphics.TextureRepository;
 import proxy.com.fs.graphics.font.FontRepository;
 import proxy.com.fs.graphics.particle.SmoothParticle;
 import proxy.com.fs.graphics.util.Fps;
+import proxy.com.fs.graphics.util.Rendering;
 import proxy.com.fs.starfarer.Version;
 import proxy.com.fs.starfarer.combat.entities.ship.damage.ImpactSound;
 import proxy.com.fs.starfarer.loading.specs.BaseWeaponSpec;
@@ -38,21 +39,65 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderState
-    public static final BlockingQueue<Runnable> mainThreadQueue = new LinkedBlockingQueue<>();
-    public static final AtomicInteger mainThreadWaitGroup = new AtomicInteger(0);
-    private static final AsyncException asyncException = new AsyncException();
+import static com.genir.renderer.Noop.breakpoint;
 
-    public static final ExecutorService workers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
-    public static final ExecutorService scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
-    public static final ExecutorService soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);
+/**
+ * OVERRIDES com.fs.starfarer.loading.ResourceLoaderState
+ */
+public class ResourceLoaderState {
+    /**
+     * STUBS
+     */
+    private Sprite barBg;
+    private Sprite title;
+    private Sprite bar;
 
-    private static final ProgressBar barAnimation = new ProgressBar();
+    /**
+     * ADDED FIELDS
+     */
+    public static BlockingQueue<Runnable> mainThreadQueue;
+    public static AtomicInteger mainThreadWaitGroup;
+    public static ExecutorService workers;
+    public static ExecutorService scriptWorkers;
+    public static ExecutorService soundWorkers;
+    public static AsyncException asyncException;
 
-    public static void init(Object stateObject, Map var1) throws Exception {
+    private ProgressBar barAnimation;
+
+    /**
+     * STUB
+     */
+    public void init_vanilla(Map session) throws Exception {
+    }
+
+    /**
+     * STUB
+     */
+    private void queueShipAndWeaponSprites() {
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    public static synchronized void initStaticFields() {
+        if (mainThreadQueue == null) {
+            mainThreadQueue = new LinkedBlockingQueue<>();
+            mainThreadWaitGroup = new AtomicInteger(0);
+            asyncException = new AsyncException();
+
+            workers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
+            scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
+            soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);
+        }
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void init(Map session) throws Exception {
+        barAnimation = new ProgressBar();
+
         FileLoader.FileLoader_getInstance().initResourceLoading();
-
-        var state = (proxy.com.fs.starfarer.loading.ResourceLoaderState) stateObject;
 
         DDSIntegration.initialize();
 
@@ -60,16 +105,20 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
             // init_vanilla will call 'initSpecStore'.
             // initSpecStore throws an exception to skip
             // the middle section of vanilla init.
-            state.init_vanilla(var1);
-        } catch (SkipVanillaInitEpilogue expected) {
-            // Continue after skipping the middle
-            // section of vanilla init.
+            init_vanilla(session);
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("Skip vanilla epilogue")) {
+                // Continue after skipping the middle
+                // section of vanilla init.
+            } else {
+                throw e;
+            }
         }
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;
         while (barAnimation.barIsNotFull()) {
-            state.renderProgress(0);
+            renderProgress();
             com.genir.renderer.bridge.commands.Display.update();
             Thread.sleep(10);
         }
@@ -81,19 +130,22 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         ExecutorFactory.awaitTermination(soundWorkers);
     }
 
-    public static void initSpecStore(proxy.com.fs.starfarer.loading.ResourceLoaderState state) throws Exception {
+    /**
+     * ADDED METHOD
+     */
+    public void initMiddle() throws Exception {
         ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException);
 
         mainThreadWaitGroup.incrementAndGet();
         mainThreadExec.execute(() -> {
             try {
                 // Bulk of the resource loading is performed in this call.
-                SpecStore.SpecStore_init(state);
+                SpecStore.initActual(this);
 
                 // Most sprites were already optionally queued in
                 // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
                 // But vanilla is the final judge on what should be loaded.
-                state.queueShipAndWeaponSprites();
+                queueShipAndWeaponSprites();
             } catch (Throwable e) {
                 asyncException.set(e);
             } finally {
@@ -110,7 +162,7 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
                 }
 
                 if (ContextManager.getThreadContext().exec.isIdle()) {
-                    state.renderProgress(0);
+                    renderProgress();
                     com.genir.renderer.bridge.commands.Display.update(true);
                 }
 
@@ -149,10 +201,13 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         ExecutorFactory.awaitTermination(scriptWorkers);
 
         // Skip a redundant section of vanilla resource loading.
-        throw new SkipVanillaInitEpilogue();
+        throw new RuntimeException("Skip vanilla epilogue");
     }
 
-    private static void initEpilogue() throws Exception {
+    /**
+     * ADDED METHOD
+     */
+    private void initEpilogue() throws Exception {
         MarkovNames.loadIfNeeded();
 
         // Initialize mods.
@@ -191,17 +246,22 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         }
     }
 
-    public static void queueResource(String type, String path) {
+    /**
+     * REPLACED METHOD
+     */
+    public void queueResource(ResourceType type, String path, int weight) {
+        String typeName = type.name();
+
         if (path == null) {
             return;
         }
 
-        switch (type) {
+        switch (typeName) {
             case "TEXTURE":
             case "TEXTURE_OPTIONAL":
             case "TEXTURE_ALPHA_ADDER":
                 TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
-                textureLoader.queueImage(type, path);
+                textureLoader.queueImage(typeName, path);
                 break;
             case "SOUND":
                 if (Global.getSettings().isSoundEnabled()) {
@@ -218,6 +278,9 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         }
     }
 
+    /**
+     * ADDED METHOD
+     */
     public static void queueWeaponSprite(WeaponSpecAPI weaponSpec) {
         TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
 
@@ -241,6 +304,9 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         }
     }
 
+    /**
+     * ADDED METHOD
+     */
     private static void queueWeaponAnimation(WeaponSpecAPI weaponSpec) {
         TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
 
@@ -253,6 +319,9 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         }
     }
 
+    /**
+     * ADDED METHOD
+     */
     public static void queueProjectileSprite(Object abstractProjectileSpec) {
         TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
 
@@ -266,16 +335,43 @@ public class ResourceLoaderState { // com.fs.starfarer.loading.ResourceLoaderSta
         }
     }
 
+    /**
+     * ADDED METHOD
+     */
     public static void queueShipSprite(ShipHullSpec hullSpec) {
         TextureLoader textureLoader = TextureRepository.TextureRepository_getTextureLoader();
         String texture = ((ShipHullSpecAPI) hullSpec).getSpriteName();
         textureLoader.queueImageOptional("TEXTURE", texture);
     }
 
-    public static void animateBar(Sprite bar) {
-        barAnimation.animate(bar);
+    /**
+     * REPLACED METHOD
+     */
+    private void renderProgress(float progress) {
+        // Do nothing. The progress bar animation is completely
+        // overriden and controlled by renderProgress().
     }
 
-    private static class SkipVanillaInitEpilogue extends RuntimeException {
+    /**
+     * ADDED METHOD
+     */
+    private void renderProgress() {
+        float width = Global.getSettings().getScreenWidth();
+        float height = Global.getSettings().getScreenHeight();
+
+        Rendering.Rendering_begin();
+        Rendering.Rendering_setupProjection(0.0F, width, 0.0F, height, 1000.0F);
+
+        title.renderAtCenter(width / 2.0F, height / 2.0F + 48.0F + 5.0F);
+        barBg.renderAtCenter(width / 2.0F, height / 2.0F);
+        barAnimation.animate(bar);
+
+        Rendering.Rendering_end();
+    }
+
+    /**
+     * STUB
+     */
+    public enum ResourceType {
     }
 }
