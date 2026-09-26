@@ -1,16 +1,16 @@
 package com.genir.renderer.agent.bytecode;
 
 import com.genir.renderer.agent.ClassName;
-import com.genir.renderer.agent.constants.ConstantTransformer;
-import com.genir.renderer.agent.constants.IllegalRules;
-import com.genir.renderer.agent.constants.Rules;
+import com.genir.renderer.agent.ConstantTransformer;
+import com.genir.renderer.agent.IllegalRules;
+import com.genir.renderer.agent.Rules;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
-public class Transformer implements ClassFileTransformer {
+public class BytecodeFileTransformer implements ClassFileTransformer {
     private final ConstantTransformer overrideTransformer = new ConstantTransformer(
             Rules.obfuscation, Rules.overrides, IllegalRules.transformations);
 

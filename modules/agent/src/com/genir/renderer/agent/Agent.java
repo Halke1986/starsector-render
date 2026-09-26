@@ -25,7 +25,7 @@ public final class Agent {
         // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
         // Donor bytecode is not loaded here, so its constants must be transformed by its respective loader.
         // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.
-        instrumentation.addTransformer(new com.genir.renderer.agent.constants.Transformer(), false);
+        instrumentation.addTransformer(new ConstantFileTransformer(), false);
 
         instrumentation.addTransformer(loadBytecodeTransformer(), false);
     }
@@ -50,7 +50,7 @@ public final class Agent {
                     "asm-9.1.jar"
             );
 
-            Class<?> transformerClass = embeddedLoader.loadClass("com.genir.renderer.agent.bytecode.Transformer");
+            Class<?> transformerClass = embeddedLoader.loadClass("com.genir.renderer.agent.bytecode.BytecodeFileTransformer");
             Object transformer = transformerClass.newInstance();
 
             return (ClassFileTransformer) transformer;

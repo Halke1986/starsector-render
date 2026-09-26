@@ -1,12 +1,10 @@
-package com.genir.renderer.agent.constants;
-
-import com.genir.renderer.agent.ClassName;
+package com.genir.renderer.agent;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 
-public class Transformer implements ClassFileTransformer {
+public class ConstantFileTransformer implements ClassFileTransformer {
     private final ConstantTransformer frTransformer = new ConstantTransformer(Rules.obfuscation, Rules.overrides);
     private final ConstantTransformer scriptTransformer = new ConstantTransformer(Rules.opengl);
     private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Rules.xstream);
