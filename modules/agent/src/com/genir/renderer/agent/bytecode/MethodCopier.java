@@ -1,12 +1,6 @@
 package com.genir.renderer.agent.bytecode;
 
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -50,7 +44,7 @@ public final class MethodCopier {
      * <p>
      * Requires only org.ow2.asm:asm:9.1.
      */
-    public static byte[] copyMethods(byte[] targetBytes, byte[] donorBytes) {
+    public static byte[] copyMethods(byte[] targetBytes, byte[] donorBytes, String donorJavaName) {
         ClassReader target = new ClassReader(targetBytes);
         ClassReader donor = new ClassReader(donorBytes);
         if (((target.getAccess() | donor.getAccess()) & Opcodes.ACC_INTERFACE) != 0) {
@@ -63,6 +57,13 @@ public final class MethodCopier {
         ClassWriter writer = new ClassWriter(target, 0);
 
         target.accept(new ClassVisitor(Opcodes.ASM9, writer) {
+            @Override
+            public void visit(int version, int access, String name,
+                              String signature, String superName, String[] interfaces) {
+                super.visit(version, access, name, signature, superName, interfaces);
+                super.visitSource(donorJavaName, null);
+            }
+
             @Override
             public FieldVisitor visitField(int access, String name, String descriptor,
                                            String signature, Object value) {
@@ -133,6 +134,7 @@ public final class MethodCopier {
                         };
                     }
                 }, ClassReader.EXPAND_FRAMES);
+
                 super.visitEnd();
             }
         }, 0);

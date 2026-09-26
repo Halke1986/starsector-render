@@ -18,4 +18,9 @@ public class ClassName {
 
         return binary;
     }
+
+    public static String simple(String name) {
+        String binary = binary(name);
+        return binary.substring(binary.lastIndexOf('.') + 1);
+    }
 }
