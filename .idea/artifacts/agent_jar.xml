@@ -6,6 +6,7 @@
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/modules/agent/MANIFEST.MF" />
       </element>
+      <element id="library" level="project" name="asm-9.1" />
     </root>
   </artifact>
 </component>

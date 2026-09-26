@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="asm-9.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/modules/agent/asm-9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
