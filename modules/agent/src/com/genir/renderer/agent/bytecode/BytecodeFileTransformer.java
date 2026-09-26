@@ -1,9 +1,15 @@
 package com.genir.renderer.agent.bytecode;
 
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
+
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class BytecodeFileTransformer implements ClassFileTransformer {
+    private static Throwable deferedThrowable = null;
+    private static int count = 0;
+
     @Override
     public byte[] transform(
             ClassLoader loader,
@@ -12,6 +18,8 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
             ProtectionDomain protectionDomain,
             byte[] classfileBuffer
     ) {
+        injectThrowableIntoRenderer();
+
         // No class to transform.
         if (className == null) {
             return null;
@@ -31,9 +39,37 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 return null;
             }
         } catch (Throwable t) {
-            // TODO do something useful with the exception
+            if (deferedThrowable == null) {
+                deferedThrowable = t;
+                injectThrowableIntoRenderer();
+            }
+
             throw t;
         }
+    }
+
+    /**
+     * Use the executor exception handling to crash the application
+     * in case of bytecode transformation failure.
+     */
+    private void injectThrowableIntoRenderer() {
+        if (deferedThrowable == null) {
+            return;
+        }
+
+        // Handle cases when the transformation failed
+        // before a rendering thread was started.
+        final Context context = ContextManager.getThreadContext();
+        if (context == null) {
+            return;
+        }
+
+        final Throwable injection = deferedThrowable;
+        context.exec.execute((ctx, args, offset) -> {
+            throw new RuntimeException(injection);
+        });
+
+        deferedThrowable = null;
     }
 
     private void applyTransform(String className, BytecodeTransformer transformer) {
