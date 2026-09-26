@@ -214,11 +214,9 @@ public class ResourceLoaderState {
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
             mod.onApplicationLoad();
 
-            final Context context = ContextManager.getThreadContext();
-            context.exec.wait((ctx, args, offset) -> {
-                org.lwjgl.opengl.Display.processMessages();
-                org.lwjgl.opengl.GL11.glFinish();
-            });
+            // Clean OpenGL state before loading next mod.
+            com.genir.renderer.bridge.commands.Display.processMessages();
+            com.genir.renderer.bridge.commands.GL11.glFinish();
         }
 
         // Initialize misc vanilla features.

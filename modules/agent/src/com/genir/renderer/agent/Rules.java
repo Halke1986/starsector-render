@@ -51,7 +51,6 @@ public class Rules {
 
     public static Map<String, String> obfuscation = Map.<String, String>ofEntries(
             // Classes
-            entry("com/fs/graphics/TextureRepository", "com/fs/graphics/oOoO"),
             entry("com/fs/graphics/AlphaAdder", "com/fs/graphics/do"),
             entry("com/fs/graphics/font/FontRepository", "com/fs/graphics/A/D"),
             entry("com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
@@ -171,6 +170,7 @@ public class Rules {
             entry("com/genir/renderer/overrides/loading/WeaponSpecStore", "com/fs/starfarer/loading/Q"),
             entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
-            entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o")
+            entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o"),
+            entry("com/genir/renderer/overrides/loading/textures/TextureRepository", "com/fs/graphics/oOoO")
     );
 }
