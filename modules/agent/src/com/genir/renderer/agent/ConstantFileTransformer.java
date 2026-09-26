@@ -1,8 +1,13 @@
 package com.genir.renderer.agent;
 
+import com.genir.renderer.Version;
+
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 public class ConstantFileTransformer implements ClassFileTransformer {
     private final ConstantTransformer frTransformer = new ConstantTransformer(Rules.obfuscation, Rules.overrides);
@@ -54,6 +59,10 @@ public class ConstantFileTransformer implements ClassFileTransformer {
             return lwjglTransformer;
         } else if (name.startsWith("com.thoughtworks.xstream.")) {
             return xstreamTransformer;
+        } else if (name.startsWith("com.fs.starfarer.Version")) {
+            // Append FR version to watermark.
+            return new ConstantTransformer(starfarerTransformer.getTransforms(),
+                    Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + Version.getVersion().replace("v0.", "FR"))));
         } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformer;
         } else if (name.startsWith("com.genir.renderer.agent.")) {
@@ -68,7 +77,8 @@ public class ConstantFileTransformer implements ClassFileTransformer {
             return null;
         } else if (name.contains("FSD_PlatingHitRenderer") || name.contains("FSD_CocxisDrivePlatingRenderer")) {
             // Workaround for FarsightDrive async stall on repeated glGetError calls.
-            return new ConstantTransformer(Rules.opengl, Rules.glDrainErrors);
+            return new ConstantTransformer(Rules.opengl,
+                    Map.ofEntries(entry("glGetError", "glDrainErrors")));
         } else {
             // Do Assume classes loaded by loaders other than system loaders are scripts.
             return scriptTransformer;
