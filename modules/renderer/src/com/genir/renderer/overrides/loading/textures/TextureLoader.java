@@ -2,7 +2,6 @@ package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
-import com.fs.graphics.TextureRepository;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;

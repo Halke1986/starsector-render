@@ -1,6 +1,6 @@
-package com.fs.graphics;
+package com.genir.renderer.overrides.loading.textures;
 
-import com.genir.renderer.overrides.loading.textures.TextureLoader;
+import com.fs.graphics.TextureHandler;
 
 // $FF: renamed from: com.fs.graphics.oOoO
 public class TextureRepository {

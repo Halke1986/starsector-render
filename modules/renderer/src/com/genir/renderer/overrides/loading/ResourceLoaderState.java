@@ -1,7 +1,7 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.Sprite;
-import com.fs.graphics.TextureRepository;
+import com.genir.renderer.overrides.loading.textures.TextureRepository;
 import com.fs.graphics.font.FontRepository;
 import com.fs.graphics.particle.SmoothParticle;
 import com.fs.graphics.util.Fps;
