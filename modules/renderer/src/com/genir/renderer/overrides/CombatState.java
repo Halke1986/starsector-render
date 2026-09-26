@@ -4,9 +4,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
-import static com.genir.renderer.Noop.breakpoint;
 import static org.lwjgl.input.Keyboard.*;
-import static org.lwjgl.input.Keyboard.KEY_RSHIFT;
 
 /**
  * OVERRIDES com.fs.starfarer.combat.CombatState

@@ -4,7 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import com.genir.renderer.debug.Debug;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;

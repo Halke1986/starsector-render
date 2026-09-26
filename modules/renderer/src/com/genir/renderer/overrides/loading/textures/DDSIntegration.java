@@ -65,8 +65,8 @@ public class DDSIntegration {
 
     public static int commitTexture(TextureData texData) {
         int target = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
-        int textureID = com.genir.renderer.bridge.opengl.GL11.glGenTextures();
-        com.genir.renderer.bridge.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         final Context context = ContextManager.getThreadContext();
         context.textureManager.manageTexture(

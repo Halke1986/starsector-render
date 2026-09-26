@@ -1,7 +1,6 @@
 package com.genir.renderer.overrides.loading;
 
 import com.fs.graphics.Sprite;
-import com.genir.renderer.overrides.loading.textures.TextureRepository;
 import com.fs.graphics.font.FontRepository;
 import com.fs.graphics.particle.SmoothParticle;
 import com.fs.graphics.util.Fps;
@@ -28,6 +27,7 @@ import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
+import com.genir.renderer.overrides.loading.textures.TextureRepository;
 
 import java.awt.*;
 import java.io.IOException;
