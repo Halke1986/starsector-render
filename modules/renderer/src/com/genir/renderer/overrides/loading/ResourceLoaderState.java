@@ -102,6 +102,25 @@ public class ResourceLoaderState {
      * REPLACED METHOD
      */
     public void init(Map session) throws Exception {
+        try {
+            initRun(session);
+        } catch (Throwable t) {
+            // Interrupt workers.
+            resourceWorker.shutdownNow();
+            textureWorkers.shutdownNow();
+            scriptWorkers.shutdownNow();
+            soundWorkers.shutdownNow();
+
+            ExecutorFactory.awaitTermination(resourceWorker);
+            ExecutorFactory.awaitTermination(textureWorkers);
+            ExecutorFactory.awaitTermination(scriptWorkers);
+            ExecutorFactory.awaitTermination(soundWorkers);
+
+            throw t;
+        }
+    }
+
+    private void initRun(Map session) throws Exception {
         barAnimation = new ProgressBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
@@ -122,42 +141,20 @@ public class ResourceLoaderState {
 
         // Run commands on main thread, as if it was an Executor.
         do {
-            try {
-                Runnable r = mainThreadQueue.poll(333, TimeUnit.MILLISECONDS);
-                if (r != null) {
-                    r.run();
-                }
-
-                // Animate progress bar after each completed task.
-                if (ContextManager.getThreadContext().exec.isIdle()) {
-                    renderProgress();
-                    com.genir.renderer.bridge.commands.Display.update(true);
-                }
-            } catch (Throwable e) {
-                asyncException.set(e);
+            Runnable r = mainThreadQueue.poll(333, TimeUnit.MILLISECONDS);
+            if (r != null) {
+                r.run();
             }
-        } while (mainThreadWaitGroup.get() > 0 && asyncException.get() == null);
 
-        // Rethrow exception captured in a worker thread.
-        Throwable t = asyncException.get();
-        if (t != null) {
-            // Interrupt workers.
-            resourceWorker.shutdownNow();
-            textureWorkers.shutdownNow();
-            scriptWorkers.shutdownNow();
-            soundWorkers.shutdownNow();
-
-            ExecutorFactory.awaitTermination(resourceWorker);
-            ExecutorFactory.awaitTermination(textureWorkers);
-            ExecutorFactory.awaitTermination(scriptWorkers);
-            ExecutorFactory.awaitTermination(soundWorkers);
-
-            if (t instanceof Exception e) {
-                throw e;
-            } else {
-                throw new RuntimeException(t);
+            // Animate progress bar after each completed task.
+            if (ContextManager.getThreadContext().exec.isIdle()) {
+                renderProgress();
+                com.genir.renderer.bridge.commands.Display.update(true);
             }
-        }
+
+            // Abort if worker has thrown.
+            rethrowAsyncException();
+        } while (mainThreadWaitGroup.get() > 0);
 
         resourceWorker.shutdown();
         ExecutorFactory.awaitTermination(resourceWorker);
@@ -166,6 +163,8 @@ public class ResourceLoaderState {
         scriptWorkers.shutdown();
         ExecutorFactory.awaitTermination(textureWorkers);
         ExecutorFactory.awaitTermination(scriptWorkers);
+
+        rethrowAsyncException();
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;
@@ -180,6 +179,20 @@ public class ResourceLoaderState {
 
         soundWorkers.shutdown();
         ExecutorFactory.awaitTermination(soundWorkers);
+
+        // Rethrow any exception in sound thread.
+        rethrowAsyncException();
+    }
+
+    private void rethrowAsyncException() throws Exception {
+        Throwable t = asyncException.get();
+        if (t != null) {
+            if (t instanceof Exception e) {
+                throw e;
+            } else {
+                throw new RuntimeException(t);
+            }
+        }
     }
 
     /**
