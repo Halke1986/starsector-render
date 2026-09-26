@@ -69,7 +69,7 @@ public class TextureLoader {
         ResourceLoaderState.initStaticFields();
 
         ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.workers.execute(() -> {
+        ResourceLoaderState.textureWorkers.execute(() -> {
             try {
                 loadTextureAsync(type, path);
             } catch (Throwable t) {

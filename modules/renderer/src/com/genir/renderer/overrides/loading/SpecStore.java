@@ -24,21 +24,36 @@ public class SpecStore {
      * REPLACED METHOD
      */
     public static void SpecStore_init(ResourceLoaderState state) throws Exception {
-        // This method is called by ResourceLoaderState.init_vanilla.
-        // Return control to ResourceLoaderState immediately.
-        state.initMiddle();
+        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
+        ResourceLoaderState.resourceWorker.execute(() -> {
+            try {
+                // Initiate sound loading at the very beginning of spec store
+                // initialization, to maximize parallel thread work time.
+                loadingSoundSets_vanilla(state);
+
+                // Delegate the remaining work, except sound loading, to vanilla implementation.
+                init_vanilla(state);
+
+                // Most sprites were already optionally queued in
+                // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
+                // But vanilla is the final judge on what should be loaded.
+                state.queueShipAndWeaponSprites_public();
+            } catch (Throwable e) {
+                ResourceLoaderState.asyncException.set(e);
+            } finally {
+                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
+            }
+        });
+
+        // Skip a redundant section of vanilla resource loading.
+        throw new RuntimeException("Skip vanilla epilogue");
     }
 
     /**
      * ADDED METHOD
      */
     public static void initActual(ResourceLoaderState state) throws JSONException, IOException {
-        // Initiate sound loading at the very beginning of spec store
-        // initialization, to maximize parallel thread work time.
-        loadingSoundSets_vanilla(state);
 
-        // Delegate the remaining work, except sound loading, to vanilla implementation.
-        init_vanilla(state);
     }
 
     /**

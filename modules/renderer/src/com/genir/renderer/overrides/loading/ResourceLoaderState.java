@@ -55,9 +55,10 @@ public class ResourceLoaderState {
      */
     public static BlockingQueue<Runnable> mainThreadQueue;
     public static AtomicInteger mainThreadWaitGroup;
-    public static ExecutorService workers;
+    public static ExecutorService textureWorkers;
     public static ExecutorService scriptWorkers;
     public static ExecutorService soundWorkers;
+    public static ExecutorService resourceWorker;
     public static AsyncException asyncException;
 
     private ProgressBar barAnimation;
@@ -77,15 +78,23 @@ public class ResourceLoaderState {
     /**
      * ADDED METHOD
      */
+    public void queueShipAndWeaponSprites_public() {
+        queueShipAndWeaponSprites();
+    }
+
+    /**
+     * ADDED METHOD
+     */
     public static synchronized void initStaticFields() {
         if (mainThreadQueue == null) {
             mainThreadQueue = new LinkedBlockingQueue<>();
             mainThreadWaitGroup = new AtomicInteger(0);
             asyncException = new AsyncException();
 
-            workers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
+            textureWorkers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
             scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
             soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);
+            resourceWorker = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException);
         }
     }
 
@@ -96,13 +105,11 @@ public class ResourceLoaderState {
         barAnimation = new ProgressBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
-
         DDSIntegration.initialize();
 
         try {
-            // init_vanilla will call 'initSpecStore'.
-            // initSpecStore throws an exception to skip
-            // the middle section of vanilla init.
+            // init_vanilla will call 'initSpecStore', which triggers most of asset loading.
+            // initSpecStore throws an exception to skip the middle section of vanilla init.
             init_vanilla(session);
         } catch (RuntimeException e) {
             if (e.getMessage().equals("Skip vanilla epilogue")) {
@@ -112,6 +119,53 @@ public class ResourceLoaderState {
                 throw e;
             }
         }
+
+        // Run commands on main thread, as if it was an Executor.
+        do {
+            try {
+                Runnable r = mainThreadQueue.poll(333, TimeUnit.MILLISECONDS);
+                if (r != null) {
+                    r.run();
+                }
+
+                // Animate progress bar after each completed task.
+                if (ContextManager.getThreadContext().exec.isIdle()) {
+                    renderProgress();
+                    com.genir.renderer.bridge.commands.Display.update(true);
+                }
+            } catch (Throwable e) {
+                asyncException.set(e);
+            }
+        } while (mainThreadWaitGroup.get() > 0 && asyncException.get() == null);
+
+        // Rethrow exception captured in a worker thread.
+        Throwable t = asyncException.get();
+        if (t != null) {
+            // Interrupt workers.
+            resourceWorker.shutdownNow();
+            textureWorkers.shutdownNow();
+            scriptWorkers.shutdownNow();
+            soundWorkers.shutdownNow();
+
+            ExecutorFactory.awaitTermination(resourceWorker);
+            ExecutorFactory.awaitTermination(textureWorkers);
+            ExecutorFactory.awaitTermination(scriptWorkers);
+            ExecutorFactory.awaitTermination(soundWorkers);
+
+            if (t instanceof Exception e) {
+                throw e;
+            } else {
+                throw new RuntimeException(t);
+            }
+        }
+
+        resourceWorker.shutdown();
+        ExecutorFactory.awaitTermination(resourceWorker);
+
+        textureWorkers.shutdown();
+        scriptWorkers.shutdown();
+        ExecutorFactory.awaitTermination(textureWorkers);
+        ExecutorFactory.awaitTermination(scriptWorkers);
 
         // Fill the progress bar.
         barAnimation.forwardOnly = true;
@@ -132,10 +186,8 @@ public class ResourceLoaderState {
      * ADDED METHOD
      */
     public void initMiddle() throws Exception {
-        ExecutorService mainThreadExec = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException);
-
         mainThreadWaitGroup.incrementAndGet();
-        mainThreadExec.execute(() -> {
+        resourceWorker.execute(() -> {
             try {
                 // Bulk of the resource loading is performed in this call.
                 SpecStore.initActual(this);
@@ -150,53 +202,6 @@ public class ResourceLoaderState {
                 mainThreadWaitGroup.decrementAndGet();
             }
         });
-
-        // Run commands on main thread, as if it was an Executor.
-        do {
-            try {
-                Runnable r = mainThreadQueue.poll(333, TimeUnit.MILLISECONDS);
-                if (r != null) {
-                    r.run();
-                }
-
-                if (ContextManager.getThreadContext().exec.isIdle()) {
-                    renderProgress();
-                    com.genir.renderer.bridge.commands.Display.update(true);
-                }
-
-            } catch (Throwable e) {
-                asyncException.set(e);
-            }
-        } while (mainThreadWaitGroup.get() > 0 && asyncException.get() == null);
-
-        // Rethrow exception captured in a worker thread.
-        Throwable t = asyncException.get();
-        if (t != null) {
-            // Interrupt workers.
-            mainThreadExec.shutdownNow();
-            workers.shutdownNow();
-            scriptWorkers.shutdownNow();
-            soundWorkers.shutdownNow();
-
-            ExecutorFactory.awaitTermination(mainThreadExec);
-            ExecutorFactory.awaitTermination(workers);
-            ExecutorFactory.awaitTermination(scriptWorkers);
-            ExecutorFactory.awaitTermination(soundWorkers);
-
-            if (t instanceof Exception e) {
-                throw e;
-            } else {
-                throw new RuntimeException(t);
-            }
-        }
-
-        mainThreadExec.shutdown();
-        workers.shutdown();
-        scriptWorkers.shutdown();
-
-        ExecutorFactory.awaitTermination(mainThreadExec);
-        ExecutorFactory.awaitTermination(workers);
-        ExecutorFactory.awaitTermination(scriptWorkers);
 
         // Skip a redundant section of vanilla resource loading.
         throw new RuntimeException("Skip vanilla epilogue");
