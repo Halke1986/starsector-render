@@ -1,5 +1,7 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.executor.Executor;
+import com.genir.renderer.bridge.context.executor.SyncBatchExecutor;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.debug.Profiler;
 import org.apache.log4j.Logger;
@@ -49,7 +51,11 @@ public class Context {
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
-    public final Executor exec = new Executor(this);
+
+//    public final Executor exec = new AsyncExecutor(this);
+//    public final Executor exec = new SyncExecutor(this);
+    public final Executor exec = new SyncBatchExecutor(this);
+
     public final StateCache glStateCache = new StateCache();
     public final BufferPool bufferPool = new BufferPool();
 

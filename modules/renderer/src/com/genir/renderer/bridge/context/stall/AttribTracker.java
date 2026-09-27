@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.Executor;
+import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;

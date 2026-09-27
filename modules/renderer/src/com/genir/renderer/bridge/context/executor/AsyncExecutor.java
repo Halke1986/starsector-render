@@ -1,26 +1,30 @@
-package com.genir.renderer.bridge.context;
+package com.genir.renderer.bridge.context.executor;
 
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.Frame;
+import com.genir.renderer.bridge.context.Pool;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import static com.genir.renderer.bridge.context.Frame.ARGS_NUM;
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
-public class Executor {
+/**
+ * Default implementation. Runs commands in batched on a dedicated thread.
+ */
+public class AsyncExecutor implements Executor {
     private final Context context;
 
     private Frame currentFrame = new Frame();
     private final Pool framePool = new Pool();
 
-    private Future<?> currentSwapFuture = completedFuture(null);
+    private Future<?> currentSwapFuture = CompletableFuture.completedFuture(null);
 
     // Exception handling.
     private final AsyncException asyncException = new AsyncException();
@@ -31,18 +35,20 @@ public class Executor {
     private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exceptionHandler);
     private static final Object execMutex = new Object();
 
-    public Executor(Context context) {
+    public AsyncExecutor(Context context) {
         this.context = context;
     }
 
     /**
      * Queue command for execution.
      */
+    @Override
     public void execute(GLCommand command) {
         Frame frame = currentFrame;
         frame.add(command);
     }
 
+    @Override
     public void executeSync(GLCommand command, GLSync fence) {
         Frame frame = currentFrame;
         frame.add(command);
@@ -50,6 +56,7 @@ public class Executor {
         frame.fences.add(fence);
     }
 
+    @Override
     public void execute(GLCommand command, float arg1) {
         Frame frame = currentFrame;
         int argsOffset = frame.add(command);
@@ -57,6 +64,7 @@ public class Executor {
         frame.args[argsOffset] = arg1;
     }
 
+    @Override
     public void execute(GLCommand command, float arg1, float arg2) {
         Frame frame = currentFrame;
         int argsOffset = frame.add(command);
@@ -65,6 +73,7 @@ public class Executor {
         frame.args[argsOffset + 1] = arg2;
     }
 
+    @Override
     public void execute(GLCommand command, float arg1, float arg2, float arg3) {
         Frame frame = currentFrame;
         int argsOffset = frame.add(command);
@@ -74,6 +83,7 @@ public class Executor {
         frame.args[argsOffset + 2] = arg3;
     }
 
+    @Override
     public void execute(GLCommand command, float arg1, float arg2, float arg3, float arg4) {
         Frame frame = currentFrame;
         int argsOffset = frame.add(command);
@@ -88,6 +98,7 @@ public class Executor {
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
+    @Override
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
 
@@ -112,6 +123,7 @@ public class Executor {
      * Execute command and block until it returns.
      * This method stalls the concurrent pipeline.
      */
+    @Override
     public void wait(GLCommand command) {
         long start = System.nanoTime();
 
@@ -135,6 +147,7 @@ public class Executor {
      * Wait until PREVIOUS frame is completed. This allows producer
      * and consumer threads to overlap with maximum flexibility.
      */
+    @Override
     public void swapFramesAndSync() {
         Future<?> prevSwapFuture = currentSwapFuture;
 
@@ -146,6 +159,7 @@ public class Executor {
     /**
      * Execute queued commands.
      */
+    @Override
     public void swapFrames() {
         // Assume all commands issued before the producer thread was notified
         // of the exception are invalid and must not be executed.
@@ -237,7 +251,7 @@ public class Executor {
         // Run all scheduled commands.
         for (int i = 0; i < frame.commandsSize; i++) {
             try {
-                commands[i].run(context, args, i * ARGS_NUM);
+                commands[i].run(context, args, i * Frame.ARGS_NUM);
             } catch (AssertionError e) {
                 // Do not interrupt application graceful shutdown with
                 // assertion errors, as this could lead to a permanent freeze.
@@ -250,6 +264,7 @@ public class Executor {
         }
     }
 
+    @Override
     public void shutdown() {
         execActual.shutdown();
     }
@@ -257,6 +272,7 @@ public class Executor {
     /**
      * Returns true if no commands are being executed.
      */
+    @Override
     public boolean isIdle() {
         return currentSwapFuture.isDone();
     }
