@@ -1,3 +1,7 @@
+v0.8.10
+
+- Promoted v0.8.10rc3 to stable. No changes.
+
 v0.8.10rc3
 
 - Fixed an asynchronous pipeline stall crash when using FarsightDrive. Reported by Hierophant.Slayer.
