@@ -10,15 +10,15 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class ConstantFileTransformer implements ClassFileTransformer {
-    private final ConstantTransformer frTransformer = new ConstantTransformer(Rules.obfuscation, Rules.overrides);
-    private final ConstantTransformer scriptTransformer = new ConstantTransformer(Rules.opengl);
-    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Rules.xstream);
-    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Rules.lwjgl);
+    private final ConstantTransformer frTransformer = new ConstantTransformer(Transformations.obfuscation, Transformations.overrides);
+    private final ConstantTransformer scriptTransformer = new ConstantTransformer(Transformations.opengl);
+    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Transformations.xstream);
+    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Transformations.lwjgl);
     private final ConstantTransformer starfarerTransformer = new ConstantTransformer(
-            Rules.opengl,  // Replace OpenGL calls.
-            Rules.scriptLoader,  // Replace class loader for loading scripts.
-            Rules.obfuscation, // Obfuscate assembled overrides.
-            IllegalRules.transformations  // Sanitize illegal obf symbols.
+            Transformations.opengl,  // Replace OpenGL calls.
+            Transformations.scriptLoader,  // Replace class loader for loading scripts.
+            Transformations.obfuscation, // Obfuscate assembled overrides.
+            IllegalTransformations.transformations  // Sanitize illegal obf symbols.
     );
 
     @Override
@@ -77,7 +77,7 @@ public class ConstantFileTransformer implements ClassFileTransformer {
             return null;
         } else if (name.contains("FSD_PlatingHitRenderer") || name.contains("FSD_CocxisDrivePlatingRenderer")) {
             // Workaround for FarsightDrive async stall on repeated glGetError calls.
-            return new ConstantTransformer(Rules.opengl,
+            return new ConstantTransformer(Transformations.opengl,
                     Map.ofEntries(entry("glGetError", "glDrainErrors")));
         } else {
             // Do Assume classes loaded by loaders other than system loaders are scripts.

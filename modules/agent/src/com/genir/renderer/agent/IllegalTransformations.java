@@ -3,7 +3,7 @@ package com.genir.renderer.agent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IllegalRules {
+public class IllegalTransformations {
     public final static Map<String, String> transformations = makeTransformations();
 
     static Map<String, String> makeTransformations() {

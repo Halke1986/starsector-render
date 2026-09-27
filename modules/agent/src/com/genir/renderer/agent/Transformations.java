@@ -4,7 +4,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class Rules {
+public class Transformations {
     public static Map<String, String> scriptLoader = Map.<String, String>ofEntries(
             // Use memory-optimized Path implementation.
             entry("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
