@@ -25,6 +25,7 @@ public class AttribState {
 
     // GL_SCISSOR_BIT
     public boolean enableScissorTest = false; // GL11.GL_SCISSOR_TEST, also GL_ENABLE_BIT
+    public Box scissorBox = new Box(0, 0, 0, 0);
 
     // GL_STENCIL_BUFFER_BIT
     public boolean enableStencilTest = false; // GL11.GL_STENCIL_TEST, also GL_ENABLE_BIT
@@ -139,6 +140,10 @@ public class AttribState {
 
     public void glViewport(int x, int y, int width, int height) {
         viewport = new Box(x, y, width, height);
+    }
+
+    public void glScissor(int x, int y, int width, int height) {
+        scissorBox = new Box(x, y, width, height);
     }
 
     private void setEnable(int cap, boolean value) {

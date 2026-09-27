@@ -1109,7 +1109,21 @@ public class GL11 {
             }
         }
 
+        record glScissorClient(int x, int y, int width, int height) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.attribTracker.glScissor(x, y, width, height);
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            listManager.record(new glScissorClient(x, y, width, height), null, 0);
+        } else {
+            context.attribTracker.glScissor(x, y, width, height);
+        }
+
         context.exec.execute(new glScissor(x, y, width, height));
     }
 
@@ -1646,6 +1660,13 @@ public class GL11 {
                 putIfPossible(outBuffer, viewport.y());
                 putIfPossible(outBuffer, viewport.width());
                 putIfPossible(outBuffer, viewport.height());
+                return;
+            case org.lwjgl.opengl.GL11.GL_SCISSOR_BOX:
+                AttribState.Box scissorBox = context.attribTracker.getScissorBox();
+                putIfPossible(outBuffer, scissorBox.x());
+                putIfPossible(outBuffer, scissorBox.y());
+                putIfPossible(outBuffer, scissorBox.width());
+                putIfPossible(outBuffer, scissorBox.height());
                 return;
         }
 

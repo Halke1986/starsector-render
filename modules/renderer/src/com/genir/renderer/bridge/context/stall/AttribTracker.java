@@ -185,6 +185,25 @@ public class AttribTracker {
         return result;
     }
 
+    public AttribState.Box getScissorBox() {
+        record getScissorBox(AttribState.Box expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                IntBuffer actual = BufferUtils.createIntBuffer(16);
+                org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_SCISSOR_BOX, actual);
+
+                asertEqual(expected.x(), actual.get(), this);
+                asertEqual(expected.y(), actual.get(), this);
+                asertEqual(expected.width(), actual.get(), this);
+                asertEqual(expected.height(), actual.get(), this);
+            }
+        }
+
+        AttribState.Box result = state.scissorBox;
+        exec.execute(new getScissorBox(result));
+        return result;
+    }
+
     public int getCurrentProgram() {
         record getCurrentProgram(int expected) implements GLCommand {
             @Override
@@ -258,6 +277,10 @@ public class AttribTracker {
 
     public void glViewport(int x, int y, int width, int height) {
         state.glViewport(x, y, width, height);
+    }
+
+    public void glScissor(int x, int y, int width, int height) {
+        state.glScissor(x, y, width, height);
     }
 
     public void glUseProgram(int program) {
