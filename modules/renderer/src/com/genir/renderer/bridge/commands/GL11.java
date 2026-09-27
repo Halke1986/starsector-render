@@ -1647,7 +1647,7 @@ public class GL11 {
         switch (pname) {
             // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_VIEWPORT:
-                AttribState.Viewport viewport = context.attribTracker.getViewport();
+                AttribState.Box viewport = context.attribTracker.getViewport();
                 putIfPossible(outBuffer, viewport.x());
                 putIfPossible(outBuffer, viewport.y());
                 putIfPossible(outBuffer, viewport.width());

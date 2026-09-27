@@ -166,8 +166,8 @@ public class AttribTracker {
         return result;
     }
 
-    public AttribState.Viewport getViewport() {
-        record getViewport(AttribState.Viewport expected) implements GLCommand {
+    public AttribState.Box getViewport() {
+        record getViewport(AttribState.Box expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
@@ -180,7 +180,7 @@ public class AttribTracker {
             }
         }
 
-        AttribState.Viewport result = state.viewport;
+        AttribState.Box result = state.viewport;
         exec.execute(new getViewport(result));
         return result;
     }
