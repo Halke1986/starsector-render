@@ -515,9 +515,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            float[] args = context.commandArgs;
-            args[0] = 1;
-            listManager.record(new glMatrixModeClient(mode), args, 0);
+            listManager.record(new glMatrixModeClient(mode), null, 0);
         } else {
             context.attribTracker.glMatrixMode(mode);
         }
@@ -1022,9 +1020,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            float[] args = context.commandArgs;
-            args[0] = 1;
-            listManager.record(new glViewportClient(x, y, width, height), args, 0);
+            listManager.record(new glViewportClient(x, y, width, height), null, 0);
         } else {
             context.attribTracker.glViewport(x, y, width, height);
         }
@@ -1228,9 +1224,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            float[] args = context.commandArgs;
-            args[0] = 1;
-            listManager.record(new glLineWidthClient(width), args, 0);
+            listManager.record(new glLineWidthClient(width), null, 0);
         } else {
             context.attribTracker.glLineWidth(width);
         }
