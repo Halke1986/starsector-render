@@ -4,7 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import com.genir.renderer.debug.Debug;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -18,8 +17,6 @@ public class ShaderTracker { // Context-shared object.
 
     synchronized public void invalidateCache(int program) {
         Logger.getLogger(ShaderTracker.class).info("invalidateCache " + program);
-
-        Debug.logStack();
 
         uniformLocations.remove(program);
         programParameters.remove(program);
