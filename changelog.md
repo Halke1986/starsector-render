@@ -1,4 +1,5 @@
 - Fixed a race condition during sound loading at game startup. Reported by wing.
+- Added support for Unix paths with a slash prefix. Issue reported by wing.
 
 v0.9.0rc1
 

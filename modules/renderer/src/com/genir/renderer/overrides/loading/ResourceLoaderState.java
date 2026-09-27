@@ -121,6 +121,7 @@ public class ResourceLoaderState {
     }
 
     private void initRun(Map session) throws Exception {
+        initStaticFields();
         barAnimation = new ProgressBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
