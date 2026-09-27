@@ -1,3 +1,7 @@
+v0.9.0rc1
+
+- Added a number of bugs and regressions. No expected improvement for the user. 
+
 v0.8.10
 
 - Promoted v0.8.10rc3 to stable. No changes.
