@@ -2,9 +2,8 @@ package com.genir.renderer.overrides.loading;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
-import proxy.sound.OggLoader;
-import proxy.sound.SoundBuffer;
-import proxy.sound.SoundStore;
+import sound.OggLoader;
+import sound.SoundBuffer;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -30,8 +29,10 @@ public class SoundLoader {
     );
 
     public static void queueSound(String path) {
+        ResourceLoaderState.initStaticFields();
+
         if (path != null && knownSounds.add(path)) {
-            ResourceLoader.soundWorkers.execute(() -> {
+            ResourceLoaderState.soundWorkers.execute(() -> {
                 loadSound(path);
             });
         }
@@ -50,7 +51,7 @@ public class SoundLoader {
         SoundStore soundStore = getSoundStore();
         if (!soundStore.getIsOpenALInitialized2()) {
             return;
-        } else if (!soundStore.SoundStore_getIsInitialized()) {
+        } else if (!soundStore.getIsInitialized()) {
             throw new RuntimeException("Can't load sounds until SoundStore is init(). Use the container init() method.");
         }
 
@@ -70,7 +71,8 @@ public class SoundLoader {
     }
 
     private static BufferedInputStream openStream(String path) throws IOException {
-        InputStream stream = FileLoader.loadInputStream(path, true);
+        FileLoader fileLoader = FileLoader.FileLoader_getInstance();
+        InputStream stream = fileLoader.FileLoader_loadInputStream(path, true);
         if (stream == null) {
             throw new RuntimeException("Sound with filename [" + path + "] not found or failed to load");
         }
@@ -93,7 +95,7 @@ public class SoundLoader {
                 break;
             default:
                 throw new RuntimeException("Only wav and ogg are currently supported.");
-            }
+        }
     }
 
     private static void loadOgg(String path, InputStream stream, SoundStore soundStore) throws IOException {
@@ -135,7 +137,7 @@ public class SoundLoader {
      */
     private static void loadWav(String path, InputStream stream, SoundStore soundStore) throws IOException {
         synchronized (mapLock) {
-            soundStore.SoundStore_loadWav(path, stream);
+            soundStore.loadWav(path, stream);
         }
     }
 

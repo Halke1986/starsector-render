@@ -27,6 +27,7 @@ public class ConstantTransformer {
     private static final int CONSTANT_Package = 20;
 
     private final Map<byte[], byte[]> transforms;
+    private final Map<String, String> strTransforms;
     private final int minTransformLen;
     private final int maxTransformLen;
 
@@ -61,9 +62,14 @@ public class ConstantTransformer {
             maxTransformLen = Math.max(maxTransformLen, from.length);
         }
 
+        this.strTransforms = strTransforms;
         this.transforms = transforms;
         this.minTransformLen = minTransformLen;
         this.maxTransformLen = maxTransformLen;
+    }
+
+    public Map<String, String> getTransforms() {
+        return strTransforms;
     }
 
     private static int readUnsignedShort(byte[] buf, int offset) {

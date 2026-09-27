@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/modules/agent/agent.iml" filepath="$PROJECT_DIR$/modules/agent/agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/jfr/jfr.iml" filepath="$PROJECT_DIR$/modules/jfr/jfr.iml" />
-      <module fileurl="file://$PROJECT_DIR$/modules/methods/methods.iml" filepath="$PROJECT_DIR$/modules/methods/methods.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/proxy/proxy.iml" filepath="$PROJECT_DIR$/modules/proxy/proxy.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/renderer/renderer.iml" filepath="$PROJECT_DIR$/modules/renderer/renderer.iml" />
       <module fileurl="file://$PROJECT_DIR$/starsector-render.iml" filepath="$PROJECT_DIR$/starsector-render.iml" />

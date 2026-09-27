@@ -1,13 +1,11 @@
 package com.genir.renderer.overrides.loading;
 
-import proxy.com.fs.util.FileLoader.ResourceLocation;
+import com.fs.util.FileLoader.ResourceLocation;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static com.genir.renderer.overrides.loading.FileLoader.readStringVanilla;
 
 public class ResourceHandle extends InputStream {
     private final FileHandle fileHandle;
@@ -23,7 +21,7 @@ public class ResourceHandle extends InputStream {
                 fileHandle.cachedContents = Files.readString(fileHandle.file.toPath(), StandardCharsets.UTF_8);
             } catch (Exception e) {
                 // In case of incorrect character set exception, fall back to the lenient vanilla implementation.
-                fileHandle.cachedContents = readStringVanilla(new FileInputStream(fileHandle.file));
+                fileHandle.cachedContents = LoadingUtils.readStreamAsString_vanilla(new FileInputStream(fileHandle.file));
             }
 
             fileHandle.cachedContents = fileHandle.cachedContents.replaceAll("\\r", "");

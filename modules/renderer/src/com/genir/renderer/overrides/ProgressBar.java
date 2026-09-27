@@ -11,16 +11,44 @@ import java.nio.IntBuffer;
  * ProgressBar override fixes background flicker when saving/loading the game.
  */
 public class ProgressBar {
-    private static proxy.com.fs.starfarer.campaign.save.ProgressBar currentBar = null;
-    private static int texID = 0;
-    private static int w = 0;
-    private static int h = 0;
+    /**
+     * ADDED FIELDS
+     */
+    private static Object currentBar;
+    private static int textureID;
 
-    public static void renderBackground(proxy.com.fs.starfarer.campaign.save.ProgressBar bar) {
+    /**
+     * STUB
+     */
+    // $FF: renamed from: Ò00000 (java.lang.String) void
+    public void ProgressBar_setDescription(String description) {
+    }
+
+    /**
+     * STUB
+     */
+    // $FF: renamed from: o00000 (float) void
+    public void ProgressBar_render(float progress) {
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void ProgressBar_renderWithDescription(String description, float progress) {
+        renderBackground();
+
+        ProgressBar_setDescription(description);
+        ProgressBar_render(progress);
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    private void renderBackground() {
         try {
-            if (bar != currentBar) {
+            if (this != currentBar) {
                 storeBackground();
-                currentBar = bar;
+                currentBar = this;
             }
 
             drawBackground();
@@ -30,72 +58,80 @@ public class ProgressBar {
         }
     }
 
-    private static void storeBackground() {
-        if (texID == 0) {
+    /**
+     * ADDED METHOD
+     */
+    private void storeBackground() {
+        if (textureID == 0) {
             // Allocate the texture.
-            texID = com.genir.renderer.bridge.opengl.GL11.glGenTextures();
+            textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
         } else {
-            // Free the texture for reuse.
-            com.genir.renderer.bridge.opengl.GL11.glDeleteTextures(texID);
+            // Free the texture from previous loading bar for reuse.
+            com.genir.renderer.bridge.commands.GL11.glDeleteTextures(textureID);
         }
 
-        w = Display.getWidth();
-        h = Display.getHeight();
+        int width = Display.getWidth();
+        int height = Display.getHeight();
 
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        com.genir.renderer.bridge.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
-
-        com.genir.renderer.bridge.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-        com.genir.renderer.bridge.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-        com.genir.renderer.bridge.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-        com.genir.renderer.bridge.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
         // Read screen pixels.
-        final int readBufferState = com.genir.renderer.bridge.opengl.GL11.glGetInteger(GL11.GL_READ_BUFFER);
-        com.genir.renderer.bridge.opengl.GL11.glReadBuffer(GL11.GL_FRONT);
-        com.genir.renderer.bridge.opengl.GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0, w, h, 0);
-        com.genir.renderer.bridge.opengl.GL11.glReadBuffer(readBufferState);
+        final int readBufferState = com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_READ_BUFFER);
+        com.genir.renderer.bridge.commands.GL11.glReadBuffer(GL11.GL_FRONT);
+        com.genir.renderer.bridge.commands.GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0, width, height, 0);
+        com.genir.renderer.bridge.commands.GL11.glReadBuffer(readBufferState);
     }
 
-    private static void drawBackground() {
+    /**
+     * ADDED METHOD
+     */
+    private void drawBackground() {
+        int width = Display.getWidth();
+        int height = Display.getHeight();
+
         // Save viewport and matrix mode.
-        final int matrixMode = com.genir.renderer.bridge.opengl.GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+        final int matrixMode = com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_MATRIX_MODE);
         final IntBuffer viewport = BufferUtils.createIntBuffer(16);
-        com.genir.renderer.bridge.opengl.GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
-        com.genir.renderer.bridge.opengl.GL11.glViewport(0, 0, w, h);
+        com.genir.renderer.bridge.commands.GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
+        com.genir.renderer.bridge.commands.GL11.glViewport(0, 0, width, height);
 
-        com.genir.renderer.bridge.opengl.GL11.glMatrixMode(GL11.GL_PROJECTION);
-        com.genir.renderer.bridge.opengl.GL11.glPushMatrix();
-        com.genir.renderer.bridge.opengl.GL11.glLoadIdentity();
-        com.genir.renderer.bridge.opengl.GL11.glOrtho(0, w, 0, h, -1, 1);
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
+        com.genir.renderer.bridge.commands.GL11.glOrtho(0, width, 0, height, -1, 1);
 
-        com.genir.renderer.bridge.opengl.GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        com.genir.renderer.bridge.opengl.GL11.glPushMatrix();
-        com.genir.renderer.bridge.opengl.GL11.glLoadIdentity();
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
 
-        com.genir.renderer.bridge.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
-        com.genir.renderer.bridge.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
+        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        com.genir.renderer.bridge.opengl.GL11.glBegin(GL11.GL_QUADS);
-        com.genir.renderer.bridge.opengl.GL11.glTexCoord2f(0f, 0f);
-        com.genir.renderer.bridge.opengl.GL11.glVertex2f(0f, 0f);
-        com.genir.renderer.bridge.opengl.GL11.glTexCoord2f(1f, 0f);
-        com.genir.renderer.bridge.opengl.GL11.glVertex2f(w, 0f);
-        com.genir.renderer.bridge.opengl.GL11.glTexCoord2f(1f, 1f);
-        com.genir.renderer.bridge.opengl.GL11.glVertex2f(w, h);
-        com.genir.renderer.bridge.opengl.GL11.glTexCoord2f(0f, 1f);
-        com.genir.renderer.bridge.opengl.GL11.glVertex2f(0f, h);
-        com.genir.renderer.bridge.opengl.GL11.glEnd();
+        com.genir.renderer.bridge.commands.GL11.glBegin(GL11.GL_QUADS);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(0f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(width, 0f);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1f, 1f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(width, height);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0f, 1f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(0f, height);
+        com.genir.renderer.bridge.commands.GL11.glEnd();
 
-        com.genir.renderer.bridge.opengl.GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        com.genir.renderer.bridge.opengl.GL11.glPopMatrix();
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
-        com.genir.renderer.bridge.opengl.GL11.glMatrixMode(GL11.GL_PROJECTION);
-        com.genir.renderer.bridge.opengl.GL11.glPopMatrix();
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
         // Restore viewport and matrix mode.
         viewport.limit(4);
-        com.genir.renderer.bridge.opengl.GL11.glViewport(viewport.get(), viewport.get(), viewport.get(), viewport.get());
-        com.genir.renderer.bridge.opengl.GL11.glMatrixMode(matrixMode);
+        com.genir.renderer.bridge.commands.GL11.glViewport(viewport.get(), viewport.get(), viewport.get(), viewport.get());
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(matrixMode);
     }
 }

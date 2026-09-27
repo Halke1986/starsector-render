@@ -1,25 +1,71 @@
 package com.genir.renderer.overrides;
 
+import com.fs.graphics.LayeredRenderable;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect;
+import com.fs.starfarer.combat.CombatViewport;
+import com.fs.starfarer.combat.entities.CustomCombatEntity;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.VertexInterceptor;
-import proxy.com.fs.graphics.LayeredRenderable;
-import proxy.com.fs.starfarer.combat.CombatViewport;
-import proxy.com.fs.starfarer.combat.entities.CustomCombatEntity;
 
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
-import static com.genir.renderer.bridge.context.ContextManager.getThreadContext;
+/**
+ * Overrides com.fs.graphics.LayeredRenderer
+ */
+public class LayeredRenderer<T extends Enum<T>, V> {
+    /**
+     * STUB
+     */
+    private Class<T> layerEnumClass;
 
-public class LayeredRenderer {
-    public static void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
+    /**
+     * STUB
+     */
+    private List<LayeredRenderable<T, V>> getList(T var1) {
+        return null;
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void renderExcluding(V viewport, T... exclude) {
+        EnumSet<T> allLayers = EnumSet.allOf(this.layerEnumClass);
+        List<T> excludedLayers = Arrays.asList(exclude);
+
+        for (T layer : allLayers) {
+            if (excludedLayers.contains(layer)) {
+                continue;
+            }
+
+            renderOnly(viewport, layer);
+        }
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void renderOnly(V viewport, T layer) {
+        // Cast parameters to actual used types.
+        renderOnly(
+                (CombatViewport) viewport,
+                (CombatEngineLayers) layer,
+                (List) getList(layer));
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    private void renderOnly(CombatViewport viewport, CombatEngineLayers layer, List<LayeredRenderable<CombatEngineLayers, CombatViewport>> entities) {
         if (entities == null) {
             return;
         }
 
-        final Context context = getThreadContext();
+        final Context context = ContextManager.getThreadContext();
 
         for (LayeredRenderable<CombatEngineLayers, CombatViewport> entity : entities) {
             if (isSwarm(entity)) {
@@ -34,7 +80,10 @@ public class LayeredRenderer {
         }
     }
 
-    private static boolean isSwarm(LayeredRenderable<CombatEngineLayers, CombatViewport> entity) {
+    /**
+     * ADDED METHOD
+     */
+    private boolean isSwarm(LayeredRenderable<CombatEngineLayers, CombatViewport> entity) {
         if (entity instanceof CustomCombatEntity) {
             CombatLayeredRenderingPlugin plugin = ((CustomCombatEntity) entity).getPlugin();
 

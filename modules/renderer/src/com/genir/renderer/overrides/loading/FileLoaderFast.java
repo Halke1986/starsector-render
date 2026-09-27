@@ -1,9 +1,9 @@
 package com.genir.renderer.overrides.loading;
 
+import com.fs.util.FileLoader.ResourceLocation;
+import com.fs.util.container.Pair;
 import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import org.apache.log4j.Logger;
-import proxy.com.fs.util.FileLoader.ResourceLocation;
-import proxy.com.fs.util.container.Pair;
 
 import java.io.File;
 import java.io.InputStream;
@@ -85,7 +85,7 @@ public class FileLoaderFast {
         }
 
         // Handle the rare case of a resource embedded in a jar file.
-        InputStream stream = proxy.com.fs.util.FileLoader.class.getClassLoader().getResourceAsStream(path);
+        InputStream stream = FileLoaderFast.class.getClassLoader().getResourceAsStream(path);
         if (stream != null) {
             // Find the classpath location.
             ResourceLocation classpath = null;

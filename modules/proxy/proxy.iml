@@ -17,7 +17,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="renderer" />
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="library" name="lwjgl_util" level="project" />
   </component>
