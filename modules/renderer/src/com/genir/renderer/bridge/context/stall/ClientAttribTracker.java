@@ -44,8 +44,22 @@ public class ClientAttribTracker {
             }
         }
 
-        int result = state.arrayBufferBinding;
+        int result = state.arrayBuffer;
         exec.execute(new getArrayBufferBinding(result));
+        return result;
+    }
+
+    public int getElementArrayBufferBinding() {
+        record getElementArrayBufferBinding(int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING);
+                asertEqual(expected, actual, this);
+            }
+        }
+
+        int result = state.elementArrayBuffer;
+        exec.execute(new getElementArrayBufferBinding(result));
         return result;
     }
 
@@ -121,8 +135,13 @@ public class ClientAttribTracker {
     }
 
     public void glBindBuffer(int target, int buffer) {
-        if (target == GL15.GL_ARRAY_BUFFER) {
-            state.arrayBufferBinding = buffer;
+        switch (target) {
+            case GL15.GL_ARRAY_BUFFER:
+                state.arrayBuffer = buffer;
+                break;
+            case GL15.GL_ELEMENT_ARRAY_BUFFER:
+                state.elementArrayBuffer = buffer;
+                break;
         }
     }
 
