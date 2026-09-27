@@ -1,3 +1,5 @@
+- Fixed a race condition during sound loading at game startup. Reported by wing.
+
 v0.9.0rc1
 
 - Added a number of bugs and regressions. No expected improvement for the user. 
