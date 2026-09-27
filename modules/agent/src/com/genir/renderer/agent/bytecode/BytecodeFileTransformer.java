@@ -8,7 +8,6 @@ import java.security.ProtectionDomain;
 
 public class BytecodeFileTransformer implements ClassFileTransformer {
     private static Throwable deferedThrowable = null;
-    private static int count = 0;
 
     @Override
     public byte[] transform(
@@ -130,6 +129,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 break;
             case "com/fs/starfarer/loading/scripts/ScriptStore":
                 transformer.removeMethod("Object", "(Ljava/lang/String;)V"); // ScriptLoader_queueScript
+                transformer.removeMethod("int", "()V"); // ScriptLoader_startScriptLoadingThread
                 transformer.mergeClass("com/genir/renderer/overrides/loading/ScriptStore");
                 break;
             case "com/fs/starfarer/combat/CombatEngine":
