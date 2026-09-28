@@ -271,6 +271,7 @@ public class AttribState {
 
         if ((attribMask & GL11.GL_SCISSOR_BIT) != 0) {
             enableScissorTest = source.enableScissorTest;
+            scissorBox = source.scissorBox;
         }
     }
 
