@@ -1,8 +1,9 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.bridge.context.executor.AsyncExecutor;
 import com.genir.renderer.bridge.context.executor.Executor;
-import com.genir.renderer.bridge.context.executor.SyncBatchExecutor;
 import com.genir.renderer.bridge.context.stall.*;
+import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.debug.Profiler;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
@@ -10,6 +11,10 @@ import org.lwjgl.LWJGLException;
 import static com.genir.renderer.debug.Debug.asert;
 
 public class Context {
+    // Debug fields
+    private final String clientThread;
+    private final String renderingThread;
+
     public final boolean isMain;
     boolean isDestroyed = false;
     private final org.lwjgl.opengl.SharedDrawable sharedDrawable;
@@ -27,6 +32,9 @@ public class Context {
         this.textureManager = new TextureManager();
         this.shaderTracker = new ShaderTracker();
         this.textureTracker = new TextureTracker();
+
+        this.clientThread = Thread.currentThread().getName();
+        this.renderingThread = exec.get(new getRenderingThread()).getName();
     }
 
     public Context(Context parent, org.lwjgl.opengl.SharedDrawable sharedDrawable) {
@@ -38,6 +46,9 @@ public class Context {
         this.textureManager = parent.textureManager;
         this.shaderTracker = parent.shaderTracker;
         this.textureTracker = parent.textureTracker;
+
+        this.clientThread = Thread.currentThread().getName();
+        this.renderingThread = exec.get(new getRenderingThread()).getName();
     }
 
     // Server state. Runs on rendering thread.
@@ -51,11 +62,7 @@ public class Context {
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
-
-//    public final Executor exec = new AsyncExecutor(this);
-//    public final Executor exec = new SyncExecutor(this);
-    public final Executor exec = new SyncBatchExecutor(this);
-
+    public final Executor exec = new AsyncExecutor(this);
     public final StateCache glStateCache = new StateCache();
     public final BufferPool bufferPool = new BufferPool();
 
@@ -131,6 +138,13 @@ public class Context {
             // Allow other methods to be called during context destruction.
             // NOTE: This allows incorrect re-entrant destroy() call.
             isDestroyed = true;
+        }
+    }
+
+    private record getRenderingThread() implements GLGetter<Thread> {
+        @Override
+        public Thread call(Context context) {
+            return Thread.currentThread();
         }
     }
 }
