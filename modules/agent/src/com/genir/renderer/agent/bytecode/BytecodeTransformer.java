@@ -2,15 +2,15 @@ package com.genir.renderer.agent.bytecode;
 
 import com.genir.renderer.agent.ClassName;
 import com.genir.renderer.agent.ConstantTransformer;
-import com.genir.renderer.agent.IllegalRules;
-import com.genir.renderer.agent.Rules;
+import com.genir.renderer.agent.IllegalTransformations;
+import com.genir.renderer.agent.Transformations;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BytecodeTransformer {
     private static final ConstantTransformer overrideTransformer = new ConstantTransformer(
-            Rules.obfuscation, Rules.overrides, IllegalRules.transformations);
+            Transformations.obfuscation, Transformations.overrides, IllegalTransformations.transformations);
 
     public boolean transformApplied = false;
 

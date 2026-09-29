@@ -25,6 +25,7 @@ public class AttribState {
 
     // GL_SCISSOR_BIT
     public boolean enableScissorTest = false; // GL11.GL_SCISSOR_TEST, also GL_ENABLE_BIT
+    public Box scissorBox = new Box(0, 0, 0, 0);
 
     // GL_STENCIL_BUFFER_BIT
     public boolean enableStencilTest = false; // GL11.GL_STENCIL_TEST, also GL_ENABLE_BIT
@@ -40,7 +41,7 @@ public class AttribState {
     public int matrixMode = GL11.GL_MODELVIEW;
 
     // GL_VIEWPORT_BIT
-    public Viewport viewport = new Viewport(0, 0, 0, 0);
+    public Box viewport = new Box(0, 0, 0, 0);
 
     //
     // GL Setters
@@ -138,7 +139,11 @@ public class AttribState {
     }
 
     public void glViewport(int x, int y, int width, int height) {
-        viewport = new Viewport(x, y, width, height);
+        viewport = new Box(x, y, width, height);
+    }
+
+    public void glScissor(int x, int y, int width, int height) {
+        scissorBox = new Box(x, y, width, height);
     }
 
     private void setEnable(int cap, boolean value) {
@@ -266,6 +271,7 @@ public class AttribState {
 
         if ((attribMask & GL11.GL_SCISSOR_BIT) != 0) {
             enableScissorTest = source.enableScissorTest;
+            scissorBox = source.scissorBox;
         }
     }
 
@@ -396,7 +402,7 @@ public class AttribState {
         }
     }
 
-    public record Viewport(int x, int y, int width, int height) {
+    public record Box(int x, int y, int width, int height) {
     }
 
     public record Snapshot(AttribState state, int attribMask) {

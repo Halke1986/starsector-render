@@ -14,9 +14,7 @@ public class FileLoader {
     /**
      * STUBS
      */
-    // $FF: renamed from: String java.lang.String
     public String FileLoader_locationFilter;
-    // $FF: renamed from: super boolean
     public static boolean FileLoader_withoutMods;
 
     /**
@@ -24,6 +22,7 @@ public class FileLoader {
      */
     private FileLoaderFast fastLoader;
     private boolean isModLoading;
+    private Thread mainThread;
 
     /**
      * STUB
@@ -66,14 +65,15 @@ public class FileLoader {
      * REPLACED METHOD
      */
     public InputStream FileLoader_loadInputStream(String path, boolean searchMods) throws IOException {
-        if (fastLoader != null && !isModLoading) {
-            return fastLoader.loadInputStream(path, null, false);
+        // Fallback to vanilla method.
+        if (fastLoader == null) {
+            return FileLoader_loadInputStream_vanilla(path, searchMods);
         }
 
-        if (fastLoader != null) {
+        // String and boolean state are used only by mods,
+        // on the main asset loading thread.
+        if (isModLoading && mainThread == Thread.currentThread()) {
             try {
-                // String and boolean state are used only by mods,
-                // after the multithreaded part of game loading.
                 boolean skipMods = !searchMods || FileLoader_withoutMods;
 
                 return fastLoader.loadInputStream(path, FileLoader_locationFilter, skipMods);
@@ -83,8 +83,7 @@ public class FileLoader {
             }
         }
 
-        // Fallback to vanilla method.
-        return FileLoader_loadInputStream_vanilla(path, searchMods);
+        return fastLoader.loadInputStream(path, null, false);
     }
 
     /**
@@ -112,6 +111,7 @@ public class FileLoader {
      */
     public void initResourceLoading() {
         fastLoader = new FileLoaderFast(FileLoader_getResourceList());
+        mainThread = Thread.currentThread();
     }
 
     /**

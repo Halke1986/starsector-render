@@ -1,3 +1,13 @@
+v0.9.0rc2
+
+- Fixed a race condition during sound loading at game startup. Reported by wing.
+- Added support for Unix paths with a slash prefix. Issue reported by wing.
+- Added support for Starsector Marines. Incompatibility reported in The Bar.
+
+v0.9.0rc1
+
+- Added a number of bugs and regressions. No expected improvement for the user. 
+
 v0.8.10
 
 - Promoted v0.8.10rc3 to stable. No changes.

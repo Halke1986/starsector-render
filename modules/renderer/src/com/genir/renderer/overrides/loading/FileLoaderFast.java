@@ -16,9 +16,9 @@ public class FileLoaderFast {
     private final static String CLASSPATH = "CLASSPATH";
     private final static String ABSOLUTE_AND_CWD = "ABSOLUTE_AND_CWD";
 
-    private final String PWD = normalize(System.getProperty("user.dir"));
-    private final String MODS = normalize(System.getProperty("com.fs.starfarer.settings.paths.mods"));
-    private final String SAVES = normalize(System.getProperty("com.fs.starfarer.settings.paths.saves"));
+    private final String PWD = System.getProperty("user.dir");
+    private final String MODS = System.getProperty("com.fs.starfarer.settings.paths.mods");
+    private final String SAVES = System.getProperty("com.fs.starfarer.settings.paths.saves");
 
     private final List<ResourceLocation> allLocations;
     private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
@@ -55,16 +55,16 @@ public class FileLoaderFast {
     }
 
     public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) {
-        String resourceKey = normalize(path);
-
         // Vanilla may pass absolute path when it loads core game resource.
-        boolean isAbsolute = resourceKey.startsWith(PWD);
+        String pathRelative = path;
+        boolean isAbsolute = pathRelative.startsWith(PWD);
         if (isAbsolute) {
-            resourceKey = normalize(resourceKey.substring(PWD.length()));
+            pathRelative = pathRelative.substring(PWD.length());
         }
 
-        List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
+        String resourceKey = normalize(pathRelative);
         List<FileHandle> knownResources = cachedFiles.get(resourceKey);
+        List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
 
         // Convert resources to output format.
         if (knownResources != null) {

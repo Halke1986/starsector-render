@@ -121,6 +121,7 @@ public class ResourceLoaderState {
     }
 
     private void initRun(Map session) throws Exception {
+        initStaticFields();
         barAnimation = new ProgressBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
@@ -184,42 +185,6 @@ public class ResourceLoaderState {
         rethrowAsyncException();
     }
 
-    private void rethrowAsyncException() throws Exception {
-        Throwable t = asyncException.get();
-        if (t != null) {
-            if (t instanceof Exception e) {
-                throw e;
-            } else {
-                throw new RuntimeException(t);
-            }
-        }
-    }
-
-    /**
-     * ADDED METHOD
-     */
-    public void initMiddle() throws Exception {
-        mainThreadWaitGroup.incrementAndGet();
-        resourceWorker.execute(() -> {
-            try {
-                // Bulk of the resource loading is performed in this call.
-                SpecStore.initActual(this);
-
-                // Most sprites were already optionally queued in
-                // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
-                // But vanilla is the final judge on what should be loaded.
-                queueShipAndWeaponSprites();
-            } catch (Throwable e) {
-                asyncException.set(e);
-            } finally {
-                mainThreadWaitGroup.decrementAndGet();
-            }
-        });
-
-        // Skip a redundant section of vanilla resource loading.
-        throw new RuntimeException("Skip vanilla epilogue");
-    }
-
     /**
      * ADDED METHOD
      */
@@ -248,7 +213,7 @@ public class ResourceLoaderState {
         SlipstreamManager.validateConfigs();
         com.genir.renderer.bridge.commands.Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
 
-        // Initliaze Fast Rendering functionality.
+        // Initialize Fast Rendering functionality.
         final Context context = ContextManager.getThreadContext();
         context.stallDetector.enableDetection();
         GameState.gameInitialized = true;
@@ -257,6 +222,17 @@ public class ResourceLoaderState {
         context.textureManager.assetLoadingFinished();
         if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
             SamplerRunner.samplerRunner.start();
+        }
+    }
+
+    private void rethrowAsyncException() throws Exception {
+        Throwable t = asyncException.get();
+        if (t != null) {
+            if (t instanceof Exception e) {
+                throw e;
+            } else {
+                throw new RuntimeException(t);
+            }
         }
     }
 

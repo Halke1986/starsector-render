@@ -515,9 +515,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            float[] args = context.commandArgs;
-            args[0] = 1;
-            listManager.record(new glMatrixModeClient(mode), args, 0);
+            listManager.record(new glMatrixModeClient(mode), null, 0);
         } else {
             context.attribTracker.glMatrixMode(mode);
         }
@@ -1022,9 +1020,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            float[] args = context.commandArgs;
-            args[0] = 1;
-            listManager.record(new glViewportClient(x, y, width, height), args, 0);
+            listManager.record(new glViewportClient(x, y, width, height), null, 0);
         } else {
             context.attribTracker.glViewport(x, y, width, height);
         }
@@ -1113,7 +1109,21 @@ public class GL11 {
             }
         }
 
+        record glScissorClient(int x, int y, int width, int height) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.attribTracker.glScissor(x, y, width, height);
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            listManager.record(new glScissorClient(x, y, width, height), null, 0);
+        } else {
+            context.attribTracker.glScissor(x, y, width, height);
+        }
+
         context.exec.execute(new glScissor(x, y, width, height));
     }
 
@@ -1228,9 +1238,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         ListManager listManager = context.clientListManager;
         if (listManager.isRecording()) {
-            float[] args = context.commandArgs;
-            args[0] = 1;
-            listManager.record(new glLineWidthClient(width), args, 0);
+            listManager.record(new glLineWidthClient(width), null, 0);
         } else {
             context.attribTracker.glLineWidth(width);
         }
@@ -1610,6 +1618,8 @@ public class GL11 {
                 return context.attribTracker.getActiveTexture();
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
                 return context.clientAttribTracker.getArrayBufferBinding();
+            case org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING:
+                return context.clientAttribTracker.getElementArrayBufferBinding();
             case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
                 return context.attribTracker.getCurrentProgram();
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
@@ -1645,11 +1655,18 @@ public class GL11 {
         switch (pname) {
             // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_VIEWPORT:
-                AttribState.Viewport viewport = context.attribTracker.getViewport();
+                AttribState.Box viewport = context.attribTracker.getViewport();
                 putIfPossible(outBuffer, viewport.x());
                 putIfPossible(outBuffer, viewport.y());
                 putIfPossible(outBuffer, viewport.width());
                 putIfPossible(outBuffer, viewport.height());
+                return;
+            case org.lwjgl.opengl.GL11.GL_SCISSOR_BOX:
+                AttribState.Box scissorBox = context.attribTracker.getScissorBox();
+                putIfPossible(outBuffer, scissorBox.x());
+                putIfPossible(outBuffer, scissorBox.y());
+                putIfPossible(outBuffer, scissorBox.width());
+                putIfPossible(outBuffer, scissorBox.height());
                 return;
         }
 

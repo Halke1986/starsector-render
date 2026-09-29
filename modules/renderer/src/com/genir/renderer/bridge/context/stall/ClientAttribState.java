@@ -12,7 +12,8 @@ public class ClientAttribState {
     public ArrayPointer texCoordPointer = null;
     public ArrayPointer colorPointer = null;
 
-    public int arrayBufferBinding = 0;
+    public int arrayBuffer = 0;
+    public int elementArrayBuffer = 0;
 
     public void overwriteWith(ClientAttribState source, int attribMask) {
         if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
@@ -24,7 +25,8 @@ public class ClientAttribState {
             texCoordPointer = source.texCoordPointer;
             colorPointer = source.colorPointer;
 
-            arrayBufferBinding = source.arrayBufferBinding;
+            arrayBuffer = source.arrayBuffer;
+            elementArrayBuffer = source.elementArrayBuffer;
         }
     }
 }
