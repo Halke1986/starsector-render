@@ -57,28 +57,41 @@ public class ConstantFileTransformer implements ClassFileTransformer {
         String name = ClassName.binary(binaryOrInternalName);
         if (name.startsWith("org.lwjgl.util.glu.")) {
             return lwjglTransformer;
+
         } else if (name.startsWith("com.thoughtworks.xstream.")) {
             return xstreamTransformer;
-        } else if (name.startsWith("com.fs.starfarer.Version")) {
+
+        } else if (name.equals("com.fs.starfarer.Version")) {
             // Append FR version to watermark.
             return new ConstantTransformer(starfarerTransformer.getTransforms(),
                     Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + Version.getVersion().replace("v0.", "FR"))));
+
+        } else if (name.equals("com.fs.starfarer.BaseGameState") || name.equals("com.fs.starfarer.combat.CombatState")) {
+            // Override methods related to frame update.
+            return new ConstantTransformer(starfarerTransformer.getTransforms(), Transformations.sync);
+
         } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformer;
+
         } else if (name.startsWith("com.genir.renderer.agent.")) {
             return null;
+
         } else if (name.startsWith("com.genir.renderer.")) {
             return frTransformer;
+
         } else if (loader == ClassLoader.getSystemClassLoader() || loader == this.getClass().getClassLoader()) {
             // Other core game classes.
             return null;
+
         } else if (name.startsWith("DeCell.VOpt.Commons.Rendering.")) {
             // Do not replace OpenGL calls in VOpt, as it does run directly on rendering thread.
             return null;
+
         } else if (name.contains("FSD_PlatingHitRenderer") || name.contains("FSD_CocxisDrivePlatingRenderer")) {
             // Workaround for FarsightDrive async stall on repeated glGetError calls.
             return new ConstantTransformer(Transformations.opengl,
                     Map.ofEntries(entry("glGetError", "glDrainErrors")));
+
         } else {
             // Do Assume classes loaded by loaders other than system loaders are scripts.
             return scriptTransformer;

@@ -6,19 +6,28 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.debug.SamplerRunner;
+import org.lwjgl.opengl.DisplayMode;
 
 import static com.genir.renderer.debug.Debug.asert;
 
 public class Sync {
     static long prevUpdateTimestamp = 0;
 
-    public static void sleep(long ignored) {
+    public static void sleep(long duration) {
+        // Sleeping is handled by the update(boolean processMessages) override, except when the game window
+        // is inactive: the game calls processMessages() and sleeps for 50 ms, which should not be ignored.
+        if (duration >= 50L) {
+            try {
+                Thread.sleep(duration);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     /**
      * Main application state update.
      */
-    public static void syncAndUpdate(boolean processMessages) {
+    public static void update(boolean processMessages) {
         Context context = ContextManager.getThreadContext();
         asert(context.isMain);
 
@@ -26,7 +35,7 @@ public class Sync {
         Display.update(processMessages);
 
         if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginSync();
-        sync(0);
+        sync();
 
         // Conclude the current animation frame.
         if (context.mainProfilerFrame != null) context.mainProfilerFrame.commit();
@@ -59,7 +68,7 @@ public class Sync {
      * Using a microsecond-resolution delay avoids this, provided
      * the FPS matches (or divides evenly into) the monitor refresh rate.
      */
-    public static void sync(long ignored) {
+    private static void sync() {
         long fps = (long) StarfarerSettings.StarfarerSettings_getFloatValue("fps");
         long frameNS = 1_000_000_000 / fps;
 
@@ -84,5 +93,35 @@ public class Sync {
         }
 
         prevUpdateTimestamp = System.nanoTime();
+    }
+
+    // All org.lwjgl.opengl.Display methods are redirected to
+    // com.genir.renderer.overrides.Sync in CombatState and BaseGameState.
+    public static void processMessages() {
+        com.genir.renderer.bridge.commands.Display.processMessages();
+    }
+
+    public static void update() {
+        com.genir.renderer.bridge.commands.Display.update();
+    }
+
+    public static boolean isCloseRequested() {
+        return com.genir.renderer.bridge.commands.Display.isCloseRequested();
+    }
+
+    public static boolean isActive() {
+        return com.genir.renderer.bridge.commands.Display.isActive();
+    }
+
+    public static boolean isVisible() {
+        return com.genir.renderer.bridge.commands.Display.isVisible();
+    }
+
+    public static boolean isFullscreen() {
+        return com.genir.renderer.bridge.commands.Display.isFullscreen();
+    }
+
+    public static DisplayMode getDesktopDisplayMode() {
+        return com.genir.renderer.bridge.commands.Display.getDesktopDisplayMode();
     }
 }

@@ -21,6 +21,12 @@ public class Transformations {
             entry("org/lwjgl/opengl/GL14", "com/genir/renderer/bridge/opengl/GL14")
     );
 
+    public static Map<String, String> sync = Map.<String, String>ofEntries(
+            // Override methods related to frame update.
+            entry("java/lang/Thread", "com/genir/renderer/overrides/Sync"),
+            entry("org/lwjgl/opengl/Display", "com/genir/renderer/overrides/Sync")
+    );
+
     public static Map<String, String> opengl = Map.<String, String>ofEntries(
             // Replace all OpenGL calls.
             entry("org/lwjgl/opengl/GL11", "com/genir/renderer/bridge/opengl/GL11"),

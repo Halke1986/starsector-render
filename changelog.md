@@ -1,3 +1,5 @@
+- Port microsecond frame sync from v0.8.10. This should reintroduce smooth animation.
+
 v0.9.0rc2
 
 - Fixed a race condition during sound loading at game startup. Reported by wing.
