@@ -1,3 +1,5 @@
+v0.9.0
+
 - Port improved frame synchronization from v0.8.10. This should reintroduce smooth animation.
 - Removed busy wait from frame synchronization. This should reduce CPU usage.
 - Added oats for DeCell, so he can reach the desired girth. Suggested by DeCell.
