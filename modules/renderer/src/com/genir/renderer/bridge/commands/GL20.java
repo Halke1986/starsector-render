@@ -511,4 +511,28 @@ public class GL20 {
         final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glIsProgram(program));
     }
+
+    public static String glGetActiveUniform(int program, int index, int maxLength, IntBuffer sizeType) {
+        record glGetActiveUniform(int program, int index, int maxLength, IntBuffer sizeType) implements GLGetter<String> {
+            @Override
+            public String call(Context context) {
+                return org.lwjgl.opengl.GL20.glGetActiveUniform(program, index, maxLength, sizeType);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        return context.exec.get(new glGetActiveUniform(program, index, maxLength, sizeType));
+    }
+
+    public static String glGetActiveAttrib(int program, int index, int maxLength, IntBuffer sizeType) {
+        record glGetActiveAttrib(int program, int index, int maxLength, IntBuffer sizeType) implements GLGetter<String> {
+            @Override
+            public String call(Context context) {
+                return org.lwjgl.opengl.GL20.glGetActiveAttrib(program, index, maxLength, sizeType);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        return context.exec.get(new glGetActiveAttrib(program, index, maxLength, sizeType));
+    }
 }

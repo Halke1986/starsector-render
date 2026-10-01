@@ -204,7 +204,7 @@ public final class GL20 {
     }
 
     public static String glGetActiveUniform(int program, int index, int maxLength, IntBuffer sizeType) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveUniform(int, int, int, IntBuffer)");
+        return com.genir.renderer.bridge.commands.GL20.glGetActiveUniform(program, index, maxLength, sizeType);
     }
 
     public static String glGetActiveUniform(int program, int index, int maxLength) {
@@ -356,7 +356,7 @@ public final class GL20 {
     }
 
     public static String glGetActiveAttrib(int program, int index, int maxLength, IntBuffer sizeType) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveAttrib(int, int, int, IntBuffer)");
+        return com.genir.renderer.bridge.commands.GL20.glGetActiveAttrib(program, index, maxLength, sizeType);
     }
 
     public static String glGetActiveAttrib(int program, int index, int maxLength) {

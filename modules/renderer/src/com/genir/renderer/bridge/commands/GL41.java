@@ -4,6 +4,9 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
 public class GL41 {
     public static void glProgramUniform1i(int program, int location, int v0) {
         record glProgramUniform1i(int program, int location, int v0) implements GLCommand {
@@ -63,5 +66,17 @@ public class GL41 {
 
         final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glDepthRangef(n, f));
+    }
+
+    public static void glGetProgramBinary(int program, IntBuffer length, IntBuffer binaryFormat, ByteBuffer binary) {
+        record glGetProgramBinary(int program, IntBuffer length, IntBuffer binaryFormat, ByteBuffer binary) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL41.glGetProgramBinary(program, length, binaryFormat, binary);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.wait(new glGetProgramBinary(program, length, binaryFormat, binary));
     }
 }

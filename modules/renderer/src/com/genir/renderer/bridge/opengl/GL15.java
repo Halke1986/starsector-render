@@ -116,7 +116,7 @@ public final class GL15 {
     }
 
     public static int glGetBufferParameteri(int target, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferParameteri(int, int)");
+        return com.genir.renderer.bridge.commands.GL15.glGetBufferParameteri(target, pname);
     }
 
     public static ByteBuffer glGetBufferPointer(int target, int pname) {

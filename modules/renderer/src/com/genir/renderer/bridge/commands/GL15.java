@@ -207,4 +207,16 @@ public class GL15 {
         final Context context = ContextManager.getThreadContext();
         return context.bufferTracker.glIsBuffer(buffer);
     }
+
+    public static int glGetBufferParameteri(int target, int pname) {
+        record glGetBufferParameteri(int target, int pname) implements GLGetter<Integer> {
+            @Override
+            public Integer call(Context context) {
+                return org.lwjgl.opengl.GL15.glGetBufferParameteri(target, pname);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        return context.exec.get(new glGetBufferParameteri(target, pname));
+    }
 }

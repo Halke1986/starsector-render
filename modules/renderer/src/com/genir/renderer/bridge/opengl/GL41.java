@@ -27,7 +27,7 @@ public final class GL41 {
     }
 
     public static void glGetProgramBinary(int program, IntBuffer length, IntBuffer binaryFormat, ByteBuffer binary) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL41.glGetProgramBinary(int, IntBuffer, IntBuffer, ByteBuffer)");
+        com.genir.renderer.bridge.commands.GL41.glGetProgramBinary(program, length, binaryFormat, binary);
     }
 
     public static void glProgramBinary(int program, int binaryFormat, ByteBuffer binary) {
