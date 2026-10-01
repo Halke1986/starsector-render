@@ -1,4 +1,5 @@
-- Port microsecond frame sync from v0.8.10. This should reintroduce smooth animation.
+- Port improved frame synchronization from v0.8.10. This should reintroduce smooth animation.
+- Removed busy wait from frame synchronization. This should reduce CPU usage.
 
 v0.9.0rc2
 

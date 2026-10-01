@@ -31,6 +31,11 @@ public class Sync {
         Context context = ContextManager.getThreadContext();
         asert(context.isMain);
 
+        // Update the profiler before Display.update(), which may block a critical section
+        // shared with keyboard state and stall the profiler's keyboard queries.
+        SamplerRunner.samplerRunner.update();
+        final Profiler.Frame nextProfilerFrame = Profiler.profiler.update();
+
         if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginSwap();
         Display.update(processMessages);
 
@@ -39,9 +44,6 @@ public class Sync {
 
         // Conclude the current animation frame.
         if (context.mainProfilerFrame != null) context.mainProfilerFrame.commit();
-
-        SamplerRunner.samplerRunner.update();
-        final Profiler.Frame nextProfilerFrame = Profiler.profiler.update();
 
         // The simulation normally runs one frame ahead of rendering, unless
         // there is spare CPU capacity. To record concurrent simulation and
@@ -58,41 +60,36 @@ public class Sync {
     }
 
     /**
-     * Replacement for vanilla Thread.sleep()-based frame sync.
-     * Thread.sleep() offers only millisecond precision, while a frame
-     * (e.g. at 60 FPS) lasts ~16.67ms. Because the duration is not
-     * a whole number of milliseconds, relying on millisecond delays
-     * causes drift between animation updates and monitor refresh.
-     * The result is visible stutter in smooth motion.
+     * Replaces vanilla Thread.sleep()-based frame synchronization.
+     * Starsector's frame sync consistently oversleeps, causing missed
+     * vsync windows and visible stutter during smooth motion.
      * <p>
-     * Using a microsecond-resolution delay avoids this, provided
-     * the FPS matches (or divides evenly into) the monitor refresh rate.
+     * A fixed frame schedule prevents this stutter, provided the target
+     * FPS equals the monitor refresh rate or is an integer divisor of it.
      */
     private static void sync() {
         long fps = (long) StarfarerSettings.StarfarerSettings_getFloatValue("fps");
         long frameNS = 1_000_000_000 / fps;
 
         long deadline = prevUpdateTimestamp + frameNS;
-        long syncBegin = System.nanoTime();
+        long now = System.nanoTime();
 
-        if (syncBegin < deadline) {
-            long waitNS = deadline - syncBegin;
-            long waitMS = Math.max(0, waitNS / 1_000_000 - 2);
-
-            if (waitMS > 0) {
-                try {
-                    Thread.sleep(waitMS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            // Spin
-            while (System.nanoTime() < deadline) {
-            }
+        // Allow drift in low FPS scenarios.
+        if (now > deadline) {
+            prevUpdateTimestamp = now;
+            return;
         }
 
-        prevUpdateTimestamp = System.nanoTime();
+        long waitNS = deadline - now;
+        long waitMS = waitNS / 1_000_000;
+
+        try {
+            Thread.sleep(waitMS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        prevUpdateTimestamp = deadline;
     }
 
     // All org.lwjgl.opengl.Display methods are redirected to

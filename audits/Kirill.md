@@ -102,8 +102,8 @@ IS EASY AND I WILL APPLY IT JUST IN CASE.
 - **WP-A-7** — `swapFramesAndSync` submits frame B and then waits on frame A; if A fails,
   B has already been submitted and can execute against invalid GL state.
   
-PARTIALLY CORRECT. FRAME B DOES CHECK FOR FRAME A RESULT AND ABORTS EXECUTION IF FRAME A FAILED.
-THE MECHANISM IS HOWEVER SUBJECT TO A RACE CONDITION.
+PARTIALLY CORRECT. FRAME B DOES CHECK FOR FRAME A RESULT AND ABORTS EXECUTION IF FRAME A FAILED, 
+WHICH THE AUDIT MISSED. THE MECHANISM IS HOWEVER SUBJECT TO A RACE CONDITION. FIXED NOW.
  
 - **WP-A-8** — recovery replaces `currentFrame` after the client-side mirrors have already
   advanced, and then suppresses all subsequent assertion failures. The pipeline keeps
@@ -161,11 +161,26 @@ engine did.
 
 - **WP-O-2** — `Sync.sync` computes `1_000_000_000 / fps` from a settings value. `(long)fps`
   is 0 for any value in  and for NaN, and integer division by zero follows.
+
+EVEN BETTER, THIS IS AN INTEGER DIVISION, NOT FLOAT, SO IT WILL CRASH ON DIV BY 0. 
+BUT I DON'T MIND, PUTTING WEIRD VALUES IN CONFIG IS A USER ERROR; LET IT CRASH.
+
 - **WP-O-10** — the replacement frame limiter **busy-spins** on the game thread for the
   remainder of every under-budget frame (`Sync.java:62-86`), where vanilla slept.
+
+TURNS OUT YOU DON'T NEED PRECISE SLEEP AT ALL TO AVOID VANILLA MICRO-STUTTER. I REMOVED THE BUSY WAIT.
+
 - **WP-O-1** — thirteen combat particle caps are set to `Integer.MAX_VALUE`
   (`CombatEngine.java:95-114`), removing vanilla's 500–5000 bounds. `readme.txt` already
   notes Particle Engine can crash in very large battles.
+
+FUNNY THING, THE LIMITS WERE RE-INTRODUCED BY THE GAME AT THE START OF EACH COMBAT BY CREATING 
+A FRESH INSTANCE OF COMBAT ENGINE. I REMOVED THE LIMITS ONLY FROM THE VERY FIRST INSTANCE. IT
+IS FIXED NOW, ALL INSTANCES HAVE THE LIMIT REMOVED.
+
+AS FOR THE ISSUE POINTED IN THIS AUDIT, README MENTIONS PARTICLE ENGINE MOD, UNRELATED TO 
+VANILLA PARTICLE IMPLEMENTATION. WITH FR OPTIMIZATIONS, IT IS SAFE TO LIFT THE VANILLA 
+PARTICLE LIMIT, AT LEAST ACCORDING TO MY PROFILING.
 
 **Exception-unsafe state restoration:**
 
