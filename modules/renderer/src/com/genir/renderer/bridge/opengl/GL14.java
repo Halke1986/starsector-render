@@ -11,79 +11,79 @@ public final class GL14 {
     }
 
     public static void glBlendColor(float red, float green, float blue, float alpha) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glBlendColor(float, float, float, float)");
     }
 
     public static void glFogCoordf(float coord) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glFogCoordf(float)");
     }
 
     public static void glFogCoordd(double coord) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glFogCoordd(double)");
     }
 
     public static void glFogCoordPointer(int stride, DoubleBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glFogCoordPointer(int, DoubleBuffer)");
     }
 
     public static void glFogCoordPointer(int stride, FloatBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glFogCoordPointer(int, FloatBuffer)");
     }
 
     public static void glFogCoordPointer(int type, int stride, long data_buffer_offset) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glFogCoordPointer(int, int, long)");
     }
 
     public static void glMultiDrawArrays(int mode, IntBuffer piFirst, IntBuffer piCount) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glMultiDrawArrays(int, IntBuffer, IntBuffer)");
     }
 
     public static void glPointParameteri(int pname, int param) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glPointParameteri(int, int)");
     }
 
     public static void glPointParameterf(int pname, float param) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glPointParameterf(int, float)");
     }
 
     public static void glPointParameter(int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glPointParameter(int, IntBuffer)");
     }
 
     public static void glPointParameter(int pname, FloatBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glPointParameter(int, FloatBuffer)");
     }
 
     public static void glSecondaryColor3b(byte red, byte green, byte blue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColor3b(byte, byte, byte)");
     }
 
     public static void glSecondaryColor3f(float red, float green, float blue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColor3f(float, float, float)");
     }
 
     public static void glSecondaryColor3d(double red, double green, double blue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColor3d(double, double, double)");
     }
 
     public static void glSecondaryColor3ub(byte red, byte green, byte blue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColor3ub(byte, byte, byte)");
     }
 
     public static void glSecondaryColorPointer(int size, int stride, DoubleBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColorPointer(int, int, DoubleBuffer)");
     }
 
     public static void glSecondaryColorPointer(int size, int stride, FloatBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColorPointer(int, int, FloatBuffer)");
     }
 
     public static void glSecondaryColorPointer(int size, boolean unsigned, int stride, ByteBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColorPointer(int, boolean, int, ByteBuffer)");
     }
 
     public static void glSecondaryColorPointer(int size, int type, int stride, long data_buffer_offset) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glSecondaryColorPointer(int, int, int, long)");
     }
 
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
@@ -91,26 +91,26 @@ public final class GL14 {
     }
 
     public static void glWindowPos2f(float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glWindowPos2f(float, float)");
     }
 
     public static void glWindowPos2d(double x, double y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glWindowPos2d(double, double)");
     }
 
     public static void glWindowPos2i(int x, int y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glWindowPos2i(int, int)");
     }
 
     public static void glWindowPos3f(float x, float y, float z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glWindowPos3f(float, float, float)");
     }
 
     public static void glWindowPos3d(double x, double y, double z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glWindowPos3d(double, double, double)");
     }
 
     public static void glWindowPos3i(int x, int y, int z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glWindowPos3i(int, int, int)");
     }
 }

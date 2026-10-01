@@ -4,7 +4,7 @@ import java.nio.*;
 
 public final class GL20 {
     public static void glShaderSource(int shader, ByteBuffer string) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glShaderSource(int, ByteBuffer)");
     }
 
     public static void glShaderSource(int shader, CharSequence string) {
@@ -12,7 +12,7 @@ public final class GL20 {
     }
 
     public static void glShaderSource(int shader, CharSequence[] strings) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glShaderSource(int, CharSequence[])");
     }
 
     public static int glCreateShader(int type) {
@@ -20,7 +20,7 @@ public final class GL20 {
     }
 
     public static boolean glIsShader(int shader) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glIsShader(int)");
     }
 
     public static void glCompileShader(int shader) {
@@ -112,23 +112,23 @@ public final class GL20 {
     }
 
     public static void glUniform1(int location, IntBuffer values) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glUniform1(int, IntBuffer)");
     }
 
     public static void glUniform2(int location, IntBuffer values) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glUniform2(int, IntBuffer)");
     }
 
     public static void glUniform3(int location, IntBuffer values) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glUniform3(int, IntBuffer)");
     }
 
     public static void glUniform4(int location, IntBuffer values) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glUniform4(int, IntBuffer)");
     }
 
     public static void glUniformMatrix2(int location, boolean transpose, FloatBuffer matrices) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glUniformMatrix2(int, boolean, FloatBuffer)");
     }
 
     public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) {
@@ -140,7 +140,7 @@ public final class GL20 {
     }
 
     public static void glGetShader(int shader, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetShader(int, int, IntBuffer)");
     }
 
     /**
@@ -156,7 +156,7 @@ public final class GL20 {
     }
 
     public static void glGetProgram(int program, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetProgram(int, int, IntBuffer)");
     }
 
     /**
@@ -192,7 +192,7 @@ public final class GL20 {
     }
 
     public static int glGetUniformLocation(int program, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetUniformLocation(int, ByteBuffer)");
     }
 
     public static int glGetUniformLocation(int program, CharSequence name) {
@@ -200,111 +200,111 @@ public final class GL20 {
     }
 
     public static void glGetActiveUniform(int program, int index, IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveUniform(int, int, IntBuffer, IntBuffer, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetActiveUniform(int program, int index, int maxLength, IntBuffer sizeType) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveUniform(int, int, int, IntBuffer)");
     }
 
     public static String glGetActiveUniform(int program, int index, int maxLength) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveUniform(int, int, int)");
     }
 
     public static int glGetActiveUniformSize(int program, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveUniformSize(int, int)");
     }
 
     public static int glGetActiveUniformType(int program, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveUniformType(int, int)");
     }
 
     public static void glGetUniform(int program, int location, FloatBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetUniform(int, int, FloatBuffer)");
     }
 
     public static void glGetUniform(int program, int location, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetUniform(int, int, IntBuffer)");
     }
 
     public static void glGetShaderSource(int shader, IntBuffer length, ByteBuffer source) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetShaderSource(int, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetShaderSource(int shader, int maxLength) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetShaderSource(int, int)");
     }
 
     public static void glVertexAttrib1s(int index, short x) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib1s(int, short)");
     }
 
     public static void glVertexAttrib1f(int index, float x) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib1f(int, float)");
     }
 
     public static void glVertexAttrib1d(int index, double x) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib1d(int, double)");
     }
 
     public static void glVertexAttrib2s(int index, short x, short y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib2s(int, short, short)");
     }
 
     public static void glVertexAttrib2f(int index, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib2f(int, float, float)");
     }
 
     public static void glVertexAttrib2d(int index, double x, double y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib2d(int, double, double)");
     }
 
     public static void glVertexAttrib3s(int index, short x, short y, short z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib3s(int, short, short, short)");
     }
 
     public static void glVertexAttrib3f(int index, float x, float y, float z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib3f(int, float, float, float)");
     }
 
     public static void glVertexAttrib3d(int index, double x, double y, double z) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib3d(int, double, double, double)");
     }
 
     public static void glVertexAttrib4s(int index, short x, short y, short z, short w) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib4s(int, short, short, short, short)");
     }
 
     public static void glVertexAttrib4f(int index, float x, float y, float z, float w) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib4f(int, float, float, float, float)");
     }
 
     public static void glVertexAttrib4d(int index, double x, double y, double z, double w) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib4d(int, double, double, double, double)");
     }
 
     public static void glVertexAttrib4Nub(int index, byte x, byte y, byte z, byte w) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttrib4Nub(int, byte, byte, byte, byte)");
     }
 
     public static void glVertexAttribPointer(int index, int size, boolean normalized, int stride, DoubleBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttribPointer(int, int, boolean, int, DoubleBuffer)");
     }
 
     public static void glVertexAttribPointer(int index, int size, boolean normalized, int stride, FloatBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttribPointer(int, int, boolean, int, FloatBuffer)");
     }
 
     public static void glVertexAttribPointer(int index, int size, boolean unsigned, boolean normalized, int stride, ByteBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttribPointer(int, int, boolean, boolean, int, ByteBuffer)");
     }
 
     public static void glVertexAttribPointer(int index, int size, boolean unsigned, boolean normalized, int stride, IntBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttribPointer(int, int, boolean, boolean, int, IntBuffer)");
     }
 
     public static void glVertexAttribPointer(int index, int size, boolean unsigned, boolean normalized, int stride, ShortBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttribPointer(int, int, boolean, boolean, int, ShortBuffer)");
     }
 
     public static void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long buffer_buffer_offset) {
@@ -312,7 +312,7 @@ public final class GL20 {
     }
 
     public static void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, ByteBuffer buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glVertexAttribPointer(int, int, int, boolean, int, ByteBuffer)");
     }
 
     public static void glEnableVertexAttribArray(int index) {
@@ -324,55 +324,55 @@ public final class GL20 {
     }
 
     public static void glGetVertexAttrib(int index, int pname, FloatBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetVertexAttrib(int, int, FloatBuffer)");
     }
 
     public static void glGetVertexAttrib(int index, int pname, DoubleBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetVertexAttrib(int, int, DoubleBuffer)");
     }
 
     public static void glGetVertexAttrib(int index, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetVertexAttrib(int, int, IntBuffer)");
     }
 
     public static ByteBuffer glGetVertexAttribPointer(int index, int pname, long result_size) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetVertexAttribPointer(int, int, long)");
     }
 
     public static void glGetVertexAttribPointer(int index, int pname, ByteBuffer pointer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetVertexAttribPointer(int, int, ByteBuffer)");
     }
 
     public static void glBindAttribLocation(int program, int index, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glBindAttribLocation(int, int, ByteBuffer)");
     }
 
     public static void glBindAttribLocation(int program, int index, CharSequence name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glBindAttribLocation(int, int, CharSequence)");
     }
 
     public static void glGetActiveAttrib(int program, int index, IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveAttrib(int, int, IntBuffer, IntBuffer, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetActiveAttrib(int program, int index, int maxLength, IntBuffer sizeType) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveAttrib(int, int, int, IntBuffer)");
     }
 
     public static String glGetActiveAttrib(int program, int index, int maxLength) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveAttrib(int, int, int)");
     }
 
     public static int glGetActiveAttribSize(int program, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveAttribSize(int, int)");
     }
 
     public static int glGetActiveAttribType(int program, int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetActiveAttribType(int, int)");
     }
 
     public static int glGetAttribLocation(int program, ByteBuffer name) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glGetAttribLocation(int, ByteBuffer)");
     }
 
     public static int glGetAttribLocation(int program, CharSequence name) {
@@ -388,18 +388,18 @@ public final class GL20 {
     }
 
     public static void glStencilOpSeparate(int face, int sfail, int dpfail, int dppass) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glStencilOpSeparate(int, int, int, int)");
     }
 
     public static void glStencilFuncSeparate(int face, int func, int ref, int mask) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glStencilFuncSeparate(int, int, int, int)");
     }
 
     public static void glStencilMaskSeparate(int face, int mask) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glStencilMaskSeparate(int, int)");
     }
 
     public static void glBlendEquationSeparate(int modeRGB, int modeAlpha) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glBlendEquationSeparate(int, int)");
     }
 }

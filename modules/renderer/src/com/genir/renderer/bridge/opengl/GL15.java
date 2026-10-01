@@ -36,7 +36,7 @@ public final class GL15 {
     }
 
     public static void glBufferData(int target, DoubleBuffer data, int usage) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glBufferData(int, DoubleBuffer, int)");
     }
 
     public static void glBufferData(int target, FloatBuffer data, int usage) {
@@ -44,7 +44,7 @@ public final class GL15 {
     }
 
     public static void glBufferData(int target, IntBuffer data, int usage) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glBufferData(int, IntBuffer, int)");
     }
 
     public static void glBufferData(int target, ShortBuffer data, int usage) {
@@ -56,7 +56,7 @@ public final class GL15 {
     }
 
     public static void glBufferSubData(int target, long offset, DoubleBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glBufferSubData(int, long, DoubleBuffer)");
     }
 
     public static void glBufferSubData(int target, long offset, FloatBuffer data) {
@@ -72,31 +72,31 @@ public final class GL15 {
     }
 
     public static void glGetBufferSubData(int target, long offset, ByteBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferSubData(int, long, ByteBuffer)");
     }
 
     public static void glGetBufferSubData(int target, long offset, DoubleBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferSubData(int, long, DoubleBuffer)");
     }
 
     public static void glGetBufferSubData(int target, long offset, FloatBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferSubData(int, long, FloatBuffer)");
     }
 
     public static void glGetBufferSubData(int target, long offset, IntBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferSubData(int, long, IntBuffer)");
     }
 
     public static void glGetBufferSubData(int target, long offset, ShortBuffer data) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferSubData(int, long, ShortBuffer)");
     }
 
     public static ByteBuffer glMapBuffer(int target, int access, ByteBuffer old_buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glMapBuffer(int, int, ByteBuffer)");
     }
 
     public static ByteBuffer glMapBuffer(int target, int access, long length, ByteBuffer old_buffer) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glMapBuffer(int, int, long, ByteBuffer)");
     }
 
     public static boolean glUnmapBuffer(int target) {
@@ -104,7 +104,7 @@ public final class GL15 {
     }
 
     public static void glGetBufferParameter(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferParameter(int, int, IntBuffer)");
     }
 
     /**
@@ -116,43 +116,43 @@ public final class GL15 {
     }
 
     public static int glGetBufferParameteri(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferParameteri(int, int)");
     }
 
     public static ByteBuffer glGetBufferPointer(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetBufferPointer(int, int)");
     }
 
     public static void glGenQueries(IntBuffer ids) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGenQueries(IntBuffer)");
     }
 
     public static int glGenQueries() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGenQueries()");
     }
 
     public static void glDeleteQueries(IntBuffer ids) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glDeleteQueries(IntBuffer)");
     }
 
     public static void glDeleteQueries(int id) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glDeleteQueries(int)");
     }
 
     public static boolean glIsQuery(int id) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glIsQuery(int)");
     }
 
     public static void glBeginQuery(int target, int id) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glBeginQuery(int, int)");
     }
 
     public static void glEndQuery(int target) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glEndQuery(int)");
     }
 
     public static void glGetQuery(int target, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetQuery(int, int, IntBuffer)");
     }
 
     /**
@@ -164,22 +164,22 @@ public final class GL15 {
     }
 
     public static int glGetQueryi(int target, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetQueryi(int, int)");
     }
 
     public static void glGetQueryObject(int id, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetQueryObject(int, int, IntBuffer)");
     }
 
     public static int glGetQueryObjecti(int id, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetQueryObjecti(int, int)");
     }
 
     public static void glGetQueryObjectu(int id, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetQueryObjectu(int, int, IntBuffer)");
     }
 
     public static int glGetQueryObjectui(int id, int pname) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glGetQueryObjectui(int, int)");
     }
 }
