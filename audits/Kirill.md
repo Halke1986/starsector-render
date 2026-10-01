@@ -2,17 +2,6 @@
 
 ## 1. Mod compatibility — the bridge implements a subset of LWJGL
 
-This is the section with the most immediate player impact, and it was produced
-mechanically rather than by reading.
-
-Every `.class` entry of 507 jars (4 vanilla + 503 mod jars from a real modpack install)
-was parsed at the constant-pool level and every reference to `org/lwjgl/opengl/*` was
-extracted — 10,271 references. Those were diffed against the bridge's actual surface,
-taken from `javap` over the compiled bridge classes.
-
-**8,360 of 8,448 mod references resolve. 88 do not.** They split into two categories that
-behave completely differently.
-
 ### 1a. Owner is rewritten, member is absent → linkage error when the call executes
 
 The agent rewrites `org/lwjgl/opengl/GL11` and 17 sibling classes to the bridge for every
@@ -34,9 +23,14 @@ Confirmed, with the referencing mod identified and the call site checked for rea
 | WP-K-13 | `GL20.glUniform1(I…IntBuffer)V` | CPG `ShaderUniformManager.setIntArray` |
 | WP-K-14 | client colour-pointer descriptor | Combat Radar, non-VBO setting |
 
+YES, MANY OPENGL METHODS ARE NOT IMPLEMENTED. WITHOUT GOING INTO DETAILS OF MY DEV PROCESS, THIS IS EXPECTED.
+I IMPLEMENT WRAPPERS ONLY WHEN IT CAN BE DEMONSTRATED THAT THE MISSING GL METHODS CAN IN FACT BE REACHED. 
+
 **WP-K-6 deserves separate attention.** Farsight wraps those paths in `catch (Exception)`.
 `NoSuchMethodError` is an `Error`, not an `Exception`, so the mod's own defensive handling
 cannot catch it. A mod that tried to be careful still dies.
+
+VERY GOOD. IT SHOULD CRASH AND FORCE THE PLAYER TO POST A REPORT.
 
 One claim in this group was **rejected**: the vanilla `SpriteBatch` ARB VBO path is inert,
 because the bridge's `glGetString(GL_EXTENSIONS)` never reports that extension, so vanilla
@@ -62,6 +56,10 @@ queued commands for that same context.
 GraphicsLib-style mod that renders to an offscreen target does so outside the bridge's
 knowledge, while the bridge believes it owns GL state.
 
+NO, THE METHODS IN CLASSES THAT ARE NOT IMPLEMENTED IN FR WILL NOT EXECUTE IN THEIR OWN CONTEXT.
+THIS IS BECAUSE FR CONTROLS GL CONTEXT CREATION AND THE CONTEXTS ARE PRESENT ONLY IN FR-OWNED RENDERING THREADS.
+ATTEMPTS TO EXECUTE LWJGL CALLS DIRECTLY BY MODS WILL LEAD TO "NO GL CONTEXT PRESENT IN THE THREAD" EXCEPTIONS.    
+
 **The `GL12` omission looks accidental.** `ScriptTransformations` lists GL11, GL13, GL14,
 GL15, GL20, GL30 … — it skips from GL11 straight to GL13, while rewriting the classes on
 both sides of the gap. A mod mixing GL11 and GL12 calls in one drawing sequence gets half
@@ -69,8 +67,8 @@ its commands queued and half executed immediately. Compare the VOpt exemption
 (`ClassTransformer.java:103-105`), which is deliberate and carries a comment explaining
 why; this one carries nothing.
 
-*Reproduce:* `out/audit/tools/extract_gl_calls.py` and `diff_bridge_surface.py`, both with
-commands in their headers. Raw data in `out/audit/inventory/T0.2-*`.
+GL12 IS NOT IMPLEMENTED BECAUSE I AM NOT AWARE OF ANY MOD THAT CALLS IT. EXECUTING GL12 CALLS WILL 
+LEAD TO "NO GL CONTEXT PRESENT IN THE THREAD" EXCEPTION, AS EXPLAINED ABOVE.
 
 ---
 
@@ -93,9 +91,17 @@ IS EASY AND I WILL APPLY IT JUST IN CASE.
 
 - **WP-A-4** — `ContextManager.auxContext` is a plain `HashMap` (`ContextManager.java:15`),
   mutated under the class monitor but **read without any lock on every GL call**.
+
+TRUE. THERE ARE TWO READS. FIRST (auxContexts.isEmpty()) SHOULD STILL WORK WITH NO LOCK 
+(NO EXCEPTIONS AND FALSE NEGATIVES/POSITIVES ARE HANDLED) AND IS LEFT THAT WAY FOR MAX PERFORMANCE.
+SECOND (auxContexts.get(Thread.currentThread())) I WRAPPED IN A SYNCHRONIZED SECTION.
+
 - **WP-A-5** — `getThreadContext` hands `mainContext` to any unregistered non-main thread
   while `auxContext.isEmpty()`, which turns that thread into an unsynchronised co-producer
   of the main `Frame`.
+
+TRUE, THIS IS A PERFORMANCE TRADEOFF. AS LONG AS CONTEXT ACCESS IS HANDLED INTERNALLY BY FR, 
+IT'S UP TO ME TO GUARANTEE ONE PRODUCER PER CONTEXT. NO GUARDRAILS ARE NECESSARY.    
 
 **State corruption after an exception.**
 
@@ -115,12 +121,22 @@ THIS ONE I DON'T UNDERSTAND.
   it later on the executor thread. A caller that reuses a `StringBuilder` compiles whatever
   the buffer holds at replay time, not at call time.
 
+OH YEAH, I MISSED THAT ONE. FIXED.
+
 **WP-C-2** — `allocatedListsNumber` is a `static` field, but `glGenLists` is a
 `synchronized` **instance** method, so it locks `this`. Each context holds two
 `ListManager` instances, so different instances increment one static counter under
 different monitors. A lost update hands two display lists the same id. *Verified by hand
 for this report* (`ListManager.java:32`, `:71-75`) after the two automated passes
 disagreed.
+
+FIRST, EACH CONTEXT INDEED HOLDS TWO LIST MANAGERS, BUT ONLY 
+ONE OF THEM CAN HAVE glGenLists() CALLED. SO NO RACE HERE. SECOND, ONLY VANILLA STARSECTOR
+CALLS GL LISTS, AND ONLY FROM ONE THREAD. SO NO RACE HERE EITHER. IN FACT THE synchronized 
+KEYWORD IS SUPERFLUOUS FOR glGenLists AND A LEFTOVER FROM EARLIER DEVELOPMENT.
+
+IN THEORY, IF A MOD USING MULTIPLE GL CONTEXTS USED GL LISTS AS WELL, A RACE HERE WOULD BE 
+POSSIBLE. I'LL LEAVE THIS CASE UNHANDLED AS I CONSIDER ANY MOD USING GL LISTS VERY UNLIKELY.
 
 ---
 
@@ -135,7 +151,15 @@ also did.
 **Silent loss of work the original performed:**
 
 - **WP-V-core-2** — `forceMipmapsFor` is silently ignored for every FR-uploaded texture.
+
+TRUE. IN THE CURRENT FR MIPMAPS ARE GENERATED FOR EACH TEXTURE, MAKING forceMipmapsFor REDUNDANT.
+AND YES, IT'S STILL A DIVERGENCE FROM VANILLA. I DIDN'T KNOW WHY VANILLA SKIPS MIPMAPS FOR LARGER 
+TEXTURES, SO I CHANGED IT. 
+
 - **WP-V-core-3** — registered image processors are skipped on the gameplay texture path.
+
+IF BY IMAGE PREPROCESSORS YOU MEAN TEXTURE_ALPHA_ADDER, THEN IT'S USED ONLY FOR "graphics/fx/emp_arcs.png".
+TEXTURE_ALPHA_ADDER IS NOT REACHABLE IN GAMEPLAY TEXTURE PATH.
 
 Neither crashes nor renders visibly wrong. The mod simply stops doing part of what the
 engine did.
@@ -144,18 +168,36 @@ engine did.
 
 - **WP-V-core-1** — the texture load path converts every failure into `RuntimeException`,
   defeating vanilla's `IOException` fallbacks (crash).
+
+VANILLA FALLBACKS ARE EITHER IGNORING THE EXCEPTION (WHICH I DON'T LIKE), CONVERTING IT TO RuntimeException OR 
+CAPTURING AS THROWABLE AND CALLING System.exit(0); AFTER A LOG. SO NOT MUCH DIFFERENCE FROM MY APPROACH.
+
 - **WP-V-core-4** — `renderExcluding` lost its null guard; NPE on a null exclusion array.
+
+I SUPPOSE. IN VANILLA renderExcluding IS CALLED IN ONLY ONE PLACE, WITH A NON-NULL ARRAY.
+
 - **WP-V-core-5** — the replaced `renderOnly` hard-casts to combat types, breaking the
   generic renderer for any other caller.
+
+THE ONLY OTHER CALLER IS STARFARER PROTOTYPE.  
+
 - **WP-O-3** — an interrupt during combat pacing now escapes the handler vanilla used.
+
+AGAIN, I DON'T LIKE IGNORING EXCEPTIONS. IF IT TURNS OUT VANILLA APPROACH FIXES SOME ISSUE 
+I'M NOT AWARE OF, I'LL PORT IT TO FR. 
 
 **Changed gameplay decisions:**
 
 - **WP-O-4** — reinforcement reselection keeps only the civilian check and discards every
   other vanilla eligibility decision: deployment budget, `allowedToDeploy`, CR gates, role
   and carrier handling. Verified line by line against vanilla `DeploymentManager`.
+
+YEA. PLAYERS DIDN'T NOTICE ANY DIFFERENCE. I DID (ENEMY CAN DEPLOY MORE SHIPS THAN DP LIMIT, BUT I FIND IT FUNNY).  
+
 - **WP-O-8** — open or discontinuous mod-supplied bounds lose terminal vertices relative to
   vanilla (`Tesselation.java:22-…`).
+
+ARE OPEN OR DISCONTINUOUS BOUNDS EVEN VALID?
 
 **Frame pacing and limits (`overrides/`):**
 
@@ -187,10 +229,16 @@ PARTICLE LIMIT, AT LEAST ACCORDING TO MY PROFILING.
 - **WP-O-9** — reorder mode is enabled, arbitrary mod code is called, and it is disabled
   afterwards **without `finally`** (`LayeredRenderer.java:22-34`; same shape around particle
   renderers in `CombatEngine.java:69-92`).
+
+REORDER IS ENABLED ONLY AROUND RoilingSwarmEffect AND SELECTED VANILLA PARTICLE IMPLEMENTATION. 
+PERHAPS A MOD COULD OVERRIDE RoilingSwarmEffect, BUT I'LL WORRY ONLY IF I RECEIVE REPORTS OF THAT HAPPENING.
+
 - **WP-O-5 / WP-O-6** — the save/load background renderer swallows every exception (because
   the game would otherwise treat a throw as save corruption) and its manual GL save/restore
   is neither exhaustive nor exception-safe. Vanilla's `glPushAttrib(24832)` runs *after*
   FR's prelude, so it snapshots state FR has already changed.
+
+I PROBABLY NEED TO MOVE THE PROGRESS BAR ANIMATION TO A SEPARATE CONTEXT FOR MAXIMUM ISOLATION. TODO WILL SUFFICE FOR NOW.
 
 ---
 
@@ -200,14 +248,26 @@ PARTICLE LIMIT, AT LEAST ACCORDING TO MY PROFILING.
   relative** path (`Agent.java:17-19`) and lets the I/O failure escape `premain`, which aborts
   JVM startup before the transformer is ever registered. Two packages found this
   independently.
+
+YEA, I WANT IT TO CRASH. ALLOWING THE AGENT TO SURVIVE EXCEPTIONS WOULD LEAVE FR IN AN INCORRECT STATE AND CRASH LATER ANYWAY.
+
 - **WP-P-1** — the same method computes the vanilla jar's SHA-256, logs it, and never
   compares it to anything. The documented expected value matches neither of the two
   0.98a-RC8 installs available here, so the version guard is decorative while the symbolic
   rewrites it would protect are version-sensitive.
+
+THE HASH IS FOR ME WHEN READING CRASH LOGS.
+
 - **WP-L-2** — `scripts/deploy.sh:1-11` deletes every installed launch artifact before
   validating sources or copying replacements. A failed deploy leaves the install unlaunchable.
+
+YEA, IT'S ONLY FOR DEV PURPOSES.
+
 - **WP-L-8** — `fr.jar` wins class loading over fifteen vanilla classes with no build-identity
   or compatibility check.
+
+THE VANILLA LOGIC OVERRIDE RELIED ON fr.jar WINNING CLASS LOADING. CRASHES WERE THE COMPATIBILITY CHECKS.
+THE OVERRIDE METHOD IS NOT USED ANYWAY IN CURRENT FR.
 
 ---
 
@@ -219,17 +279,38 @@ All findings *unmeasured*, by design. Ranked by expected effect:
   which removes the parallelism the architecture exists to provide. It implements a
   workaround for BoxUtil flicker; scoping it more narrowly than process-wide is the
   question worth answering.
+
+POSSIBLE. BUT PROFILING REVEALED NO PERFORMANCE DEGRADATION.
+
 - **WP-F-2** — `glGetInteger` consults `StateCache` only for pnames inside its `switch`;
   anything else stalls the pipeline on every call.
+
+YES. I IMPLEMENT STALL WORKAROUNDS ONLY FOR CALLS THAT ARE REPORTED TO CAUSE STALLS.
+
 - **WP-F-5** — `glFlush()` runs once per **submitted batch**, and every stall submits a
   batch, so a stall-heavy frame flushes many times rather than once.
+
+IT HAPPENS ONLY WITH BOXUTIL. AND BOXUTIL ITSELF CALLS FAR MORE glFlush THAN FR, SO THIS 
+IS IN FACT A PERFORMANCE OPTIMIZATION.
+
 - **WP-F-4** — `getThreadContext` performs `auxContext.isEmpty()` plus a
   `Thread.currentThread()` comparison on every GL call once any auxiliary context exists.
+
+YES, AND IT IS DONE TO INCREASE PERFORMANCE BY AVOIDING MAP QUERY EACH CALL.
+
 - **WP-F-3** — `GLCommand.run` is dispatched from a single site over 196+ record types
   (megamorphic).
+
+I DON'T HAVE ANY BETTER IDEA HOW TO DO IT. THE CALL PATH IS ALREADY HEAVILY OPTIMIZED.
+
 - **WP-F-7** — `glGetError` has no cache and stalls the game thread on every call.
+
+YES, THAT'S UNFORTUNATE. I DON'T KNOW HOW TO RELIABLY SIMULATE glGetError ON CALLER THREAD.
+
 - **WP-F-8** — `glNormal3f` allocates a record per call while the other vertex-hot commands
   use shared static instances.
+
+THIS IS BECAUSE glNormal3f IS USED ONLY TO RENDER PLANETS, AND NOT IN THE HOT PATH.
 
 **Retention (WP-G).** The systemic statement is more useful than the individual leaks:
 **no pool or cache in the bridge has an eviction path anywhere in the design.** Deleting a
@@ -239,3 +320,5 @@ is keyed by `Thread` and entries are removed only by an explicit `destroyAuxCont
 dead worker thread retains its context, its executor and everything they reference
 (WP-A-11). Note that native direct buffers, ordinary heap and GPU objects are three
 separate budgets and should not be summed.
+
+YEA, NO GRACEFULLY SHUTDOWN IS IMPLEMENTED. NOT PURGING THE CACHE DOESN'T SEEM TO HURT.

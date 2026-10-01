@@ -1,8 +1,5 @@
 BUGS
 
-boxutil 1.5.4 timing issue
-async stall in shader query
-
 IMPROVEMENTS
 
 game is responsive when loading mods

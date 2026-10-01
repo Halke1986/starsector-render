@@ -190,7 +190,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glShaderSource(shader, string));
+        context.exec.execute(new glShaderSource(shader, string.toString()));
     }
 
     public static void glUniform1f(int location, float v0) {

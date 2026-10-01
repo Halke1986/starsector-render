@@ -10,6 +10,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.VertexInterceptor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -35,7 +36,7 @@ public class LayeredRenderer<T extends Enum<T>, V> {
      */
     public void renderExcluding(V viewport, T... exclude) {
         EnumSet<T> allLayers = EnumSet.allOf(this.layerEnumClass);
-        List<T> excludedLayers = Arrays.asList(exclude);
+        List<T> excludedLayers = exclude == null ? new ArrayList() : Arrays.asList(exclude);
 
         for (T layer : allLayers) {
             if (excludedLayers.contains(layer)) {

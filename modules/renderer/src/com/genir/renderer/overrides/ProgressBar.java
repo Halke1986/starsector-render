@@ -11,6 +11,8 @@ import java.nio.IntBuffer;
  * ProgressBar override fixes background flicker when saving/loading the game.
  */
 public class ProgressBar {
+    // TODO move progress bar animation to a separate context for maximum isolation.
+
     /**
      * ADDED FIELDS
      */

@@ -15,16 +15,21 @@ public class ContextManager {
     private static final Map<Thread, Context> auxContexts = new HashMap<>();
 
     public static Context getThreadContext() {
+        // Leave access to auxContexts unsynchronized to minimize hot-path overhead.
+        // Based on the HashMap implementation, concurrent access will not make isEmpty() throw.
+        // If the map incorrectly appears nonempty, getThreadContext() handles it via the slow path.
+        // If it incorrectly appears empty, returning mainContext is harmless on the main thread.
+        // Auxiliary threads must call createAuxContext() before accessing contexts.
         if (auxContexts.isEmpty()) {
             return mainContext;
         }
 
-        // Assume the majority of commands is executed by main application thread.
+        // Assume the majority of commands are executed by the main application thread.
         if (Thread.currentThread() == mainThread) {
             return mainContext;
         }
 
-        return auxContexts.get(Thread.currentThread());
+        return getAuxContext();
     }
 
     synchronized public static Context createMainContext() {
@@ -44,15 +49,19 @@ public class ContextManager {
     }
 
     synchronized public static Context createAuxContext(org.lwjgl.opengl.SharedDrawable drawable) {
-        asert(auxContexts.get(Thread.currentThread()) == null);
+        final Context context = new Context(mainContext, drawable);
 
-        Context context = new Context(mainContext, drawable);
-        auxContexts.put(Thread.currentThread(), context);
+        Context prevValue = auxContexts.put(Thread.currentThread(), context);
+        asert(prevValue == null);
 
         return context;
     }
 
     synchronized public static Context removeAuxContext() {
         return auxContexts.remove(Thread.currentThread());
+    }
+
+    synchronized private static Context getAuxContext() {
+        return auxContexts.get(Thread.currentThread());
     }
 }
