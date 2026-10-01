@@ -11,7 +11,7 @@ public final class GL40 {
     }
 
     public static void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBlendEquationSeparatei");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBlendEquationSeparatei(int, int, int)");
     }
 
     public static void glBlendFunci(int buf, int src, int dst) {
@@ -23,107 +23,107 @@ public final class GL40 {
     }
 
     public static void glDrawArraysIndirect(int mode, ByteBuffer indirect) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawArraysIndirect");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawArraysIndirect(int, ByteBuffer)");
     }
 
     public static void glDrawArraysIndirect(int mode, long indirect_buffer_offset) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawArraysIndirect");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawArraysIndirect(int, long)");
     }
 
     public static void glDrawArraysIndirect(int mode, IntBuffer indirect) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawArraysIndirect");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawArraysIndirect(int, IntBuffer)");
     }
 
     public static void glDrawElementsIndirect(int mode, int type, ByteBuffer indirect) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawElementsIndirect");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawElementsIndirect(int, int, ByteBuffer)");
     }
 
     public static void glDrawElementsIndirect(int mode, int type, long indirect_buffer_offset) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawElementsIndirect");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawElementsIndirect(int, int, long)");
     }
 
     public static void glDrawElementsIndirect(int mode, int type, IntBuffer indirect) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawElementsIndirect");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawElementsIndirect(int, int, IntBuffer)");
     }
 
     public static void glUniform1d(int location, double x) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform1d");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform1d(int, double)");
     }
 
     public static void glUniform2d(int location, double x, double y) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform2d");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform2d(int, double, double)");
     }
 
     public static void glUniform3d(int location, double x, double y, double z) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform3d");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform3d(int, double, double, double)");
     }
 
     public static void glUniform4d(int location, double x, double y, double z, double w) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform4d");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform4d(int, double, double, double, double)");
     }
 
     public static void glUniform1(int location, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform1");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform1(int, DoubleBuffer)");
     }
 
     public static void glUniform2(int location, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform2");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform2(int, DoubleBuffer)");
     }
 
     public static void glUniform3(int location, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform3");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform3(int, DoubleBuffer)");
     }
 
     public static void glUniform4(int location, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform4");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniform4(int, DoubleBuffer)");
     }
 
     public static void glUniformMatrix2(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix2");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix2(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix3(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix3");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix3(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix4(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix4");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix4(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix2x3(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix2x3");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix2x3(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix2x4(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix2x4");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix2x4(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix3x2(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix3x2");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix3x2(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix3x4(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix3x4");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix3x4(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix4x2(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix4x2");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix4x2(int, boolean, DoubleBuffer)");
     }
 
     public static void glUniformMatrix4x3(int location, boolean transpose, DoubleBuffer value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix4x3");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glUniformMatrix4x3(int, boolean, DoubleBuffer)");
     }
 
     public static void glGetUniform(int program, int location, DoubleBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetUniform");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetUniform(int, int, DoubleBuffer)");
     }
 
     public static void glMinSampleShading(float value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glMinSampleShading");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glMinSampleShading(float)");
     }
 
     public static int glGetSubroutineUniformLocation(int program, int shadertype, ByteBuffer name) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetSubroutineUniformLocation");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetSubroutineUniformLocation(int, int, ByteBuffer)");
     }
 
     public static int glGetSubroutineUniformLocation(int program, int shadertype, CharSequence name) {
@@ -131,7 +131,7 @@ public final class GL40 {
     }
 
     public static int glGetSubroutineIndex(int program, int shadertype, ByteBuffer name) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetSubroutineIndex");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetSubroutineIndex(int, int, ByteBuffer)");
     }
 
     public static int glGetSubroutineIndex(int program, int shadertype, CharSequence name) {
@@ -139,7 +139,7 @@ public final class GL40 {
     }
 
     public static void glGetActiveSubroutineUniform(int program, int shadertype, int index, int pname, IntBuffer values) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniform");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniform(int, int, int, int, IntBuffer)");
     }
 
     /**
@@ -151,23 +151,23 @@ public final class GL40 {
     }
 
     public static int glGetActiveSubroutineUniformi(int program, int shadertype, int index, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniformi");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniformi(int, int, int, int)");
     }
 
     public static void glGetActiveSubroutineUniformName(int program, int shadertype, int index, IntBuffer length, ByteBuffer name) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniformName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniformName(int, int, int, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetActiveSubroutineUniformName(int program, int shadertype, int index, int bufsize) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniformName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineUniformName(int, int, int, int)");
     }
 
     public static void glGetActiveSubroutineName(int program, int shadertype, int index, IntBuffer length, ByteBuffer name) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineName(int, int, int, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetActiveSubroutineName(int program, int shadertype, int index, int bufsize) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetActiveSubroutineName(int, int, int, int)");
     }
 
     public static void glUniformSubroutinesu(int shadertype, IntBuffer indices) {
@@ -175,7 +175,7 @@ public final class GL40 {
     }
 
     public static void glGetUniformSubroutineu(int shadertype, int location, IntBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetUniformSubroutineu");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetUniformSubroutineu(int, int, IntBuffer)");
     }
 
     /**
@@ -187,11 +187,11 @@ public final class GL40 {
     }
 
     public static int glGetUniformSubroutineui(int shadertype, int location) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetUniformSubroutineui");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetUniformSubroutineui(int, int)");
     }
 
     public static void glGetProgramStage(int program, int shadertype, int pname, IntBuffer values) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetProgramStage");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetProgramStage(int, int, int, IntBuffer)");
     }
 
     /**
@@ -203,7 +203,7 @@ public final class GL40 {
     }
 
     public static int glGetProgramStagei(int program, int shadertype, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetProgramStagei");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetProgramStagei(int, int, int)");
     }
 
     public static void glPatchParameteri(int pname, int value) {
@@ -211,59 +211,59 @@ public final class GL40 {
     }
 
     public static void glPatchParameter(int pname, FloatBuffer values) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glPatchParameter");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glPatchParameter(int, FloatBuffer)");
     }
 
     public static void glBindTransformFeedback(int target, int id) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBindTransformFeedback");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBindTransformFeedback(int, int)");
     }
 
     public static void glDeleteTransformFeedbacks(IntBuffer ids) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDeleteTransformFeedbacks");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDeleteTransformFeedbacks(IntBuffer)");
     }
 
     public static void glDeleteTransformFeedbacks(int id) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDeleteTransformFeedbacks");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDeleteTransformFeedbacks(int)");
     }
 
     public static void glGenTransformFeedbacks(IntBuffer ids) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGenTransformFeedbacks");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGenTransformFeedbacks(IntBuffer)");
     }
 
     public static int glGenTransformFeedbacks() {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGenTransformFeedbacks");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGenTransformFeedbacks()");
     }
 
     public static boolean glIsTransformFeedback(int id) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glIsTransformFeedback");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glIsTransformFeedback(int)");
     }
 
     public static void glPauseTransformFeedback() {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glPauseTransformFeedback");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glPauseTransformFeedback()");
     }
 
     public static void glResumeTransformFeedback() {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glResumeTransformFeedback");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glResumeTransformFeedback()");
     }
 
     public static void glDrawTransformFeedback(int mode, int id) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawTransformFeedback");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawTransformFeedback(int, int)");
     }
 
     public static void glDrawTransformFeedbackStream(int mode, int id, int stream) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawTransformFeedbackStream");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glDrawTransformFeedbackStream(int, int, int)");
     }
 
     public static void glBeginQueryIndexed(int target, int index, int id) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBeginQueryIndexed");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBeginQueryIndexed(int, int, int)");
     }
 
     public static void glEndQueryIndexed(int target, int index) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glEndQueryIndexed");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glEndQueryIndexed(int, int)");
     }
 
     public static void glGetQueryIndexed(int target, int index, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetQueryIndexed");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetQueryIndexed(int, int, int, IntBuffer)");
     }
 
     /**
@@ -275,6 +275,6 @@ public final class GL40 {
     }
 
     public static int glGetQueryIndexedi(int target, int index, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetQueryIndexedi");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glGetQueryIndexedi(int, int, int)");
     }
 }

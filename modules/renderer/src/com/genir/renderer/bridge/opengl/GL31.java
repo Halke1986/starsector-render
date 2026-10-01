@@ -10,7 +10,7 @@ public final class GL31 {
     }
 
     public static void glDrawElementsInstanced(int mode, ByteBuffer indices, int primcount) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glDrawElementsInstanced");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glDrawElementsInstanced(int, ByteBuffer, int)");
     }
 
     public static void glDrawElementsInstanced(int mode, IntBuffer indices, int primcount) {
@@ -18,7 +18,7 @@ public final class GL31 {
     }
 
     public static void glDrawElementsInstanced(int mode, ShortBuffer indices, int primcount) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glDrawElementsInstanced");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glDrawElementsInstanced(int, ShortBuffer, int)");
     }
 
     public static void glDrawElementsInstanced(int mode, int indices_count, int type, long indices_buffer_offset, int primcount) {
@@ -30,7 +30,7 @@ public final class GL31 {
     }
 
     public static void glPrimitiveRestartIndex(int index) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glPrimitiveRestartIndex");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glPrimitiveRestartIndex(int)");
     }
 
     public static void glTexBuffer(int target, int internalformat, int buffer) {
@@ -38,15 +38,15 @@ public final class GL31 {
     }
 
     public static void glGetUniformIndices(int program, ByteBuffer uniformNames, IntBuffer uniformIndices) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformIndices");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformIndices(int, ByteBuffer, IntBuffer)");
     }
 
     public static void glGetUniformIndices(int program, CharSequence[] uniformNames, IntBuffer uniformIndices) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformIndices");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformIndices(int, CharSequence[], IntBuffer)");
     }
 
     public static void glGetActiveUniforms(int program, IntBuffer uniformIndices, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniforms");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniforms(int, IntBuffer, int, IntBuffer)");
     }
 
     /**
@@ -58,19 +58,19 @@ public final class GL31 {
     }
 
     public static int glGetActiveUniformsi(int program, int uniformIndex, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformsi");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformsi(int, int, int)");
     }
 
     public static void glGetActiveUniformName(int program, int uniformIndex, IntBuffer length, ByteBuffer uniformName) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformName(int, int, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetActiveUniformName(int program, int uniformIndex, int bufSize) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformName(int, int, int)");
     }
 
     public static int glGetUniformBlockIndex(int program, ByteBuffer uniformBlockName) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformBlockIndex");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetUniformBlockIndex(int, ByteBuffer)");
     }
 
     public static int glGetUniformBlockIndex(int program, CharSequence uniformBlockName) {
@@ -78,7 +78,7 @@ public final class GL31 {
     }
 
     public static void glGetActiveUniformBlock(int program, int uniformBlockIndex, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlock");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlock(int, int, int, IntBuffer)");
     }
 
     /**
@@ -94,11 +94,11 @@ public final class GL31 {
     }
 
     public static void glGetActiveUniformBlockName(int program, int uniformBlockIndex, IntBuffer length, ByteBuffer uniformBlockName) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlockName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlockName(int, int, IntBuffer, ByteBuffer)");
     }
 
     public static String glGetActiveUniformBlockName(int program, int uniformBlockIndex, int bufSize) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlockName");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL31.glGetActiveUniformBlockName(int, int, int)");
     }
 
     public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {

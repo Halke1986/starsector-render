@@ -6,15 +6,15 @@ import java.nio.ShortBuffer;
 
 public final class GL42 {
     public static void glGetActiveAtomicCounterBuffer(int program, int bufferIndex, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetActiveAtomicCounterBuffer");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetActiveAtomicCounterBuffer(int, int, int, IntBuffer)");
     }
 
     public static int glGetActiveAtomicCounterBuffer(int program, int bufferIndex, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetActiveAtomicCounterBuffer");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetActiveAtomicCounterBuffer(int, int, int)");
     }
 
     public static void glTexStorage1D(int target, int levels, int internalformat, int width) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glTexStorage1D");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glTexStorage1D(int, int, int, int)");
     }
 
     public static void glTexStorage2D(int target, int levels, int internalformat, int width, int height) {
@@ -22,51 +22,51 @@ public final class GL42 {
     }
 
     public static void glTexStorage3D(int target, int levels, int internalformat, int width, int height, int depth) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glTexStorage3D");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glTexStorage3D(int, int, int, int, int, int)");
     }
 
     public static void glDrawTransformFeedbackInstanced(int mode, int id, int primcount) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawTransformFeedbackInstanced");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawTransformFeedbackInstanced(int, int, int)");
     }
 
     public static void glDrawTransformFeedbackStreamInstanced(int mode, int id, int stream, int primcount) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawTransformFeedbackStreamInstanced");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawTransformFeedbackStreamInstanced(int, int, int, int)");
     }
 
     public static void glDrawArraysInstancedBaseInstance(int mode, int first, int count, int primcount, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawArraysInstancedBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawArraysInstancedBaseInstance(int, int, int, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseInstance(int mode, ByteBuffer indices, int primcount, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance(int, ByteBuffer, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseInstance(int mode, IntBuffer indices, int primcount, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance(int, IntBuffer, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseInstance(int mode, ShortBuffer indices, int primcount, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance(int, ShortBuffer, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseInstance(int mode, int indices_count, int type, long indices_buffer_offset, int primcount, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseInstance(int, int, int, long, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseVertexBaseInstance(int mode, ByteBuffer indices, int primcount, int basevertex, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance(int, ByteBuffer, int, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseVertexBaseInstance(int mode, IntBuffer indices, int primcount, int basevertex, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance(int, IntBuffer, int, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseVertexBaseInstance(int mode, ShortBuffer indices, int primcount, int basevertex, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance(int, ShortBuffer, int, int, int)");
     }
 
     public static void glDrawElementsInstancedBaseVertexBaseInstance(int mode, int indices_count, int type, long indices_buffer_offset, int primcount, int basevertex, int baseinstance) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glDrawElementsInstancedBaseVertexBaseInstance(int, int, int, long, int, int, int)");
     }
 
     public static void glBindImageTexture(int unit, int texture, int level, boolean layered, int layer, int access, int format) {
@@ -78,10 +78,10 @@ public final class GL42 {
     }
 
     public static void glGetInternalformat(int target, int internalformat, int pname, IntBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetInternalformat");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetInternalformat(int, int, int, IntBuffer)");
     }
 
     public static int glGetInternalformat(int target, int internalformat, int pname) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetInternalformat");
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL42.glGetInternalformat(int, int, int)");
     }
 }
