@@ -91,6 +91,7 @@ public class GL30 {
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glBindFramebuffer(target, framebuffer);
+        context.bufferTracker.glBindFramebuffer(target, framebuffer);
         context.exec.execute(new glBindFramebuffer(target, framebuffer));
     }
 
@@ -103,6 +104,7 @@ public class GL30 {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.bufferTracker.glDeleteFramebuffers(framebuffer);
         context.exec.execute(new glDeleteFramebuffers(framebuffer));
     }
 
@@ -284,5 +286,10 @@ public class GL30 {
 
         final Context context = ContextManager.getThreadContext();
         context.exec.execute(new glUniform3ui(location, v0, v1, v2));
+    }
+
+    public static boolean glIsFramebuffer(int framebuffer) {
+        final Context context = ContextManager.getThreadContext();
+        return context.bufferTracker.glIsFramebuffer(framebuffer);
     }
 }

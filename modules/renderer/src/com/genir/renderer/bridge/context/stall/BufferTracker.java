@@ -12,6 +12,7 @@ import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class BufferTracker {
     private final Set<Integer> buffers = ConcurrentHashMap.newKeySet();
+    private final Set<Integer> framebuffers = ConcurrentHashMap.newKeySet();
 
     //
     // GL CALLS
@@ -53,8 +54,37 @@ public class BufferTracker {
         buffers.add(buffer);
     }
 
+    public void glBindFramebuffer(int target, int framebuffer) {
+        switch (target) {
+            case GL30.GL_DRAW_FRAMEBUFFER:
+            case GL30.GL_READ_FRAMEBUFFER:
+            case GL30.GL_FRAMEBUFFER:
+                break;
+
+            // Unknown framebuffer type.
+            default:
+                return;
+        }
+
+        // Out of bounds.
+        if (framebuffer < 0) {
+            return;
+        }
+
+        // Unbinding a buffer.
+        if (framebuffer == 0) {
+            return;
+        }
+
+        framebuffers.add(framebuffer);
+    }
+
     public void glDeleteBuffers(int buffer) {
         buffers.remove(buffer);
+    }
+
+    public void glDeleteFramebuffers(int framebuffer) {
+        framebuffers.remove(framebuffer);
     }
 
     public boolean glIsBuffer(int buffer) {
@@ -73,6 +103,21 @@ public class BufferTracker {
         return result;
     }
 
-//    GL30.glIsFramebuffer(id)
+    public boolean glIsFramebuffer(int framebuffer) {
+        record glIsFramebuffer(int framebuffer, boolean expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                boolean actual = org.lwjgl.opengl.GL30.glIsFramebuffer(framebuffer);
+                asertEqual(expected, actual, this);
+            }
+        }
+
+        boolean result = framebuffers.contains(framebuffer);
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glIsFramebuffer(framebuffer, result));
+        return result;
+    }
+
 //    GL30.glIsRenderbuffer(id)
 }

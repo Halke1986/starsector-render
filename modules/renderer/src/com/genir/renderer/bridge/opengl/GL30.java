@@ -247,7 +247,7 @@ public final class GL30 {
     }
 
     public static boolean glIsFramebuffer(int framebuffer) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glIsFramebuffer(int)");
+        return com.genir.renderer.bridge.commands.GL30.glIsFramebuffer(framebuffer);
     }
 
     public static void glBindFramebuffer(int target, int framebuffer) {
