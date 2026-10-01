@@ -203,7 +203,7 @@ public final class GL30 {
     }
 
     public static boolean glIsRenderbuffer(int renderbuffer) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glIsRenderbuffer(int)");
+        return com.genir.renderer.bridge.commands.GL30.glIsRenderbuffer(renderbuffer);
     }
 
     public static void glBindRenderbuffer(int target, int renderbuffer) {

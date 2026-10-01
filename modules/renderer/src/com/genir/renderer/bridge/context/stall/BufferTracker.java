@@ -13,6 +13,7 @@ import static com.genir.renderer.debug.Debug.asertEqual;
 public class BufferTracker {
     private final Set<Integer> buffers = ConcurrentHashMap.newKeySet();
     private final Set<Integer> framebuffers = ConcurrentHashMap.newKeySet();
+    private final Set<Integer> renderbuffers = ConcurrentHashMap.newKeySet();
 
     //
     // GL CALLS
@@ -79,12 +80,40 @@ public class BufferTracker {
         framebuffers.add(framebuffer);
     }
 
+    public void glBindRenderbuffer(int target, int renderbuffer) {
+        // Unknown framebuffer type.
+        if (target != GL30.GL_RENDERBUFFER) {
+            return;
+        }
+
+        // Out of bounds.
+        if (renderbuffer < 0) {
+            return;
+        }
+
+        // Unbinding a buffer.
+        if (renderbuffer == 0) {
+            return;
+        }
+
+        renderbuffers.add(renderbuffer);
+    }
+
+    public void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
+        // TODO validate target and attachment
+        glBindRenderbuffer(renderbuffertarget, renderbuffer);
+    }
+
     public void glDeleteBuffers(int buffer) {
         buffers.remove(buffer);
     }
 
     public void glDeleteFramebuffers(int framebuffer) {
         framebuffers.remove(framebuffer);
+    }
+
+    public void glDeleteRenderbuffers(int renderbuffer) {
+        renderbuffers.remove(renderbuffer);
     }
 
     public boolean glIsBuffer(int buffer) {
@@ -119,5 +148,19 @@ public class BufferTracker {
         return result;
     }
 
-//    GL30.glIsRenderbuffer(id)
+    public boolean glIsRenderbuffer(int renderbuffer) {
+        record glIsRenderbuffer(int renderbuffer, boolean expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Assert the simulated value reflects the OpenGL state.
+                boolean actual = org.lwjgl.opengl.GL30.glIsRenderbuffer(renderbuffer);
+                asertEqual(expected, actual, this);
+            }
+        }
+
+        boolean result = renderbuffers.contains(renderbuffer);
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glIsRenderbuffer(renderbuffer, result));
+        return result;
+    }
 }
