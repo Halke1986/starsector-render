@@ -34,21 +34,15 @@ public class GL15 {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.bufferTracker.glDeleteBuffers(buffer);
         context.exec.execute(new glDeleteBuffers(buffer));
     }
 
     public static void glDeleteBuffers(IntBuffer buffers) {
-        record glDeleteBuffers(IntBufferSnapshot buffers) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL15.glDeleteBuffers(buffers.buffer);
-                buffers.release();
-            }
+        IntBuffer readBuffer = buffers.duplicate();
+        while (readBuffer.hasRemaining()) {
+            glDeleteBuffers(readBuffer.get());
         }
-
-        final Context context = ContextManager.getThreadContext();
-        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(buffers);
-        context.exec.execute(new glDeleteBuffers(snapshot));
     }
 
     public static void glBindBuffer(int target, int buffer) {
@@ -61,6 +55,7 @@ public class GL15 {
 
         final Context context = ContextManager.getThreadContext();
         context.bufferManager.glBindBuffer(target, buffer);
+        context.bufferTracker.glBindBuffer(target, buffer);
         context.clientAttribTracker.glBindBuffer(target, buffer);
         context.exec.execute(new glBindBuffer(target, buffer));
     }
@@ -206,5 +201,10 @@ public class GL15 {
         }
 
         return context.exec.get(new glUnmapBuffer(target));
+    }
+
+    public static boolean glIsBuffer(int buffer) {
+        final Context context = ContextManager.getThreadContext();
+        return context.bufferTracker.glIsBuffer(buffer);
     }
 }

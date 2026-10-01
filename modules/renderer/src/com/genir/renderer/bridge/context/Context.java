@@ -32,6 +32,7 @@ public class Context {
         this.textureManager = new TextureManager();
         this.shaderTracker = new ShaderTracker();
         this.textureTracker = new TextureTracker();
+        this.bufferTracker = new BufferTracker();
 
         this.clientThread = Thread.currentThread().getName();
         this.renderingThread = exec.get(new getRenderingThread()).getName();
@@ -46,6 +47,7 @@ public class Context {
         this.textureManager = parent.textureManager;
         this.shaderTracker = parent.shaderTracker;
         this.textureTracker = parent.textureTracker;
+        this.bufferTracker = parent.bufferTracker;
 
         this.clientThread = Thread.currentThread().getName();
         this.renderingThread = exec.get(new getRenderingThread()).getName();
@@ -70,7 +72,8 @@ public class Context {
     public final float[] commandArgs = new float[4];
     public final AttribTracker attribTracker = new AttribTracker(exec);
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
-    // Context-local client state, that can however be safely run per-context.
+    public final BufferManager bufferManager = new BufferManager();
+    // Context-shared client state, that can however be safely run per-context.
     public final ListManager clientListManager = new ListManager(this);
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
@@ -78,7 +81,7 @@ public class Context {
     // Context-shared client state.
     public final ShaderTracker shaderTracker;
     public final TextureTracker textureTracker;
-    public final BufferManager bufferManager = new BufferManager();
+    public final BufferTracker bufferTracker;
 
     public void update() {
         // Runs on rendering thread.

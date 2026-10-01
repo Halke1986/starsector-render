@@ -24,7 +24,7 @@ public final class GL15 {
     }
 
     public static boolean glIsBuffer(int buffer) {
-        throw new UnsupportedOperationException();
+        return com.genir.renderer.bridge.commands.GL15.glIsBuffer(buffer);
     }
 
     public static void glBufferData(int target, long data_size, int usage) {
