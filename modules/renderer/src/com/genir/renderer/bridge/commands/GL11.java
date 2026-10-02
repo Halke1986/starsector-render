@@ -535,10 +535,26 @@ public class GL11 {
         }
     }
 
+    private record GlPushMatrixClient() implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            // TODO
+        }
+    }
+
     private static GlPushMatrix glPushMatrixCommand = new GlPushMatrix();
+    private static GlPushMatrixClient glPushMatrixCommandClient = new GlPushMatrixClient();
 
     public static void glPushMatrix() {
         final Context context = ContextManager.getThreadContext();
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            listManager.record(glPushMatrixCommandClient, null, 0);
+        } else {
+            // TODO
+        }
+
         context.exec.execute(glPushMatrixCommand);
     }
 
@@ -557,10 +573,26 @@ public class GL11 {
         }
     }
 
+    private record GlPopMatrixClient() implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            // TODO
+        }
+    }
+
     private static GlPopMatrix glPopMatrixCommand = new GlPopMatrix();
+    private static GlPopMatrixClient glPopMatrixCommandClient = new GlPopMatrixClient();
 
     public static void glPopMatrix() {
         final Context context = ContextManager.getThreadContext();
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            listManager.record(glPopMatrixCommandClient, null, 0);
+        } else {
+            // TODO
+        }
+
         context.exec.execute(glPopMatrixCommand);
     }
 
@@ -575,7 +607,18 @@ public class GL11 {
             }
         }
 
+        record glLoadIdentityClient() implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
+                // TODO
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
+        new glLoadIdentityClient().run(context, null, 0);
         context.exec.execute(new glLoadIdentity());
     }
 
@@ -602,10 +645,34 @@ public class GL11 {
         }
     }
 
+    private record GlTranslatefClient() implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            float x = args[argsOffset + 0];
+            float y = args[argsOffset + 1];
+            float z = args[argsOffset + 2];
+
+            // TODO
+        }
+    }
+
     private static GlTranslatef glTranslatefCommand = new GlTranslatef();
+    private static GlTranslatefClient glTranslatefCommandClient = new GlTranslatefClient();
 
     public static void glTranslatef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = x;
+            args[1] = y;
+            args[2] = z;
+            listManager.record(glTranslatefCommandClient, args, 0);
+        } else {
+            // TODO
+        }
+
         context.exec.execute(glTranslatefCommand, x, y, z);
     }
 
@@ -634,10 +701,36 @@ public class GL11 {
         }
     }
 
+    private record GlRotatefClient() implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            float angle = args[argsOffset + 0];
+            float x = args[argsOffset + 1];
+            float y = args[argsOffset + 2];
+            float z = args[argsOffset + 3];
+
+            // TODO
+        }
+    }
+
     private static GlRotatef glRotatefCommand = new GlRotatef();
+    private static GlRotatefClient glRotatefCommandClient = new GlRotatefClient();
 
     public static void glRotatef(float angle, float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = angle;
+            args[1] = x;
+            args[2] = y;
+            args[3] = z;
+            listManager.record(glRotatefCommandClient, args, 0);
+        } else {
+            // TODO
+        }
+
         context.exec.execute(glRotatefCommand, angle, x, y, z);
     }
 
@@ -664,10 +757,34 @@ public class GL11 {
         }
     }
 
+    private record GlScalefClient() implements GLCommand, Recordable { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            float x = args[argsOffset + 0];
+            float y = args[argsOffset + 1];
+            float z = args[argsOffset + 2];
+
+            // TODO
+        }
+    }
+
     private static GlScalef glScalefCommand = new GlScalef();
+    private static GlScalefClient glScalefCommandClient = new GlScalefClient();
 
     public static void glScalef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
+
+        ListManager listManager = context.clientListManager;
+        if (listManager.isRecording()) {
+            float[] args = context.commandArgs;
+            args[0] = x;
+            args[1] = y;
+            args[2] = z;
+            listManager.record(glScalefCommandClient, args, 0);
+        } else {
+            // TODO
+        }
+
         context.exec.execute(glScalefCommand, x, y, z);
     }
 
@@ -691,8 +808,20 @@ public class GL11 {
             }
         }
 
+        record glMultMatrixClient(FloatBufferSnapshot m) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
+                // TODO
+                // Buffer will be released on the rendering thread.
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(m);
+        new glMultMatrixClient(snapshot).run(context, null, 0);
         context.exec.execute(new glMultMatrix(snapshot));
     }
 
@@ -716,8 +845,20 @@ public class GL11 {
             }
         }
 
+        record glLoadMatrixClient(FloatBufferSnapshot m) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
+                // TODO
+                // Buffer will be released on the rendering thread.
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(m);
+        new glLoadMatrixClient(snapshot).run(context, null, 0);
         context.exec.execute(new glLoadMatrix(snapshot));
     }
 
@@ -732,7 +873,18 @@ public class GL11 {
             }
         }
 
+        record glOrthoClient(double left, double right, double bottom, double top, double zNear, double zFar) implements GLCommand, Recordable {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
+                // TODO
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
+        new glOrthoClient(left, right, bottom, top, zNear, zFar).run(context, null, 0);
         context.exec.execute(new glOrtho(left, right, bottom, top, zNear, zFar));
     }
 
