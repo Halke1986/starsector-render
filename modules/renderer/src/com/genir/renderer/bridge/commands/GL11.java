@@ -538,7 +538,7 @@ public class GL11 {
     private record GlPushMatrixClient() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            // TODO
+            context.matrixTracker.glPushMatrix();
         }
     }
 
@@ -552,7 +552,7 @@ public class GL11 {
         if (listManager.isRecording()) {
             listManager.record(glPushMatrixCommandClient, null, 0);
         } else {
-            // TODO
+            context.matrixTracker.glPushMatrix();
         }
 
         context.exec.execute(glPushMatrixCommand);
@@ -576,7 +576,7 @@ public class GL11 {
     private record GlPopMatrixClient() implements GLCommand, Recordable { // Heap optimized
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            // TODO
+            context.matrixTracker.glPopMatrix();
         }
     }
 
@@ -590,7 +590,7 @@ public class GL11 {
         if (listManager.isRecording()) {
             listManager.record(glPopMatrixCommandClient, null, 0);
         } else {
-            // TODO
+            context.matrixTracker.glPopMatrix();
         }
 
         context.exec.execute(glPopMatrixCommand);
@@ -613,7 +613,7 @@ public class GL11 {
                 if (context.clientListManager.isRecording(this, args, argsOffset))
                     return;
 
-                // TODO
+                context.matrixTracker.glLoadIdentity();
             }
         }
 
@@ -652,7 +652,7 @@ public class GL11 {
             float y = args[argsOffset + 1];
             float z = args[argsOffset + 2];
 
-            // TODO
+            context.matrixTracker.glTranslatef(x, y, z);
         }
     }
 
@@ -670,7 +670,7 @@ public class GL11 {
             args[2] = z;
             listManager.record(glTranslatefCommandClient, args, 0);
         } else {
-            // TODO
+            context.matrixTracker.glTranslatef(x, y, z);
         }
 
         context.exec.execute(glTranslatefCommand, x, y, z);
@@ -709,7 +709,7 @@ public class GL11 {
             float y = args[argsOffset + 2];
             float z = args[argsOffset + 3];
 
-            // TODO
+            context.matrixTracker.glRotatef(angle, x, y, z);
         }
     }
 
@@ -728,7 +728,7 @@ public class GL11 {
             args[3] = z;
             listManager.record(glRotatefCommandClient, args, 0);
         } else {
-            // TODO
+            context.matrixTracker.glRotatef(angle, x, y, z);
         }
 
         context.exec.execute(glRotatefCommand, angle, x, y, z);
@@ -764,7 +764,7 @@ public class GL11 {
             float y = args[argsOffset + 1];
             float z = args[argsOffset + 2];
 
-            // TODO
+            context.matrixTracker.glScalef(x, y, z);
         }
     }
 
@@ -782,7 +782,7 @@ public class GL11 {
             args[2] = z;
             listManager.record(glScalefCommandClient, args, 0);
         } else {
-            // TODO
+            context.matrixTracker.glScalef(x, y, z);
         }
 
         context.exec.execute(glScalefCommand, x, y, z);
@@ -814,7 +814,7 @@ public class GL11 {
                 if (context.clientListManager.isRecording(this, args, argsOffset))
                     return;
 
-                // TODO
+                context.matrixTracker.glMultMatrix(m.buffer);
                 // Buffer will be released on the rendering thread.
             }
         }
@@ -851,7 +851,7 @@ public class GL11 {
                 if (context.clientListManager.isRecording(this, args, argsOffset))
                     return;
 
-                // TODO
+                context.matrixTracker.glLoadMatrix(m.buffer);
                 // Buffer will be released on the rendering thread.
             }
         }
@@ -879,7 +879,7 @@ public class GL11 {
                 if (context.clientListManager.isRecording(this, args, argsOffset))
                     return;
 
-                // TODO
+                context.matrixTracker.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
 

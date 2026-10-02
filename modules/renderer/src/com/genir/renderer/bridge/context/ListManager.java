@@ -52,10 +52,12 @@ public class ListManager {
     public void record(GLCommand command, float[] args, int argsOffset) {
         int listArgsOffset = newList.add(command);
 
-        newList.args[listArgsOffset + 0] = args[argsOffset + 0];
-        newList.args[listArgsOffset + 1] = args[argsOffset + 1];
-        newList.args[listArgsOffset + 2] = args[argsOffset + 2];
-        newList.args[listArgsOffset + 3] = args[argsOffset + 3];
+        if (args != null) {
+            newList.args[listArgsOffset + 0] = args[argsOffset + 0];
+            newList.args[listArgsOffset + 1] = args[argsOffset + 1];
+            newList.args[listArgsOffset + 2] = args[argsOffset + 2];
+            newList.args[listArgsOffset + 3] = args[argsOffset + 3];
+        }
 
         if (mode == GL11.GL_COMPILE_AND_EXECUTE) {
             mode = 0;
