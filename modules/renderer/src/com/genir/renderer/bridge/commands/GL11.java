@@ -664,7 +664,7 @@ public class GL11 {
         }
     }
 
-    private static GlRotatef glScalefCommand = new GlRotatef();
+    private static GlScalef glScalefCommand = new GlScalef();
 
     public static void glScalef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
