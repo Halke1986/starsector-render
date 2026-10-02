@@ -88,7 +88,7 @@ public class GL11 {
         }
     }
 
-    static GlBegin glBeginCommand = new GlBegin();
+    private static GlBegin glBeginCommand = new GlBegin();
 
     public static void glBegin(int mode) {
         final Context context = ContextManager.getThreadContext();
@@ -113,7 +113,7 @@ public class GL11 {
         }
     }
 
-    static GlEnd glEndCommand = new GlEnd();
+    private static GlEnd glEndCommand = new GlEnd();
 
     public static void glEnd() {
         final Context context = ContextManager.getThreadContext();
@@ -172,7 +172,7 @@ public class GL11 {
         }
     }
 
-    static GlColor4f glColor4fCommand = new GlColor4f();
+    private static GlColor4f glColor4fCommand = new GlColor4f();
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
         final Context context = ContextManager.getThreadContext();
@@ -224,7 +224,7 @@ public class GL11 {
         }
     }
 
-    static GlTexCoord4f glTexCoord4fCommand = new GlTexCoord4f();
+    private static GlTexCoord4f glTexCoord4fCommand = new GlTexCoord4f();
 
     public static void glTexCoord4f(float s, float t, float r, float q) {
         final Context context = ContextManager.getThreadContext();
@@ -289,7 +289,7 @@ public class GL11 {
         }
     }
 
-    static GlVertex3f glVertex3fCommand = new GlVertex3f();
+    private static GlVertex3f glVertex3fCommand = new GlVertex3f();
 
     public static void glVertex3f(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
@@ -535,7 +535,7 @@ public class GL11 {
         }
     }
 
-    static GlPushMatrix glPushMatrixCommand = new GlPushMatrix();
+    private static GlPushMatrix glPushMatrixCommand = new GlPushMatrix();
 
     public static void glPushMatrix() {
         final Context context = ContextManager.getThreadContext();
@@ -557,7 +557,7 @@ public class GL11 {
         }
     }
 
-    static GlPopMatrix glPopMatrixCommand = new GlPopMatrix();
+    private static GlPopMatrix glPopMatrixCommand = new GlPopMatrix();
 
     public static void glPopMatrix() {
         final Context context = ContextManager.getThreadContext();
@@ -602,7 +602,7 @@ public class GL11 {
         }
     }
 
-    static GlTranslatef glTranslatefCommand = new GlTranslatef();
+    private static GlTranslatef glTranslatefCommand = new GlTranslatef();
 
     public static void glTranslatef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
@@ -634,7 +634,7 @@ public class GL11 {
         }
     }
 
-    static GlRotatef glRotatefCommand = new GlRotatef();
+    private static GlRotatef glRotatefCommand = new GlRotatef();
 
     public static void glRotatef(float angle, float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
@@ -754,8 +754,8 @@ public class GL11 {
         }
     }
 
-    static GlEnable glEnableCommand = new GlEnable();
-    static GlEnableClient glEnableClientCommand = new GlEnableClient();
+    private static GlEnable glEnableCommand = new GlEnable();
+    private static GlEnableClient glEnableClientCommand = new GlEnableClient();
 
     public static void glEnable(int cap) {
         final Context context = ContextManager.getThreadContext();
@@ -803,8 +803,8 @@ public class GL11 {
         }
     }
 
-    static GlDisable glDisableCommand = new GlDisable();
-    static GlDisableClient glDisableClientCommand = new GlDisableClient();
+    private static GlDisable glDisableCommand = new GlDisable();
+    private static GlDisableClient glDisableClientCommand = new GlDisableClient();
 
     public static void glDisable(int cap) {
         final Context context = ContextManager.getThreadContext();
@@ -846,7 +846,7 @@ public class GL11 {
         }
     }
 
-    static GlBlendFunc glBlendFuncCommand = new GlBlendFunc();
+    private static GlBlendFunc glBlendFuncCommand = new GlBlendFunc();
 
     public static void glBlendFunc(int sfactorRGB, int dfactorRGB) {
         ContextManager.getThreadContext().exec.execute(
@@ -896,8 +896,8 @@ public class GL11 {
         }
     }
 
-    static GlBindTexture glBindTextureCommand = new GlBindTexture();
-    static GlBindTextureClient glBindTextureClientCommand = new GlBindTextureClient();
+    private static GlBindTexture glBindTextureCommand = new GlBindTexture();
+    private static GlBindTextureClient glBindTextureClientCommand = new GlBindTextureClient();
 
     public static void glBindTexture(int target, int texture) {
         final Context context = ContextManager.getThreadContext();
