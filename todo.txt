@@ -4,7 +4,6 @@ IMPROVEMENTS
 
 game is responsive when loading mods
 flicker after alt-tab
-audits
 faster json
 finish FileLoaderExact and test with vulpoids
 
