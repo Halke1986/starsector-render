@@ -1133,19 +1133,39 @@ public class GL11 {
         context.exec.execute(new glScissor(x, y, width, height));
     }
 
-    public static void glStencilFunc(int func, int ref, int mask) {
-        record glStencilFunc(int func, int ref, int mask) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                if (context.listManager.isRecording(this, args, argsOffset))
-                    return;
+    private record GlStencilFunc() implements GLCommand, Recordable, DebugString { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            if (context.listManager.isRecording(this, args, argsOffset))
+                return;
 
-                org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
-            }
+            int func = Float.floatToRawIntBits(args[argsOffset + 0]);
+            int ref = Float.floatToRawIntBits(args[argsOffset + 1]);
+            int mask = Float.floatToRawIntBits(args[argsOffset + 2]);
+
+            org.lwjgl.opengl.GL11.glStencilFunc(func, ref, mask);
         }
 
+        @Override
+        public String debugString(Context context, float[] args, int argsOffset) {
+            int func = Float.floatToRawIntBits(args[argsOffset + 0]);
+            int ref = Float.floatToRawIntBits(args[argsOffset + 1]);
+            int mask = Float.floatToRawIntBits(args[argsOffset + 2]);
+
+            return "glStencilFunc[func=" + func + ", ref" + ref + ", mask =" + mask + "]";
+        }
+    }
+
+    private static GlStencilFunc glStencilFuncCommand = new GlStencilFunc();
+
+    public static void glStencilFunc(int func, int ref, int mask) {
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glStencilFunc(func, ref, mask));
+        context.exec.execute(
+                glStencilFuncCommand,
+                Float.intBitsToFloat(func),
+                Float.intBitsToFloat(ref),
+                Float.intBitsToFloat(mask)
+        );
     }
 
     public static void glStencilMask(int mask) {
