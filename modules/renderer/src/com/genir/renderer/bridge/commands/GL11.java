@@ -641,19 +641,34 @@ public class GL11 {
         context.exec.execute(glRotatefCommand, angle, x, y, z);
     }
 
-    public static void glScalef(float x, float y, float z) {
-        record glScalef(float x, float y, float z) implements GLCommand, Recordable {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                if (context.listManager.isRecording(this, args, argsOffset))
-                    return;
+    private record GlScalef() implements GLCommand, Recordable, DebugString { // Heap optimized
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            if (context.listManager.isRecording(this, args, argsOffset))
+                return;
 
-                context.matrixManager.glScalef(x, y, z);
-            }
+            float x = args[argsOffset + 0];
+            float y = args[argsOffset + 1];
+            float z = args[argsOffset + 2];
+
+            context.matrixManager.glScalef(x, y, z);
         }
 
+        @Override
+        public String debugString(Context context, float[] args, int argsOffset) {
+            float x = args[argsOffset + 0];
+            float y = args[argsOffset + 1];
+            float z = args[argsOffset + 2];
+
+            return "glScalef[x" + x + ", y =" + y + ", z =" + z + "]";
+        }
+    }
+
+    private static GlRotatef glScalefCommand = new GlRotatef();
+
+    public static void glScalef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glScalef(x, y, z));
+        context.exec.execute(glScalefCommand, x, y, z);
     }
 
     public static void glMultMatrix(FloatBuffer m) {
