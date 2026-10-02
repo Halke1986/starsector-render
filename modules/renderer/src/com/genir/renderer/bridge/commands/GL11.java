@@ -529,7 +529,7 @@ public class GL11 {
             if (context.listManager.isRecording(this, args, argsOffset))
                 return;
 
-            context.transformManager.glPushMatrix();
+            context.matrixManager.glPushMatrix();
         }
 
         @Override
@@ -551,7 +551,7 @@ public class GL11 {
             if (context.listManager.isRecording(this, args, argsOffset))
                 return;
 
-            context.transformManager.glPopMatrix();
+            context.matrixManager.glPopMatrix();
         }
 
         @Override
@@ -574,7 +574,7 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                context.transformManager.glLoadIdentity();
+                context.matrixManager.glLoadIdentity();
             }
         }
 
@@ -592,7 +592,7 @@ public class GL11 {
             float y = args[argsOffset + 1];
             float z = args[argsOffset + 2];
 
-            context.transformManager.glTranslatef(x, y, z);
+            context.matrixManager.glTranslatef(x, y, z);
         }
 
         @Override
@@ -623,7 +623,7 @@ public class GL11 {
             float y = args[argsOffset + 2];
             float z = args[argsOffset + 3];
 
-            context.transformManager.glRotatef(angle, x, y, z);
+            context.matrixManager.glRotatef(angle, x, y, z);
         }
 
         @Override
@@ -651,7 +651,7 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                context.transformManager.glScalef(x, y, z);
+                context.matrixManager.glScalef(x, y, z);
             }
         }
 
@@ -666,7 +666,7 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                context.transformManager.glMultMatrix(m.buffer);
+                context.matrixManager.glMultMatrix(m.buffer);
 
                 if (!context.listManager.isReplaying()) {
                     this.release();
@@ -691,7 +691,7 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                context.transformManager.glLoadMatrix(m.buffer);
+                context.matrixManager.glLoadMatrix(m.buffer);
 
                 if (!context.listManager.isReplaying()) {
                     this.release();
@@ -716,7 +716,7 @@ public class GL11 {
                 if (context.listManager.isRecording(this, args, argsOffset))
                     return;
 
-                context.transformManager.glOrtho(left, right, bottom, top, zNear, zFar);
+                context.matrixManager.glOrtho(left, right, bottom, top, zNear, zFar);
             }
         }
 

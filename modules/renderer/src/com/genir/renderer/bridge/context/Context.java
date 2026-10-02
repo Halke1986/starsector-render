@@ -56,8 +56,8 @@ public class Context {
     // Server state. Runs on rendering thread.
     public final ListManager listManager = new ListManager(this);
     public final AttribManager attribManager = new AttribManager();
-    public final TransformManager transformManager = new TransformManager(attribManager);
-    public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, transformManager);
+    public final MatrixManager matrixManager = new MatrixManager(attribManager);
+    public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
     public final TextureReadManager textureReadManager = new TextureReadManager();
     // Context-shared server state.
     public final TextureManager textureManager;

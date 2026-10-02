@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.FloatBuffer;
 
-public class TransformManager {
+public class MatrixManager {
     private final AttribManager attribManager;
     private final MatrixStack modelView = new MatrixStack();
 
@@ -14,7 +14,7 @@ public class TransformManager {
     private boolean cpuMode = true;
     private final Matrix4f identity = new Matrix4f();
 
-    public TransformManager(AttribManager attribManager) {
+    public MatrixManager(AttribManager attribManager) {
         this.attribManager = attribManager;
         this.identity.setIdentity();
     }

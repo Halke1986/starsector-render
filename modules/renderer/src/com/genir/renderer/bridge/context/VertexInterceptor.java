@@ -32,7 +32,7 @@ public class VertexInterceptor {
     private static final int NORMAL_FLAG = 16;
 
     // GL State.
-    private final TransformManager transformManager;
+    private final MatrixManager matrixManager;
     private final AttribManager attribManager;
 
     private boolean reorderDraw = false;
@@ -72,9 +72,9 @@ public class VertexInterceptor {
     private ByteBuffer vertexPointer = BufferUtils.createByteBuffer(0);
     private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
 
-    public VertexInterceptor(AttribManager attribManager, TransformManager transformManager) {
+    public VertexInterceptor(AttribManager attribManager, MatrixManager matrixManager) {
         this.attribManager = attribManager;
-        this.transformManager = transformManager;
+        this.matrixManager = matrixManager;
     }
 
     public void update() {
@@ -143,7 +143,7 @@ public class VertexInterceptor {
     }
 
     public void glVertex3f(float x, float y, float z) {
-        Matrix4f m = transformManager.getCPUModelView();
+        Matrix4f m = matrixManager.getCPUModelView();
 
         // Transform vertices;
         float xt = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
@@ -302,14 +302,14 @@ public class VertexInterceptor {
         // into model space, since the model matrix can change every time the array is drawn.
         // Applying the transformation on the GPU avoids repeatedly un-packing the array,
         // transforming vertices on the CPU, and re-packing the data for each draw call.
-        transformManager.setGPUMode();
+        matrixManager.setGPUMode();
 
         // Draw.
         attribManager.applyDrawAttribs();
         drawArraysCommand.run();
 
         // Move model transformation back to CPU.
-        transformManager.setCPUMode();
+        matrixManager.setCPUMode();
     }
 
     private ByteBuffer restoreSnapshot(ArraySnapshot snapshot, ByteBuffer pointer) {
