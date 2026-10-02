@@ -508,18 +508,15 @@ public class GL11 {
         record glMatrixModeClient(int mode) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
                 context.attribTracker.glMatrixMode(mode);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        ListManager listManager = context.clientListManager;
-        if (listManager.isRecording()) {
-            listManager.record(new glMatrixModeClient(mode), null, 0);
-        } else {
-            context.attribTracker.glMatrixMode(mode);
-        }
-
+        new glMatrixModeClient(mode).run(context, null, 0);
         context.exec.execute(new glMatrixMode(mode));
     }
 
@@ -1013,18 +1010,15 @@ public class GL11 {
         record glViewportClient(int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
                 context.attribTracker.glViewport(x, y, width, height);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        ListManager listManager = context.clientListManager;
-        if (listManager.isRecording()) {
-            listManager.record(new glViewportClient(x, y, width, height), null, 0);
-        } else {
-            context.attribTracker.glViewport(x, y, width, height);
-        }
-
+        new glViewportClient(x, y, width, height).run(context, null, 0);
         context.exec.execute(new glViewport(x, y, width, height));
     }
 
@@ -1112,18 +1106,15 @@ public class GL11 {
         record glScissorClient(int x, int y, int width, int height) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
                 context.attribTracker.glScissor(x, y, width, height);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        ListManager listManager = context.clientListManager;
-        if (listManager.isRecording()) {
-            listManager.record(new glScissorClient(x, y, width, height), null, 0);
-        } else {
-            context.attribTracker.glScissor(x, y, width, height);
-        }
-
+        new glScissorClient(x, y, width, height).run(context, null, 0);
         context.exec.execute(new glScissor(x, y, width, height));
     }
 
@@ -1231,18 +1222,15 @@ public class GL11 {
         record glLineWidthClient(float width) implements GLCommand, Recordable {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                if (context.clientListManager.isRecording(this, args, argsOffset))
+                    return;
+
                 context.attribTracker.glLineWidth(width);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        ListManager listManager = context.clientListManager;
-        if (listManager.isRecording()) {
-            listManager.record(new glLineWidthClient(width), null, 0);
-        } else {
-            context.attribTracker.glLineWidth(width);
-        }
-
+        new glLineWidthClient(width).run(context, null, 0);
         context.exec.execute(new glLineWidth(width));
     }
 
