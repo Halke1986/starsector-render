@@ -2,6 +2,7 @@ package com.genir.renderer.overrides.render;
 
 import com.fs.graphics.TextureHandler;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import java.awt.*;
 
@@ -41,8 +42,8 @@ public class Sprite {
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
 
         if (texClamp) {
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(3553, 10242, 33071);
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(3553, 10243, 33071);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
         }
 
         com.genir.renderer.bridge.commands.GL11.glPushMatrix();
@@ -57,8 +58,8 @@ public class Sprite {
             com.genir.renderer.bridge.commands.GL11.glTranslatef(-width / 2.0F, -height / 2.0F, 0.0F);
         }
 
-        com.genir.renderer.bridge.commands.GL11.glEnable(3553);
-        com.genir.renderer.bridge.commands.GL11.glEnable(3042);
+        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
+        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
         com.genir.renderer.bridge.commands.GL11.glBlendFunc(blendSrc, blendDest);
         com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) ((int) ((float) color.getAlpha() * alphaMult)));
 
@@ -77,8 +78,8 @@ public class Sprite {
         com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
         if (texClamp) {
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(3553, 10242, 10497);
-            com.genir.renderer.bridge.commands.GL11.glTexParameteri(3553, 10243, 10497);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+            com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         }
     }
 }
