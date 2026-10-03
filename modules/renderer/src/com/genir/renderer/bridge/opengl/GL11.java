@@ -380,7 +380,7 @@ public final class GL11 {
     }
 
     public static void glGetFloat(int pname, FloatBuffer params) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glGetFloat(int, FloatBuffer)");
+        com.genir.renderer.bridge.commands.GL11.glGetFloat(pname, params);
     }
 
     public static float glGetFloat(int pname) {

@@ -11,6 +11,7 @@ import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.*;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
+import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -1782,7 +1783,7 @@ public class GL11 {
      * Blocking.
      */
     public static int glGetInteger(int pname) {
-        // Values simulated on the rendering thread.
+        // Values simulated on the client thread.
         final Context context = ContextManager.getThreadContext();
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
@@ -1826,9 +1827,8 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         IntBuffer outBuffer = params.duplicate();
 
-        // Return a cached value.
+        // Values simulated on the client thread.
         switch (pname) {
-            // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_VIEWPORT:
                 AttribState.Box viewport = context.attribTracker.getViewport();
                 putIfPossible(outBuffer, viewport.x());
@@ -1892,8 +1892,8 @@ public class GL11 {
     public static float glGetFloat(int pname) {
         final Context context = ContextManager.getThreadContext();
 
+        // Values simulated on the client thread.
         switch (pname) {
-            // Values simulated on the rendering thread.
             case org.lwjgl.opengl.GL11.GL_LINE_WIDTH:
                 return context.attribTracker.getLineWidth();
         }
@@ -1907,6 +1907,22 @@ public class GL11 {
         }
 
         return context.exec.get(new glGetFloat(pname));
+    }
+
+    public static void glGetFloat(int pname, FloatBuffer params) {
+        final Context context = ContextManager.getThreadContext();
+        FloatBuffer outBuffer = params.duplicate();
+
+        // Values simulated on the client thread.
+        switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_MODELVIEW_MATRIX:
+                Matrix4f modelView = context.matrixTracker.getModelView();
+                modelView.storeTranspose(outBuffer);
+                return;
+
+            default:
+                throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glGetFloat(" + pname + ", params)");
+        }
     }
 
     public static void glGenTextures(IntBuffer textures) {
