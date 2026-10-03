@@ -1,3 +1,9 @@
+v0.9.1rc1
+
+- Optimized rendering performance.
+- Added a debug tool for diagnosing game freezes.
+- Added support for glGetFloat(GL_MODELVIEW_MATRIX, modelview). Required by Political Map mod.
+
 v0.9.0
 
 - Port improved frame synchronization from v0.8.10. This should reintroduce smooth animation.
