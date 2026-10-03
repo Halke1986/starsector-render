@@ -24,6 +24,7 @@ import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.SamplerRunner;
+import com.genir.renderer.debug.Watchdog;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
@@ -102,6 +103,8 @@ public class ResourceLoaderState {
      * REPLACED METHOD
      */
     public void init(Map session) throws Exception {
+        Watchdog.start();
+
         try {
             initRun(session);
         } catch (Throwable t) {

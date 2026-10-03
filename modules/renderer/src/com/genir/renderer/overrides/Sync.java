@@ -6,6 +6,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.debug.SamplerRunner;
+import com.genir.renderer.debug.Watchdog;
 import org.lwjgl.opengl.DisplayMode;
 
 import static com.genir.renderer.debug.Debug.asert;
@@ -13,21 +14,12 @@ import static com.genir.renderer.debug.Debug.asert;
 public class Sync {
     static long prevUpdateTimestamp = 0;
 
-    public static void sleep(long duration) {
-        // Sleeping is handled by the update(boolean processMessages) override, except when the game window
-        // is inactive: the game calls processMessages() and sleeps for 50 ms, which should not be ignored.
-        if (duration >= 50L) {
-            try {
-                Thread.sleep(duration);
-            } catch (InterruptedException ignored) {
-            }
-        }
-    }
-
     /**
      * Main application state update.
      */
     public static void update(boolean processMessages) {
+        Watchdog.update();
+
         Context context = ContextManager.getThreadContext();
         asert(context.isMain);
 
@@ -90,6 +82,17 @@ public class Sync {
         }
 
         prevUpdateTimestamp = deadline;
+    }
+
+    public static void sleep(long duration) {
+        // Sleeping is handled by the update(boolean processMessages) override, except when the game window
+        // is inactive: the game calls processMessages() and sleeps for 50 ms, which should not be ignored.
+        if (duration >= 50L) {
+            try {
+                Thread.sleep(duration);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     // All org.lwjgl.opengl.Display methods are redirected to

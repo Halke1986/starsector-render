@@ -60,6 +60,8 @@
 -Dcom.fs.starfarer.settings.paths.mods=../mods
 -Dcom.fs.starfarer.settings.paths.logs=.
 
+-Dcom.genir.renderer.watchdog=0
+
 -javaagent:fr.agent.jar
 
 -classpath
