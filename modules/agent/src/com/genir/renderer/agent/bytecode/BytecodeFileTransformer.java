@@ -160,6 +160,10 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.renameMethod("reloadAssets", "reloadAssets_vanilla", "()V");
                 transformer.mergeClass("com/genir/renderer/overrides/CombatState");
                 break;
+            case "com/fs/graphics/Sprite":
+                transformer.removeMethod("render", "(FF)V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
+                break;
         }
     }
 }
