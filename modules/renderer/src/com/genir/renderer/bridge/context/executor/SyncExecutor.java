@@ -22,41 +22,12 @@ public class SyncExecutor implements Executor {
     }
 
     @Override
+    public void execute(GLCommand command, float[] args) {
+        command.run(context, args, 0);
+    }
+
+    @Override
     public void executeSync(GLCommand command, GLSync fence) {
-        command.run(context, args, 0);
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1) {
-        args[0] = arg1;
-
-        command.run(context, args, 0);
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1, float arg2) {
-        args[0] = arg1;
-        args[1] = arg2;
-
-        command.run(context, args, 0);
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1, float arg2, float arg3) {
-        args[0] = arg1;
-        args[1] = arg2;
-        args[2] = arg3;
-
-        command.run(context, args, 0);
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1, float arg2, float arg3, float arg4) {
-        args[0] = arg1;
-        args[1] = arg2;
-        args[2] = arg3;
-        args[3] = arg4;
-
         command.run(context, args, 0);
     }
 

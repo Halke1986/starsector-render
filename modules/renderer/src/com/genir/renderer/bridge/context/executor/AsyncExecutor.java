@@ -49,49 +49,22 @@ public class AsyncExecutor implements Executor {
     }
 
     @Override
+    public void execute(GLCommand command, float[] args) {
+        Frame frame = currentFrame;
+        int argsOffset = frame.add(command);
+
+        frame.args[argsOffset + 0] = args[0];
+        frame.args[argsOffset + 1] = args[1];
+        frame.args[argsOffset + 2] = args[2];
+        frame.args[argsOffset + 3] = args[3];
+    }
+
+    @Override
     public void executeSync(GLCommand command, GLSync fence) {
         Frame frame = currentFrame;
         frame.add(command);
 
         frame.fences.add(fence);
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1) {
-        Frame frame = currentFrame;
-        int argsOffset = frame.add(command);
-
-        frame.args[argsOffset] = arg1;
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1, float arg2) {
-        Frame frame = currentFrame;
-        int argsOffset = frame.add(command);
-
-        frame.args[argsOffset + 0] = arg1;
-        frame.args[argsOffset + 1] = arg2;
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1, float arg2, float arg3) {
-        Frame frame = currentFrame;
-        int argsOffset = frame.add(command);
-
-        frame.args[argsOffset + 0] = arg1;
-        frame.args[argsOffset + 1] = arg2;
-        frame.args[argsOffset + 2] = arg3;
-    }
-
-    @Override
-    public void execute(GLCommand command, float arg1, float arg2, float arg3, float arg4) {
-        Frame frame = currentFrame;
-        int argsOffset = frame.add(command);
-
-        frame.args[argsOffset + 0] = arg1;
-        frame.args[argsOffset + 1] = arg2;
-        frame.args[argsOffset + 2] = arg3;
-        frame.args[argsOffset + 3] = arg4;
     }
 
     /**
