@@ -45,6 +45,20 @@ public class Sprite {
      * the client-server thread boundary.
      */
     public void render(float posX, float posY) {
+        render(posX, posY, true);
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void renderNoBind(float posX, float posY) {
+        render(posX, posY, false);
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    private void render(float posX, float posY, boolean bind) {
         if (texture == null) {
             return;
         }
@@ -58,6 +72,7 @@ public class Sprite {
 
         command.posX = posX;
         command.posY = posY;
+        command.bind = bind;
         command.textureID = texture.TextureHandler_getTextureID();
         command.width = width;
         command.height = height;
@@ -86,6 +101,7 @@ public class Sprite {
     public static class RenderState implements GLCommand, GLCommandClient, Recordable, Releasable {
         public float posX;
         public float posY;
+        public boolean bind;
         public int textureID;
         public float width;
         public float height;
@@ -108,11 +124,13 @@ public class Sprite {
 
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            if (context.listManager.isRecording(this, args, argsOffset))
+            if (context.listManager.isRecording(this, null, 0))
                 return;
 
-            context.attribManager.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-            org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+            if (bind) {
+                context.attribManager.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+                org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+            }
 
             if (texClamp) {
                 org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
@@ -171,10 +189,12 @@ public class Sprite {
             if (context.clientListManager.isRecording(this, args, argsOffset))
                 return;
 
-            if (context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID)) {
-                context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+            if (bind) {
+                if (context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID)) {
+                    context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+                }
+                context.textureManager.glBindTexture(context, GL11.GL_TEXTURE_2D, textureID);
             }
-            context.textureManager.glBindTexture(context, GL11.GL_TEXTURE_2D, textureID);
 
             context.attribTracker.glEnable(GL11.GL_TEXTURE_2D);
             context.attribTracker.glDisable(GL11.GL_BLEND);

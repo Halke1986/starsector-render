@@ -162,6 +162,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 break;
             case "com/fs/graphics/Sprite":
                 transformer.removeMethod("render", "(FF)V");
+                transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 break;
         }
