@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Recordable;
+import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -51,29 +52,34 @@ public class Sprite {
                 texture.TextureHandler_getTextureID()
         );
 
-        final GLCommand command = new render(
-                posX,
-                posY,
-                texture.TextureHandler_getTextureID(),
-                width,
-                height,
-                texX,
-                texY,
-                texWidth,
-                texHeight,
-                angle,
-                (byte) color.getRed(),
-                (byte) color.getGreen(),
-                (byte) color.getBlue(),
-                (byte) ((int) ((float) color.getAlpha() * alphaMult)),
-                centerX,
-                centerY,
-                (float) offsetX,
-                (float) offsetY,
-                blendSrc,
-                blendDest,
-                texClamp
-        );
+        Object pooledCommand = Pools.spritePool.get();
+        if (pooledCommand == null) {
+            pooledCommand = new RenderState();
+        }
+
+        RenderState command = (RenderState) pooledCommand;
+
+        command.posX = posX;
+        command.posY = posY;
+        command.textureID = texture.TextureHandler_getTextureID();
+        command.width = width;
+        command.height = height;
+        command.texX = texX;
+        command.texY = texY;
+        command.texWidth = texWidth;
+        command.texHeight = texHeight;
+        command.angle = angle;
+        command.r = (byte) color.getRed();
+        command.g = (byte) color.getGreen();
+        command.b = (byte) color.getBlue();
+        command.a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
+        command.centerX = centerX;
+        command.centerY = centerY;
+        command.offsetX = (float) offsetX;
+        command.offsetY = (float) offsetY;
+        command.blendSrc = blendSrc;
+        command.blendDest = blendDest;
+        command.texClamp = texClamp;
 
         final Context context = ContextManager.getThreadContext();
         commandClient.run(context, null, 0);
@@ -96,29 +102,29 @@ public class Sprite {
         }
     }
 
-    public record render(
-            float posX,
-            float posY,
-            int textureID,
-            float width,
-            float height,
-            float texX,
-            float texY,
-            float texWidth,
-            float texHeight,
-            float angle,
-            byte r,
-            byte g,
-            byte b,
-            byte a,
-            float centerX,
-            float centerY,
-            float offsetX,
-            float offsetY,
-            int blendSrc,
-            int blendDest,
-            boolean texClamp
-    ) implements GLCommand, Recordable {
+    public static class RenderState implements GLCommand, Recordable, Releasable {
+        public float posX;
+        public float posY;
+        public int textureID;
+        public float width;
+        public float height;
+        public float texX;
+        public float texY;
+        public float texWidth;
+        public float texHeight;
+        public float angle;
+        public byte r;
+        public byte g;
+        public byte b;
+        public byte a;
+        public float centerX;
+        public float centerY;
+        public float offsetX;
+        public float offsetY;
+        public int blendSrc;
+        public int blendDest;
+        public boolean texClamp;
+
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             if (context.listManager.isRecording(this, args, argsOffset))
@@ -173,6 +179,15 @@ public class Sprite {
                 org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
                 org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
             }
+
+            if (!context.listManager.isReplaying()) {
+                this.release();
+            }
+        }
+
+        @Override
+        public void release() {
+            Pools.spritePool.put(this);
         }
     }
 }
