@@ -4,6 +4,7 @@ import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.interfaces.GLCommandClient;
 import com.genir.renderer.bridge.interfaces.Recordable;
 import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
@@ -48,10 +49,6 @@ public class Sprite {
             return;
         }
 
-        final GLCommand commandClient = new renderClient(
-                texture.TextureHandler_getTextureID()
-        );
-
         Object pooledCommand = Pools.spritePool.get();
         if (pooledCommand == null) {
             pooledCommand = new RenderState();
@@ -82,27 +79,11 @@ public class Sprite {
         command.texClamp = texClamp;
 
         final Context context = ContextManager.getThreadContext();
-        commandClient.run(context, null, 0);
+        command.runClient(context, null, 0);
         context.exec.execute(command);
     }
 
-    public record renderClient(int textureID) implements GLCommand, Recordable {
-        @Override
-        public void run(Context context, float[] args, int argsOffset) {
-            if (context.clientListManager.isRecording(this, args, argsOffset))
-                return;
-
-            if (context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID)) {
-                context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-            }
-            context.textureManager.glBindTexture(context, GL11.GL_TEXTURE_2D, textureID);
-
-            context.attribTracker.glEnable(GL11.GL_TEXTURE_2D);
-            context.attribTracker.glDisable(GL11.GL_BLEND);
-        }
-    }
-
-    public static class RenderState implements GLCommand, Recordable, Releasable {
+    public static class RenderState implements GLCommand, GLCommandClient, Recordable, Releasable {
         public float posX;
         public float posY;
         public int textureID;
@@ -183,6 +164,20 @@ public class Sprite {
             if (!context.listManager.isReplaying()) {
                 this.release();
             }
+        }
+
+        @Override
+        public void runClient(Context context, float[] args, int argsOffset) {
+            if (context.clientListManager.isRecording(this, args, argsOffset))
+                return;
+
+            if (context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID)) {
+                context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+            }
+            context.textureManager.glBindTexture(context, GL11.GL_TEXTURE_2D, textureID);
+
+            context.attribTracker.glEnable(GL11.GL_TEXTURE_2D);
+            context.attribTracker.glDisable(GL11.GL_BLEND);
         }
 
         @Override

@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.interfaces.GLCommandClient;
 import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
 
@@ -12,6 +13,7 @@ import static com.genir.renderer.debug.Debug.asert;
 
 public class ListManager {
     private final Context context;
+    private final Side side;
 
     private int mode = 0;
     private Frame newList;
@@ -19,8 +21,9 @@ public class ListManager {
     private final Map<Integer, Frame> lists = new HashMap<>();
     private boolean isReplay = false;
 
-    public ListManager(Context context) {
+    public ListManager(Context context, Side side) {
         this.context = context;
+        this.side = side;
     }
 
     // NOTE:
@@ -50,6 +53,10 @@ public class ListManager {
     }
 
     public void record(GLCommand command, float[] args, int argsOffset) {
+        if (side == Side.CLIENT) {
+            asert(command instanceof GLCommandClient);
+        }
+
         int listArgsOffset = newList.add(command);
 
         if (args != null) {
@@ -63,7 +70,7 @@ public class ListManager {
             mode = 0;
             isReplay = true;
             try {
-                command.run(context, args, argsOffset);
+                runCommand(command, args, argsOffset);
             } finally {
                 mode = GL11.GL_COMPILE_AND_EXECUTE;
                 isReplay = false;
@@ -85,10 +92,14 @@ public class ListManager {
 
         newList = lists.computeIfAbsent(list, k -> new Frame());
 
-        // Release any resources allocated by the old list.
-        for (int i = 0; i < newList.commandsSize; i++) {
-            if (newList.commands[i] instanceof Releasable releasable) {
-                releasable.release();
+        // Release any resources allocated by the old list. Perform the release
+        // only on the server thread, as it runs last, after both client and
+        // server side command execution.
+        if (side == Side.SERVER) {
+            for (int i = 0; i < newList.commandsSize; i++) {
+                if (newList.commands[i] instanceof Releasable releasable) {
+                    releasable.release();
+                }
             }
         }
 
@@ -111,11 +122,27 @@ public class ListManager {
                 // for-each loop over a list is a performance bottleneck, according to a profiler.
                 // Simple for loop over an array is much faster.
                 for (int i = 0; i < listToCall.commandsSize; i++) {
-                    listToCall.commands[i].run(context, args, i * ARGS_NUM);
+                    runCommand(listToCall.commands[i], args, i * ARGS_NUM);
                 }
             }
         } finally {
             isReplay = false;
         }
+    }
+
+    private void runCommand(GLCommand command, float[] args, int argsOffset) {
+        switch (side) {
+            case SERVER:
+                command.run(context, args, argsOffset);
+                break;
+            case CLIENT:
+                ((GLCommandClient) command).runClient(context, args, argsOffset);
+                break;
+        }
+    }
+
+    public enum Side {
+        SERVER,
+        CLIENT
     }
 }
