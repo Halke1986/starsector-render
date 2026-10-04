@@ -165,6 +165,12 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 break;
+            case "com/fs/graphics/particle/SmoothParticle":
+                transformer.removeMethod("render", "()V");
+                transformer.removeMethod("preBatch", "()V");
+                transformer.removeMethod("postBatch", "()V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/SmoothParticle");
+                break;
         }
     }
 }

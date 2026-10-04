@@ -1004,10 +1004,6 @@ public class GL11 {
 
             context.attribManager.glBindTexture(target, texture);
 
-            if (!Thread.currentThread().getName().contains("Render")) {
-                int x = 0;
-            }
-
             org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
 

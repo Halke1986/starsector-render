@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL12;
 import java.awt.*;
 
 /**
- * OVERRIDES for com.fs.graphics.Sprite
+ * OVERRIDES com.fs.graphics.Sprite
  */
 public class Sprite {
     /**
