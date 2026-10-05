@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class BytecodeTransformer {
-    public boolean transformApplied = false;
-
     public byte[] targetBytes;
 
     public BytecodeTransformer(String targetName) {
@@ -21,12 +19,10 @@ public class BytecodeTransformer {
     }
 
     public void renameMethod(String oldName, String newName, String descriptor) {
-        transformApplied = true;
         targetBytes = MethodRenamer.renameMethod(targetBytes, oldName, newName, descriptor);
     }
 
     public void removeMethod(String methodName, String descriptor) {
-        transformApplied = true;
         targetBytes = MethodRemover.removeMethod(targetBytes, methodName, descriptor);
     }
 
@@ -38,7 +34,6 @@ public class BytecodeTransformer {
     public void mergeClass(String donorClassName, byte[] donorBytes) {
         String donorJavaName = ClassName.simple(donorClassName) + ".java";
 
-        transformApplied = true;
         targetBytes = MethodCopier.copyMethods(targetBytes, donorBytes, donorJavaName);
     }
 

@@ -172,11 +172,11 @@ public class Transformations {
             entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o"),
-            entry("com/genir/renderer/overrides/loading/textures/TextureRepository", "com/fs/graphics/oOoO")
-//            entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite")
+            entry("com/genir/renderer/overrides/loading/textures/TextureRepository", "com/fs/graphics/oOoO"),
+            entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
-            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite")
+//            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite")
     );
 }
