@@ -34,9 +34,14 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
 
             if (transformer.transformApplied) {
                 return transformer.targetBytes;
-            } else {
-                return null;
             }
+
+            BytecodeTransformer debugTransformer = applyTransformDebug(className, classfileBuffer);
+            if (debugTransformer != null) {
+                return debugTransformer.targetBytes;
+            }
+
+            return null;
         } catch (Throwable t) {
             if (deferedThrowable == null) {
                 deferedThrowable = t;
@@ -165,6 +170,20 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 break;
+        }
+    }
+
+    private BytecodeTransformer applyTransformDebug(String className, byte[] donorBytes) {
+        switch (className) {
+            case "com/genir/renderer/overrides/render/Sprite":
+                BytecodeTransformer transformer = new BytecodeTransformer("com/fs/graphics/Sprite");
+                transformer.removeMethod("render", "(FF)V");
+                transformer.removeMethod("renderNoBind", "(FF)V");
+                transformer.mergeClass(className, donorBytes);
+                return transformer;
+
+            default:
+                return null;
         }
     }
 }
