@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -29,21 +30,21 @@ public class SmoothParticle extends BaseParticle {
      */
     private static float[] vertexScratchpad;
     private static float[] texScratchpad;
-    private static float[] colorScratchpad;
+    private static byte[] colorScratchpad;
 
     private static FloatBuffer texCoordPointer;
     private static FloatBuffer vertexPointer;
-    private static FloatBuffer colorPointer;
+    private static ByteBuffer colorPointer;
 
     public void preBatch() {
         if (vertexScratchpad == null) {
             vertexScratchpad = new float[8];
             texScratchpad = new float[8];
-            colorScratchpad = new float[16];
+            colorScratchpad = new byte[16];
 
             texCoordPointer = BufferUtils.createFloatBuffer(8);
             vertexPointer = BufferUtils.createFloatBuffer(8);
-            colorPointer = BufferUtils.createFloatBuffer(16);
+            colorPointer = BufferUtils.createByteBuffer(16);
         }
 
         numPoints = 0;
@@ -61,26 +62,25 @@ public class SmoothParticle extends BaseParticle {
             vertexScratchpad = Arrays.copyOf(vertexScratchpad, vertexScratchpad.length * 2);
             texScratchpad = Arrays.copyOf(texScratchpad, texScratchpad.length * 2);
             colorScratchpad = Arrays.copyOf(colorScratchpad, colorScratchpad.length * 2);
+
+            for (int i = 0; i < texScratchpad.length / 8; i++) {
+                texScratchpad[i + 0] = 0;
+                texScratchpad[i + 1] = 0;
+                texScratchpad[i + 2] = 0;
+                texScratchpad[i + 3] = 1;
+                texScratchpad[i + 4] = 1;
+                texScratchpad[i + 5] = 1;
+                texScratchpad[i + 6] = 1;
+                texScratchpad[i + 7] = 0;
+            }
         }
-
-        float x = this.getX();
-        float y = this.getY();
-
-        float r = (color.getRed() & 0xFF) / 255f;
-        float g = (color.getGreen() & 0xFF) / 255f;
-        float b = (color.getBlue() & 0xFF) / 255f;
-        float a = (((int) ((float) color.getAlpha() * this.getBrightness())) & 0xFF) / 255f;
 
         int offset = numPoints * 8;
 
-        texScratchpad[offset + 0] = 0;
-        texScratchpad[offset + 1] = 0;
-        texScratchpad[offset + 2] = 0;
-        texScratchpad[offset + 3] = 1;
-        texScratchpad[offset + 4] = 1;
-        texScratchpad[offset + 5] = 1;
-        texScratchpad[offset + 6] = 1;
-        texScratchpad[offset + 7] = 0;
+        byte r = (byte) color.getRed();
+        byte g = (byte) color.getGreen();
+        byte b = (byte) color.getBlue();
+        byte a = (byte) ((int) ((float) color.getAlpha() * this.getBrightness()));
 
         colorScratchpad[offset + 0] = r;
         colorScratchpad[offset + 1] = g;
@@ -99,14 +99,17 @@ public class SmoothParticle extends BaseParticle {
         colorScratchpad[offset + 14] = b;
         colorScratchpad[offset + 15] = a;
 
-        vertexScratchpad[offset + 0] = x + offsetX;
-        vertexScratchpad[offset + 1] = y + offsetY;
-        vertexScratchpad[offset + 2] = x + offsetX;
-        vertexScratchpad[offset + 3] = y + offsetY + size;
-        vertexScratchpad[offset + 4] = x + offsetX + size;
-        vertexScratchpad[offset + 5] = y + offsetY + size;
-        vertexScratchpad[offset + 6] = x + offsetX + size;
-        vertexScratchpad[offset + 7] = y + offsetY;
+        float x = this.getX() + offsetX;
+        float y = this.getY() + offsetY;
+
+        vertexScratchpad[offset + 0] = x;
+        vertexScratchpad[offset + 1] = y;
+        vertexScratchpad[offset + 2] = x;
+        vertexScratchpad[offset + 3] = y + size;
+        vertexScratchpad[offset + 4] = x + size;
+        vertexScratchpad[offset + 5] = y + size;
+        vertexScratchpad[offset + 6] = x + size;
+        vertexScratchpad[offset + 7] = y;
 
         numPoints++;
     }
@@ -124,7 +127,7 @@ public class SmoothParticle extends BaseParticle {
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);
             texCoordPointer = BufferUtils.createFloatBuffer(texScratchpad.length);
-            colorPointer = BufferUtils.createFloatBuffer(colorScratchpad.length);
+            colorPointer = BufferUtils.createByteBuffer(colorScratchpad.length);
         }
 
         vertexPointer.put(0, vertexScratchpad, 0, numPoints * 8);
@@ -137,7 +140,7 @@ public class SmoothParticle extends BaseParticle {
 
         com.genir.renderer.bridge.commands.GL11.glVertexPointer(2, 0, vertexPointer);
         com.genir.renderer.bridge.commands.GL11.glTexCoordPointer(2, 0, texCoordPointer);
-        com.genir.renderer.bridge.commands.GL11.glColorPointer(4, 0, colorPointer);
+        com.genir.renderer.bridge.commands.GL11.glColorPointer(4, true, 0, colorPointer);
 
         com.genir.renderer.bridge.commands.GL11.glDrawArrays(GL11.GL_QUADS, 0, numPoints);
 
