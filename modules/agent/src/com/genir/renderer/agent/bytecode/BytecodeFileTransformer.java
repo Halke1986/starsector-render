@@ -170,28 +170,37 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 return transformer;
+            case "com/fs/graphics/particle/SmoothParticle":
+                transformer.removeMethod("render", "()V");
+                transformer.removeMethod("preBatch", "()V");
+                transformer.removeMethod("postBatch", "()V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/SmoothParticle");
+                return transformer;
             default:
                 return null;
         }
     }
 
     private BytecodeTransformer applyTransformDebug(String className, byte[] donorBytes) {
+        BytecodeTransformer transformer;
+
         switch (className) {
             case "com/genir/renderer/overrides/render/Sprite":
-                BytecodeTransformer transformer = new BytecodeTransformer("com/fs/graphics/Sprite");
+                transformer = new BytecodeTransformer("com/fs/graphics/Sprite");
                 transformer.removeMethod("render", "(FF)V");
                 transformer.removeMethod("renderNoBind", "(FF)V");
+                transformer.mergeClass(className, donorBytes);
+                return transformer;
+            case "com/genir/renderer/overrides/render/SmoothParticle":
+                transformer = new BytecodeTransformer("com/fs/graphics/particle/SmoothParticle");
+                transformer.removeMethod("render", "()V");
+                transformer.removeMethod("preBatch", "()V");
+                transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
 
             default:
                 return null;
-            case "com/fs/graphics/particle/SmoothParticle":
-                transformer.removeMethod("render", "()V");
-                transformer.removeMethod("preBatch", "()V");
-                transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/SmoothParticle");
-                break;
         }
     }
 }
