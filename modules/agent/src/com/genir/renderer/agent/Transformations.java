@@ -176,4 +176,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite"),
             entry("com/genir/renderer/overrides/render/SmoothParticle", "com/fs/graphics/particle/SmoothParticle")
     );
+
+    public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
+//            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite")
+    );
 }
