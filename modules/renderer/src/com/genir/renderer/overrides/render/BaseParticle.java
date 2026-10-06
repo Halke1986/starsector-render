@@ -6,6 +6,7 @@ import com.genir.renderer.bridge.context.Matrix;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
@@ -17,15 +18,15 @@ public class BaseParticle {
     /**
      * ADDED FIELDS
      */
-    protected static float[] texScratchpad;
-    protected static byte[] colorScratchpad;
-    protected static float[] vertexScratchpad;
+    private static float[] texScratchpad;
+    private static byte[] colorScratchpad;
+    private static float[] vertexScratchpad;
 
     private static ByteBuffer colorPointer;
     private static FloatBuffer texCoordPointer;
     private static FloatBuffer vertexPointer;
 
-    protected static Matrix m;
+    private static Matrix m;
     protected static int numParticles;
 
     /**
@@ -109,7 +110,16 @@ public class BaseParticle {
         }
     }
 
-    protected void setParticleColor(byte r, byte g, byte b, byte a) {
+    protected void setParticleColor(Color color, float brightness) {
+        byte r = (byte) (byte) color.getRed();
+        byte g = (byte) (byte) color.getGreen();
+        byte b = (byte) (byte) color.getBlue();
+        byte a = (byte) (byte) ((int) ((float) color.getAlpha() * brightness));
+
+        setParticleColor(r, g, b, a);
+    }
+
+    private void setParticleColor(byte r, byte g, byte b, byte a) {
         int c = numParticles * 16;
 
         colorScratchpad[c + 0] = r;

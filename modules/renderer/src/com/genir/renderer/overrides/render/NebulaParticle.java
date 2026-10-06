@@ -53,21 +53,14 @@ public class NebulaParticle extends BaseParticle {
     public void render() {
         super.resizeArrays(numParticles + 1);
 
-        byte r = (byte) color.getRed();
-        byte g = (byte) color.getGreen();
-        byte b = (byte) color.getBlue();
-        byte a = (byte) ((int) ((float) color.getAlpha() * calculateBrightness()));
-
-        super.setParticleColor(r, g, b, a);
+        super.setParticleColor(color, calculateBrightness());
 
         float size = w == 2 ? 0.5F : 0.25F;
         float s = (float) i * size;
         float t = (float) j * size;
 
         super.setParticleTex(s, t, size, size);
-
         super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
-
         super.setParticleVertices(offsetX, offsetY, width, height);
 
         numParticles++;

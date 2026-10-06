@@ -47,17 +47,9 @@ public class SmoothParticle extends BaseParticle {
         // Resize vertex arrays.
         super.resizeArrays(numParticles + 1);
 
-        byte r = (byte) color.getRed();
-        byte g = (byte) color.getGreen();
-        byte b = (byte) color.getBlue();
-        byte a = (byte) ((int) ((float) color.getAlpha() * this.getBrightness()));
-
-        super.setParticleColor(r, g, b, a);
-
+        super.setParticleColor(color, this.getBrightness());
         super.setParticleTex(0f, 0f, 1f, 1f);
-
         super.setParticleTransformation(this.getX(), this.getY(), 0);
-
         super.setParticleVertices(offsetX, offsetY, size, size);
 
         numParticles++;

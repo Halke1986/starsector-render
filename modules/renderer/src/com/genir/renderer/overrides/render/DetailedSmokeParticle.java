@@ -36,17 +36,9 @@ public class DetailedSmokeParticle extends BaseParticle {
     public void render() {
         super.resizeArrays(numParticles + 1);
 
-        byte r = (byte) (byte) color.getRed();
-        byte g = (byte) (byte) color.getGreen();
-        byte b = (byte) (byte) color.getBlue();
-        byte a = (byte) (byte) ((int) ((float) color.getAlpha() * this.getBrightness()));
-
-        super.setParticleColor(r, g, b, a);
-
+        super.setParticleColor(color, this.getBrightness());
         super.setParticleTex(0f, 0f, 1f, 1f);
-
         super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
-
         super.setParticleVertices(offsetX, offsetY, size, size);
 
         numParticles++;
