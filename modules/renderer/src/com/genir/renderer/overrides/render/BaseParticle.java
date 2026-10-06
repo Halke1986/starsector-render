@@ -107,6 +107,27 @@ public class BaseParticle {
         }
     }
 
+    protected void setParticleColor(byte r, byte g, byte b, byte a) {
+        int c = numParticles * 16;
+
+        colorScratchpad[c + 0] = r;
+        colorScratchpad[c + 1] = g;
+        colorScratchpad[c + 2] = b;
+        colorScratchpad[c + 3] = a;
+        colorScratchpad[c + 4] = r;
+        colorScratchpad[c + 5] = g;
+        colorScratchpad[c + 6] = b;
+        colorScratchpad[c + 7] = a;
+        colorScratchpad[c + 8] = r;
+        colorScratchpad[c + 9] = g;
+        colorScratchpad[c + 10] = b;
+        colorScratchpad[c + 11] = a;
+        colorScratchpad[c + 12] = r;
+        colorScratchpad[c + 13] = g;
+        colorScratchpad[c + 14] = b;
+        colorScratchpad[c + 15] = a;
+    }
+
     protected void drawArrays() {
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);

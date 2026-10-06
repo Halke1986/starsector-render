@@ -177,7 +177,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/BaseParticle", "com/fs/graphics/particle/BaseParticle"),
             entry("com/genir/renderer/overrides/render/NebulaParticle", "com/fs/graphics/particle/NebulaParticle"),
             entry("com/genir/renderer/overrides/render/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
-            entry("com/genir/renderer/overrides/render/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle")
+            entry("com/genir/renderer/overrides/render/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
+            entry("com/genir/renderer/overrides/render/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle")
 //            entry("com/genir/renderer/overrides/render/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
     );
 
@@ -187,5 +188,6 @@ public class Transformations {
 //            entry("com/fs/graphics/particle/DynamicParticleGroup", "com/genir/renderer/overrides/render/DynamicParticleGroup"),
 //            entry("com/fs/starfarer/combat/entities/ContrailParticle", "com/genir/renderer/overrides/render/ContrailParticle")
 //            entry("com/fs/graphics/particle/NebulaParticle", "com/genir/renderer/overrides/render/NebulaParticle")
+//            entry("com/fs/starfarer/renderers/fx/DetailedSmokeParticle", "com/genir/renderer/overrides/render/DetailedSmokeParticle")
     );
 }

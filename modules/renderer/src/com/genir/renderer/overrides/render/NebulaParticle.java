@@ -30,6 +30,9 @@ public class NebulaParticle extends BaseParticle {
     private float width;
     private float height;
 
+    /**
+     * REPLACED METHOD
+     */
     public void preBatch() {
         super.initBatch();
 
@@ -46,6 +49,9 @@ public class NebulaParticle extends BaseParticle {
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
 
+    /**
+     * REPLACED METHOD
+     */
     public void render() {
         super.resizeArrays(numParticles + 1);
 
@@ -54,24 +60,7 @@ public class NebulaParticle extends BaseParticle {
         byte b = (byte) color.getBlue();
         byte a = (byte) ((int) ((float) color.getAlpha() * calculateBrightness()));
 
-        int c = numParticles * 16;
-
-        colorScratchpad[c + 0] = r;
-        colorScratchpad[c + 1] = g;
-        colorScratchpad[c + 2] = b;
-        colorScratchpad[c + 3] = a;
-        colorScratchpad[c + 4] = r;
-        colorScratchpad[c + 5] = g;
-        colorScratchpad[c + 6] = b;
-        colorScratchpad[c + 7] = a;
-        colorScratchpad[c + 8] = r;
-        colorScratchpad[c + 9] = g;
-        colorScratchpad[c + 10] = b;
-        colorScratchpad[c + 11] = a;
-        colorScratchpad[c + 12] = r;
-        colorScratchpad[c + 13] = g;
-        colorScratchpad[c + 14] = b;
-        colorScratchpad[c + 15] = a;
+        super.setParticleColor(r, g, b, a);
 
         int v = numParticles * 8;
 
@@ -109,6 +98,9 @@ public class NebulaParticle extends BaseParticle {
         numParticles++;
     }
 
+    /**
+     * REPLACED METHOD
+     */
     public void postBatch() {
         super.drawArrays();
 
@@ -119,6 +111,9 @@ public class NebulaParticle extends BaseParticle {
         }
     }
 
+    /**
+     * ADDED METHOD
+     */
     private float calculateBrightness() {
         float brightness = this.getBrightness();
         if (brightness >= 1.0F) {
