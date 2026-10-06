@@ -56,19 +56,9 @@ public class SmoothParticle extends BaseParticle {
 
         super.setParticleTex(0f, 0f, 1f, 1f);
 
-        int v = numParticles * 8;
+        super.setParticleTransformation(this.getX(), this.getY(), 0);
 
-        float x = this.getX() + offsetX;
-        float y = this.getY() + offsetY;
-
-        vertexScratchpad[v + 0] = x;
-        vertexScratchpad[v + 1] = y;
-        vertexScratchpad[v + 2] = x;
-        vertexScratchpad[v + 3] = y + size;
-        vertexScratchpad[v + 4] = x + size;
-        vertexScratchpad[v + 5] = y + size;
-        vertexScratchpad[v + 6] = x + size;
-        vertexScratchpad[v + 7] = y;
+        super.setParticleVertices(offsetX, offsetY, size, size);
 
         numParticles++;
     }

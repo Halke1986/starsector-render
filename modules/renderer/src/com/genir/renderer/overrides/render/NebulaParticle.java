@@ -1,8 +1,6 @@
 package com.genir.renderer.overrides.render;
 
 import com.fs.graphics.TextureHandler;
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -68,25 +66,9 @@ public class NebulaParticle extends BaseParticle {
 
         super.setParticleTex(s, t, size, size);
 
-        final Context context = ContextManager.getThreadContext();
+        super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
 
-        m.set(context.matrixTracker.getModelView());
-        m.translate(this.getX(), this.getY(), 0);
-        m.rotate(this.getAngle(), 0, 0, 1);
-
-        float x = offsetX;
-        float y = offsetY;
-
-        int v = numParticles * 8;
-
-        vertexScratchpad[v + 0] = x * m.m00 + y * m.m01;
-        vertexScratchpad[v + 1] = x * m.m10 + y * m.m11;
-        vertexScratchpad[v + 2] = x * m.m00 + (y + height) * m.m01;
-        vertexScratchpad[v + 3] = x * m.m10 + (y + height) * m.m11;
-        vertexScratchpad[v + 4] = (x + width) * m.m00 + (y + height) * m.m01;
-        vertexScratchpad[v + 5] = (x + width) * m.m10 + (y + height) * m.m11;
-        vertexScratchpad[v + 6] = (x + width) * m.m00 + y * m.m01;
-        vertexScratchpad[v + 7] = (x + width) * m.m10 + y * m.m11;
+        super.setParticleVertices(offsetX, offsetY, width, height);
 
         numParticles++;
     }

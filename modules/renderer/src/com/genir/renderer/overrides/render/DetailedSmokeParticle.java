@@ -1,8 +1,6 @@
 package com.genir.renderer.overrides.render;
 
 import com.fs.graphics.TextureHandler;
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -47,25 +45,9 @@ public class DetailedSmokeParticle extends BaseParticle {
 
         super.setParticleTex(0f, 0f, 1f, 1f);
 
-        int v = numParticles * 8;
+        super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
 
-        final Context context = ContextManager.getThreadContext();
-
-        m.set(context.matrixTracker.getModelView());
-        m.translate(this.getX(), this.getY(), 0);
-        m.rotate(this.getAngle(), 0, 0, 1);
-
-        float x = offsetX;
-        float y = offsetY;
-
-        vertexScratchpad[v + 0] = x * m.m00 + y * m.m01 + m.m03;
-        vertexScratchpad[v + 1] = x * m.m10 + y * m.m11 + m.m13;
-        vertexScratchpad[v + 2] = x * m.m00 + (y + size) * m.m01 + m.m03;
-        vertexScratchpad[v + 3] = x * m.m10 + (y + size) * m.m11 + m.m13;
-        vertexScratchpad[v + 4] = (x + size) * m.m00 + (y + size) * m.m01 + m.m03;
-        vertexScratchpad[v + 5] = (x + size) * m.m10 + (y + size) * m.m11 + m.m13;
-        vertexScratchpad[v + 6] = (x + size) * m.m00 + y * m.m01 + m.m03;
-        vertexScratchpad[v + 7] = (x + size) * m.m10 + y * m.m11 + m.m13;
+        super.setParticleVertices(offsetX, offsetY, size, size);
 
         numParticles++;
     }
@@ -74,14 +56,7 @@ public class DetailedSmokeParticle extends BaseParticle {
      * REPLACED METHOD
      */
     public void postBatch() {
-        com.genir.renderer.bridge.commands.GL11.glEnd();
-
-        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
-        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
-
         super.drawArrays();
-
-        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }

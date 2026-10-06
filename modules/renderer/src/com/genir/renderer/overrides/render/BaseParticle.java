@@ -1,5 +1,7 @@
 package com.genir.renderer.overrides.render;
 
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -141,6 +143,29 @@ public class BaseParticle {
         texScratchpad[v + 7] = t;
     }
 
+    protected void setParticleTransformation(float posX, float posY, float angle) {
+        final Context context = ContextManager.getThreadContext();
+
+        m.set(context.matrixTracker.getModelView());
+        m.translate(posX, posY, 0);
+        if (angle != 0) {
+            m.rotate(angle, 0, 0, 1);
+        }
+    }
+
+    protected void setParticleVertices(float x, float y, float dx, float dy) {
+        int v = numParticles * 8;
+
+        vertexScratchpad[v + 0] = x * m.m00 + y * m.m01 + m.m03;
+        vertexScratchpad[v + 1] = x * m.m10 + y * m.m11 + m.m13;
+        vertexScratchpad[v + 2] = x * m.m00 + (y + dy) * m.m01 + m.m03;
+        vertexScratchpad[v + 3] = x * m.m10 + (y + dy) * m.m11 + m.m13;
+        vertexScratchpad[v + 4] = (x + dx) * m.m00 + (y + dy) * m.m01 + m.m03;
+        vertexScratchpad[v + 5] = (x + dx) * m.m10 + (y + dy) * m.m11 + m.m13;
+        vertexScratchpad[v + 6] = (x + dx) * m.m00 + y * m.m01 + m.m03;
+        vertexScratchpad[v + 7] = (x + dx) * m.m10 + y * m.m11 + m.m13;
+    }
+
     protected void drawArrays() {
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);
@@ -160,7 +185,13 @@ public class BaseParticle {
         com.genir.renderer.bridge.commands.GL11.glTexCoordPointer(2, 0, texCoordPointer);
         com.genir.renderer.bridge.commands.GL11.glColorPointer(4, true, 0, colorPointer);
 
+        // Particle transformation is handled on the CPU.
+        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
+
         com.genir.renderer.bridge.commands.GL11.glDrawArrays(GL11.GL_QUADS, 0, numParticles * 4);
+
+        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
