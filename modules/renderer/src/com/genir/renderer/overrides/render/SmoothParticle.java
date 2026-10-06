@@ -84,33 +84,11 @@ public class SmoothParticle extends BaseParticle {
             }
         }
 
-        int v = numPoints * 8;
-
         byte r = (byte) color.getRed();
         byte g = (byte) color.getGreen();
         byte b = (byte) color.getBlue();
         byte a = (byte) ((int) ((float) color.getAlpha() * this.getBrightness()));
 
-        vertexScratchpad[v + 0] = x + offsetX;
-        vertexScratchpad[v + 1] = y + offsetY;
-        vertexScratchpad[v + 2] = x + offsetX;
-        vertexScratchpad[v + 3] = y + offsetY + size;
-        vertexScratchpad[v + 4] = x + offsetX + size;
-        vertexScratchpad[v + 5] = y + offsetY + size;
-        vertexScratchpad[v + 6] = x + offsetX + size;
-        vertexScratchpad[v + 7] = y + offsetY;
-
-        float x = this.getX() + offsetX;
-        float y = this.getY() + offsetY;
-
-        vertexScratchpad[offset + 0] = x;
-        vertexScratchpad[offset + 1] = y;
-        vertexScratchpad[offset + 2] = x;
-        vertexScratchpad[offset + 3] = y + size;
-        vertexScratchpad[offset + 4] = x + size;
-        vertexScratchpad[offset + 5] = y + size;
-        vertexScratchpad[offset + 6] = x + size;
-        vertexScratchpad[offset + 7] = y;
         int c = numPoints * 16;
 
         colorScratchpad[c + 0] = r;
@@ -129,6 +107,20 @@ public class SmoothParticle extends BaseParticle {
         colorScratchpad[c + 13] = g;
         colorScratchpad[c + 14] = b;
         colorScratchpad[c + 15] = a;
+
+        float x = this.getX() + offsetX;
+        float y = this.getY() + offsetY;
+
+        int v = numPoints * 8;
+
+        vertexScratchpad[v + 0] = x + offsetX;
+        vertexScratchpad[v + 1] = y + offsetY;
+        vertexScratchpad[v + 2] = x + offsetX;
+        vertexScratchpad[v + 3] = y + offsetY + size;
+        vertexScratchpad[v + 4] = x + offsetX + size;
+        vertexScratchpad[v + 5] = y + offsetY + size;
+        vertexScratchpad[v + 6] = x + offsetX + size;
+        vertexScratchpad[v + 7] = y + offsetY;
 
         numPoints++;
     }
