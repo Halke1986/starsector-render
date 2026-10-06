@@ -47,6 +47,15 @@ public class SmoothParticle extends BaseParticle {
         }
 
         numPoints = 0;
+
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
+        org.lwjgl.opengl.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+
+        // Bind texture.
+        TextureHandler textureHandler = override != null ? override : texture;
+        int textureID = textureHandler.TextureHandler_getTextureID();
+        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
 
     public void render() {
@@ -71,56 +80,49 @@ public class SmoothParticle extends BaseParticle {
         float b = (color.getBlue() & 0xFF) / 255f;
         float a = (((int) ((float) color.getAlpha() * this.getBrightness())) & 0xFF) / 255f;
 
-        int offset = numPoints * 8;
+        int v = numPoints * 8;
 
-        texScratchpad[offset + 0] = 0;
-        texScratchpad[offset + 1] = 0;
-        texScratchpad[offset + 2] = 0;
-        texScratchpad[offset + 3] = 1;
-        texScratchpad[offset + 4] = 1;
-        texScratchpad[offset + 5] = 1;
-        texScratchpad[offset + 6] = 1;
-        texScratchpad[offset + 7] = 0;
+        texScratchpad[v + 0] = 0;
+        texScratchpad[v + 1] = 0;
+        texScratchpad[v + 2] = 0;
+        texScratchpad[v + 3] = 1;
+        texScratchpad[v + 4] = 1;
+        texScratchpad[v + 5] = 1;
+        texScratchpad[v + 6] = 1;
+        texScratchpad[v + 7] = 0;
 
-        colorScratchpad[offset + 0] = r;
-        colorScratchpad[offset + 1] = g;
-        colorScratchpad[offset + 2] = b;
-        colorScratchpad[offset + 3] = a;
-        colorScratchpad[offset + 4] = r;
-        colorScratchpad[offset + 5] = g;
-        colorScratchpad[offset + 6] = b;
-        colorScratchpad[offset + 7] = a;
-        colorScratchpad[offset + 8] = r;
-        colorScratchpad[offset + 9] = g;
-        colorScratchpad[offset + 10] = b;
-        colorScratchpad[offset + 11] = a;
-        colorScratchpad[offset + 12] = r;
-        colorScratchpad[offset + 13] = g;
-        colorScratchpad[offset + 14] = b;
-        colorScratchpad[offset + 15] = a;
+        vertexScratchpad[v + 0] = x + offsetX;
+        vertexScratchpad[v + 1] = y + offsetY;
+        vertexScratchpad[v + 2] = x + offsetX;
+        vertexScratchpad[v + 3] = y + offsetY + size;
+        vertexScratchpad[v + 4] = x + offsetX + size;
+        vertexScratchpad[v + 5] = y + offsetY + size;
+        vertexScratchpad[v + 6] = x + offsetX + size;
+        vertexScratchpad[v + 7] = y + offsetY;
 
-        vertexScratchpad[offset + 0] = x + offsetX;
-        vertexScratchpad[offset + 1] = y + offsetY;
-        vertexScratchpad[offset + 2] = x + offsetX;
-        vertexScratchpad[offset + 3] = y + offsetY + size;
-        vertexScratchpad[offset + 4] = x + offsetX + size;
-        vertexScratchpad[offset + 5] = y + offsetY + size;
-        vertexScratchpad[offset + 6] = x + offsetX + size;
-        vertexScratchpad[offset + 7] = y + offsetY;
+        int c = numPoints * 16;
+
+        colorScratchpad[c + 0] = r;
+        colorScratchpad[c + 1] = g;
+        colorScratchpad[c + 2] = b;
+        colorScratchpad[c + 3] = a;
+        colorScratchpad[c + 4] = r;
+        colorScratchpad[c + 5] = g;
+        colorScratchpad[c + 6] = b;
+        colorScratchpad[c + 7] = a;
+        colorScratchpad[c + 8] = r;
+        colorScratchpad[c + 9] = g;
+        colorScratchpad[c + 10] = b;
+        colorScratchpad[c + 11] = a;
+        colorScratchpad[c + 12] = r;
+        colorScratchpad[c + 13] = g;
+        colorScratchpad[c + 14] = b;
+        colorScratchpad[c + 15] = a;
 
         numPoints++;
     }
 
     public void postBatch() {
-        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
-        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
-        com.genir.renderer.bridge.commands.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-
-        // Bind texture.
-        TextureHandler textureHandler = override != null ? override : texture;
-        int textureID = textureHandler.TextureHandler_getTextureID();
-        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);
             texCoordPointer = BufferUtils.createFloatBuffer(texScratchpad.length);
@@ -128,23 +130,23 @@ public class SmoothParticle extends BaseParticle {
         }
 
         vertexPointer.put(0, vertexScratchpad, 0, numPoints * 8);
-        texCoordPointer.put(0, texCoordPointer, 0, numPoints * 8);
-        colorPointer.put(0, colorPointer, 0, numPoints * 16);
+        texCoordPointer.put(0, texScratchpad, 0, numPoints * 8);
+        colorPointer.put(0, colorScratchpad, 0, numPoints * 16);
 
-        com.genir.renderer.bridge.commands.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        com.genir.renderer.bridge.commands.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        com.genir.renderer.bridge.commands.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
-        com.genir.renderer.bridge.commands.GL11.glVertexPointer(2, 0, vertexPointer);
-        com.genir.renderer.bridge.commands.GL11.glTexCoordPointer(2, 0, texCoordPointer);
-        com.genir.renderer.bridge.commands.GL11.glColorPointer(4, 0, colorPointer);
+        org.lwjgl.opengl.GL11.glVertexPointer(2, 0, vertexPointer);
+        org.lwjgl.opengl.GL11.glTexCoordPointer(2, 0, texCoordPointer);
+        org.lwjgl.opengl.GL11.glColorPointer(4, 0, colorPointer);
 
-        com.genir.renderer.bridge.commands.GL11.glDrawArrays(GL11.GL_QUADS, 0, numPoints);
+        org.lwjgl.opengl.GL11.glDrawArrays(GL11.GL_QUADS, 0, numPoints * 4);
 
-        com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
 
-        com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 }
