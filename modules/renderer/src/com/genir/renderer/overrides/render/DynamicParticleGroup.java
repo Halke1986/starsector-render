@@ -1,7 +1,5 @@
 package com.genir.renderer.overrides.render;
 
-import com.fs.graphics.particle.BaseParticle;
-
 import java.util.LinkedList;
 
 /**

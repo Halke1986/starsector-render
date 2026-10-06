@@ -174,6 +174,7 @@ public class Transformations {
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o"),
             entry("com/genir/renderer/overrides/loading/textures/TextureRepository", "com/fs/graphics/oOoO"),
             entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite"),
+            entry("com/genir/renderer/overrides/render/BaseParticle", "com/fs/graphics/particle/BaseParticle"),
             entry("com/genir/renderer/overrides/render/NebulaParticle", "com/fs/graphics/particle/NebulaParticle"),
             entry("com/genir/renderer/overrides/render/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
             entry("com/genir/renderer/overrides/render/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle")
