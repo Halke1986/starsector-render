@@ -1,8 +1,8 @@
 package com.genir.renderer.bridge.context.stall;
 
+import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.context.MatrixStack;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.FloatBuffer;
 
@@ -14,7 +14,7 @@ public class MatrixTracker {
         this.attribTracker = attribTracker;
     }
 
-    public Matrix4f getModelView() {
+    public Matrix getModelView() {
         return modelView.getMatrix();
     }
 

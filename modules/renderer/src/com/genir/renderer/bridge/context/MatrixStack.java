@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge.context;
 
-import org.lwjgl.util.vector.Matrix4f;
-
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -12,11 +10,12 @@ public class MatrixStack {
 
     public MatrixStack() {
         stack[0] = new Matrix();
+        stack[0].setIdentity();
         current = stack[0];
     }
 
-    public Matrix4f getMatrix() {
-        return current.getMatrix4f();
+    public Matrix getMatrix() {
+        return current;
     }
 
     public void glPushMatrix() {
@@ -29,7 +28,8 @@ public class MatrixStack {
             stack[next] = new Matrix();
         }
 
-        Matrix4f.load(current.getMatrix4f(), stack[next].getMatrix4f());
+        stack[next].set(current);
+
         matrixIdx++;
         current = stack[matrixIdx];
     }
@@ -45,30 +45,32 @@ public class MatrixStack {
     }
 
     public void glLoadIdentity() {
-        current.glLoadIdentity();
+        current.setIdentity();
     }
 
     public void glTranslatef(float x, float y, float z) {
-        current.glTranslatef(x, y, z);
+        current.translate(x, y, z);
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        current.glRotatef(angle, x, y, z);
+        current.rotate(angle, x, y, z);
     }
 
     public void glScalef(float x, float y, float z) {
-        current.glScalef(x, y, z);
+        current.scale(x, y, z);
     }
 
     public void glMultMatrix(FloatBuffer buf) {
-        current.glMultMatrix(buf);
+        Matrix right = new Matrix();
+        right.loadTranspose(buf.duplicate());
+        current.mul(right);
     }
 
     public void glLoadMatrix(FloatBuffer buf) {
-        current.glLoadMatrix(buf);
+        current.loadTranspose(buf.duplicate());
     }
 
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        current.glOrtho(left, right, bottom, top, zNear, zFar);
+        current.ortho(left, right, bottom, top, zNear, zFar);
     }
 }

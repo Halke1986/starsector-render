@@ -5,12 +5,12 @@ import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.context.stall.AttribState;
 import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.*;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
-import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -1872,7 +1872,7 @@ public class GL11 {
         // Values simulated on the client thread.
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_MODELVIEW_MATRIX:
-                Matrix4f modelView = context.matrixTracker.getModelView();
+                Matrix modelView = context.matrixTracker.getModelView();
                 modelView.storeTranspose(outBuffer);
                 return;
 

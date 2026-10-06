@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.context;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.FloatBuffer;
 
@@ -12,7 +11,7 @@ public class MatrixManager {
 
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private boolean cpuMode = true;
-    private final Matrix4f identity = new Matrix4f();
+    private final Matrix identity = new Matrix();
 
     public MatrixManager(AttribManager attribManager) {
         this.attribManager = attribManager;
@@ -44,7 +43,7 @@ public class MatrixManager {
         cpuMode = false;
     }
 
-    public Matrix4f getCPUModelView() {
+    public Matrix getCPUModelView() {
         if (cpuMode) {
             return modelView.getMatrix();
         }

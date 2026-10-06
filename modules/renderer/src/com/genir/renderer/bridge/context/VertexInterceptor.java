@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.util.vector.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -143,7 +142,7 @@ public class VertexInterceptor {
     }
 
     public void glVertex3f(float x, float y, float z) {
-        Matrix4f m = matrixManager.getCPUModelView();
+        Matrix m = matrixManager.getCPUModelView();
 
         // Transform vertices;
         float xt = x * m.m00 + y * m.m01 + z * m.m02 + m.m03;
