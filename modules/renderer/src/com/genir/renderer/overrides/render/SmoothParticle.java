@@ -49,14 +49,14 @@ public class SmoothParticle extends BaseParticle {
 
         numPoints = 0;
 
-        org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
-        org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
-        org.lwjgl.opengl.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
+        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
+        com.genir.renderer.bridge.commands.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 
         // Bind texture.
         TextureHandler textureHandler = override != null ? override : texture;
         int textureID = textureHandler.TextureHandler_getTextureID();
-        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
 
     public void render() {
@@ -136,20 +136,20 @@ public class SmoothParticle extends BaseParticle {
         texCoordPointer.put(0, texScratchpad, 0, numPoints * 8);
         colorPointer.put(0, colorScratchpad, 0, numPoints * 16);
 
-        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        com.genir.renderer.bridge.commands.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        com.genir.renderer.bridge.commands.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        com.genir.renderer.bridge.commands.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
-        org.lwjgl.opengl.GL11.glVertexPointer(2, 0, vertexPointer);
-        org.lwjgl.opengl.GL11.glTexCoordPointer(2, 0, texCoordPointer);
-        org.lwjgl.opengl.GL11.glColorPointer(4, true, 0, colorPointer);
+        com.genir.renderer.bridge.commands.GL11.glVertexPointer(2, 0, vertexPointer);
+        com.genir.renderer.bridge.commands.GL11.glTexCoordPointer(2, 0, texCoordPointer);
+        com.genir.renderer.bridge.commands.GL11.glColorPointer(4, true, 0, colorPointer);
 
-        org.lwjgl.opengl.GL11.glDrawArrays(GL11.GL_QUADS, 0, numPoints * 4);
+        com.genir.renderer.bridge.commands.GL11.glDrawArrays(GL11.GL_QUADS, 0, numPoints * 4);
 
-        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+        com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
 
-        org.lwjgl.opengl.GL11.glDisable(GL11.GL_TEXTURE_2D);
+        com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 }
