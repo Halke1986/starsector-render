@@ -36,6 +36,9 @@ public class SmoothParticle extends BaseParticle {
     private static FloatBuffer vertexPointer;
     private static ByteBuffer colorPointer;
 
+    /**
+     * REPLACED METHOD
+     */
     public void preBatch() {
         if (vertexScratchpad == null) {
             vertexScratchpad = new float[8];
@@ -59,6 +62,9 @@ public class SmoothParticle extends BaseParticle {
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
 
+    /**
+     * REPLACED METHOD
+     */
     public void render() {
         // Particle is too dark to be rendered.
         if (this.getBrightnessOverride() == 0.0F || this.getBrightnessMult() == 0.0F) {
@@ -72,7 +78,7 @@ public class SmoothParticle extends BaseParticle {
             texScratchpad = Arrays.copyOf(texScratchpad, texScratchpad.length * 2);
             colorScratchpad = Arrays.copyOf(colorScratchpad, colorScratchpad.length * 2);
 
-            for (int i = 0; i < texScratchpad.length / 8; i++) {
+            for (int i = 0; i < texScratchpad.length; i += 8) {
                 texScratchpad[i + 0] = 0;
                 texScratchpad[i + 1] = 0;
                 texScratchpad[i + 2] = 0;
@@ -91,6 +97,7 @@ public class SmoothParticle extends BaseParticle {
 
         int c = numPoints * 16;
 
+        // TODO optimize color
         colorScratchpad[c + 0] = r;
         colorScratchpad[c + 1] = g;
         colorScratchpad[c + 2] = b;
@@ -113,18 +120,21 @@ public class SmoothParticle extends BaseParticle {
 
         int v = numPoints * 8;
 
-        vertexScratchpad[v + 0] = x + offsetX;
-        vertexScratchpad[v + 1] = y + offsetY;
-        vertexScratchpad[v + 2] = x + offsetX;
-        vertexScratchpad[v + 3] = y + offsetY + size;
-        vertexScratchpad[v + 4] = x + offsetX + size;
-        vertexScratchpad[v + 5] = y + offsetY + size;
-        vertexScratchpad[v + 6] = x + offsetX + size;
-        vertexScratchpad[v + 7] = y + offsetY;
+        vertexScratchpad[v + 0] = x;
+        vertexScratchpad[v + 1] = y;
+        vertexScratchpad[v + 2] = x;
+        vertexScratchpad[v + 3] = y + size;
+        vertexScratchpad[v + 4] = x + size;
+        vertexScratchpad[v + 5] = y + size;
+        vertexScratchpad[v + 6] = x + size;
+        vertexScratchpad[v + 7] = y;
 
         numPoints++;
     }
 
+    /**
+     * REPLACED METHOD
+     */
     public void postBatch() {
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);

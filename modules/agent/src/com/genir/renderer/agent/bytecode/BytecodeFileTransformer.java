@@ -176,6 +176,14 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/SmoothParticle");
                 return transformer;
+            case "com/fs/starfarer/combat/entities/ContrailParticle":
+                transformer.removeMethod("preBatch", "()V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/ContrailParticle");
+                return transformer;
+//            case "com/fs/graphics/particle/DynamicParticleGroup":
+//                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
+//                transformer.mergeClass("com/genir/renderer/overrides/render/DynamicParticleGroup");
+//                return transformer;
             default:
                 return null;
         }
@@ -198,6 +206,16 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
+            case "com/genir/renderer/overrides/render/ContrailParticle":
+                transformer = new BytecodeTransformer("com/fs/starfarer/combat/entities/ContrailParticle");
+                transformer.removeMethod("preBatch", "()V");
+                transformer.mergeClass(className, donorBytes);
+                return transformer;
+//            case "com/genir/renderer/overrides/render/DynamicParticleGroup":
+//                transformer = new BytecodeTransformer("com/fs/graphics/particle/DynamicParticleGroup");
+//                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
+//                transformer.mergeClass(className, donorBytes);
+//                return transformer;
 
             default:
                 return null;

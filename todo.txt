@@ -9,3 +9,7 @@ finish FileLoaderExact and test with vulpoids
 
 particle engine PR
 glib forcing lazy load
+
+LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
+insignia42LTaa
+https://discord.com/channels/187635036525166592/1549091275167240272/1556998414678368288
