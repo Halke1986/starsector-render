@@ -10,11 +10,17 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class ConstantFileTransformer implements ClassFileTransformer {
-    private final ConstantTransformer frTransformer = new ConstantTransformer(Transformations.obfuscation, Transformations.overrides);
-    private final ConstantTransformer scriptTransformer = new ConstantTransformer(Transformations.opengl);
-    private final ConstantTransformer xstreamTransformer = new ConstantTransformer(Transformations.xstream);
-    private final ConstantTransformer lwjglTransformer = new ConstantTransformer(Transformations.lwjgl);
-    private final ConstantTransformer starfarerTransformer = new ConstantTransformer(
+    private static final ConstantTransformer scriptTransformer = new ConstantTransformer(Transformations.opengl);
+    private static final ConstantTransformer xstreamTransformer = new ConstantTransformer(Transformations.xstream);
+    private static final ConstantTransformer lwjglTransformer = new ConstantTransformer(Transformations.lwjgl);
+    public static final ConstantTransformer frTransformer = new ConstantTransformer(
+            Transformations.overrides,
+            Transformations.overridesDebug,
+            Transformations.obfuscation,
+            IllegalTransformations.transformations
+    );
+    public static final ConstantTransformer starfarerTransformer = new ConstantTransformer(
+            Transformations.overridesDebug,
             Transformations.opengl,  // Replace OpenGL calls.
             Transformations.scriptLoader,  // Replace class loader for loading scripts.
             Transformations.obfuscation, // Obfuscate assembled overrides.
