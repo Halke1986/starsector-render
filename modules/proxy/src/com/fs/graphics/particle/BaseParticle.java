@@ -20,4 +20,16 @@ public class BaseParticle {
     public float getY() {
         return 0;
     }
+
+    public float getAge() {
+        return 0;
+    }
+
+    public float getMaxAge() {
+        return 0;
+    }
+
+    public float getAngle() {
+        return 0;
+    }
 }
