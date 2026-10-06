@@ -128,6 +128,19 @@ public class BaseParticle {
         colorScratchpad[c + 15] = a;
     }
 
+    protected void setParticleTex(float s, float t, float ds, float dt) {
+        int v = numParticles * 8;
+
+        texScratchpad[v + 0] = s;
+        texScratchpad[v + 1] = t;
+        texScratchpad[v + 2] = s;
+        texScratchpad[v + 3] = t + dt;
+        texScratchpad[v + 4] = s + ds;
+        texScratchpad[v + 5] = t + dt;
+        texScratchpad[v + 6] = s + ds;
+        texScratchpad[v + 7] = t;
+    }
+
     protected void drawArrays() {
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);

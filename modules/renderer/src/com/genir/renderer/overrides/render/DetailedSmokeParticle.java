@@ -45,16 +45,9 @@ public class DetailedSmokeParticle extends BaseParticle {
 
         super.setParticleColor(r, g, b, a);
 
-        int v = numParticles * 8;
+        super.setParticleTex(0f, 0f, 1f, 1f);
 
-        texScratchpad[v + 0] = 0;
-        texScratchpad[v + 1] = 0;
-        texScratchpad[v + 2] = 0;
-        texScratchpad[v + 3] = 1;
-        texScratchpad[v + 4] = 1;
-        texScratchpad[v + 5] = 1;
-        texScratchpad[v + 6] = 1;
-        texScratchpad[v + 7] = 0;
+        int v = numParticles * 8;
 
         final Context context = ContextManager.getThreadContext();
 

@@ -62,20 +62,11 @@ public class NebulaParticle extends BaseParticle {
 
         super.setParticleColor(r, g, b, a);
 
-        int v = numParticles * 8;
-
         float size = w == 2 ? 0.5F : 0.25F;
         float s = (float) i * size;
         float t = (float) j * size;
 
-        texScratchpad[v + 0] = s;
-        texScratchpad[v + 1] = t;
-        texScratchpad[v + 2] = s;
-        texScratchpad[v + 3] = t + size;
-        texScratchpad[v + 4] = s + size;
-        texScratchpad[v + 5] = t + size;
-        texScratchpad[v + 6] = s + size;
-        texScratchpad[v + 7] = t;
+        super.setParticleTex(s, t, size, size);
 
         final Context context = ContextManager.getThreadContext();
 
@@ -85,6 +76,8 @@ public class NebulaParticle extends BaseParticle {
 
         float x = offsetX;
         float y = offsetY;
+
+        int v = numParticles * 8;
 
         vertexScratchpad[v + 0] = x * m.m00 + y * m.m01;
         vertexScratchpad[v + 1] = x * m.m10 + y * m.m11;
