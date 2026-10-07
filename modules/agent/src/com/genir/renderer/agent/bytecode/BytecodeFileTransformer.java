@@ -202,8 +202,12 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.mergeClass("com/genir/renderer/overrides/render/GenericTextureParticle");
                 return transformer;
             case "com/fs/graphics/particle/DynamicParticleGroup":
+                transformer.removeMethod("size", "()I");
+                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
                 transformer.removeMethod("render", "(FF)V");
-//                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
+                transformer.removeMethod("advance", "(F)V");
+                transformer.removeMethod("isEmpty", "()Z");
+                transformer.removeMethod("getParticles", "()Ljava/util/List;");
                 transformer.mergeClass("com/genir/renderer/overrides/render/DynamicParticleGroup");
                 return transformer;
             default:
@@ -249,8 +253,12 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 return transformer;
             case "com/genir/renderer/overrides/render/DynamicParticleGroup":
                 transformer = new BytecodeTransformer("com/fs/graphics/particle/DynamicParticleGroup");
+                transformer.removeMethod("size", "()I");
+                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
                 transformer.removeMethod("render", "(FF)V");
-//                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
+                transformer.removeMethod("advance", "(F)V");
+                transformer.removeMethod("isEmpty", "()Z");
+                transformer.removeMethod("getParticles", "()Ljava/util/List;");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
             case "com/genir/renderer/overrides/render/BaseParticle":

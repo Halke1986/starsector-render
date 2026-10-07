@@ -50,6 +50,19 @@ public abstract class BaseParticle {
     /**
      * STUB
      */
+    public void advance(float dt) {
+    }
+
+    /**
+     * STUB
+     */
+    public boolean isExpired() {
+        return false;
+    }
+
+    /**
+     * STUB
+     */
     public float getBrightness() {
         return 0;
     }
@@ -134,10 +147,6 @@ public abstract class BaseParticle {
         byte b = (byte) (byte) color.getBlue();
         byte a = (byte) (byte) ((int) ((float) color.getAlpha() * brightness));
 
-        setParticleColor(r, g, b, a);
-    }
-
-    private void setParticleColor(byte r, byte g, byte b, byte a) {
         int c = numParticles * 16;
 
         colorScratchpad[c + 0] = r;
