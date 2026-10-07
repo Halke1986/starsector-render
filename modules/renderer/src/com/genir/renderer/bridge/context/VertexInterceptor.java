@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
-import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -34,7 +33,6 @@ public class VertexInterceptor {
     private final MatrixManager matrixManager;
     private final AttribManager attribManager;
 
-    private boolean reorderDraw = false;
     private int arrayFlags = 0;
 
     // State.
@@ -64,7 +62,6 @@ public class VertexInterceptor {
     // Draw buffers.
     private float[] vertexScratchpad = new float[STRIDE];
     private FloatBuffer primaryVertexPointer = BufferUtils.createFloatBuffer(STRIDE);
-    private final Map<ReorderedDrawContext, FloatBuffer> reorderBuffer = new HashMap<>();
 
     // Recorded array draw buffers.
     private ByteBuffer texCoordPointer = BufferUtils.createByteBuffer(0);
@@ -84,10 +81,6 @@ public class VertexInterceptor {
         arrayFlags = 0;
     }
 
-    private void setReorderDraw(boolean reorder) {
-        reorderDraw = reorder;
-    }
-
     //
     // GL calls.
     //
@@ -103,8 +96,6 @@ public class VertexInterceptor {
 
         if (count == 0) {
             return;
-        } else if (reorderDraw) {
-            storeReorderedDraw(mode, count);
         } else {
             drawAsArray(count);
         }
@@ -197,57 +188,6 @@ public class VertexInterceptor {
     //
     // Draw.
     //
-
-    private void commitLayer() {
-        if (reorderBuffer.isEmpty()) {
-            return;
-        }
-
-        for (Map.Entry<ReorderedDrawContext, FloatBuffer> entry : reorderBuffer.entrySet()) {
-            FloatBuffer vertexBatch = entry.getValue();
-            if (vertexBatch.position() == 0) {
-                continue;
-            }
-
-            ReorderedDrawContext ctx = entry.getKey();
-
-            vertexBatch.flip();
-            final int batchMode = ctx.mode;
-            final int batchCount = vertexBatch.limit() / STRIDE;
-
-            prepareVertexPointers(batchCount, VERTEX_FLAG | COLOR_FLAG | TEX_FLAG);
-
-            primaryVertexPointer.put(0, vertexBatch, 0, vertexBatch.limit());
-            vertexBatch.clear();
-
-            attribManager.forceReorderedDrawContext(ctx);
-            org.lwjgl.opengl.GL11.glDrawArrays(batchMode, 0, batchCount);
-        }
-
-        // Restore client selected attributes to avoid client-server state desync.
-        attribManager.reorderedDrawContextCleanup();
-    }
-
-    private void storeReorderedDraw(int mode, int count) {
-        ReorderedDrawContext ctx = attribManager.getReorderedDrawContext(mode);
-
-        // Create buffer if absent.
-        FloatBuffer vertexBatch = reorderBuffer.get(ctx);
-        if (vertexBatch == null) {
-            vertexBatch = BufferUtils.createFloatBuffer(count * STRIDE);
-            reorderBuffer.put(ctx, vertexBatch);
-        }
-
-        // Resize buffer if necessary.
-        int capacityRequired = BufferUtil.capacityRequired(vertexBatch, count * STRIDE);
-        if (capacityRequired > 0) {
-            vertexBatch = BufferUtil.reallocate(capacityRequired, vertexBatch);
-            reorderBuffer.put(ctx, vertexBatch);
-        }
-
-        // Append current vertices.
-        vertexBatch.put(vertexScratchpad, 0, count * STRIDE);
-    }
 
     public void drawRecordedArrays(Runnable drawArraysCommand, ClientAttribTracker.ArrayPointersSnapshot snapshot) {
         arraysTouched();
@@ -426,20 +366,6 @@ public class VertexInterceptor {
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }
-        }
-    }
-
-    public record setReorderDraw(boolean reorder) implements GLCommand {
-        @Override
-        public void run(Context context, float[] args, int argsOffset) {
-            context.vertexInterceptor.setReorderDraw(reorder);
-        }
-    }
-
-    public record commitLayer() implements GLCommand {
-        @Override
-        public void run(Context context, float[] args, int argsOffset) {
-            context.vertexInterceptor.commitLayer();
         }
     }
 }

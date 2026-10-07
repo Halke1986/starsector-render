@@ -6,9 +6,6 @@ import com.fs.starfarer.combat.CombatViewport;
 import com.fs.starfarer.renderers.FloatingTextManager;
 import com.fs.starfarer.renderers.damage.DebrisParticleSystem;
 import com.fs.starfarer.renderers.damage.ExplosionParticleSystem;
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.VertexInterceptor;
 import com.genir.renderer.overrides.render.particle.DynamicParticleGroup;
 
 /**
@@ -205,18 +202,12 @@ public class CombatEngine {
      */
     private void renderLayer(CombatEngineLayers layer) {
         getRenderer().renderOnly(getViewport(), layer);
-
-        final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new VertexInterceptor.commitLayer());
     }
 
     /**
      * ADDED METHOD
      */
     private void renderLayer(String layer) {
-        final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new VertexInterceptor.setReorderDraw(true));
-
         switch (layer) {
             case "GlowyContrailParticles" -> getGlowyContrailParticles().render(0F, 0F);
             case "SmokyContrailParticles" -> getSmokyContrailParticles().render(0F, 0F);
@@ -234,9 +225,6 @@ public class CombatEngine {
             case "NegativeNebulaParticles" -> getNegativeNebulaParticles().render(0F, 0F);
             case "NegativeSwirlyNebulaParticles" -> getNegativeSwirlyNebulaParticles().render(0F, 0F);
         }
-
-        context.exec.execute(new VertexInterceptor.setReorderDraw(false));
-        context.exec.execute(new VertexInterceptor.commitLayer());
     }
 
     /**

@@ -78,11 +78,6 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
         BytecodeTransformer transformer = new BytecodeTransformer(targetBytes);
 
         switch (className) {
-            case "com/fs/graphics/LayeredRenderer":
-                transformer.removeMethod("renderOnly", "(Ljava/lang/Object;Ljava/lang/Enum;)V");
-                transformer.removeMethod("renderExcluding", "(Ljava/lang/Object;[Ljava/lang/Enum;)V");
-                transformer.mergeClass("com/genir/renderer/overrides/LayeredRenderer");
-                return transformer;
             case "com/fs/graphics/TextureLoader":
                 transformer.renameMethod("o00000", "loadTexture_vanilla",
                         "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");

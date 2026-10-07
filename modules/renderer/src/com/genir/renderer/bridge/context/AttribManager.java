@@ -38,38 +38,6 @@ public class AttribManager {
         return expected.matrixMode;
     }
 
-    public ReorderedDrawContext getReorderedDrawContext(int mode) {
-        return new ReorderedDrawContext(mode, expected);
-    }
-
-    // Set server-side attributes required by the bridge, which may be
-    // different from attributes selected by the client.
-    public void forceReorderedDrawContext(ReorderedDrawContext ctx) {
-        applyTexture(ctx.enableTexture2D, ctx.texture2D, false);
-
-        AttribState.BlendFactors blendFactors = new AttribState.BlendFactors();
-        blendFactors.sfactorRGB = ctx.blendSfactor;
-        blendFactors.dfactorRGB = ctx.blendDfactor;
-        blendFactors.sfactorAlpha = ctx.blendSfactor;
-        blendFactors.dfactorAlpha = ctx.blendDfactor;
-        applyBlend(ctx.enableBlend, blendFactors, ctx.blendEquation, null, null);
-
-        //
-        // GL functions never required by reordered draw context.
-        //
-
-        applyAlpha(false);
-        applyStencil(false);
-        applyLighting(false);
-        applyScissor(false);
-    }
-
-    public void reorderedDrawContextCleanup() {
-        // Resynchronize server and client texture state after a reordered draw may have caused them to diverge.
-        // Apply the texture state exactly, bypassing any statechange optimizations normally used by applyTexture().
-        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0, true);
-    }
-
     // Apply server-side attributes selected by the client.
     public void applyDrawAttribs() {
         applyStencil(expected.enableStencilTest);
