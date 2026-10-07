@@ -195,6 +195,12 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/DetailedSmokeParticle");
                 return transformer;
+            case "com/fs/graphics/particle/GenericTextureParticle":
+                transformer.removeMethod("render", "()V");
+                transformer.removeMethod("preBatch", "()V");
+                transformer.removeMethod("postBatch", "()V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/GenericTextureParticle");
+                return transformer;
 //            case "com/fs/graphics/particle/DynamicParticleGroup":
 //                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
 //                transformer.mergeClass("com/genir/renderer/overrides/render/DynamicParticleGroup");
