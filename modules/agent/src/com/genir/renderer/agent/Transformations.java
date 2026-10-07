@@ -158,7 +158,7 @@ public class Transformations {
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
             entry("com/genir/renderer/overrides/loading/textures/TextureLoader", "com/fs/graphics/TextureLoader"),
-            entry("com/genir/renderer/overrides/RoilingSwarmEffect", "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect"),
+            entry("com/genir/renderer/overrides/render/RoilingSwarmEffect", "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect"),
             entry("com/genir/renderer/overrides/Expression", "com/fs/starfarer/campaign/rules/oOOO"),
             entry("com/genir/renderer/overrides/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             entry("com/genir/renderer/overrides/DeploymentManager", "com/fs/starfarer/combat/ai/admiral/G"),

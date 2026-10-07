@@ -5,8 +5,6 @@ import com.fs.starfarer.campaign.fleet.FleetMember;
 
 import java.util.List;
 
-import static com.genir.renderer.Noop.breakpoint;
-
 /**
  * Fixed a vanilla bug where enemy ships were deployed progressively from smallest to largest.
  * Enemy fleets now maintain a balanced composition throughout the entire battle.
@@ -37,8 +35,6 @@ public class DeploymentManager {
             List<FleetMember> reinforcements,
             boolean firstAttempt
     ) {
-        breakpoint();
-
         FleetMember vanillaPick = pickReinforcement_vanilla(
                 reinforcementType, deploymentPointLimit, reserves, reinforcements, firstAttempt);
 
