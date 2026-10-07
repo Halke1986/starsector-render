@@ -20,6 +20,12 @@ public class SmoothParticle extends BaseParticle {
     private float size;
 
     /**
+     * STUB
+     */
+    public SmoothParticle(Color var1, float var2) {
+    }
+
+    /**
      * REPLACED METHOD
      */
     @Override

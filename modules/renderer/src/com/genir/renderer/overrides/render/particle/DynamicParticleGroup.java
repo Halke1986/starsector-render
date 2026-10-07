@@ -23,6 +23,19 @@ public class DynamicParticleGroup {
     private int particlesNum;
 
     /**
+     * STUB
+     */
+    public int getLimit() {
+        return 0;
+    }
+
+    /**
+     * STUB
+     */
+    public void setLimit(int limit) {
+    }
+
+    /**
      * ADDED METHOD
      */
     private void syncState() {
