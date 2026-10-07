@@ -174,22 +174,22 @@ public class Transformations {
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o"),
             entry("com/genir/renderer/overrides/loading/textures/TextureRepository", "com/fs/graphics/oOoO"),
             entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite"),
-            entry("com/genir/renderer/overrides/render/BaseParticle", "com/fs/graphics/particle/BaseParticle"),
-            entry("com/genir/renderer/overrides/render/NebulaParticle", "com/fs/graphics/particle/NebulaParticle"),
-            entry("com/genir/renderer/overrides/render/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
-            entry("com/genir/renderer/overrides/render/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
-            entry("com/genir/renderer/overrides/render/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
-            entry("com/genir/renderer/overrides/render/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
-            entry("com/genir/renderer/overrides/render/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
+            entry("com/genir/renderer/overrides/render/particle/BaseParticle", "com/fs/graphics/particle/BaseParticle"),
+            entry("com/genir/renderer/overrides/render/particle/NebulaParticle", "com/fs/graphics/particle/NebulaParticle"),
+            entry("com/genir/renderer/overrides/render/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
+            entry("com/genir/renderer/overrides/render/particle/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
+            entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
+            entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
+            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
 //            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite")
-//            entry("com/fs/graphics/particle/SmoothParticle", "com/genir/renderer/overrides/render/SmoothParticle"),
-//            entry("com/fs/graphics/particle/DynamicParticleGroup", "com/genir/renderer/overrides/render/DynamicParticleGroup"),
-//            entry("com/fs/graphics/particle/BaseParticle", "com/genir/renderer/overrides/render/BaseParticle")
-//            entry("com/fs/starfarer/combat/entities/ContrailParticle", "com/genir/renderer/overrides/render/ContrailParticle")
-//            entry("com/fs/graphics/particle/NebulaParticle", "com/genir/renderer/overrides/render/NebulaParticle")
-//            entry("com/fs/starfarer/renderers/fx/DetailedSmokeParticle", "com/genir/renderer/overrides/render/DetailedSmokeParticle")
+//            entry("com/fs/graphics/particle/SmoothParticle", "com/genir/renderer/overrides/render/particle/SmoothParticle"),
+//            entry("com/fs/graphics/particle/DynamicParticleGroup", "com/genir/renderer/overrides/render/particle/DynamicParticleGroup"),
+//            entry("com/fs/graphics/particle/BaseParticle", "com/genir/renderer/overrides/render/particle/BaseParticle")
+//            entry("com/fs/starfarer/combat/entities/ContrailParticle", "com/genir/renderer/overrides/render/particle/ContrailParticle")
+//            entry("com/fs/graphics/particle/NebulaParticle", "com/genir/renderer/overrides/render/particle/NebulaParticle")
+//            entry("com/fs/starfarer/renderers/fx/DetailedSmokeParticle", "com/genir/renderer/overrides/render/particle/DetailedSmokeParticle")
     );
 }

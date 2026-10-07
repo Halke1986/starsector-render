@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.render;
+package com.genir.renderer.overrides.render.particle;
 
 import com.genir.renderer.bridge.context.Matrix;
 import org.lwjgl.BufferUtils;

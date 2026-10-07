@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.render;
+package com.genir.renderer.overrides.render.particle;
 
 import com.fs.starfarer.loading.specs.EngineSlot;
 import org.lwjgl.opengl.GL11;

@@ -171,35 +171,35 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 return transformer;
             case "com/fs/graphics/particle/BaseParticle":
-                transformer.mergeClass("com/genir/renderer/overrides/render/BaseParticle");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/BaseParticle");
                 return transformer;
             case "com/fs/graphics/particle/SmoothParticle":
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/SmoothParticle");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/SmoothParticle");
                 return transformer;
             case "com/fs/starfarer/combat/entities/ContrailParticle":
                 transformer.removeMethod("preBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/ContrailParticle");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/ContrailParticle");
                 return transformer;
             case "com/fs/graphics/particle/NebulaParticle":
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/NebulaParticle");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/NebulaParticle");
                 return transformer;
             case "com/fs/starfarer/renderers/fx/DetailedSmokeParticle":
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/DetailedSmokeParticle");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle");
                 return transformer;
             case "com/fs/graphics/particle/GenericTextureParticle":
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/GenericTextureParticle");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/GenericTextureParticle");
                 return transformer;
             case "com/fs/graphics/particle/DynamicParticleGroup":
                 transformer.removeMethod("size", "()I");
@@ -208,7 +208,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("advance", "(F)V");
                 transformer.removeMethod("isEmpty", "()Z");
                 transformer.removeMethod("getParticles", "()Ljava/util/List;");
-                transformer.mergeClass("com/genir/renderer/overrides/render/DynamicParticleGroup");
+                transformer.mergeClass("com/genir/renderer/overrides/render/particle/DynamicParticleGroup");
                 return transformer;
             default:
                 return null;
@@ -225,33 +225,33 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-            case "com/genir/renderer/overrides/render/SmoothParticle":
+            case "com/genir/renderer/overrides/render/particle/SmoothParticle":
                 transformer = new BytecodeTransformer("com/fs/graphics/particle/SmoothParticle");
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-            case "com/genir/renderer/overrides/render/NebulaParticle":
+            case "com/genir/renderer/overrides/render/particle/NebulaParticle":
                 transformer = new BytecodeTransformer("com/fs/graphics/particle/NebulaParticle");
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-            case "com/genir/renderer/overrides/render/DetailedSmokeParticle":
+            case "com/genir/renderer/overrides/render/particle/DetailedSmokeParticle":
                 transformer = new BytecodeTransformer("com/fs/starfarer/renderers/fx/DetailedSmokeParticle");
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-            case "com/genir/renderer/overrides/render/ContrailParticle":
+            case "com/genir/renderer/overrides/render/particle/ContrailParticle":
                 transformer = new BytecodeTransformer("com/fs/starfarer/combat/entities/ContrailParticle");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-            case "com/genir/renderer/overrides/render/DynamicParticleGroup":
+            case "com/genir/renderer/overrides/render/particle/DynamicParticleGroup":
                 transformer = new BytecodeTransformer("com/fs/graphics/particle/DynamicParticleGroup");
                 transformer.removeMethod("size", "()I");
                 transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
@@ -261,7 +261,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("getParticles", "()Ljava/util/List;");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-            case "com/genir/renderer/overrides/render/BaseParticle":
+            case "com/genir/renderer/overrides/render/particle/BaseParticle":
                 transformer = new BytecodeTransformer("com/fs/graphics/particle/BaseParticle");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;

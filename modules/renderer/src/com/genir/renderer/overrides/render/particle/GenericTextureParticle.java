@@ -1,28 +1,26 @@
-package com.genir.renderer.overrides.render;
+package com.genir.renderer.overrides.render.particle;
 
 import com.fs.graphics.TextureHandler;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
 /**
- * OVERRIDES com.fs.graphics.particle.NebulaParticle
+ * OVERRIDES com.fs.graphics.particle.GenericTextureParticle
  */
-public class NebulaParticle extends BaseParticle {
+public class GenericTextureParticle extends BaseParticle {
     /**
      * STUBS
      */
-    private transient TextureHandler texture;
     private Color color;
+    private transient TextureHandler texture;
     boolean fullyFadedIn;
     private float fullBrightnessFraction;
     private int src;
     private int dst;
-    private boolean negative;
-    private int i;
-    private int j;
-    private int w;
+    private float tw;
+    private float th;
+    private int renderCount;
     private float offsetX;
     private float offsetY;
     private float width;
@@ -34,10 +32,6 @@ public class NebulaParticle extends BaseParticle {
     @Override
     public void preBatch() {
         super.initBatch();
-
-        if (this.negative) {
-            com.genir.renderer.bridge.commands.GL14.glBlendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
-        }
 
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
@@ -53,17 +47,17 @@ public class NebulaParticle extends BaseParticle {
      */
     @Override
     public void render() {
-        super.resizeArrays(numParticles + 1);
+        super.resizeArrays(numParticles + renderCount);
 
-        super.setParticleColor(color, calculateBrightness());
+        float brightness = calculateBrightness();
 
-        float size = w == 2 ? 0.5F : 0.25F;
-        float s = (float) i * size;
-        float t = (float) j * size;
-
-        super.setParticleTex(s, t, size, size);
         super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
-        super.setParticleVertices(offsetX, offsetY, width, height);
+
+        for (int i = 0; i < renderCount; i++) {
+            super.setParticleColor(color, brightness);
+            super.setParticleTex(0, 0, tw, th);
+            super.setParticleVertices(offsetX + (float) i, offsetY, width, height);
+        }
 
         numParticles++;
     }
@@ -76,10 +70,6 @@ public class NebulaParticle extends BaseParticle {
         super.drawArrays();
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-        if (this.negative) {
-            com.genir.renderer.bridge.commands.GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-        }
     }
 
     /**

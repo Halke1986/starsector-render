@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.render;
+package com.genir.renderer.overrides.render.particle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
