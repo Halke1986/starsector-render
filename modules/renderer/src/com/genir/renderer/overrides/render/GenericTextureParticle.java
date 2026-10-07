@@ -29,6 +29,7 @@ public class GenericTextureParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void preBatch() {
         super.initBatch();
 
@@ -44,6 +45,7 @@ public class GenericTextureParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void render() {
         super.resizeArrays(numParticles + renderCount);
 
@@ -63,6 +65,7 @@ public class GenericTextureParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void postBatch() {
         super.drawArrays();
 

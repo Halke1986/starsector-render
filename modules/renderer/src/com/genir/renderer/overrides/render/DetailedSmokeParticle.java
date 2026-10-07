@@ -21,6 +21,7 @@ public class DetailedSmokeParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void preBatch() {
         super.initBatch();
 
@@ -33,6 +34,10 @@ public class DetailedSmokeParticle extends BaseParticle {
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
 
+    /**
+     * REPLACED METHOD
+     */
+    @Override
     public void render() {
         super.resizeArrays(numParticles + 1);
 
@@ -47,6 +52,7 @@ public class DetailedSmokeParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void postBatch() {
         super.drawArrays();
 

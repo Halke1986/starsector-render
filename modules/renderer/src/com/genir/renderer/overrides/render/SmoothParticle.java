@@ -22,6 +22,7 @@ public class SmoothParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void preBatch() {
         super.initBatch();
 
@@ -38,6 +39,7 @@ public class SmoothParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void render() {
         // Particle is too dark to be rendered.
         if (this.getBrightnessOverride() == 0.0F || this.getBrightnessMult() == 0.0F) {
@@ -47,7 +49,6 @@ public class SmoothParticle extends BaseParticle {
         // Resize vertex arrays.
         super.resizeArrays(numParticles + 1);
 
-        // TODO Optimize.
         super.setParticleColor(color, this.getBrightness());
         super.setParticleTex(0f, 0f, 1f, 1f);
         super.setParticleTransformation(this.getX(), this.getY(), 0);
@@ -59,6 +60,7 @@ public class SmoothParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void postBatch() {
         super.drawArrays();
 

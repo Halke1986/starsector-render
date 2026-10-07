@@ -31,6 +31,7 @@ public class NebulaParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void preBatch() {
         super.initBatch();
 
@@ -50,6 +51,7 @@ public class NebulaParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void render() {
         super.resizeArrays(numParticles + 1);
 
@@ -69,6 +71,7 @@ public class NebulaParticle extends BaseParticle {
     /**
      * REPLACED METHOD
      */
+    @Override
     public void postBatch() {
         super.drawArrays();
 

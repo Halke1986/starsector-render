@@ -14,7 +14,7 @@ import java.util.Arrays;
 /**
  * OVERRIDES com.fs.graphics.particle.BaseParticle
  */
-public class BaseParticle {
+public abstract class BaseParticle {
     /**
      * ADDED FIELDS
      */
@@ -28,6 +28,21 @@ public class BaseParticle {
 
     private static Matrix m;
     protected static int numParticles;
+
+    /**
+     * STUB
+     */
+    public abstract void preBatch();
+
+    /**
+     * STUB
+     */
+    public abstract void postBatch();
+
+    /**
+     * STUB
+     */
+    public abstract void render();
 
     /**
      * STUB

@@ -179,8 +179,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
             entry("com/genir/renderer/overrides/render/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
             entry("com/genir/renderer/overrides/render/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
-            entry("com/genir/renderer/overrides/render/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle")
-//            entry("com/genir/renderer/overrides/render/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
+            entry("com/genir/renderer/overrides/render/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
+            entry("com/genir/renderer/overrides/render/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
