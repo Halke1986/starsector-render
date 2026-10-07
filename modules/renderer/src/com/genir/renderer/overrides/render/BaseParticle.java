@@ -1,7 +1,5 @@
 package com.genir.renderer.overrides.render;
 
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -10,6 +8,8 @@ import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+
+import static java.lang.Math.cos;
 
 /**
  * OVERRIDES com.fs.graphics.particle.BaseParticle
@@ -28,6 +28,9 @@ public abstract class BaseParticle {
 
     private static Matrix m;
     protected static int numParticles;
+
+    private static float groupPosX;
+    private static float groupPosY;
 
     /**
      * STUB
@@ -169,13 +172,27 @@ public abstract class BaseParticle {
     }
 
     protected void setParticleTransformation(float posX, float posY, float angle) {
-        final Context context = ContextManager.getThreadContext();
+        // Optimized equivalent of:
+        // m.setIdentify()
+        // m.translate(posX + groupPosX, posY + groupPosY, 0);
+        // m.rotate(angle, 0, 0, 1);
 
-        m.set(context.matrixTracker.getModelView());
-        m.translate(posX, posY, 0);
+        float c = 1;
+        float s = 0;
+
         if (angle != 0) {
-            m.rotate(angle, 0, 0, 1);
+            float a = angle * (float) (Math.PI / 180);
+            c = (float) cos(a);
+            s = (float) Math.sin(a);
         }
+
+        m.m00 = c;
+        m.m01 = -s;
+        m.m03 = posX + groupPosX;
+
+        m.m10 = s;
+        m.m11 = c;
+        m.m13 = posY + groupPosY;
     }
 
     protected void setParticleVertices(float x, float y, float dx, float dy) {
@@ -221,5 +238,10 @@ public abstract class BaseParticle {
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+    }
+
+    public void setParticleGroupPosition(float posX, float posY) {
+        groupPosX = posX;
+        groupPosY = posY;
     }
 }

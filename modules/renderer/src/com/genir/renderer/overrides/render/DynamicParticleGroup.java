@@ -1,7 +1,5 @@
 package com.genir.renderer.overrides.render;
 
-import org.lwjgl.opengl.GL11;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -20,10 +18,11 @@ public class DynamicParticleGroup {
      */
     public void render(float posX, float posY) {
         if (!this.particles.isEmpty()) {
-            BaseParticle var3 = (BaseParticle) this.particles.get(0);
-            com.genir.renderer.bridge.commands.GL11.glPushMatrix();
-            com.genir.renderer.bridge.commands.GL11.glTranslatef(posX, posY, 0.0F);
-            var3.preBatch();
+            BaseParticle first = (BaseParticle) this.particles.get(0);
+
+            first.setParticleGroupPosition(posX, posY);
+            first.preBatch();
+
             Iterator var5 = this.particles.iterator();
 
             while (var5.hasNext()) {
@@ -31,9 +30,7 @@ public class DynamicParticleGroup {
                 var4.render();
             }
 
-            var3.postBatch();
-            com.genir.renderer.bridge.commands.GL11.glTranslatef(-posX, -posY, 0.0F);
-            com.genir.renderer.bridge.commands.GL11.glPopMatrix();
+            first.postBatch();
         }
     }
 
