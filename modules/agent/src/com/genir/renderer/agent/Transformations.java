@@ -135,6 +135,7 @@ public class Transformations {
             entry("Rendering_begin", "return"),
             entry("Rendering_setupProjection", "o00000"),
             entry("Rendering_end", "Õ00000"),
+            entry("StarField_removeParticles", "o00000"),
 
             // Fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -147,7 +148,12 @@ public class Transformations {
             entry("CombatEngine_hitParticlesGroup", "OÔ0000"),
             entry("HullSpecStore_hulls", "o00000"),
             entry("WeaponSpecStore_weapons", "new"),
-            entry("WeaponSpecStore_projectiles", "o00000")
+            entry("WeaponSpecStore_projectiles", "o00000"),
+            entry("StarField_viewport", "Õ00000"),
+            entry("StarFieldViewport_x", "Ó00000"),
+            entry("StarFieldViewport_y", "class"),
+            entry("StarFieldViewport_width", "Ô00000"),
+            entry("StarFieldViewport_height", "new")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -180,7 +186,9 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/particle/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
             entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
             entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
-            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
+            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
+            entry("com/genir/renderer/overrides/StarField", "com/fs/starfarer/combat/OOOo"),
+            entry("com/genir/renderer/overrides/StarField$StarFieldViewport", "com/fs/starfarer/combat/OOOo$o")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(

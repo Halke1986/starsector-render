@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.render.particle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * OVERRIDES com.fs.graphics.particle.DynamicParticleGroup
@@ -18,7 +19,6 @@ public class DynamicParticleGroup {
     /**
      * ADDED FIELDS
      */
-    private ArrayList<BaseParticle> particlesArrayList;
     private BaseParticle[] particlesArray;
     private int particlesNum;
 
@@ -38,19 +38,10 @@ public class DynamicParticleGroup {
     /**
      * ADDED METHOD
      */
-    private void syncState() {
+    private void init() {
         if (particlesArray == null) {
-            if (particlesArrayList == null || particlesArrayList.isEmpty()) {
-                // First init.
-                particlesArray = new BaseParticle[1];
-                particlesNum = 0;
-            } else {
-                // Sync state after external operations on a list.
-                particlesArray = particlesArrayList.toArray(new BaseParticle[0]);
-                particlesNum = particlesArrayList.size();
-            }
-
-            particlesArrayList = null;
+            particlesArray = new BaseParticle[1];
+            particlesNum = 0;
         }
     }
 
@@ -58,7 +49,6 @@ public class DynamicParticleGroup {
      * REPLACED METHOD
      */
     public int size() {
-        syncState();
         return particlesNum;
     }
 
@@ -66,7 +56,7 @@ public class DynamicParticleGroup {
      * REPLACED METHOD
      */
     public void add(BaseParticle particle) {
-        syncState();
+        init();
 
         if (particlesArray.length == particlesNum) {
             particlesArray = Arrays.copyOf(particlesArray, particlesArray.length * 2);
@@ -78,10 +68,11 @@ public class DynamicParticleGroup {
     }
 
     public void advance(float dt) {
-        syncState();
+        if (particlesNum == 0) {
+            return;
+        }
 
         int pos = 0;
-
         while (pos < particlesNum) {
             BaseParticle particle = particlesArray[pos];
             particle.advance(dt);
@@ -101,8 +92,6 @@ public class DynamicParticleGroup {
      * REPLACED METHOD
      */
     public void render(float posX, float posY) {
-        syncState();
-
         if (particlesNum == 0) {
             return;
         }
@@ -123,22 +112,41 @@ public class DynamicParticleGroup {
      * REPLACED METHOD
      */
     public boolean isEmpty() {
-        syncState();
-
         return particlesNum == 0;
     }
 
     /**
      * REPLACED METHOD
+     * <p>
+     * NOTE: Returns a copy of the particle array. Ensure no vanilla
+     * method attempts to change the contents of the arrays, as the
+     * changes will not be reflected in DynamicParticleGroup.
      */
-    // TODO remove sync
     public List<BaseParticle> getParticles() {
         BaseParticle[] notNullArray = Arrays.copyOf(particlesArray, particlesNum);
-        particlesArrayList = new ArrayList<>(Arrays.asList(notNullArray));
+        return new ArrayList<>(Arrays.asList(notNullArray));
+    }
 
-        particlesArray = null;
-        particlesNum = 0;
+    /**
+     * ADDED METHOD
+     * <p>
+     * Removes particles matching the predicate.
+     */
+    public void filter(Predicate<BaseParticle> p) {
+        if (particlesNum == 0) {
+            return;
+        }
 
-        return particlesArrayList;
+        int pos = 0;
+        while (pos < particlesNum) {
+            if (p.test(particlesArray[pos])) {
+                // Compact the particle array.
+                particlesArray[pos] = particlesArray[particlesNum - 1];
+                particlesArray[particlesNum - 1] = null;
+                particlesNum--;
+            } else {
+                pos++;
+            }
+        }
     }
 }
