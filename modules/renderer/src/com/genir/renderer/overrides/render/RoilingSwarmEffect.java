@@ -29,11 +29,8 @@ public class RoilingSwarmEffect {
      * REPLACED METHOD
      */
     public void render(CombatEngineLayers layer, ViewportAPI viewport) {
-        // Vanilla uses only true value for renderFlashOnSameLayer.
-//        asert(params.renderFlashOnSameLayer);
-
-//        breakpoint();
-
+        // params.renderFlashOnSameLayer is ignored and the entire
+        // swarm is rendered on the fighter layer.
         if (layer != CombatEngineLayers.FIGHTERS_LAYER) {
             return;
         }
@@ -51,34 +48,32 @@ public class RoilingSwarmEffect {
         Color color = params.color;
         members.get(0).sprite.bindTexture();
 
-        for (com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect.SwarmMember p : members) {
-            float size = params.baseSpriteSize;
-            size *= p.scale * p.fader.getBrightness();
+        SpriteAPI glowSprite = Global.getSettings().getSprite("misc", "threat_swarm_glow");
+        glowSprite.setAdditiveBlend();
 
-            float b = p.fader.getBrightness();
+        for (com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect.SwarmMember p : members) {
+            float brightness = p.fader.getBrightness();
+            float size = params.baseSpriteSize * p.scale * brightness;
+            float glow = getGlowForMember(p);
 
             p.sprite.setAngle(p.angle);
             p.sprite.setSize(size, size);
-            p.sprite.setAlphaMult(alphaMult * b * params.alphaMultBase);
+            p.sprite.setAlphaMult(alphaMult * brightness * params.alphaMultBase);
             p.sprite.setColor(color);
             p.sprite.renderAtCenterNoBind(p.loc.x, p.loc.y);
 
-            float glow = getGlowForMember(p);
             if (glow > 0 && params.flashCoreRadiusMult <= 0f) {
-                p.sprite.setAlphaMult(alphaMult * b * glow * params.alphaMultFlash);
+                p.sprite.setAlphaMult(alphaMult * brightness * glow * params.alphaMultFlash);
                 p.sprite.setColor(params.flashCoreColor);
                 p.sprite.setAdditiveBlend();
-                //p.sprite.setNormalBlend();
                 p.sprite.renderAtCenter(p.loc.x, p.loc.y);
                 p.sprite.setNormalBlend();
             }
         }
 
-        SpriteAPI glowSprite = Global.getSettings().getSprite("misc", "threat_swarm_glow");
-        glowSprite.setAdditiveBlend();
-
         for (com.fs.starfarer.api.impl.combat.threat.RoilingSwarmEffect.SwarmMember p : members) {
             float glow = getGlowForMember(p);
+
             if (glow > 0f) {
                 float size = params.flashRadius * (0.5f + 0.5f * glow) * 2f;
                 size *= p.scale * p.fader.getBrightness();
