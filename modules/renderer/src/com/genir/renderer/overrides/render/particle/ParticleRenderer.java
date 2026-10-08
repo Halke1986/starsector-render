@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import static java.lang.Math.cos;
-
 public class ParticleRenderer {
     private byte[] colorScratchpad = new byte[16];
     private float[] texScratchpad = new float[8];
@@ -88,7 +86,7 @@ public class ParticleRenderer {
 
         if (angle != 0) {
             float a = angle * (float) (Math.PI / 180);
-            c = (float) cos(a);
+            c = (float) Math.cos(a);
             s = (float) Math.sin(a);
         }
 
