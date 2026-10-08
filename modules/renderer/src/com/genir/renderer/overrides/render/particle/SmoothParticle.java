@@ -63,7 +63,7 @@ public class SmoothParticle extends BaseParticle {
      */
     @Override
     public void postBatch() {
-        renderer.drawArrays();
+        renderer.render();
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }

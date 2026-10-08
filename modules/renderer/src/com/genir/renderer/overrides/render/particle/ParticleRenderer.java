@@ -4,16 +4,15 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 public class ParticleRenderer {
-    private byte[] colorScratchpad = new byte[16];
+    private float[] colorScratchpad = new float[16];
     private float[] texScratchpad = new float[8];
     private float[] vertexScratchpad = new float[8];
 
-    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(16);
+    private FloatBuffer colorPointer = BufferUtils.createFloatBuffer(16);
     private FloatBuffer texCoordPointer = BufferUtils.createFloatBuffer(8);
     private FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(8);
 
@@ -34,31 +33,34 @@ public class ParticleRenderer {
         }
     }
 
-    public void setColor(Color color, float brightness) {
-        setColor((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getAlpha(), brightness);
+    public void setColor(Color color, float alphaMult) {
+        setColor(
+                color.getRed() / 255f,
+                color.getGreen() / 255f,
+                color.getBlue() / 255f,
+                (color.getAlpha() / 255f) * alphaMult
+        );
     }
 
-    public void setColor(byte r, byte g, byte b, byte a, float brightness) {
-        byte am = (byte) (byte) ((int) ((float) a * brightness));
-
+    public void setColor(float r, float g, float b, float a) {
         int c = (numParticles - 1) * 16;
 
         colorScratchpad[c + 0] = r;
         colorScratchpad[c + 1] = g;
         colorScratchpad[c + 2] = b;
-        colorScratchpad[c + 3] = am;
+        colorScratchpad[c + 3] = a;
         colorScratchpad[c + 4] = r;
         colorScratchpad[c + 5] = g;
         colorScratchpad[c + 6] = b;
-        colorScratchpad[c + 7] = am;
+        colorScratchpad[c + 7] = a;
         colorScratchpad[c + 8] = r;
         colorScratchpad[c + 9] = g;
         colorScratchpad[c + 10] = b;
-        colorScratchpad[c + 11] = am;
+        colorScratchpad[c + 11] = a;
         colorScratchpad[c + 12] = r;
         colorScratchpad[c + 13] = g;
         colorScratchpad[c + 14] = b;
-        colorScratchpad[c + 15] = am;
+        colorScratchpad[c + 15] = a;
     }
 
     public void setTexture(float texX, float texY, float texWidth, float texHeight) {
@@ -113,11 +115,11 @@ public class ParticleRenderer {
         vertexScratchpad[v + 7] = w * m10 + m13;
     }
 
-    public void drawArrays() {
+    public void render() {
         if (vertexPointer.capacity() < vertexScratchpad.length) {
             vertexPointer = BufferUtils.createFloatBuffer(vertexScratchpad.length);
             texCoordPointer = BufferUtils.createFloatBuffer(texScratchpad.length);
-            colorPointer = BufferUtils.createByteBuffer(colorScratchpad.length);
+            colorPointer = BufferUtils.createFloatBuffer(colorScratchpad.length);
         }
 
         vertexPointer.put(0, vertexScratchpad, 0, numParticles * 8);
@@ -130,7 +132,7 @@ public class ParticleRenderer {
 
         com.genir.renderer.bridge.commands.GL11.glVertexPointer(2, 0, vertexPointer);
         com.genir.renderer.bridge.commands.GL11.glTexCoordPointer(2, 0, texCoordPointer);
-        com.genir.renderer.bridge.commands.GL11.glColorPointer(4, true, 0, colorPointer);
+        com.genir.renderer.bridge.commands.GL11.glColorPointer(4, 0, colorPointer);
 
         // Particle transformation is handled on the CPU.
         com.genir.renderer.bridge.commands.GL11.glPushMatrix();
