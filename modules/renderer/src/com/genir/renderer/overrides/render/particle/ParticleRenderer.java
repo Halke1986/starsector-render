@@ -21,14 +21,6 @@ public class ParticleRenderer {
 
     private int numParticles = 0;
 
-    // Transformation matrix excerpt.
-    float m00 = 1;
-    float m01 = 0;
-    float m03 = 0;
-    float m10 = 0;
-    float m11 = 1;
-    float m13 = 0;
-
     public void clear() {
         numParticles = 0;
     }
@@ -83,11 +75,12 @@ public class ParticleRenderer {
         texScratchpad[v + 7] = t;
     }
 
-    public void setTransformation(float posX, float posY, float angle) {
-        // Optimized equivalent of:
-        // m.setIdentify()
-        // m.translate(posX, posY, 0);
+    public void setVertices(float centerX, float centerY, float angle, float w, float h) {
+        // Optimized equivalent of rotate at center and translate:
+        // m.setIdentity()
+        // m.translate(centerX + width/2, centerY + height/2, 0);
         // m.rotate(angle, 0, 0, 1);
+        // m.translate(- width/2, - height/2, 0);
 
         float c = 1;
         float s = 0;
@@ -98,26 +91,27 @@ public class ParticleRenderer {
             s = (float) Math.sin(a);
         }
 
-        m00 = c;
-        m01 = -s;
-        m03 = posX;
+        float w2 = w / 2;
+        float h2 = h / 2;
 
-        m10 = s;
-        m11 = c;
-        m13 = posY;
-    }
+        float m00 = c;
+        float m01 = -s;
+        float m03 = (-w2 * c) + (h2 * s) + (centerX + w2);
 
-    public void setVertices(float x, float y, float w, float h) {
+        float m10 = s;
+        float m11 = c;
+        float m13 = (-w2 * s) - (h2 * c) + (centerY + h2);
+
         int v = (numParticles - 1) * 8;
 
-        vertexScratchpad[v + 0] = x * m00 + y * m01 + m03;
-        vertexScratchpad[v + 1] = x * m10 + y * m11 + m13;
-        vertexScratchpad[v + 2] = x * m00 + (y + h) * m01 + m03;
-        vertexScratchpad[v + 3] = x * m10 + (y + h) * m11 + m13;
-        vertexScratchpad[v + 4] = (x + w) * m00 + (y + h) * m01 + m03;
-        vertexScratchpad[v + 5] = (x + w) * m10 + (y + h) * m11 + m13;
-        vertexScratchpad[v + 6] = (x + w) * m00 + y * m01 + m03;
-        vertexScratchpad[v + 7] = (x + w) * m10 + y * m11 + m13;
+        vertexScratchpad[v + 0] = m03;
+        vertexScratchpad[v + 1] = m13;
+        vertexScratchpad[v + 2] = h * m01 + m03;
+        vertexScratchpad[v + 3] = h * m11 + m13;
+        vertexScratchpad[v + 4] = w * m00 + h * m01 + m03;
+        vertexScratchpad[v + 5] = w * m10 + h * m11 + m13;
+        vertexScratchpad[v + 6] = w * m00 + m03;
+        vertexScratchpad[v + 7] = w * m10 + m13;
     }
 
     public void drawArrays() {

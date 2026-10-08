@@ -15,8 +15,6 @@ public class DetailedSmokeParticle extends BaseParticle {
     private static TextureHandler texture;
     private Color color;
     private float size;
-    private float offsetX;
-    private float offsetY;
 
     /**
      * REPLACED METHOD
@@ -43,8 +41,7 @@ public class DetailedSmokeParticle extends BaseParticle {
 
         renderer.setColor(color, this.getBrightness());
         renderer.setTexture(0f, 0f, 1f, 1f);
-        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle());
-        renderer.setVertices(offsetX, offsetY, size, size);
+        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), size, size);
     }
 
     /**

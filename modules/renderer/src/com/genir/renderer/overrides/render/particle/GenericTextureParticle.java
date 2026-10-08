@@ -21,8 +21,6 @@ public class GenericTextureParticle extends BaseParticle {
     private float tw;
     private float th;
     private int renderCount;
-    private float offsetX;
-    private float offsetY;
     private float width;
     private float height;
 
@@ -49,13 +47,11 @@ public class GenericTextureParticle extends BaseParticle {
     public void render() {
         float brightness = calculateBrightness();
 
-        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle());
-
         for (int i = 0; i < renderCount; i++) {
             renderer.beginNewParticle();
             renderer.setColor(color, brightness);
             renderer.setTexture(0, 0, tw, th);
-            renderer.setVertices(offsetX + (float) i, offsetY, width, height);
+            renderer.setVertices(this.getX() + groupPosX + (float) i, this.getY() + groupPosY, this.getAngle(), width, height);
         }
     }
 

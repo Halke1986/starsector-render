@@ -23,8 +23,6 @@ public class NebulaParticle extends BaseParticle {
     private int i;
     private int j;
     private int w;
-    private float offsetX;
-    private float offsetY;
     private float width;
     private float height;
 
@@ -60,8 +58,7 @@ public class NebulaParticle extends BaseParticle {
         renderer.beginNewParticle();
         renderer.setColor(color, calculateBrightness());
         renderer.setTexture(s, t, size, size);
-        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle());
-        renderer.setVertices(offsetX, offsetY, width, height);
+        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), width, height);
     }
 
     /**

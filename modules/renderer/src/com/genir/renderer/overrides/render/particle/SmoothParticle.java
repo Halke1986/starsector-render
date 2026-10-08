@@ -15,8 +15,6 @@ public class SmoothParticle extends BaseParticle {
     private Color color;
     private static TextureHandler texture;
     private TextureHandler override;
-    private float offsetX;
-    private float offsetY;
     private float size;
 
     /**
@@ -57,8 +55,7 @@ public class SmoothParticle extends BaseParticle {
 
         renderer.setColor(color, this.getBrightness());
         renderer.setTexture(0f, 0f, 1f, 1f);
-        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, 0);
-        renderer.setVertices(offsetX, offsetY, size, size);
+        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, 0, size, size);
     }
 
     /**
