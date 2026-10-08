@@ -23,7 +23,7 @@ public class DetailedSmokeParticle extends BaseParticle {
      */
     @Override
     public void preBatch() {
-        super.initBatch();
+        renderer.clear();
 
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
@@ -39,14 +39,12 @@ public class DetailedSmokeParticle extends BaseParticle {
      */
     @Override
     public void render() {
-        super.resizeArrays(numParticles + 1);
+        renderer.beginNewParticle();
 
-        super.setParticleColor(color, this.getBrightness());
-        super.setParticleTex(0f, 0f, 1f, 1f);
-        super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
-        super.setParticleVertices(offsetX, offsetY, size, size);
-
-        numParticles++;
+        renderer.setColor(color, this.getBrightness());
+        renderer.setTexture(0f, 0f, 1f, 1f);
+        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle());
+        renderer.setVertices(offsetX, offsetY, size, size);
     }
 
     /**
@@ -54,7 +52,7 @@ public class DetailedSmokeParticle extends BaseParticle {
      */
     @Override
     public void postBatch() {
-        super.drawArrays();
+        renderer.drawArrays();
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }

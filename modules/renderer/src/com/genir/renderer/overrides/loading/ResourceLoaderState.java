@@ -28,6 +28,7 @@ import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import com.genir.renderer.overrides.loading.textures.TextureRepository;
+import com.genir.renderer.overrides.render.particle.BaseParticle;
 import com.genir.renderer.overrides.render.particle.SmoothParticle;
 
 import java.awt.*;
@@ -218,9 +219,10 @@ public class ResourceLoaderState {
 
         // Initialize Fast Rendering functionality.
         final Context context = ContextManager.getThreadContext();
+
+        BaseParticle.initStatic();
         context.stallDetector.enableDetection();
         GameState.gameInitialized = true;
-        ContextManager.getThreadContext().stallDetector.enableDetection();
         FileLoader.FileLoader_getInstance().initGameplay();
         context.textureManager.assetLoadingFinished();
         if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {

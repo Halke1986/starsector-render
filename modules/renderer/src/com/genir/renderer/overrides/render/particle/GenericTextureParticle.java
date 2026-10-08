@@ -31,7 +31,7 @@ public class GenericTextureParticle extends BaseParticle {
      */
     @Override
     public void preBatch() {
-        super.initBatch();
+        renderer.clear();
 
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
@@ -47,19 +47,16 @@ public class GenericTextureParticle extends BaseParticle {
      */
     @Override
     public void render() {
-        super.resizeArrays(numParticles + renderCount);
-
         float brightness = calculateBrightness();
 
-        super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
+        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle());
 
         for (int i = 0; i < renderCount; i++) {
-            super.setParticleColor(color, brightness);
-            super.setParticleTex(0, 0, tw, th);
-            super.setParticleVertices(offsetX + (float) i, offsetY, width, height);
+            renderer.beginNewParticle();
+            renderer.setColor(color, brightness);
+            renderer.setTexture(0, 0, tw, th);
+            renderer.setVertices(offsetX + (float) i, offsetY, width, height);
         }
-
-        numParticles++;
     }
 
     /**
@@ -67,7 +64,7 @@ public class GenericTextureParticle extends BaseParticle {
      */
     @Override
     public void postBatch() {
-        super.drawArrays();
+        renderer.drawArrays();
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }

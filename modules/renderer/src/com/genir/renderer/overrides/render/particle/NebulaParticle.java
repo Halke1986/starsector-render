@@ -33,7 +33,7 @@ public class NebulaParticle extends BaseParticle {
      */
     @Override
     public void preBatch() {
-        super.initBatch();
+        renderer.clear();
 
         if (this.negative) {
             com.genir.renderer.bridge.commands.GL14.glBlendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
@@ -53,19 +53,15 @@ public class NebulaParticle extends BaseParticle {
      */
     @Override
     public void render() {
-        super.resizeArrays(numParticles + 1);
-
-        super.setParticleColor(color, calculateBrightness());
-
         float size = w == 2 ? 0.5F : 0.25F;
         float s = (float) i * size;
         float t = (float) j * size;
 
-        super.setParticleTex(s, t, size, size);
-        super.setParticleTransformation(this.getX(), this.getY(), this.getAngle());
-        super.setParticleVertices(offsetX, offsetY, width, height);
-
-        numParticles++;
+        renderer.beginNewParticle();
+        renderer.setColor(color, calculateBrightness());
+        renderer.setTexture(s, t, size, size);
+        renderer.setTransformation(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle());
+        renderer.setVertices(offsetX, offsetY, width, height);
     }
 
     /**
@@ -73,7 +69,7 @@ public class NebulaParticle extends BaseParticle {
      */
     @Override
     public void postBatch() {
-        super.drawArrays();
+        renderer.drawArrays();
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
 
