@@ -37,42 +37,43 @@ public class ParticleRenderer {
     }
 
     public void setColor(Color color, float brightness) {
-        byte r = (byte) (byte) color.getRed();
-        byte g = (byte) (byte) color.getGreen();
-        byte b = (byte) (byte) color.getBlue();
-        byte a = (byte) (byte) ((int) ((float) color.getAlpha() * brightness));
+        setColor((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getAlpha(), brightness);
+    }
+
+    public void setColor(byte r, byte g, byte b, byte a, float brightness) {
+        byte am = (byte) (byte) ((int) ((float) a * brightness));
 
         int c = (numParticles - 1) * 16;
 
         colorScratchpad[c + 0] = r;
         colorScratchpad[c + 1] = g;
         colorScratchpad[c + 2] = b;
-        colorScratchpad[c + 3] = a;
+        colorScratchpad[c + 3] = am;
         colorScratchpad[c + 4] = r;
         colorScratchpad[c + 5] = g;
         colorScratchpad[c + 6] = b;
-        colorScratchpad[c + 7] = a;
+        colorScratchpad[c + 7] = am;
         colorScratchpad[c + 8] = r;
         colorScratchpad[c + 9] = g;
         colorScratchpad[c + 10] = b;
-        colorScratchpad[c + 11] = a;
+        colorScratchpad[c + 11] = am;
         colorScratchpad[c + 12] = r;
         colorScratchpad[c + 13] = g;
         colorScratchpad[c + 14] = b;
-        colorScratchpad[c + 15] = a;
+        colorScratchpad[c + 15] = am;
     }
 
-    public void setTexture(float s, float t, float ds, float dt) {
+    public void setTexture(float texX, float texY, float texWidth, float texHeight) {
         int v = (numParticles - 1) * 8;
 
-        texScratchpad[v + 0] = s;
-        texScratchpad[v + 1] = t;
-        texScratchpad[v + 2] = s;
-        texScratchpad[v + 3] = t + dt;
-        texScratchpad[v + 4] = s + ds;
-        texScratchpad[v + 5] = t + dt;
-        texScratchpad[v + 6] = s + ds;
-        texScratchpad[v + 7] = t;
+        texScratchpad[v + 0] = texX;
+        texScratchpad[v + 1] = texY;
+        texScratchpad[v + 2] = texX;
+        texScratchpad[v + 3] = texY + texHeight;
+        texScratchpad[v + 4] = texX + texWidth;
+        texScratchpad[v + 5] = texY + texHeight;
+        texScratchpad[v + 6] = texX + texWidth;
+        texScratchpad[v + 7] = texY;
     }
 
     public void setVertices(float centerX, float centerY, float angle, float w, float h) {
