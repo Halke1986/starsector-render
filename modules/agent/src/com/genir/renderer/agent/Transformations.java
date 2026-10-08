@@ -191,7 +191,8 @@ public class Transformations {
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
-//            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite")
+//            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite"),
+//            entry("com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect", "com/genir/renderer/overrides/render/RoilingSwarmEffect")
 //            entry("com/fs/graphics/particle/SmoothParticle", "com/genir/renderer/overrides/render/particle/SmoothParticle"),
 //            entry("com/fs/graphics/particle/DynamicParticleGroup", "com/genir/renderer/overrides/render/particle/DynamicParticleGroup"),
 //            entry("com/fs/graphics/particle/BaseParticle", "com/genir/renderer/overrides/render/particle/BaseParticle")

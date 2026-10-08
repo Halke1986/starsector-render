@@ -6,8 +6,6 @@ import com.genir.renderer.bridge.context.ContextManager;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
-import static java.util.Map.entry;
-
 public class BytecodeFileTransformer implements ClassFileTransformer {
     private static Throwable deferedThrowable = null;
 
@@ -267,7 +265,12 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer = new BytecodeTransformer("com/fs/graphics/particle/BaseParticle");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
-
+            case "com/genir/renderer/overrides/render/RoilingSwarmEffect":
+                transformer = new BytecodeTransformer("com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect");
+                transformer.removeMethod("getNumActiveMembers", "()I");
+                transformer.removeMethod("render", "(Lcom/fs/starfarer/api/combat/CombatEngineLayers;Lcom/fs/starfarer/api/combat/ViewportAPI;)V");
+                transformer.mergeClass(className, donorBytes);
+                return transformer;
             default:
                 return null;
         }
