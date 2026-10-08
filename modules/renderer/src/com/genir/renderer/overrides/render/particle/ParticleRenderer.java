@@ -75,9 +75,9 @@ public class ParticleRenderer {
     }
 
     public void setVertices(float centerX, float centerY, float angle, float w, float h) {
-        // Optimized equivalent of rotate at center and translate:
+        // Optimized equivalent of: achor at center, rotate and translate:
         // m.setIdentity()
-        // m.translate(centerX + width/2, centerY + height/2, 0);
+        // m.translate(centerX, centerY, 0);
         // m.rotate(angle, 0, 0, 1);
         // m.translate(- width/2, - height/2, 0);
 
@@ -95,11 +95,11 @@ public class ParticleRenderer {
 
         float m00 = c;
         float m01 = -s;
-        float m03 = (-w2 * c) + (h2 * s) + (centerX + w2);
+        float m03 = (-w2 * c) + (h2 * s) + centerX;
 
         float m10 = s;
         float m11 = c;
-        float m13 = (-w2 * s) - (h2 * c) + (centerY + h2);
+        float m13 = (-w2 * s) - (h2 * c) + centerY;
 
         int v = (numParticles - 1) * 8;
 
