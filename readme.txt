@@ -1,15 +1,14 @@
 STARSECTOR PERFORMANCE OVERHAUL
 
-- Improved framerate, especially on lower-end GPUs.
+- Improved framerate and animation smoothness, especially on lower-end GPUs.
 - Improved game loading speed.
 
 BUGFIXES AND IMPROVEMENTS TO VANILLA GAME ENGINE
 
 - Fixed multiple race conditions that could cause random crashes at game startup.
-- Fixed an issue where enemy ships were deployed progressively from smallest to largest.
 - Fixed an XStream issue that could cause freezes during game saving.
 - Fixed all instances of background flickering when saving and loading the game.
-- Improved animation smoothness by increasing frame duration resolution from milliseconds to microseconds.
+- Fixed an issue where enemy ships were deployed progressively from smallest to largest.
 
 REQUIREMENTS
 
@@ -24,6 +23,11 @@ INCOMPATIBLE MODS
 
 - BoxUtil 1.6.0 and later.
 - Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
+
+BYTECODE MODIFICATION DISCLOSURE
+
+- Fast Rendering modifies the bytecode of Starsector, the LWJGL and XStream libraries, and any script that calls OpenGL methods.
+- These modifications are performed using a Java agent, the ObjectWeb ASM library, and custom bytecode transformation code.
 
 INSTALLATION
 
