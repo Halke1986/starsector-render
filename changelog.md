@@ -1,3 +1,5 @@
+v0.9.2rc1
+
 - Optimized particle rendering.
 
 v0.9.1
