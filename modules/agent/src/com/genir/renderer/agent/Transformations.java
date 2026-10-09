@@ -173,7 +173,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
             entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", "com/fs/starfarer/loading/ResourceLoaderState$o"),
             entry("com/genir/renderer/overrides/loading/textures/TextureRepository", "com/fs/graphics/oOoO"),
-            entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite")
+            entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite"),
+            entry("com/genir/renderer/overrides/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(

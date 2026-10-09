@@ -170,6 +170,10 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 return transformer;
+            case "com/fs/graphics/particle/DynamicParticleGroup":
+                transformer.removeMethod("advance", "(F)V");
+                transformer.mergeClass("com/genir/renderer/overrides/particle/DynamicParticleGroup");
+                return transformer;
             default:
                 return null;
         }
