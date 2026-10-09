@@ -28,6 +28,7 @@ import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import com.genir.renderer.overrides.loading.textures.TextureRepository;
+import com.genir.renderer.overrides.render.RoilingSwarmEffect;
 import com.genir.renderer.overrides.render.particle.BaseParticle;
 import com.genir.renderer.overrides.render.particle.SmoothParticle;
 
@@ -206,6 +207,8 @@ public class ResourceLoaderState {
             com.genir.renderer.bridge.commands.GL11.glFinish();
         }
 
+//        Global.getSettings().setDevMode(true);
+
         // Initialize misc vanilla features.
         ImpactSound.ImpactSound_init();
         new Version();
@@ -219,8 +222,8 @@ public class ResourceLoaderState {
 
         // Initialize Fast Rendering functionality.
         final Context context = ContextManager.getThreadContext();
-
         BaseParticle.initStatic();
+        RoilingSwarmEffect.initStatic();
         context.stallDetector.enableDetection();
         GameState.gameInitialized = true;
         FileLoader.FileLoader_getInstance().initGameplay();
