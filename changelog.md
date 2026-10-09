@@ -1,5 +1,6 @@
 - Fixed a NullPointerException when accessing particle list. Reported by wing and MidnightLight.
 - Improved particle list handling, which should prevent desynchronization between mods and game engine.
+- Fixed engine contrail particles rendering below planets. Suggested by foiler.
 
 v0.9.2rc1
 

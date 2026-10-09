@@ -153,12 +153,12 @@ public class CombatEngine {
 
         unlockParticleLimit();
 
-        renderLayer("GlowyContrailParticles");
-        renderLayer("SmokyContrailParticles");
         renderLayer(CombatEngineLayers.BELOW_PLANETS);
         renderLayer(CombatEngineLayers.PLANET_LAYER);
         renderLayer(CombatEngineLayers.ABOVE_PLANETS);
         renderLayer(CombatEngineLayers.CLOUD_LAYER);
+        renderLayer("GlowyContrailParticles"); // Contrail particles render before BELOW_PLANETS in vanilla.
+        renderLayer("SmokyContrailParticles");
         renderLayer(CombatEngineLayers.BELOW_SHIPS_LAYER);
         renderLayer(CombatEngineLayers.UNDER_SHIPS_LAYER);
         renderLayer(CombatEngineLayers.ASTEROIDS_LAYER);
