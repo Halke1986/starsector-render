@@ -1,3 +1,7 @@
+v0.9.1
+
+- Promoted v0.9.1rc1 to stable. No changes.
+
 v0.9.1rc1
 
 - Optimized rendering performance.
