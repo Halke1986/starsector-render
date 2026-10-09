@@ -1,3 +1,6 @@
+- Fixed a NullPointerException when accessing particle list. Reported by wing and MidnightLight.
+- Improved particle list handling, which should prevent desynchronization between mods and game engine.
+
 v0.9.2rc1
 
 - Optimized particle rendering.

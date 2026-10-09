@@ -1,9 +1,9 @@
 package com.genir.renderer.overrides.render.particle;
 
-import java.util.ArrayList;
+import com.genir.renderer.ArrayViewList;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * OVERRIDES com.fs.graphics.particle.DynamicParticleGroup
@@ -117,36 +117,21 @@ public class DynamicParticleGroup {
 
     /**
      * REPLACED METHOD
-     * <p>
-     * NOTE: Returns a copy of the particle array. Ensure no vanilla
-     * method attempts to change the contents of the arrays, as the
-     * changes will not be reflected in DynamicParticleGroup.
      */
     public List<BaseParticle> getParticles() {
-        BaseParticle[] notNullArray = Arrays.copyOf(particlesArray, particlesNum);
-        return new ArrayList<>(Arrays.asList(notNullArray));
+        init();
+
+        return new ArrayViewList<>(particlesArray, particlesNum, this::updateArray);
     }
 
     /**
      * ADDED METHOD
-     * <p>
-     * Removes particles matching the predicate.
      */
-    public void filter(Predicate<BaseParticle> p) {
-        if (particlesNum == 0) {
-            return;
+    private void updateArray(BaseParticle[] newArray, Integer newSize) {
+        if (newArray != null) {
+            particlesArray = newArray;
         }
 
-        int pos = 0;
-        while (pos < particlesNum) {
-            if (p.test(particlesArray[pos])) {
-                // Compact the particle array.
-                particlesArray[pos] = particlesArray[particlesNum - 1];
-                particlesArray[particlesNum - 1] = null;
-                particlesNum--;
-            } else {
-                pos++;
-            }
-        }
+        particlesNum = newSize;
     }
 }
