@@ -122,6 +122,11 @@ public class ParticleRenderer {
             colorPointer = BufferUtils.createFloatBuffer(colorScratchpad.length);
         }
 
+        // Limit the arrays to avoid excessive data copying.
+        vertexPointer.limit(numParticles * 8);
+        texCoordPointer.limit(numParticles * 8);
+        colorPointer.limit(numParticles * 16);
+
         vertexPointer.put(0, vertexScratchpad, 0, numParticles * 8);
         texCoordPointer.put(0, texScratchpad, 0, numParticles * 8);
         colorPointer.put(0, colorScratchpad, 0, numParticles * 16);
