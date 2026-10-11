@@ -1,3 +1,5 @@
+- Fixed a regression in CMUtils compatibility.
+
 v0.9.2
 
 - Fixed excessive memory copying during particle rendering that reduced frame rates. Reported by folier.
