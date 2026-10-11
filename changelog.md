@@ -1,3 +1,6 @@
+- Fixed excessive memory copying during particle rendering that reduced frame rates. Reported by folier.
+- Optimized Sprite region rendering. Suggested by foiler.
+
 v0.9.2rc2
 
 - Fixed a NullPointerException when accessing particle list. Reported by wing and MidnightLight.

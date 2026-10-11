@@ -6,8 +6,9 @@ STARSECTOR PERFORMANCE OVERHAUL
 BUGFIXES AND IMPROVEMENTS TO VANILLA GAME ENGINE
 
 - Fixed multiple race conditions that could cause random crashes at game startup.
-- Fixed an XStream issue that could cause freezes during game saving.
 - Fixed all instances of background flickering when saving and loading the game.
+- Fixed an issue where engine contrails were rendered below planets.
+- Fixed an XStream issue that could cause freezes during game saving.
 - Fixed an issue where enemy ships were deployed progressively from smallest to largest.
 
 REQUIREMENTS
