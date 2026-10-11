@@ -1,3 +1,5 @@
+v0.9.3
+
 - Fixed a regression in CMUtils compatibility.
 
 v0.9.2
