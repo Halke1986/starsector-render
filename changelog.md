@@ -1,3 +1,5 @@
+v0.9.2
+
 - Fixed excessive memory copying during particle rendering that reduced frame rates. Reported by folier.
 - Optimized Sprite region rendering. Suggested by foiler.
 
