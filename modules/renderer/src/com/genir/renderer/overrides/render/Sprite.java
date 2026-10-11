@@ -44,82 +44,118 @@ public class Sprite {
      * avoiding the overhead of passing individual OpenGL calls across
      * the client-server thread boundary.
      */
+    public void renderRegion(
+            float posX,
+            float posY,
+            float regionFractionX,
+            float regionFractionY,
+            float regionFractionWidth,
+            float regionFractionHeight,
+            boolean bind
+    ) {
+        if (texture == null) {
+            return;
+        }
+
+        RenderState command = getCommand();
+
+        command.spriteX = posX + (float) offsetX;
+        command.spriteY = posY + (float) offsetY;
+        command.spriteWidth = width;
+        command.spriteHeight = height;
+
+        command.centerX = centerX;
+        command.centerY = centerY;
+        command.angle = angle;
+
+        command.r = (byte) color.getRed();
+        command.g = (byte) color.getGreen();
+        command.b = (byte) color.getBlue();
+        command.a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
+
+        command.quadX = regionFractionX * width;
+        command.quadY = regionFractionY * height;
+        command.quadWidth = regionFractionWidth * width;
+        command.quadHeight = regionFractionHeight * height;
+
+        if (regionFractionX != 0 || regionFractionY != 0) {
+            command.texX = regionFractionX * texWidth;
+            command.texY = regionFractionY * texHeight;
+        } else {
+            command.texX = texX;
+            command.texY = texY;
+        }
+        command.texWidth = regionFractionWidth * texWidth;
+        command.texHeight = regionFractionHeight * texHeight;
+
+        command.textureID = texture.TextureHandler_getTextureID();
+        command.blendSrc = blendSrc;
+        command.blendDest = blendDest;
+        command.bind = bind;
+        command.texClamp = texClamp;
+
+        runCommand(command);
+    }
+
+    /**
+     * REPLACED METHOD
+     */
     public void render(float posX, float posY) {
-        render(posX, posY, true);
+        renderRegion(posX, posY, 0, 0, 1, 1, true);
     }
 
     /**
      * REPLACED METHOD
      */
     public void renderNoBind(float posX, float posY) {
-        render(posX, posY, false);
+        renderRegion(posX, posY, 0, 0, 1, 1, false);
     }
 
     /**
      * ADDED METHOD
      */
-    private void render(float posX, float posY, boolean bind) {
-        if (texture == null) {
-            return;
-        }
-
+    private RenderState getCommand() {
         Object pooledCommand = Pools.spritePool.get();
         if (pooledCommand == null) {
             pooledCommand = new RenderState();
         }
 
-        RenderState command = (RenderState) pooledCommand;
+        return (RenderState) pooledCommand;
+    }
 
-        command.posX = posX;
-        command.posY = posY;
-        command.bind = bind;
-        command.textureID = texture.TextureHandler_getTextureID();
-        command.width = width;
-        command.height = height;
-        command.texX = texX;
-        command.texY = texY;
-        command.texWidth = texWidth;
-        command.texHeight = texHeight;
-        command.angle = angle;
-        command.r = (byte) color.getRed();
-        command.g = (byte) color.getGreen();
-        command.b = (byte) color.getBlue();
-        command.a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
-        command.centerX = centerX;
-        command.centerY = centerY;
-        command.offsetX = (float) offsetX;
-        command.offsetY = (float) offsetY;
-        command.blendSrc = blendSrc;
-        command.blendDest = blendDest;
-        command.texClamp = texClamp;
-
+    /**
+     * ADDED METHOD
+     */
+    private void runCommand(RenderState command) {
         final Context context = ContextManager.getThreadContext();
         command.runClient(context, null, 0);
         context.exec.execute(command);
     }
 
     public static class RenderState implements GLCommand, GLCommandClient, Recordable, Releasable {
-        public float posX;
-        public float posY;
-        public boolean bind;
-        public int textureID;
-        public float width;
-        public float height;
-        public float texX;
-        public float texY;
-        public float texWidth;
-        public float texHeight;
+        public float spriteX;
+        public float spriteY;
+        public float spriteWidth;
+        public float spriteHeight;
+        public float centerX;
+        public float centerY;
         public float angle;
         public byte r;
         public byte g;
         public byte b;
         public byte a;
-        public float centerX;
-        public float centerY;
-        public float offsetX;
-        public float offsetY;
+        public float quadX;
+        public float quadY;
+        public float quadWidth;
+        public float quadHeight;
+        public float texX;
+        public float texY;
+        public float texWidth;
+        public float texHeight;
+        public int textureID;
         public int blendSrc;
         public int blendDest;
+        public boolean bind;
         public boolean texClamp;
 
         @Override
@@ -138,15 +174,15 @@ public class Sprite {
             }
 
             context.matrixManager.glPushMatrix();
-            context.matrixManager.glTranslatef(posX + offsetX, posY + offsetY, 0);
+            context.matrixManager.glTranslatef(spriteX, spriteY, 0);
             if (centerX != -1 && centerY != -1) {
-                context.matrixManager.glTranslatef(width / 2, height / 2, 0);
+                context.matrixManager.glTranslatef(spriteWidth / 2, spriteHeight / 2, 0);
                 context.matrixManager.glRotatef(angle, 0, 0, 1);
                 context.matrixManager.glTranslatef(-centerX, -centerY, 0);
             } else {
-                context.matrixManager.glTranslatef(width / 2, height / 2, 0);
+                context.matrixManager.glTranslatef(spriteWidth / 2, spriteHeight / 2, 0);
                 context.matrixManager.glRotatef(angle, 0, 0, 1);
-                context.matrixManager.glTranslatef(-width / 2, -height / 2, 0);
+                context.matrixManager.glTranslatef(-spriteWidth / 2, -spriteHeight / 2, 0);
             }
 
             context.attribManager.glEnable(GL11.GL_TEXTURE_2D);
@@ -162,13 +198,13 @@ public class Sprite {
 
             context.vertexInterceptor.glBegin(GL11.GL_QUADS);
             context.vertexInterceptor.glTexCoord4f(texX, texY, 0, 1);
-            context.vertexInterceptor.glVertex3f(0, 0, 0);
+            context.vertexInterceptor.glVertex3f(quadX, quadY, 0);
             context.vertexInterceptor.glTexCoord4f(texX, texY + texHeight, 0, 1);
-            context.vertexInterceptor.glVertex3f(0, height, 0);
+            context.vertexInterceptor.glVertex3f(quadX, quadY + quadHeight, 0);
             context.vertexInterceptor.glTexCoord4f(texX + texWidth, texY + texHeight, 0, 1);
-            context.vertexInterceptor.glVertex3f(width, height, 0);
+            context.vertexInterceptor.glVertex3f(quadX + quadWidth, quadY + quadHeight, 0);
             context.vertexInterceptor.glTexCoord4f(texX + texWidth, texY, 0, 1);
-            context.vertexInterceptor.glVertex3f(width, 0, 0);
+            context.vertexInterceptor.glVertex3f(quadX + quadWidth, quadY, 0);
             context.vertexInterceptor.glEnd();
 
             context.attribManager.glDisable(GL11.GL_BLEND);

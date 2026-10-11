@@ -164,6 +164,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
             case "com/fs/graphics/Sprite":
                 transformer.removeMethod("render", "(FF)V");
                 transformer.removeMethod("renderNoBind", "(FF)V");
+                transformer.removeMethod("renderRegion", "(FFFFFFZ)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
                 return transformer;
             case "com/fs/graphics/particle/BaseParticle":
@@ -219,6 +220,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer = new BytecodeTransformer("com/fs/graphics/Sprite");
                 transformer.removeMethod("render", "(FF)V");
                 transformer.removeMethod("renderNoBind", "(FF)V");
+                transformer.removeMethod("renderRegion", "(FFFFFFZ)V");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
             case "com/genir/renderer/overrides/render/particle/SmoothParticle":
