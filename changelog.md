@@ -1,3 +1,5 @@
+- Fixed an issue where reading a file from a specified directory could return the contents of a file with the same name from a different directory. Reported by Numan.
+
 v0.9.3
 
 - Fixed a regression in CMUtils compatibility.

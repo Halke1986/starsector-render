@@ -44,8 +44,11 @@ public class FileLoaderFast {
                 continue;
             }
 
-            if (locationFilter != null && location.ResourceLocation_type.toString().equals(DIRECTORY) && !location.ResourceLocation_path.endsWith(locationFilter)) {
-                continue;
+            // Match only selected directory.
+            if (locationFilter != null) {
+                if (!location.ResourceLocation_type.toString().equals(DIRECTORY) || !location.ResourceLocation_path.endsWith(locationFilter)) {
+                    continue;
+                }
             }
 
             return resource.two;
