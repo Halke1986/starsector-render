@@ -1,4 +1,6 @@
 
+make particles null on compacting
+avoid re-binding textures?
 
 game is responsive when loading mods
 flicker after alt-tab
