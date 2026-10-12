@@ -61,9 +61,10 @@ public class MatrixStack {
     }
 
     public void glMultMatrix(FloatBuffer buf) {
-        Matrix right = new Matrix();
-        right.loadTranspose(buf.duplicate());
-        current.mul(right);
+        Matrix left = new Matrix();
+        left.loadTranspose(buf.duplicate());
+        left.mul(current);
+        current.set(left);
     }
 
     public void glLoadMatrix(FloatBuffer buf) {

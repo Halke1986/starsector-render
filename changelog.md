@@ -1,5 +1,6 @@
 - Fixed an issue where reading a file from a specified directory could return the contents of a file with the same name from a different directory. Reported by Numan.
 - Added a workaround for incorrect LazyFont rendering when using VRAM Optimizer. The underlying issue remains unresolved. Reported by Klark Morrigan.
+- Fixed an issue where italic text was misaligned. Reported by kanameme.
 
 v0.9.3
 
