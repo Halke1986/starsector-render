@@ -286,4 +286,8 @@ public class AttribTracker {
     public void glUseProgram(int program) {
         currentProgram = program;
     }
+
+    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
+        state.glBindTextures(first, count, textures, targets);
+    }
 }

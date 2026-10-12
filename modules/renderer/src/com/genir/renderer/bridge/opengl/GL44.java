@@ -90,7 +90,7 @@ public final class GL44 {
     }
 
     public static void glBindTextures(int first, int count, IntBuffer textures) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL44.glBindTextures(int, int, IntBuffer)");
+        com.genir.renderer.bridge.commands.GL44.glBindTextures(first, count, textures);
     }
 
     public static void glBindSamplers(int first, int count, IntBuffer samplers) {

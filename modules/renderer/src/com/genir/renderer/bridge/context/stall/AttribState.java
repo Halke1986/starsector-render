@@ -1,7 +1,9 @@
 package com.genir.renderer.bridge.context.stall;
 
+import com.genir.renderer.bridge.context.TextureUnit;
 import org.lwjgl.opengl.*;
 
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +11,10 @@ import java.util.Map;
 // reference:
 // https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glPushAttrib.xml
 public class AttribState {
+    // Number of know texture types (targets).
+    private static final int TEXTURE_TARGETS_NUM = 11;
+    private static final int TEXTURE_UNITS_NUM = 32;
+
     // GL_COLOR_BUFFER_BIT
     public boolean enableAlphaTest = false;   // GL11.GL_ALPHA_TEST, also GL_ENABLE_BIT
     public boolean enableBlend = false;       // GL11.GL_BLEND, also GL_ENABLE_BIT
@@ -56,12 +62,16 @@ public class AttribState {
     }
 
     public void glBindTexture(int target, int texture) {
-        if (target == GL11.GL_TEXTURE_2D && activeTexture == GL13.GL_TEXTURE0) {
+        glBindTexture(activeTexture, target, texture);
+    }
+
+    private void glBindTexture(int textureUnit, int target, int texture) {
+        if (target == GL11.GL_TEXTURE_2D && textureUnit == GL13.GL_TEXTURE0) {
             texture2DUnit0 = texture;
             return;
         }
 
-        int key = textureKey(target, activeTexture);
+        int key = textureKey(target, textureUnit);
 
         // Incorrect parameters.
         if (key == -1) {
@@ -73,6 +83,42 @@ public class AttribState {
         }
 
         textureOther[key] = texture;
+    }
+
+    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
+        IntBuffer reader = textures != null ? textures.duplicate() : null;
+
+        for (int u = 0; u < count; u++) {
+            int texture = reader != null ? reader.get() : 0;
+            int target = targets[u];
+            int textureUnitIndex = u + first;
+            int textureUnit = TextureUnit.getEnum(textureUnitIndex);
+
+            if (texture != 0) {
+                // Skip incorrect binding.
+                if (target == 0) {
+                    continue;
+                }
+
+                glBindTexture(textureUnit, target, texture);
+            } else {
+                // Unbind all targets in the given unit.
+                if (textureUnit == GL13.GL_TEXTURE0) {
+                    texture2DUnit0 = 0;
+                }
+
+                int unitOffset = textureUnitIndex * TEXTURE_TARGETS_NUM;
+                for (int i = 0; i < TEXTURE_TARGETS_NUM; i++) {
+                    int key = unitOffset + i;
+
+                    if (key >= textureOther.length) {
+                        break;
+                    }
+
+                    textureOther[key] = 0;
+                }
+            }
+        }
     }
 
     public void glDeleteTextures(int texture) {
@@ -175,7 +221,7 @@ public class AttribState {
             return;
         }
 
-        int key = textureUnitKey(activeTexture);
+        int key = TextureUnit.getIndex(activeTexture);
 
         // Incorrect parameters.
         if (key == -1) {
@@ -218,7 +264,7 @@ public class AttribState {
 
         }
 
-        int key = textureUnitKey(activeTexture);
+        int key = TextureUnit.getIndex(activeTexture);
 
         // Incorrect parameters.
         if (key == -1) {
@@ -323,8 +369,19 @@ public class AttribState {
         }
     }
 
-    public static int textureKey(int target, int activeTexture) {
-        int x = switch (target) {
+    private static int textureKey(int target, int activeTexture) {
+        int x = textureTargetIndex(target);
+        int y = TextureUnit.getIndex(activeTexture);
+
+        if (x == -1 || y == -1) {
+            return -1;
+        }
+
+        return x + y * TEXTURE_TARGETS_NUM;
+    }
+
+    private static int textureTargetIndex(int target) {
+        return switch (target) {
             case GL11.GL_TEXTURE_2D -> 0;
             case GL11.GL_TEXTURE_1D -> 1;
             case GL12.GL_TEXTURE_3D -> 2;
@@ -336,53 +393,6 @@ public class AttribState {
             case GL32.GL_TEXTURE_2D_MULTISAMPLE -> 8;
             case GL32.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> 9;
             case GL40.GL_TEXTURE_CUBE_MAP_ARRAY -> 10;
-
-            default -> -1;
-        };
-
-        int y = textureUnitKey(activeTexture);
-
-        if (x == -1 || y == -1) {
-            return -1;
-        }
-
-        return x * 32 + y;
-    }
-
-    private static int textureUnitKey(int activeTexture) {
-        return switch (activeTexture) {
-            case GL13.GL_TEXTURE0 -> 0;
-            case GL13.GL_TEXTURE1 -> 1;
-            case GL13.GL_TEXTURE2 -> 2;
-            case GL13.GL_TEXTURE3 -> 3;
-            case GL13.GL_TEXTURE4 -> 4;
-            case GL13.GL_TEXTURE5 -> 5;
-            case GL13.GL_TEXTURE6 -> 6;
-            case GL13.GL_TEXTURE7 -> 7;
-            case GL13.GL_TEXTURE8 -> 8;
-            case GL13.GL_TEXTURE9 -> 9;
-            case GL13.GL_TEXTURE10 -> 10;
-            case GL13.GL_TEXTURE11 -> 11;
-            case GL13.GL_TEXTURE12 -> 12;
-            case GL13.GL_TEXTURE13 -> 13;
-            case GL13.GL_TEXTURE14 -> 14;
-            case GL13.GL_TEXTURE15 -> 15;
-            case GL13.GL_TEXTURE16 -> 16;
-            case GL13.GL_TEXTURE17 -> 17;
-            case GL13.GL_TEXTURE18 -> 18;
-            case GL13.GL_TEXTURE19 -> 19;
-            case GL13.GL_TEXTURE20 -> 20;
-            case GL13.GL_TEXTURE21 -> 21;
-            case GL13.GL_TEXTURE22 -> 22;
-            case GL13.GL_TEXTURE23 -> 23;
-            case GL13.GL_TEXTURE24 -> 24;
-            case GL13.GL_TEXTURE25 -> 25;
-            case GL13.GL_TEXTURE26 -> 26;
-            case GL13.GL_TEXTURE27 -> 27;
-            case GL13.GL_TEXTURE28 -> 28;
-            case GL13.GL_TEXTURE29 -> 29;
-            case GL13.GL_TEXTURE30 -> 30;
-            case GL13.GL_TEXTURE31 -> 31;
 
             default -> -1;
         };

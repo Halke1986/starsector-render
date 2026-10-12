@@ -35,7 +35,7 @@ public final class GL14 {
     }
 
     public static void glMultiDrawArrays(int mode, IntBuffer piFirst, IntBuffer piCount) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL14.glMultiDrawArrays(int, IntBuffer, IntBuffer)");
+        com.genir.renderer.bridge.commands.GL14.glMultiDrawArrays(mode, piFirst, piCount);
     }
 
     public static void glPointParameteri(int pname, int param) {

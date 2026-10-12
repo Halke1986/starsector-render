@@ -1,7 +1,6 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
-import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;

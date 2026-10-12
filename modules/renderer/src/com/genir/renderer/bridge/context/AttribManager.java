@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.context.stall.AttribState;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -140,6 +141,10 @@ public class AttribManager {
 
     public void glMatrixMode(int mode) {
         expected.glMatrixMode(mode);
+    }
+
+    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
+        expected.glBindTextures(first, count, textures, targets);
     }
 
     //
