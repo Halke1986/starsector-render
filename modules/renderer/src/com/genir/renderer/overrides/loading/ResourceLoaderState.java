@@ -196,8 +196,12 @@ public class ResourceLoaderState {
     private void initEpilogue() throws Exception {
         MarkovNames.loadIfNeeded();
 
-        // Initialize mods.
+        // Conclude asset loading phase.
+        final Context context = ContextManager.getThreadContext();
+        context.textureManager.assetLoadingFinished();
         FileLoader.FileLoader_getInstance().initModLoading();
+
+        // Initialize mods.
         ScriptStore.loadModClasses();
         for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
             mod.onApplicationLoad();
@@ -221,13 +225,11 @@ public class ResourceLoaderState {
         com.genir.renderer.bridge.commands.Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
 
         // Initialize Fast Rendering functionality.
-        final Context context = ContextManager.getThreadContext();
         BaseParticle.initStatic();
         RoilingSwarmEffect.initStatic();
         context.stallDetector.enableDetection();
         GameState.gameInitialized = true;
         FileLoader.FileLoader_getInstance().initGameplay();
-        context.textureManager.assetLoadingFinished();
         if (Objects.equals(System.getProperty("com.genir.renderer.settings.sampler"), "true")) {
             SamplerRunner.samplerRunner.start();
         }
