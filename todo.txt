@@ -1,14 +1,17 @@
-BUGS
 
-IMPROVEMENTS
 
 game is responsive when loading mods
 flicker after alt-tab
-faster json
+faster CSV
 finish FileLoaderExact and test with vulpoids
 
-glib forcing lazy load
 
 LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
 insignia42LTaa
 https://discord.com/channels/187635036525166592/1549091275167240272/1556998414678368288
+
+  Global.getSettings().loadTexture("graphics/fonts/insignia42LTaa_0.png");
+
+            com.genir.renderer.bridge.commands.GL11.glPushAttrib(1048575 ^ GL11.GL_TEXTURE_BIT);
+            com.genir.renderer.bridge.commands.GL11.glBindTexture(3553, 2747);
+            com.genir.renderer.bridge.commands.GL11.glPopAttrib();

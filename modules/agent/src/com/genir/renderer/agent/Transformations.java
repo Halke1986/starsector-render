@@ -148,7 +148,7 @@ public class Transformations {
             entry("HullSpecStore_hulls", "o00000"),
             entry("WeaponSpecStore_weapons", "new"),
             entry("WeaponSpecStore_projectiles", "o00000")
-            );
+    );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
             entry("com/genir/renderer/overrides/loading/textures/TextureLoader", "com/fs/graphics/TextureLoader"),
@@ -191,5 +191,7 @@ public class Transformations {
 //            entry("com/fs/starfarer/combat/entities/ContrailParticle", "com/genir/renderer/overrides/render/particle/ContrailParticle")
 //            entry("com/fs/graphics/particle/NebulaParticle", "com/genir/renderer/overrides/render/particle/NebulaParticle")
 //            entry("com/fs/starfarer/renderers/fx/DetailedSmokeParticle", "com/genir/renderer/overrides/render/particle/DetailedSmokeParticle")
+//            entry("com/fs/starfarer/loading/ResourceLoaderState", "com/genir/renderer/overrides/loading/ResourceLoaderState"),
+//            entry("com/fs/graphics/TextureLoader", "com/genir/renderer/overrides/loading/textures/TextureLoader")
     );
 }

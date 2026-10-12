@@ -267,6 +267,17 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer = new BytecodeTransformer("com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect");
                 transformer.removeMethod("getNumActiveMembers", "()I");
                 transformer.removeMethod("render", "(Lcom/fs/starfarer/api/combat/CombatEngineLayers;Lcom/fs/starfarer/api/combat/ViewportAPI;)V");
+                return transformer;
+            case "com/genir/renderer/overrides/loading/ResourceLoaderState":
+                transformer = new BytecodeTransformer("com/fs/starfarer/loading/ResourceLoaderState");
+                transformer.renameMethod("init", "init_vanilla", "(Ljava/util/Map;)V");
+                transformer.removeMethod("queueResource", "(Lcom/fs/starfarer/loading/ResourceLoaderState$o;Ljava/lang/String;I)V");
+                transformer.removeMethod("renderProgress", "(F)V");
+                transformer.mergeClass(className, donorBytes);
+                return transformer;
+            case "com/genir/renderer/overrides/loading/textures/TextureLoader":
+                transformer = new BytecodeTransformer("com/fs/graphics/TextureLoader");
+                transformer.renameMethod("o00000", "loadTexture_vanilla", "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
             default:

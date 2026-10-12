@@ -39,6 +39,78 @@ public class Debug {
         }
     }
 
+    public static void drawBoundTextureServer() {
+        int width = org.lwjgl.opengl.Display.getWidth();
+        int height = org.lwjgl.opengl.Display.getHeight();
+
+        // Save viewport and matrix mode.
+        org.lwjgl.opengl.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        org.lwjgl.opengl.GL11.glPushMatrix();
+        org.lwjgl.opengl.GL11.glLoadIdentity();
+        org.lwjgl.opengl.GL11.glOrtho(0, width, 0, height, -1, 1);
+
+        org.lwjgl.opengl.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        org.lwjgl.opengl.GL11.glPushMatrix();
+        org.lwjgl.opengl.GL11.glLoadIdentity();
+
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        org.lwjgl.opengl.GL11.glBegin(GL11.GL_QUADS);
+        org.lwjgl.opengl.GL11.glTexCoord2f(0f, 0f);
+        org.lwjgl.opengl.GL11.glVertex2f(0f, 0f);
+        org.lwjgl.opengl.GL11.glTexCoord2f(1f, 0f);
+        org.lwjgl.opengl.GL11.glVertex2f(width / 2f, 0f);
+        org.lwjgl.opengl.GL11.glTexCoord2f(1f, 1f);
+        org.lwjgl.opengl.GL11.glVertex2f(width / 2f, height / 2f);
+        org.lwjgl.opengl.GL11.glTexCoord2f(0f, 1f);
+        org.lwjgl.opengl.GL11.glVertex2f(0f, height / 2f);
+        org.lwjgl.opengl.GL11.glEnd();
+
+        org.lwjgl.opengl.GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        org.lwjgl.opengl.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        org.lwjgl.opengl.GL11.glPopMatrix();
+
+        org.lwjgl.opengl.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        org.lwjgl.opengl.GL11.glPopMatrix();
+    }
+
+    public static void drawBoundTextureClient() {
+        int width = com.genir.renderer.bridge.commands.Display.getWidth();
+        int height = com.genir.renderer.bridge.commands.Display.getHeight();
+
+        // Save viewport and matrix mode.
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
+        com.genir.renderer.bridge.commands.GL11.glOrtho(0, width, 0, height, -1, 1);
+
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
+
+        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        com.genir.renderer.bridge.commands.GL11.glBegin(GL11.GL_QUADS);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(0f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(width / 2f, 0f);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1f, 1f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(width / 2f, height / 2f);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0f, 1f);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(0f, height / 2f);
+        com.genir.renderer.bridge.commands.GL11.glEnd();
+
+        com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
+
+        com.genir.renderer.bridge.commands.GL11.glMatrixMode(GL11.GL_PROJECTION);
+        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
+    }
+
     public static void checkStack() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 

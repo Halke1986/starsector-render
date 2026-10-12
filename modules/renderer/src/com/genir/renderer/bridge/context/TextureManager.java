@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
+import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.overrides.loading.textures.TextureData;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -85,7 +86,7 @@ public class TextureManager {
 
     private void uploadTexture(Context context, int texture, TextureCallbacks loaders) {
         // Load texture.
-        Future<byte[]> bufferFuture = workers.submit(() -> {
+        final Future<byte[]> bufferFuture = workers.submit(() -> {
             try {
                 return loaders.loadFn.call();
             } catch (Exception e) {
@@ -93,10 +94,15 @@ public class TextureManager {
             }
         });
 
+        record commitDDSTexture(TextureManager parent, int texture, Future<byte[]> bufferFuture, TextureCallbacks loaders) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                parent.commitTexture(context, texture, bufferFuture, loaders);
+            }
+        }
+
         // Commit texture.
-        context.exec.execute((ctx, args, offset) -> {
-            commitTexture(ctx, texture, bufferFuture, loaders);
-        });
+        context.exec.execute(new commitDDSTexture(this, texture, bufferFuture, loaders));
     }
 
     private void commitTexture(Context context, int texture, Future<byte[]> bufferFuture, TextureCallbacks loaders) {

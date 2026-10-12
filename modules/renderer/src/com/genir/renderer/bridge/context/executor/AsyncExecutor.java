@@ -9,6 +9,7 @@ import com.genir.renderer.bridge.context.Pool;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -19,6 +20,7 @@ import java.util.concurrent.Future;
  * Default implementation. Runs commands in batched on a dedicated thread.
  */
 public class AsyncExecutor implements Executor {
+    private final Logger logger = Logger.getLogger(AsyncExecutor.class);
     private final Context context;
 
     private Frame currentFrame = new Frame();
@@ -224,6 +226,7 @@ public class AsyncExecutor implements Executor {
         // Run all scheduled commands.
         for (int i = 0; i < frame.commandsSize; i++) {
             try {
+                // logCommand(context, args, i * Frame.ARGS_NUM, commands[i]);
                 commands[i].run(context, args, i * Frame.ARGS_NUM);
             } catch (AssertionError e) {
                 // Do not interrupt application graceful shutdown with
@@ -248,6 +251,14 @@ public class AsyncExecutor implements Executor {
     @Override
     public boolean isIdle() {
         return currentSwapFuture.isDone();
+    }
+
+    private void logCommand(Context context, float[] args, int argsOffset, GLCommand command) {
+        if (command instanceof DebugString debugString) {
+            logger.info(debugString.debugString(context, args, argsOffset));
+        } else {
+            logger.info(command);
+        }
     }
 
     private class ExceptionHandler implements Thread.UncaughtExceptionHandler {
