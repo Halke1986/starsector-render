@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.opengl.*;
 
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -105,6 +106,24 @@ public class TextureTracker { // Context-shared object.
         if (texture >= 0 && texture < textureTargets.length) {
             textureTargets[texture] = 0;
         }
+    }
+
+    synchronized public int[] getTextureTargets(int count, IntBuffer textures) {
+        int[] targets = new int[count];
+        if (textures == null) {
+            return targets;
+        }
+
+        IntBuffer reader = textures.duplicate();
+        for (int i = 0; i < count; i++) {
+            int texture = reader.get();
+
+            if (texture >= 0 && texture < textureTargets.length) {
+                targets[i] = textureTargets[texture];
+            }
+        }
+
+        return targets;
     }
 
     public void updateTextureData(Context context, int target, int level, int internalformat, int width, int height) {
