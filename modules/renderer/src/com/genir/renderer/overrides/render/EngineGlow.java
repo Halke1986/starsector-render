@@ -13,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.util.Iterator;
 
 /**
  * OVERRIDES com.fs.starfarer.combat.entities.EngineGlow
@@ -70,6 +69,7 @@ public class EngineGlow {
 
         float textureInset = 0.01F;
         float angularSkew = -(delegate.getAngularVelocity() * 0.15F);
+
         if (omegaMode) {
             float angularDirection = Math.signum(-delegate.getAngularVelocity());
             float angularSpeedFraction = Math.min(1.0F, Math.abs(delegate.getAngularVelocity()) / 120.0F);
@@ -77,19 +77,11 @@ public class EngineGlow {
             angularSkew = angularDirection * angularSpeedFraction * 10.0F;
         }
 
-        Iterator slotIterator = delegate.getEngineLocations().iterator();
-
-        while (true) {
+        for (EngineSlot slot : delegate.getEngineLocations()) {
             EngineGlowState state;
             float glowLevel;
             float effectiveGlow;
-            EngineSlot slot;
 
-            if (!slotIterator.hasNext()) {
-                return;
-            }
-
-            slot = (EngineSlot) slotIterator.next();
             state = this.EngineGlow_getEngineState(slot);
             glowLevel = state.EngineGlowState_glowLevel;
             effectiveGlow = glowLevel;
@@ -215,7 +207,7 @@ public class EngineGlow {
                     float layerPairIndex = (layerIndex + 1.0F) / 2.0F;
                     com.genir.renderer.bridge.commands.GL11.glRotatef((layerCount / 2.0F - layerPairIndex - 1.0F) / (layerCount / 2.0F) * sideSign * 2.0F * spreadRotation, 0.0F, 0.0F, 1.0F);
                     com.genir.renderer.bridge.commands.GL11.glTranslatef((layerCount - layerIndex - 1.0F) * transitionLength / (layerCount * 2.0F), 0.0F, 0.0F);
-                    com.genir.renderer.bridge.commands.GL11.glScalef(0.5F + 0.5F * (layerIndex + 1.0F) / layerCount, 1.0F * (layerCount - layerIndex) / layerCount, 1.0F);
+                    com.genir.renderer.bridge.commands.GL11.glScalef(0.5F + 0.5F * (layerIndex + 1.0F) / layerCount, (layerCount - layerIndex) / layerCount, 1.0F);
                     com.genir.renderer.bridge.commands.GL11.glBegin(8);
                     com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) (int) (layerIndex * 5.0F * color.getAlpha() / 255.0F * alphaMult * idleAlpha));
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU, 0.0F + textureInset);
@@ -279,7 +271,7 @@ public class EngineGlow {
             if (!EngineGlow_flameLengthShifter.isShifted()
                     && !EngineGlow_flameWidthShifter.isShifted()
                     && !EngineGlow_flameColorMultShifter.isShifted()) {
-                glowDiameter = renderWidth * (2.0F + 1.0F * faderBrightness);
+                glowDiameter = renderWidth * (2.0F + faderBrightness);
             } else {
                 float shiftedGlowDiameter = (renderWidth - baseRenderWidth * EngineGlow_flameWidthShifter.getCurr()) * 2.0F;
                 glowDiameter = shiftedGlowDiameter + shiftedGlowDiameter * 0.5F * faderBrightness;
@@ -325,7 +317,7 @@ public class EngineGlow {
         }
     }
 
-    public class EngineGlowState {
+    public static class EngineGlowState {
         public float EngineGlowState_textureU;
         public float EngineGlowState_angle;
         public float EngineGlowState_spread;
