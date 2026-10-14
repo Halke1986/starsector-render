@@ -73,6 +73,9 @@ public class Transformations {
             entry("com/fs/starfarer/renderers/ShipArrowRenderer", "com/fs/starfarer/renderers/O"),
             entry("com/fs/starfarer/combat/entities/ship/damage/ImpactSound", "com/fs/starfarer/combat/entities/ship/A/I"),
             entry("com/fs/graphics/util/Rendering", "com/fs/graphics/util/B"),
+            entry("com/fs/starfarer/combat/entities/ship/ShipEngineController", "com/fs/starfarer/combat/entities/ship/null"),
+            entry("com/fs/starfarer/combat/entities/ship/ShipEngineController$Delegate", "com/fs/starfarer/combat/entities/ship/null$Oo"),
+            entry("com/fs/graphics/util/GLUtils", "com/fs/graphics/util/B"),
 
             // Methods
             entry("TextureRepository_addTexture", "super"),
@@ -135,6 +138,10 @@ public class Transformations {
             entry("Rendering_begin", "return"),
             entry("Rendering_setupProjection", "o00000"),
             entry("Rendering_end", "Õ00000"),
+            entry("EngineGlow_render", "o00000"),
+            entry("EngineGlow_renderFighter", "class"),
+            entry("EngineGlow_getEngineState", "Ó00000"),
+            entry("GLUtils_lerpColor", "o00000"),
 
             // Fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -147,7 +154,26 @@ public class Transformations {
             entry("CombatEngine_hitParticlesGroup", "OÔ0000"),
             entry("HullSpecStore_hulls", "o00000"),
             entry("WeaponSpecStore_weapons", "new"),
-            entry("WeaponSpecStore_projectiles", "o00000")
+            entry("WeaponSpecStore_projectiles", "o00000"),
+            entry("EngineGlow_delegate", "Óo0000"),
+            entry("EngineGlow_isActive", "õ00000"),
+            entry("EngineGlow_flameLengthShifter", "class"),
+            entry("EngineGlow_flameWidthShifter", "Oo0000"),
+            entry("EngineGlow_flameColorMultShifter", "Øo0000"),
+            entry("EngineGlow_glowColorShifter", "öO0000"),
+            entry("EngineGlow_colorShiftIntensity", "interface"),
+            entry("EngineGlow_isAccelerating", "ØO0000"),
+            entry("EngineGlow_fader", "null"),
+            entry("EngineGlow_flameoutFader", "new"),
+            entry("EngineGlow_hitGlowSprite", "oo0000"),
+            entry("EngineGlow_glowTexture", "ÓO0000"),
+            entry("EngineGlow_secondaryGlowTexture", "ÔO0000"),
+            entry("EngineGlow_flameTexture", "class_super"),
+            entry("EngineGlowState_glowLevel", "class"),
+            entry("EngineGlowState_spread", "Ö00000"),
+            entry("EngineGlowState_textureU", "Ø00000"),
+            entry("EngineGlowState_angle", "new"),
+            entry("EngineGlowType_NORMAL", "Ó00000")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -179,7 +205,10 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/particle/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
             entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
             entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
-            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
+            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
+            entry("com/genir/renderer/overrides/render/EngineGlow", "com/fs/starfarer/combat/entities/G"),
+            entry("com/genir/renderer/overrides/render/EngineGlow$EngineGlowState", "com/fs/starfarer/combat/entities/G$Oo"),
+            entry("com/genir/renderer/overrides/render/EngineGlow$EngineGlowType", "com/fs/starfarer/combat/entities/G$o")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(

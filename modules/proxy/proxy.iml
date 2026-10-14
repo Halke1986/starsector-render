@@ -19,5 +19,6 @@
     </orderEntry>
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="library" name="lwjgl_util" level="project" />
+    <orderEntry type="module" module-name="renderer" />
   </component>
 </module>

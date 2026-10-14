@@ -207,6 +207,10 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("getParticles", "()Ljava/util/List;");
                 transformer.mergeClass("com/genir/renderer/overrides/render/particle/DynamicParticleGroup");
                 return transformer;
+            case "com/fs/starfarer/combat/entities/G":
+                transformer.removeMethod("o00000", "(F)V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/EngineGlow");
+                return transformer;
             default:
                 return null;
         }

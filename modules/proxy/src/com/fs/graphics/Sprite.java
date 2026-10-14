@@ -1,5 +1,7 @@
 package com.fs.graphics;
 
+import java.awt.*;
+
 public class Sprite {
     public void renderRegionAtCenter(float x, float y, float tx, float ty, float tdx, float tdy) {
     }
@@ -24,5 +26,14 @@ public class Sprite {
 
     public int getOffsetY() {
         return 0;
+    }
+
+    public void setAlphaMult(float var1) {
+    }
+
+    public void setColor(Color var1) {
+    }
+
+    public void setSize(float var1, float var2) {
     }
 }
