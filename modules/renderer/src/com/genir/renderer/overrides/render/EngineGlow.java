@@ -177,6 +177,7 @@ public class EngineGlow {
             float textureU = state.EngineGlowState_textureU;
             float transitionLength = Math.min(baseRenderWidth / 2.0F, renderLength / 4.0F);
             float transitionU = transitionLength / renderLength;
+
             int textureID;
             if (slot.getGlowType() == EngineGlowType.EngineGlowType_NORMAL) {
                 textureID = EngineGlow_glowTexture.TextureHandler_getTextureID();
@@ -193,30 +194,33 @@ public class EngineGlow {
             for (int passIndex = 0; passIndex < passCount; passIndex++) {
                 for (float layerIndex = 0.0F; layerIndex < layerCount; layerIndex++) {
                     com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+
                     float layerSkew = (layerCount - layerIndex - 1.0F) / layerCount * angularSkew;
                     if (omegaMode) {
                         layerSkew = angularSkew;
                     }
 
                     com.genir.renderer.bridge.commands.GL11.glRotatef(layerSkew, 0.0F, 0.0F, 1.0F);
+
                     float sideSign = 1.0F;
                     if (layerIndex % 2.0F == 0.0F) {
                         sideSign = -1.0F;
                     }
 
                     float layerPairIndex = (layerIndex + 1.0F) / 2.0F;
+
                     com.genir.renderer.bridge.commands.GL11.glRotatef((layerCount / 2.0F - layerPairIndex - 1.0F) / (layerCount / 2.0F) * sideSign * 2.0F * spreadRotation, 0.0F, 0.0F, 1.0F);
                     com.genir.renderer.bridge.commands.GL11.glTranslatef((layerCount - layerIndex - 1.0F) * transitionLength / (layerCount * 2.0F), 0.0F, 0.0F);
                     com.genir.renderer.bridge.commands.GL11.glScalef(0.5F + 0.5F * (layerIndex + 1.0F) / layerCount, (layerCount - layerIndex) / layerCount, 1.0F);
                     com.genir.renderer.bridge.commands.GL11.glBegin(8);
+
                     com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) (int) (layerIndex * 5.0F * color.getAlpha() / 255.0F * alphaMult * idleAlpha));
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU, 0.0F + textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, -renderWidth / 2.0F);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU, 1.0F - textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, renderWidth / 2.0F);
-                    float alphaScale = 1.0F;
 
-                    com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) (int) (100.0F * alphaScale * color.getAlpha() / 255.0F * alphaMult * idleAlpha));
+                    com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) (int) (100.0F * color.getAlpha() / 255.0F * alphaMult * idleAlpha));
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU + transitionU, 0.0F + textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(transitionLength, -renderWidth / 2.0F);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU + transitionU, 1.0F - textureInset);
@@ -226,39 +230,40 @@ public class EngineGlow {
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(renderLength, -renderWidth / 2.0F);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU + textureLength, 1.0F - textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(renderLength, renderWidth / 2.0F);
+
                     com.genir.renderer.bridge.commands.GL11.glEnd();
                     com.genir.renderer.bridge.commands.GL11.glPopMatrix();
+
                     textureU += 1.0F / layerCount;
                 }
             }
 
-            com.genir.renderer.bridge.commands.GL11.glRotatef(state.EngineGlowState_angle, 0.0F, 0.0F, 1.0F);
-            com.genir.renderer.bridge.commands.GL11.glScalef(0.9F, 1.0F, 1.0F);
-            float flamePassCount = 1.0F;
-
             com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, EngineGlow_flameTexture.TextureHandler_getTextureID());
 
-            for (float flamePassIndex = 0.0F; flamePassIndex < flamePassCount; flamePassIndex++) {
-                com.genir.renderer.bridge.commands.GL11.glPushMatrix();
-                float flamePassSkew = 0.0F;
-                if (omegaMode) {
-                    flamePassSkew = angularSkew;
-                }
+            com.genir.renderer.bridge.commands.GL11.glRotatef(state.EngineGlowState_angle, 0.0F, 0.0F, 1.0F);
+            com.genir.renderer.bridge.commands.GL11.glScalef(0.9F, 1.0F, 1.0F);
+            com.genir.renderer.bridge.commands.GL11.glPushMatrix();
 
-                com.genir.renderer.bridge.commands.GL11.glRotatef(flamePassSkew, 0.0F, 0.0F, 1.0F);
-                com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) (int) (glowLevel * 50.0F * color.getAlpha() / 255.0F * alphaMult * idleAlpha));
-                com.genir.renderer.bridge.commands.GL11.glBegin(8);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0.0F + textureInset, 0.0F + textureInset);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, -renderWidth / 2.0F);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0.0F + textureInset, 1.0F - textureInset);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, renderWidth / 2.0F);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1.0F - textureInset, 0.0F + textureInset);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(renderLength, -renderWidth / 2.0F);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1.0F - textureInset, 1.0F - textureInset);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(renderLength, renderWidth / 2.0F);
-                com.genir.renderer.bridge.commands.GL11.glEnd();
-                com.genir.renderer.bridge.commands.GL11.glPopMatrix();
+            float flamePassSkew = 0.0F;
+            if (omegaMode) {
+                flamePassSkew = angularSkew;
             }
+
+            com.genir.renderer.bridge.commands.GL11.glRotatef(flamePassSkew, 0.0F, 0.0F, 1.0F);
+            com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) (int) (glowLevel * 50.0F * color.getAlpha() / 255.0F * alphaMult * idleAlpha));
+            com.genir.renderer.bridge.commands.GL11.glBegin(8);
+
+            com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0.0F + textureInset, 0.0F + textureInset);
+            com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, -renderWidth / 2.0F);
+            com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0.0F + textureInset, 1.0F - textureInset);
+            com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, renderWidth / 2.0F);
+            com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1.0F - textureInset, 0.0F + textureInset);
+            com.genir.renderer.bridge.commands.GL11.glVertex2f(renderLength, -renderWidth / 2.0F);
+            com.genir.renderer.bridge.commands.GL11.glTexCoord2f(1.0F - textureInset, 1.0F - textureInset);
+            com.genir.renderer.bridge.commands.GL11.glVertex2f(renderLength, renderWidth / 2.0F);
+
+            com.genir.renderer.bridge.commands.GL11.glEnd();
+            com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
             glowLevel = 1.0F;
             float flameoutBrightness = EngineGlow_flameoutFader.getBrightness();
@@ -312,7 +317,6 @@ public class EngineGlow {
                 EngineGlow_hitGlowSprite.renderAtCenter(0.0F, 0.0F);
             }
 
-            com.genir.renderer.bridge.commands.GL11.glEnable(3042);
             com.genir.renderer.bridge.commands.GL11.glPopMatrix();
         }
     }
