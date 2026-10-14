@@ -51,7 +51,7 @@ public class GenericTextureParticle extends BaseParticle {
             renderer.beginNewParticle();
             renderer.setColor(color, brightness);
             renderer.setTexture(0, 0, tw, th);
-            renderer.setVertices(this.getX() + groupPosX + (float) i, this.getY() + groupPosY, this.getAngle(), width, height);
+            renderer.setVertices(this.getX() + (float) i, this.getY(), this.getAngle(), width, height);
         }
     }
 

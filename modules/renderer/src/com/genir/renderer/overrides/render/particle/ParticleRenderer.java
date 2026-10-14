@@ -77,7 +77,7 @@ public class ParticleRenderer {
     }
 
     public void setVertices(float centerX, float centerY, float angle, float w, float h) {
-        // Optimized equivalent of: achor at center, rotate and translate:
+        // Optimized equivalent of: anchor at center, rotate and translate:
         // m.setIdentity()
         // m.translate(centerX, centerY, 0);
         // m.rotate(angle, 0, 0, 1);
@@ -139,13 +139,7 @@ public class ParticleRenderer {
         com.genir.renderer.bridge.commands.GL11.glTexCoordPointer(2, 0, texCoordPointer);
         com.genir.renderer.bridge.commands.GL11.glColorPointer(4, 0, colorPointer);
 
-        // Particle transformation is handled on the CPU.
-        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
-        com.genir.renderer.bridge.commands.GL11.glLoadIdentity();
-
         com.genir.renderer.bridge.commands.GL11.glDrawArrays(GL11.GL_QUADS, 0, numParticles * 4);
-
-        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
 
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         com.genir.renderer.bridge.commands.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);

@@ -96,9 +96,10 @@ public class DynamicParticleGroup {
             return;
         }
 
-        BaseParticle first = particlesArray[0];
+        com.genir.renderer.bridge.commands.GL11.glPushMatrix();
+        com.genir.renderer.bridge.commands.GL11.glTranslatef(posX, posY, 0.0F);
 
-        first.setParticleGroupPosition(posX, posY);
+        BaseParticle first = particlesArray[0];
         first.preBatch();
 
         for (int i = 0; i < particlesNum; i++) {
@@ -106,6 +107,8 @@ public class DynamicParticleGroup {
         }
 
         first.postBatch();
+
+        com.genir.renderer.bridge.commands.GL11.glPopMatrix();
     }
 
     /**

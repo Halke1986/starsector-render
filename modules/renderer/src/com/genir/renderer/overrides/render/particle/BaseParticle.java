@@ -9,9 +9,6 @@ public abstract class BaseParticle {
      */
     protected static ParticleRenderer renderer;
 
-    protected static float groupPosX;
-    protected static float groupPosY;
-
     /**
      * STUB
      */
@@ -101,13 +98,5 @@ public abstract class BaseParticle {
      */
     public static void initStatic() {
         renderer = new ParticleRenderer();
-    }
-
-    /**
-     * ADDED METHOD
-     */
-    public void setParticleGroupPosition(float posX, float posY) {
-        groupPosX = posX;
-        groupPosY = posY;
     }
 }

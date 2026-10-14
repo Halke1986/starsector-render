@@ -55,7 +55,7 @@ public class SmoothParticle extends BaseParticle {
 
         renderer.setColor(color, this.getBrightness());
         renderer.setTexture(0f, 0f, 1f, 1f);
-        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, 0, size, size);
+        renderer.setVertices(this.getX(), this.getY(), 0, size, size);
     }
 
     /**
