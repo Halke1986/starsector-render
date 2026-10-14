@@ -1,12 +1,7 @@
 
-make particles null on compacting
-avoid re-binding textures?
-
 game is responsive when loading mods
 flicker after alt-tab
 faster CSV
-finish FileLoaderExact and test with vulpoids
-
 
 LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
 insignia42LTaa
