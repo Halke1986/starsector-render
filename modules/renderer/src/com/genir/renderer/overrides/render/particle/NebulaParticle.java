@@ -58,7 +58,7 @@ public class NebulaParticle extends BaseParticle {
         renderer.beginNewParticle();
         renderer.setColor(color, calculateBrightness());
         renderer.setTexture(s, t, size, size);
-        renderer.setVertices(this.getX(), this.getY(), this.getAngle(), width, height);
+        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), width, height);
     }
 
     /**
