@@ -219,13 +219,13 @@ public class EngineGlow {
                     com.genir.renderer.bridge.commands.GL11.glScalef(0.5F + 0.5F * (layerIndex + 1.0F) / layerCount, (layerCount - layerIndex) / layerCount, 1.0F);
                     com.genir.renderer.bridge.commands.GL11.glBegin(8);
 
-                    com.genir.renderer.bridge.commands.GL11.glColor4f(r, g, b, a * (layerIndex * 5.0F * alphaMult * idleAlpha));
+                    com.genir.renderer.bridge.commands.GL11.glColor4f(r, g, b, a * (layerIndex * 5.0F * alphaMult * idleAlpha) / 255f);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU, 0.0F + textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, -renderWidth / 2.0F);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU, 1.0F - textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(0.0F, renderWidth / 2.0F);
 
-                    com.genir.renderer.bridge.commands.GL11.glColor4f(r, g, b, a * (100.0F * alphaMult * idleAlpha));
+                    com.genir.renderer.bridge.commands.GL11.glColor4f(r, g, b, a * (100.0F * alphaMult * idleAlpha) / 255f);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU + transitionU, 0.0F + textureInset);
                     com.genir.renderer.bridge.commands.GL11.glVertex2f(transitionLength, -renderWidth / 2.0F);
                     com.genir.renderer.bridge.commands.GL11.glTexCoord2f(textureU + transitionU, 1.0F - textureInset);
@@ -255,7 +255,7 @@ public class EngineGlow {
             }
 
             com.genir.renderer.bridge.commands.GL11.glRotatef(flamePassSkew, 0.0F, 0.0F, 1.0F);
-            com.genir.renderer.bridge.commands.GL11.glColor4f(r, g, b, a * (glowLevel * 50.0F * alphaMult * idleAlpha));
+            com.genir.renderer.bridge.commands.GL11.glColor4f(r, g, b, a * (glowLevel * 50.0F * alphaMult * idleAlpha) / 255f);
             com.genir.renderer.bridge.commands.GL11.glBegin(8);
 
             com.genir.renderer.bridge.commands.GL11.glTexCoord2f(0.0F + textureInset, 0.0F + textureInset);
