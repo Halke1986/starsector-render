@@ -300,4 +300,16 @@ public class GL30 {
         final Context context = ContextManager.getThreadContext();
         return context.bufferTracker.glIsRenderbuffer(renderbuffer);
     }
+
+    public static void glBindFragDataLocation(int program, int colorNumber, CharSequence name) {
+        record glBindFragDataLocation(int program, int colorNumber, CharSequence name) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL30.glBindFragDataLocation(program, colorNumber, name);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glBindFragDataLocation(program, colorNumber, name));
+    }
 }

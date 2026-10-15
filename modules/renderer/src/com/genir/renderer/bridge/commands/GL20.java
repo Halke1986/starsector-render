@@ -535,4 +535,16 @@ public class GL20 {
         final Context context = ContextManager.getThreadContext();
         return context.exec.get(new glGetActiveAttrib(program, index, maxLength, sizeType));
     }
+
+    public static void glBindAttribLocation(int program, int index, CharSequence name) {
+        record glBindAttribLocation(int program, int index, CharSequence name) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL20.glBindAttribLocation(program, index, name);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glBindAttribLocation(program, index, name.toString()));
+    }
 }

@@ -171,7 +171,7 @@ public final class GL30 {
     }
 
     public static void glBindFragDataLocation(int program, int colorNumber, CharSequence name) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL30.glBindFragDataLocation(int, int, CharSequence)");
+        com.genir.renderer.bridge.commands.GL30.glBindFragDataLocation(program, colorNumber, name);
     }
 
     public static int glGetFragDataLocation(int program, ByteBuffer name) {
