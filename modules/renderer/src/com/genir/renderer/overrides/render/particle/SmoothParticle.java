@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides.render.particle;
 
 import com.fs.graphics.TextureHandler;
+import com.genir.renderer.bridge.context.Matrix;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -17,6 +18,8 @@ public class SmoothParticle extends BaseParticle {
     private TextureHandler override;
     private float size;
 
+    private static Matrix m;
+
     /**
      * STUB
      */
@@ -28,6 +31,13 @@ public class SmoothParticle extends BaseParticle {
      */
     @Override
     public void preBatch() {
+        if (m == null) {
+            m = new Matrix();
+            m.setIdentity();
+        }
+
+//        renderer.clear();
+//        VertexRenderer.vertexRenderer.clear();
         renderer.clear();
 
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -50,12 +60,19 @@ public class SmoothParticle extends BaseParticle {
             return;
         }
 
-        // Resize vertex arrays.
-        renderer.beginNewParticle();
-
-        renderer.setColor(color, this.getBrightness());
-        renderer.setTexture(0f, 0f, 1f, 1f);
-        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, 0, size, size);
+        renderer.addRectangle(
+                this.getX() + groupPosX,
+                this.getY() + groupPosY,
+                0,
+                size,
+                size,
+                color,
+                this.getBrightness(),
+                0,
+                0,
+                1,
+                1
+        );
     }
 
     /**
@@ -64,6 +81,7 @@ public class SmoothParticle extends BaseParticle {
     @Override
     public void postBatch() {
         renderer.render();
+
 
         com.genir.renderer.bridge.commands.GL11.glDisable(GL11.GL_TEXTURE_2D);
     }

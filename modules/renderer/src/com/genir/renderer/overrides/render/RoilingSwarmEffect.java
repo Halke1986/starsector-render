@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
-import com.genir.renderer.overrides.render.particle.ParticleRenderer;
+import com.genir.renderer.overrides.render.core.RectangleRenderer;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -22,10 +22,10 @@ public class RoilingSwarmEffect {
     /**
      * ADDED FIELDS
      */
-    private ParticleRenderer bodyRenderer;
-    private ParticleRenderer flashRenderer;
-    private ParticleRenderer flashExtendedRenderer;
-    private ParticleRenderer flashFringeRenderer;
+    private RectangleRenderer bodyRenderer;
+    private RectangleRenderer flashRenderer;
+    private RectangleRenderer flashExtendedRenderer;
+    private RectangleRenderer flashFringeRenderer;
     private static SpriteAPI glowSprite;
 
     /**
@@ -68,10 +68,10 @@ public class RoilingSwarmEffect {
         }
 
         if (bodyRenderer == null) {
-            bodyRenderer = new ParticleRenderer();
-            flashRenderer = new ParticleRenderer();
-            flashExtendedRenderer = new ParticleRenderer();
-            flashFringeRenderer = new ParticleRenderer();
+            bodyRenderer = new RectangleRenderer();
+            flashRenderer = new RectangleRenderer();
+            flashExtendedRenderer = new RectangleRenderer();
+            flashFringeRenderer = new RectangleRenderer();
         }
 
         // Prepare geometry.
@@ -105,10 +105,21 @@ public class RoilingSwarmEffect {
                 float bodySize = params.baseSpriteSize * p.scale * brightness;
                 float bodyAlphaMult = alphaMult * brightness * params.alphaMultBase;
 
-                bodyRenderer.beginNewParticle();
-                bodyRenderer.setColor(rBody, gBody, bBody, aBody * bodyAlphaMult);
-                bodyRenderer.setTexture(p.sprite.getTexX(), p.sprite.getTexY(), p.sprite.getTexWidth(), p.sprite.getTexHeight());
-                bodyRenderer.setVertices(p.loc.x, p.loc.y, p.angle, bodySize, bodySize);
+                bodyRenderer.addRectangle(
+                        p.loc.x,
+                        p.loc.y,
+                        p.angle,
+                        bodySize,
+                        bodySize,
+                        rBody,
+                        gBody,
+                        bBody,
+                        aBody * bodyAlphaMult,
+                        p.sprite.getTexX(),
+                        p.sprite.getTexY(),
+                        p.sprite.getTexWidth(),
+                        p.sprite.getTexHeight()
+                );
 
                 float glow = getGlowForMember(p);
                 if (glow <= 0) {
@@ -118,30 +129,63 @@ public class RoilingSwarmEffect {
                 if (params.flashCoreRadiusMult <= 0f) {
                     float flashAlphaMult = alphaMult * brightness * glow * params.alphaMultFlash;
 
-                    flashRenderer.beginNewParticle();
-                    flashRenderer.setColor(rFlash, gFlash, bFlash, aFlash * flashAlphaMult);
-                    flashRenderer.setTexture(p.sprite.getTexX(), p.sprite.getTexY(), p.sprite.getTexWidth(), p.sprite.getTexHeight());
-                    flashRenderer.setVertices(p.loc.x, p.loc.y, p.angle, bodySize, bodySize);
+                    flashRenderer.addRectangle(
+                            p.loc.x,
+                            p.loc.y,
+                            p.angle,
+                            bodySize,
+                            bodySize,
+                            rFlash,
+                            gFlash,
+                            bFlash,
+                            aFlash * flashAlphaMult,
+                            p.sprite.getTexX(),
+                            p.sprite.getTexY(),
+                            p.sprite.getTexWidth(),
+                            p.sprite.getTexHeight()
+                    );
                 }
 
                 float flashFringeSize = params.flashRadius * (0.5f + 0.5f * glow) * 2f * p.scale * brightness;
                 if (flashFringeSize > 0) {
                     float flashFringeAlphaMult = alphaMult * brightness * glow * 0.5f * params.alphaMultFlash;
 
-                    flashFringeRenderer.beginNewParticle();
-                    flashFringeRenderer.setColor(rFlashFringe, gFlashFringe, bFlashFringe, aFlashFringe * flashFringeAlphaMult);
-                    flashFringeRenderer.setTexture(glowSprite.getTexX(), glowSprite.getTexY(), glowSprite.getTexWidth(), glowSprite.getTexHeight());
-                    flashFringeRenderer.setVertices(p.loc.x, p.loc.y, 0, flashFringeSize, flashFringeSize);
+                    flashFringeRenderer.addRectangle(
+                            p.loc.x,
+                            p.loc.y,
+                            0,
+                            flashFringeSize,
+                            flashFringeSize,
+                            rFlashFringe,
+                            gFlashFringe,
+                            bFlashFringe,
+                            aFlashFringe * flashFringeAlphaMult,
+                            glowSprite.getTexX(),
+                            glowSprite.getTexY(),
+                            glowSprite.getTexWidth(),
+                            glowSprite.getTexHeight()
+                    );
                 }
 
                 float flashExtendedSize = params.baseSpriteSize * 2f * p.scale * params.flashCoreRadiusMult;
                 if (flashExtendedSize > 0) {
                     float flashExtendedAlphaMult = alphaMult * brightness * glow * 0.5f * params.alphaMultFlash;
 
-                    flashExtendedRenderer.beginNewParticle();
-                    flashExtendedRenderer.setColor(rFlash, gFlash, bFlash, aFlash * flashExtendedAlphaMult);
-                    flashExtendedRenderer.setTexture(glowSprite.getTexX(), glowSprite.getTexY(), glowSprite.getTexWidth(), glowSprite.getTexHeight());
-                    flashExtendedRenderer.setVertices(p.loc.x, p.loc.y, 0, flashExtendedSize, flashExtendedSize);
+                    flashExtendedRenderer.addRectangle(
+                            p.loc.x,
+                            p.loc.y,
+                            0,
+                            flashExtendedSize,
+                            flashExtendedSize,
+                            rFlash,
+                            gFlash,
+                            bFlash,
+                            aFlash * flashExtendedAlphaMult,
+                            glowSprite.getTexX(),
+                            glowSprite.getTexY(),
+                            glowSprite.getTexWidth(),
+                            glowSprite.getTexHeight()
+                    );
                 }
             }
         }

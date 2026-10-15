@@ -86,9 +86,13 @@ public class RectangleRenderer {
         // m.rotate(angle, 0, 0, 1);
         // m.scale(width, height, 0);
 
-        double rad = angle * Math.PI / 180.0;
-        float c = (float) Math.cos(rad);
-        float s = (float) Math.sin(rad);
+        float c = 1;
+        float s = 0;
+        if (angle != 0) {
+            double rad = angle * Math.PI / 180.0;
+            c = (float) Math.cos(rad);
+            s = (float) Math.sin(rad);
+        }
 
         addRectangle(
                 c * width,

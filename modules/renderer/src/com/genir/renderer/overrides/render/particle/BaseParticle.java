@@ -1,5 +1,7 @@
 package com.genir.renderer.overrides.render.particle;
 
+import com.genir.renderer.overrides.render.core.RectangleRenderer;
+
 /**
  * OVERRIDES com.fs.graphics.particle.BaseParticle
  */
@@ -7,7 +9,7 @@ public abstract class BaseParticle {
     /**
      * ADDED FIELDS
      */
-    protected static ParticleRenderer renderer;
+    protected static RectangleRenderer renderer;
 
     protected static float groupPosX;
     protected static float groupPosY;
@@ -100,7 +102,7 @@ public abstract class BaseParticle {
      * ADDED METHOD
      */
     public static void initStatic() {
-        renderer = new ParticleRenderer();
+        renderer = new RectangleRenderer();
     }
 
     /**
