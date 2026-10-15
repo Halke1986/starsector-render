@@ -59,6 +59,8 @@ public class NebulaParticle extends BaseParticle {
                 this.getX() + groupPosX,
                 this.getY() + groupPosY,
                 this.getAngle(),
+                -width / 2,
+                -height / 2,
                 width,
                 height,
                 color,

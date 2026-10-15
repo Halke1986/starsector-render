@@ -36,8 +36,6 @@ public class SmoothParticle extends BaseParticle {
             m.setIdentity();
         }
 
-//        renderer.clear();
-//        VertexRenderer.vertexRenderer.clear();
         renderer.clear();
 
         com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -64,6 +62,8 @@ public class SmoothParticle extends BaseParticle {
                 this.getX() + groupPosX,
                 this.getY() + groupPosY,
                 0,
+                -size / 2,
+                -size / 2,
                 size,
                 size,
                 color,

@@ -211,7 +211,7 @@ public class ResourceLoaderState {
             com.genir.renderer.bridge.commands.GL11.glFinish();
         }
 
-//        Global.getSettings().setDevMode(true);
+        Global.getSettings().setDevMode(true);
 
         // Initialize misc vanilla features.
         ImpactSound.ImpactSound_init();

@@ -41,6 +41,8 @@ public class DetailedSmokeParticle extends BaseParticle {
                 this.getX() + groupPosX,
                 this.getY() + groupPosY,
                 this.getAngle(),
+                -size / 2,
+                -size / 2,
                 size,
                 size,
                 color,

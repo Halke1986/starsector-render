@@ -52,6 +52,8 @@ public class GenericTextureParticle extends BaseParticle {
                     this.getX() + groupPosX + (float) i,
                     this.getY() + groupPosY,
                     this.getAngle(),
+                    -width / 2,
+                    -height / 2,
                     width,
                     height,
                     color,

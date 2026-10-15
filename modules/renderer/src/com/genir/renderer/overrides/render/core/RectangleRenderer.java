@@ -12,7 +12,7 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 public class RectangleRenderer {
-    private static final int RECTANGLE_SIZE = 14;
+    private static final int RECTANGLE_SIZE = 18;
 
     private static final int VERTEX_SIZE = 2;
     private static final int COLOR_SIZE = 4;
@@ -30,11 +30,14 @@ public class RectangleRenderer {
     }
 
     public void addRectangle(
-            float centerX,
-            float centerY,
+            float posX,
+            float posY,
             float angle,
-            float width,
-            float height,
+
+            float vertX,
+            float vertY,
+            float vertWidth,
+            float vertHeight,
 
             Color color,
             float alphaMult,
@@ -44,12 +47,31 @@ public class RectangleRenderer {
             float texWidth,
             float texHeight
     ) {
+        // Optimized equivalent of:
+        // m.setIdentity()
+        // m.translate(posX, posY, 0);
+        // m.rotate(angle, 0, 0, 1);
+
+        float c = 1;
+        float s = 0;
+        if (angle != 0) {
+            double rad = angle * Math.PI / 180.0;
+            c = (float) Math.cos(rad);
+            s = (float) Math.sin(rad);
+        }
+
         addRectangle(
-                centerX,
-                centerY,
-                angle,
-                width,
-                height,
+                c,
+                -s,
+                posX,
+                s,
+                c,
+                posY,
+
+                vertX,
+                vertY,
+                vertWidth,
+                vertHeight,
 
                 color.getRed() / 255f,
                 color.getGreen() / 255f,
@@ -64,11 +86,14 @@ public class RectangleRenderer {
     }
 
     public void addRectangle(
-            float centerX,
-            float centerY,
+            float posX,
+            float posY,
             float angle,
-            float width,
-            float height,
+
+            float vertX,
+            float vertY,
+            float vertWidth,
+            float vertHeight,
 
             float red,
             float green,
@@ -82,9 +107,8 @@ public class RectangleRenderer {
     ) {
         // Optimized equivalent of:
         // m.setIdentity()
-        // m.translate(centerX, centerY, 0);
+        // m.translate(posX, posY, 0);
         // m.rotate(angle, 0, 0, 1);
-        // m.scale(width, height, 0);
 
         float c = 1;
         float s = 0;
@@ -95,12 +119,17 @@ public class RectangleRenderer {
         }
 
         addRectangle(
-                c * width,
-                -s * height,
-                centerX,
-                s * width,
-                c * height,
-                centerY,
+                c,
+                -s,
+                posX,
+                s,
+                c,
+                posY,
+
+                vertX,
+                vertY,
+                vertWidth,
+                vertHeight,
 
                 red,
                 green,
@@ -121,6 +150,11 @@ public class RectangleRenderer {
             float m10,
             float m11,
             float m13,
+
+            float vertX,
+            float vertY,
+            float vertWidth,
+            float vertHeight,
 
             float red,
             float green,
@@ -145,15 +179,20 @@ public class RectangleRenderer {
         scratchpad[offset + 4] = m11;
         scratchpad[offset + 5] = m13;
 
-        scratchpad[offset + 6] = red;
-        scratchpad[offset + 7] = green;
-        scratchpad[offset + 8] = blue;
-        scratchpad[offset + 9] = alpha;
+        scratchpad[offset + 6] = vertX;
+        scratchpad[offset + 7] = vertY;
+        scratchpad[offset + 8] = vertWidth;
+        scratchpad[offset + 9] = vertHeight;
 
-        scratchpad[offset + 10] = texX;
-        scratchpad[offset + 11] = texY;
-        scratchpad[offset + 12] = texWidth;
-        scratchpad[offset + 13] = texHeight;
+        scratchpad[offset + 10] = red;
+        scratchpad[offset + 11] = green;
+        scratchpad[offset + 12] = blue;
+        scratchpad[offset + 13] = alpha;
+
+        scratchpad[offset + 14] = texX;
+        scratchpad[offset + 15] = texY;
+        scratchpad[offset + 16] = texWidth;
+        scratchpad[offset + 17] = texHeight;
 
         rectangles++;
     }
@@ -195,19 +234,24 @@ public class RectangleRenderer {
                     float m11 = snapshot[readOffset + 4];
                     float m13 = snapshot[readOffset + 5];
 
-                    float red = snapshot[readOffset + 6];
-                    float green = snapshot[readOffset + 7];
-                    float blue = snapshot[readOffset + 8];
-                    float alpha = snapshot[readOffset + 9];
+                    float vertX = snapshot[readOffset + 6];
+                    float vertY = snapshot[readOffset + 7];
+                    float vertWidth = snapshot[readOffset + 8];
+                    float vertHeight = snapshot[readOffset + 9];
 
-                    float texX = snapshot[readOffset + 10];
-                    float texY = snapshot[readOffset + 11];
-                    float texWidth = snapshot[readOffset + 12];
-                    float texHeight = snapshot[readOffset + 13];
+                    float red = snapshot[readOffset + 10];
+                    float green = snapshot[readOffset + 11];
+                    float blue = snapshot[readOffset + 12];
+                    float alpha = snapshot[readOffset + 13];
+
+                    float texX = snapshot[readOffset + 14];
+                    float texY = snapshot[readOffset + 15];
+                    float texWidth = snapshot[readOffset + 16];
+                    float texHeight = snapshot[readOffset + 17];
 
                     // Vertex 0.
-                    scratchpad[writeOffset + 0] = -0.5f * m00 - 0.5f * m01 + m03;
-                    scratchpad[writeOffset + 1] = -0.5f * m10 - 0.5f * m11 + m13;
+                    scratchpad[writeOffset + 0] = vertX * m00 + vertY * m01 + m03;
+                    scratchpad[writeOffset + 1] = vertX * m10 + vertY * m11 + m13;
                     scratchpad[writeOffset + 2] = red;
                     scratchpad[writeOffset + 3] = green;
                     scratchpad[writeOffset + 4] = blue;
@@ -216,8 +260,8 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 7] = texY;
 
                     // Vertex 2.
-                    scratchpad[writeOffset + 8] = -0.5f * m00 + 0.5f * m01 + m03;
-                    scratchpad[writeOffset + 9] = -0.5f * m10 + 0.5f * m11 + m13;
+                    scratchpad[writeOffset + 8] = vertX * m00 + (vertY + vertHeight) * m01 + m03;
+                    scratchpad[writeOffset + 9] = vertX * m10 + (vertY + vertHeight) * m11 + m13;
                     scratchpad[writeOffset + 10] = red;
                     scratchpad[writeOffset + 11] = green;
                     scratchpad[writeOffset + 12] = blue;
@@ -226,8 +270,8 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 15] = texY + texHeight;
 
                     // Vertex 3.
-                    scratchpad[writeOffset + 16] = 0.5f * m00 + 0.5f * m01 + m03;
-                    scratchpad[writeOffset + 17] = 0.5f * m10 + 0.5f * m11 + m13;
+                    scratchpad[writeOffset + 16] = (vertX + vertWidth) * m00 + (vertY + vertHeight) * m01 + m03;
+                    scratchpad[writeOffset + 17] = (vertX + vertWidth) * m10 + (vertY + vertHeight) * m11 + m13;
                     scratchpad[writeOffset + 18] = red;
                     scratchpad[writeOffset + 19] = green;
                     scratchpad[writeOffset + 20] = blue;
@@ -236,8 +280,8 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 23] = texY + texHeight;
 
                     // Vertex 4.
-                    scratchpad[writeOffset + 24] = 0.5f * m00 - 0.5f * m01 + m03;
-                    scratchpad[writeOffset + 25] = 0.5f * m10 - 0.5f * m11 + m13;
+                    scratchpad[writeOffset + 24] = (vertX + vertWidth) * m00 + vertY * m01 + m03;
+                    scratchpad[writeOffset + 25] = (vertX + vertWidth) * m10 + vertY * m11 + m13;
                     scratchpad[writeOffset + 26] = red;
                     scratchpad[writeOffset + 27] = green;
                     scratchpad[writeOffset + 28] = blue;
