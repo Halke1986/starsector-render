@@ -58,6 +58,7 @@ public class GenericTextureParticle extends BaseParticle {
                     height,
                     color,
                     brightness,
+                    brightness,
                     0,
                     0,
                     tw,

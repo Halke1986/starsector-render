@@ -12,7 +12,7 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 public class RectangleRenderer {
-    private static final int RECTANGLE_SIZE = 18;
+    private static final int RECTANGLE_SIZE = 19;
 
     private static final int VERTEX_SIZE = 2;
     private static final int COLOR_SIZE = 4;
@@ -40,7 +40,8 @@ public class RectangleRenderer {
             float vertHeight,
 
             Color color,
-            float alphaMult,
+            float alphaMultL,
+            float alphaMultR,
 
             float texX,
             float texY,
@@ -60,6 +61,8 @@ public class RectangleRenderer {
             s = (float) Math.sin(rad);
         }
 
+        float alpha = color.getAlpha() / 255f;
+
         addRectangle(
                 c,
                 -s,
@@ -76,7 +79,8 @@ public class RectangleRenderer {
                 color.getRed() / 255f,
                 color.getGreen() / 255f,
                 color.getBlue() / 255f,
-                (color.getAlpha() / 255f) * alphaMult,
+                alpha * alphaMultL,
+                alpha * alphaMultR,
 
                 texX,
                 texY,
@@ -98,7 +102,8 @@ public class RectangleRenderer {
             float red,
             float green,
             float blue,
-            float alpha,
+            float alphaL,
+            float alphaR,
 
             float texX,
             float texY,
@@ -134,7 +139,8 @@ public class RectangleRenderer {
                 red,
                 green,
                 blue,
-                alpha,
+                alphaL,
+                alphaR,
 
                 texX,
                 texY,
@@ -159,7 +165,8 @@ public class RectangleRenderer {
             float red,
             float green,
             float blue,
-            float alpha,
+            float alphaL,
+            float alphaR,
 
             float texX,
             float texY,
@@ -187,12 +194,13 @@ public class RectangleRenderer {
         scratchpad[offset + 10] = red;
         scratchpad[offset + 11] = green;
         scratchpad[offset + 12] = blue;
-        scratchpad[offset + 13] = alpha;
+        scratchpad[offset + 13] = alphaL;
+        scratchpad[offset + 14] = alphaR;
 
-        scratchpad[offset + 14] = texX;
-        scratchpad[offset + 15] = texY;
-        scratchpad[offset + 16] = texWidth;
-        scratchpad[offset + 17] = texHeight;
+        scratchpad[offset + 15] = texX;
+        scratchpad[offset + 16] = texY;
+        scratchpad[offset + 17] = texWidth;
+        scratchpad[offset + 18] = texHeight;
 
         rectangles++;
     }
@@ -242,12 +250,13 @@ public class RectangleRenderer {
                     float red = snapshot[readOffset + 10];
                     float green = snapshot[readOffset + 11];
                     float blue = snapshot[readOffset + 12];
-                    float alpha = snapshot[readOffset + 13];
+                    float alphaL = snapshot[readOffset + 13];
+                    float alphaR = snapshot[readOffset + 14];
 
-                    float texX = snapshot[readOffset + 14];
-                    float texY = snapshot[readOffset + 15];
-                    float texWidth = snapshot[readOffset + 16];
-                    float texHeight = snapshot[readOffset + 17];
+                    float texX = snapshot[readOffset + 15];
+                    float texY = snapshot[readOffset + 16];
+                    float texWidth = snapshot[readOffset + 17];
+                    float texHeight = snapshot[readOffset + 18];
 
                     // Vertex 0.
                     scratchpad[writeOffset + 0] = vertX * m00 + vertY * m01 + m03;
@@ -255,7 +264,7 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 2] = red;
                     scratchpad[writeOffset + 3] = green;
                     scratchpad[writeOffset + 4] = blue;
-                    scratchpad[writeOffset + 5] = alpha;
+                    scratchpad[writeOffset + 5] = alphaL;
                     scratchpad[writeOffset + 6] = texX;
                     scratchpad[writeOffset + 7] = texY;
 
@@ -265,7 +274,7 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 10] = red;
                     scratchpad[writeOffset + 11] = green;
                     scratchpad[writeOffset + 12] = blue;
-                    scratchpad[writeOffset + 13] = alpha;
+                    scratchpad[writeOffset + 13] = alphaL;
                     scratchpad[writeOffset + 14] = texX;
                     scratchpad[writeOffset + 15] = texY + texHeight;
 
@@ -275,7 +284,7 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 18] = red;
                     scratchpad[writeOffset + 19] = green;
                     scratchpad[writeOffset + 20] = blue;
-                    scratchpad[writeOffset + 21] = alpha;
+                    scratchpad[writeOffset + 21] = alphaR;
                     scratchpad[writeOffset + 22] = texX + texWidth;
                     scratchpad[writeOffset + 23] = texY + texHeight;
 
@@ -285,7 +294,7 @@ public class RectangleRenderer {
                     scratchpad[writeOffset + 26] = red;
                     scratchpad[writeOffset + 27] = green;
                     scratchpad[writeOffset + 28] = blue;
-                    scratchpad[writeOffset + 29] = alpha;
+                    scratchpad[writeOffset + 29] = alphaR;
                     scratchpad[writeOffset + 30] = texX + texWidth;
                     scratchpad[writeOffset + 31] = texY;
                 }

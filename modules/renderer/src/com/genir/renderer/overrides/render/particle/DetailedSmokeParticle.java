@@ -37,6 +37,8 @@ public class DetailedSmokeParticle extends BaseParticle {
      */
     @Override
     public void render() {
+        float brightness = this.getBrightness();
+
         renderer.addRectangle(
                 this.getX() + groupPosX,
                 this.getY() + groupPosY,
@@ -46,7 +48,8 @@ public class DetailedSmokeParticle extends BaseParticle {
                 size,
                 size,
                 color,
-                this.getBrightness(),
+                brightness,
+                brightness,
                 0,
                 0,
                 1,

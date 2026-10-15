@@ -55,6 +55,8 @@ public class NebulaParticle extends BaseParticle {
         float s = (float) i * size;
         float t = (float) j * size;
 
+        float brightness = this.getBrightness();
+
         renderer.addRectangle(
                 this.getX() + groupPosX,
                 this.getY() + groupPosY,
@@ -64,7 +66,8 @@ public class NebulaParticle extends BaseParticle {
                 width,
                 height,
                 color,
-                calculateBrightness(),
+                brightness,
+                brightness,
                 s,
                 t,
                 size,
