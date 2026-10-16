@@ -1,3 +1,7 @@
+v0.9.6rc1
+
+- Removed Starsector's use of OpenGL display lists to simplify the OpenGL simulation layer.
+
 v0.9.5
 
 - Added support for glBindAttribLocation and glBindFragDataLocation, required by BoxUtil 1.6.x. Suggested by wzmsykk.

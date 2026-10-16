@@ -2,6 +2,6 @@ package com.genir.renderer;
 
 public class Version {
     public static String getVersion() {
-        return "v0.9.5";
+        return "v0.9.6rc1";
     }
 }

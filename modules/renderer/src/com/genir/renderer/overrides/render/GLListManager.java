@@ -2,6 +2,9 @@ package com.genir.renderer.overrides.render;
 
 /**
  * OVERRIDES com.fs.graphics.util.GLListManager
+ * <p>
+ * Removing OpenGL display lists from Starsector
+ * substantially simplifies the OpenGL simulation layer.
  */
 public class GLListManager {
     public static final boolean buildingList = false;

@@ -22,7 +22,7 @@ MOD INTEGRATION
 
 INCOMPATIBLE MODS
 
-- BoxUtil 1.6.0 and later.
+- BoxUtil versions 1.6.0 and later require a GPU and driver that support OpenGL 4.5.
 - Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
 
 BYTECODE MODIFICATION DISCLOSURE
