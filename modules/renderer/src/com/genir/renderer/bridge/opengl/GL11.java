@@ -36,7 +36,7 @@ public final class GL11 {
     }
 
     public static void glCallList(int list) {
-        com.genir.renderer.bridge.commands.GL11.glCallList(list);
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glCallList(int)");
     }
 
     public static void glBlendFunc(int sfactor, int dfactor) {
@@ -404,7 +404,7 @@ public final class GL11 {
     }
 
     public static int glGenLists(int range) {
-        return com.genir.renderer.bridge.commands.GL11.glGenLists(range);
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glGenLists(int)");
     }
 
     public static void glFrustum(double left, double right, double bottom, double top, double zNear, double zFar) {
@@ -824,11 +824,11 @@ public final class GL11 {
     }
 
     public static void glNewList(int list, int mode) {
-        com.genir.renderer.bridge.commands.GL11.glNewList(list, mode);
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glNewList(int, int)");
     }
 
     public static void glEndList() {
-        com.genir.renderer.bridge.commands.GL11.glEndList();
+        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glEndList()");
     }
 
     public static void glMultMatrix(FloatBuffer m) {
