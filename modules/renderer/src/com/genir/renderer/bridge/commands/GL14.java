@@ -5,18 +5,14 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.bridge.interfaces.Recordable;
 
 import java.nio.IntBuffer;
 
 public class GL14 {
     public static void glBlendEquation(int mode) {
-        record glBlendEquation(int mode) implements GLCommand, Recordable {
+        record glBlendEquation(int mode) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                if (context.listManager.isRecording(this, args, argsOffset))
-                    return;
-
                 context.attribManager.glBlendEquation(mode);
             }
         }
@@ -26,12 +22,9 @@ public class GL14 {
     }
 
     public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        record glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements GLCommand, Recordable {
+        record glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                if (context.listManager.isRecording(this, args, argsOffset))
-                    return;
-
                 context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
             }
         }

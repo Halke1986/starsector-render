@@ -54,7 +54,6 @@ public class Context {
     }
 
     // Server state. Runs on rendering thread.
-    public final ListManager listManager = new ListManager(this, ListManager.Side.SERVER);
     public final AttribManager attribManager = new AttribManager();
     public final MatrixManager matrixManager = new MatrixManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
@@ -69,13 +68,11 @@ public class Context {
     public final BufferPool bufferPool = new BufferPool();
 
     // Context-local client state. Runs on main thread.
-    public final float[] commandArgs = new float[4];
     public final AttribTracker attribTracker = new AttribTracker(exec);
     public final MatrixTracker matrixTracker = new MatrixTracker(attribTracker);
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
     public final BufferManager bufferManager = new BufferManager();
     // Context-shared client state, that can however be safely run per-context.
-    public final ListManager clientListManager = new ListManager(this, ListManager.Side.CLIENT);
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
     public final ResourceGenerator bufferGenerator = new ResourceGenerator(org.lwjgl.opengl.GL15::glGenBuffers, exec);

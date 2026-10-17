@@ -348,7 +348,7 @@ public final class GL20 {
     }
 
     public static void glBindAttribLocation(int program, int index, CharSequence name) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL20.glBindAttribLocation(int, int, CharSequence)");
+        com.genir.renderer.bridge.commands.GL20.glBindAttribLocation(program, index, name);
     }
 
     public static void glGetActiveAttrib(int program, int index, IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {

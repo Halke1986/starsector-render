@@ -4,9 +4,6 @@ import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.bridge.interfaces.GLCommandClient;
-import com.genir.renderer.bridge.interfaces.Recordable;
-import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -128,11 +125,21 @@ public class Sprite {
      */
     private void runCommand(RenderState command) {
         final Context context = ContextManager.getThreadContext();
-        command.runClient(context, null, 0);
+
+        if (command.bind) {
+            if (context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, command.textureID)) {
+                context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, command.textureID);
+            }
+            context.textureManager.glBindTexture(context, GL11.GL_TEXTURE_2D, command.textureID);
+        }
+
+        context.attribTracker.glEnable(GL11.GL_TEXTURE_2D);
+        context.attribTracker.glDisable(GL11.GL_BLEND);
+
         context.exec.execute(command);
     }
 
-    public static class RenderState implements GLCommand, GLCommandClient, Recordable, Releasable {
+    public static class RenderState implements GLCommand {
         public float spriteX;
         public float spriteY;
         public float spriteWidth;
@@ -160,9 +167,6 @@ public class Sprite {
 
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            if (context.listManager.isRecording(this, null, 0))
-                return;
-
             if (bind) {
                 context.attribManager.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
                 org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
@@ -215,29 +219,6 @@ public class Sprite {
                 org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
             }
 
-            if (!context.listManager.isReplaying()) {
-                this.release();
-            }
-        }
-
-        @Override
-        public void runClient(Context context, float[] args, int argsOffset) {
-            if (context.clientListManager.isRecording(this, args, argsOffset))
-                return;
-
-            if (bind) {
-                if (context.textureTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID)) {
-                    context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-                }
-                context.textureManager.glBindTexture(context, GL11.GL_TEXTURE_2D, textureID);
-            }
-
-            context.attribTracker.glEnable(GL11.GL_TEXTURE_2D);
-            context.attribTracker.glDisable(GL11.GL_BLEND);
-        }
-
-        @Override
-        public void release() {
             Pools.spritePool.put(this);
         }
     }

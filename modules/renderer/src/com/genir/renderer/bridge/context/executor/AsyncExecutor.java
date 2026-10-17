@@ -46,27 +46,17 @@ public class AsyncExecutor implements Executor {
      */
     @Override
     public void execute(GLCommand command) {
-        Frame frame = currentFrame;
-        frame.add(command);
+        currentFrame.add(command);
     }
 
     @Override
-    public void execute(GLCommand command, float[] args) {
-        Frame frame = currentFrame;
-        int argsOffset = frame.add(command);
-
-        frame.args[argsOffset + 0] = args[0];
-        frame.args[argsOffset + 1] = args[1];
-        frame.args[argsOffset + 2] = args[2];
-        frame.args[argsOffset + 3] = args[3];
+    public void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3) {
+        currentFrame.add(command, arg0, arg1, arg2, arg3);
     }
 
     @Override
     public void executeSync(GLCommand command, GLSync fence) {
-        Frame frame = currentFrame;
-        frame.add(command);
-
-        frame.fences.add(fence);
+        currentFrame.add(command, fence);
     }
 
     /**
@@ -161,7 +151,7 @@ public class AsyncExecutor implements Executor {
                 // Ensure all GLSync fences required by this command batch have been created.
                 // Otherwise, glWaitSync() may execute before the corresponding glFenceSync(),
                 // causing a deadlock inside the following synchronized block.
-                for (GLSync sync : frameToExecute.fences) {
+                for (GLSync sync : frameToExecute.getFences()) {
                     sync.future().get();
                 }
 
@@ -220,11 +210,11 @@ public class AsyncExecutor implements Executor {
     }
 
     private void executeCommands(Frame frame) {
-        GLCommand[] commands = frame.commands;
-        float[] args = frame.args;
+        GLCommand[] commands = frame.getCommands();
+        float[] args = frame.getArgs();
 
         // Run all scheduled commands.
-        for (int i = 0; i < frame.commandsSize; i++) {
+        for (int i = 0; i < frame.getCommandsSize(); i++) {
             try {
                 // logCommand(context, args, i * Frame.ARGS_NUM, commands[i]);
                 commands[i].run(context, args, i * Frame.ARGS_NUM);

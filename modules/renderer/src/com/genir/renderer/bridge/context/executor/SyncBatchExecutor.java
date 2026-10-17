@@ -26,20 +26,13 @@ public class SyncBatchExecutor implements Executor {
     }
 
     @Override
-    public void execute(GLCommand command, float[] args) {
-        int argsOffset = frame.add(command);
-
-        frame.args[argsOffset + 0] = args[0];
-        frame.args[argsOffset + 1] = args[1];
-        frame.args[argsOffset + 2] = args[2];
-        frame.args[argsOffset + 3] = args[3];
+    public void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3) {
+        frame.add(command, arg0, arg1, arg2, arg3);
     }
 
     @Override
     public void executeSync(GLCommand command, GLSync fence) {
-        frame.add(command);
-
-        frame.fences.add(fence);
+        frame.add(command, fence);
     }
 
     /**
@@ -85,12 +78,12 @@ public class SyncBatchExecutor implements Executor {
     }
 
     private void executeCommands() {
-        GLCommand[] commands = frame.commands;
-        float[] args = frame.args;
+        GLCommand[] commands = frame.getCommands();
+        float[] args = frame.getArgs();
 
         // Run all scheduled commands.
         synchronized (execMutex) {
-            for (int i = 0; i < frame.commandsSize; i++) {
+            for (int i = 0; i < frame.getCommandsSize(); i++) {
                 commands[i].run(context, args, i * Frame.ARGS_NUM);
             }
         }

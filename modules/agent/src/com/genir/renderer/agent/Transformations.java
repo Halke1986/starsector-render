@@ -47,7 +47,10 @@ public class Transformations {
             entry("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display"),
             entry("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"),
             entry("org/lwjgl/opengl/GLSync", "com/genir/renderer/bridge/commands/GLSync"),
-            entry("org/lwjgl/opengl/SharedDrawable", "com/genir/renderer/bridge/commands/SharedDrawable")
+            entry("org/lwjgl/opengl/SharedDrawable", "com/genir/renderer/bridge/commands/SharedDrawable"),
+
+            entry("com/fs/graphics/util/GLListManager", "com/genir/renderer/overrides/render/GLListManager"),
+            entry("com/fs/graphics/util/GLListManager$GLListToken", "com/genir/renderer/overrides/render/GLListManager$GLListToken")
     );
 
     public static Map<String, String> obfuscation = Map.<String, String>ofEntries(

@@ -22,7 +22,12 @@ public class SyncExecutor implements Executor {
     }
 
     @Override
-    public void execute(GLCommand command, float[] args) {
+    public void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3) {
+        args[0] = arg0;
+        args[1] = arg1;
+        args[2] = arg2;
+        args[3] = arg3;
+
         command.run(context, args, 0);
     }
 
