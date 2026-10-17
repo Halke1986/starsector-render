@@ -68,7 +68,6 @@ public class Context {
     public final BufferPool bufferPool = new BufferPool();
 
     // Context-local client state. Runs on main thread.
-    public final float[] commandArgs = new float[4];
     public final AttribTracker attribTracker = new AttribTracker(exec);
     public final MatrixTracker matrixTracker = new MatrixTracker(attribTracker);
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);

@@ -41,11 +41,7 @@ public class GL11 {
 
     public static void glBegin(int mode) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = Float.intBitsToFloat(mode);
-
-        context.exec.execute(glBeginCommand, args);
+        context.exec.execute(glBeginCommand, Float.intBitsToFloat(mode), 0, 0, 0);
     }
 
     private static class GlEnd implements GLCommand, DebugString { // Heap optimized
@@ -120,14 +116,7 @@ public class GL11 {
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = red;
-        args[1] = green;
-        args[2] = blue;
-        args[3] = alpha;
-
-        context.exec.execute(glColor4fCommand, args);
+        context.exec.execute(glColor4fCommand, red, green, blue, alpha);
     }
 
     public static void glColor4ub(byte red, byte green, byte blue, byte alpha) {
@@ -176,14 +165,7 @@ public class GL11 {
 
     public static void glTexCoord4f(float s, float t, float r, float q) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = s;
-        args[1] = t;
-        args[2] = r;
-        args[3] = q;
-
-        context.exec.execute(glTexCoord4fCommand, args);
+        context.exec.execute(glTexCoord4fCommand, s, t, r, q);
     }
 
     public static void glNormal3f(float nx, float ny, float nz) {
@@ -242,13 +224,7 @@ public class GL11 {
 
     public static void glVertex3f(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = x;
-        args[1] = y;
-        args[2] = z;
-
-        context.exec.execute(glVertex3fCommand, args);
+        context.exec.execute(glVertex3fCommand, x, y, z, 0);
     }
 
     public static void glVertex3d(double x, double y, double z) {
@@ -516,14 +492,8 @@ public class GL11 {
 
     public static void glTranslatef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = x;
-        args[1] = y;
-        args[2] = z;
-
         context.matrixTracker.glTranslatef(x, y, z);
-        context.exec.execute(glTranslatefCommand, args);
+        context.exec.execute(glTranslatefCommand, x, y, z, 0);
     }
 
     private static class GlRotatef implements GLCommand, DebugString { // Heap optimized
@@ -552,15 +522,8 @@ public class GL11 {
 
     public static void glRotatef(float angle, float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = angle;
-        args[1] = x;
-        args[2] = y;
-        args[3] = z;
-
         context.matrixTracker.glRotatef(angle, x, y, z);
-        context.exec.execute(glRotatefCommand, args);
+        context.exec.execute(glRotatefCommand, angle, x, y, z);
     }
 
     private static class GlScalef implements GLCommand, DebugString { // Heap optimized
@@ -587,14 +550,8 @@ public class GL11 {
 
     public static void glScalef(float x, float y, float z) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = x;
-        args[1] = y;
-        args[2] = z;
-
         context.matrixTracker.glScalef(x, y, z);
-        context.exec.execute(glScalefCommand, args);
+        context.exec.execute(glScalefCommand, x, y, z, 0);
     }
 
     public static void glMultMatrix(FloatBuffer m) {
@@ -668,12 +625,8 @@ public class GL11 {
 
     public static void glEnable(int cap) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = Float.intBitsToFloat(cap);
-
         context.attribTracker.glEnable(cap);
-        context.exec.execute(glEnableCommand, args);
+        context.exec.execute(glEnableCommand, Float.intBitsToFloat(cap), 0, 0, 0);
     }
 
     private static class GlDisable implements GLCommand, DebugString { // Heap optimized
@@ -697,12 +650,8 @@ public class GL11 {
 
     public static void glDisable(int cap) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = Float.intBitsToFloat(cap);
-
         context.attribTracker.glDisable(cap);
-        context.exec.execute(glDisableCommand, args);
+        context.exec.execute(glDisableCommand, Float.intBitsToFloat(cap), 0, 0, 0);
     }
 
     private static class GlBlendFunc implements GLCommand, DebugString { // Heap optimized
@@ -727,12 +676,7 @@ public class GL11 {
 
     public static void glBlendFunc(int sfactorRGB, int dfactorRGB) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = Float.intBitsToFloat(sfactorRGB);
-        args[1] = Float.intBitsToFloat(dfactorRGB);
-
-        context.exec.execute(glBlendFuncCommand, args);
+        context.exec.execute(glBlendFuncCommand, Float.intBitsToFloat(sfactorRGB), Float.intBitsToFloat(dfactorRGB), 0, 0);
     }
 
     private static class GlBindTexture implements GLCommand, DebugString { // Heap optimized
@@ -760,18 +704,13 @@ public class GL11 {
     public static void glBindTexture(int target, int texture) {
         final Context context = ContextManager.getThreadContext();
 
-        float[] args = context.commandArgs;
-        args[0] = Float.intBitsToFloat(target);
-        args[1] = Float.intBitsToFloat(texture);
-
         // Use texture tracker to assert the correctness of binding request.
         // Act only on correct requests.
         if (context.textureTracker.glBindTexture(target, texture)) {
             context.attribTracker.glBindTexture(target, texture);
         }
 
-        context.exec.execute(glBindTextureCommand, args);
-
+        context.exec.execute(glBindTextureCommand, Float.intBitsToFloat(target), Float.intBitsToFloat(texture), 0, 0);
         context.textureManager.glBindTexture(context, target, texture);
     }
 
@@ -946,13 +885,7 @@ public class GL11 {
 
     public static void glStencilFunc(int func, int ref, int mask) {
         final Context context = ContextManager.getThreadContext();
-
-        float[] args = context.commandArgs;
-        args[0] = Float.intBitsToFloat(func);
-        args[1] = Float.intBitsToFloat(ref);
-        args[2] = Float.intBitsToFloat(mask);
-
-        context.exec.execute(glStencilFuncCommand, args);
+        context.exec.execute(glStencilFuncCommand, Float.intBitsToFloat(func), Float.intBitsToFloat(ref), Float.intBitsToFloat(mask), 0);
     }
 
     public static void glStencilMask(int mask) {

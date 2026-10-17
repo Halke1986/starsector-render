@@ -26,8 +26,8 @@ public class SyncBatchExecutor implements Executor {
     }
 
     @Override
-    public void execute(GLCommand command, float[] args) {
-        frame.add(command, args);
+    public void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3) {
+        frame.add(command, arg0, arg1, arg2, arg3);
     }
 
     @Override

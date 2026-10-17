@@ -29,16 +29,20 @@ public class Frame {
         commandsSize++;
     }
 
-    public void add(GLCommand command, float[] inArgs) {
+    public void add(GLCommand command, float arg0, float arg1, float arg2, float arg3) {
         try {
             commands[commandsSize] = command;
-            System.arraycopy(inArgs, 0, args, commandsSize * ARGS_NUM, ARGS_NUM);
         } catch (ArrayIndexOutOfBoundsException e) {
             resizeArrays();
 
             commands[commandsSize] = command;
-            System.arraycopy(inArgs, 0, args, commandsSize * ARGS_NUM, ARGS_NUM);
         }
+
+        int offset = commandsSize * ARGS_NUM;
+        args[offset + 0] = arg0;
+        args[offset + 1] = arg1;
+        args[offset + 2] = arg2;
+        args[offset + 3] = arg3;
 
         commandsSize++;
     }
