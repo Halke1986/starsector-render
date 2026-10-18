@@ -181,7 +181,7 @@ public class Transformations {
             entry("FontRenderer_color", "Øo0000"),
             entry("FontRenderer_colorAlpha", "Ö00000"),
             entry("FontRenderer_highlightColor", "Ô00000"),
-            entry("FontRenderer_highlightColorAlpha", "Öo0000"),
+            entry("FontRenderer_highlightColorAlpha", "öO0000"),
             entry("FontRenderer_highlightColors", "ØÓ0000"),
             entry("FontRenderer_highlightByChar", "Oo0000"),
             entry("FontRenderer_highlighByCharAlphas", "ÔÒ0000"),

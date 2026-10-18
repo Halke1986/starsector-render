@@ -18,7 +18,7 @@ public class FontRenderer {
 //    // $FF: renamed from: ÔÓ0000 boolean
 //    public static boolean boolean_0 = false;
     // $FF: renamed from: Öo0000 float
-    private float FontRenderer_highlightColorAlpha;
+//    private float FontRenderer_highlightColorAlpha;
     //    // $FF: renamed from: float.super float
 //    private float float_2 = 0.0F;
     // $FF: renamed from: float.new com.fs.graphics.A.F
@@ -51,8 +51,8 @@ public class FontRenderer {
 //    private float float_6;
     // $FF: renamed from: Ö00000 float
     private float FontRenderer_colorAlpha;
-    //    // $FF: renamed from: öO0000 float
-//    private float float_8;
+    // $FF: renamed from: öO0000 float
+    private float FontRenderer_highlightColorAlpha;
     // $FF: renamed from: ÔÒ0000 float[]
     private float[] FontRenderer_highlighByCharAlphas;
     //    // $FF: renamed from: ö00000 int
