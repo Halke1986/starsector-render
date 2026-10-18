@@ -215,6 +215,10 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("endList", "()V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/GLListManager");
                 return transformer;
+            case "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO":
+                transformer.removeMethod("Õ00000", "(Z)V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/FontRenderer");
+                return transformer;
             default:
                 return null;
         }

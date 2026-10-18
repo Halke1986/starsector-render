@@ -73,6 +73,9 @@ public class Transformations {
             entry("com/fs/starfarer/renderers/ShipArrowRenderer", "com/fs/starfarer/renderers/O"),
             entry("com/fs/starfarer/combat/entities/ship/damage/ImpactSound", "com/fs/starfarer/combat/entities/ship/A/I"),
             entry("com/fs/graphics/util/Rendering", "com/fs/graphics/util/B"),
+            entry("com/fs/graphics/font/Font", "com/fs/graphics/A/F"),
+            entry("com/fs/graphics/font/Glyph", "com/fs/graphics/A/oOOO"),
+            entry("com/fs/graphics/font/Kerning", "com/fs/graphics/A/class"),
 
             // Methods
             entry("TextureRepository_addTexture", "super"),
@@ -135,6 +138,20 @@ public class Transformations {
             entry("Rendering_begin", "return"),
             entry("Rendering_setupProjection", "o00000"),
             entry("Rendering_end", "Õ00000"),
+            entry("FontRenderer_renderGlyphs", "Õ00000"),
+            entry("FontRenderer_renderGlyph", "o00000"),
+            entry("FontRenderer_renderUnderline", "o00000"),
+            entry("FontRenderer_refreshFontFlags", "int"),
+            entry("FontRenderer_renderGlyphsWithTransform", "Ò00000"),
+            entry("FontRenderer_isHighlightEnd", "Ø00000"),
+            entry("FontRenderer_isHighlightStart", "Ô00000"),
+            entry("Font_getSize", "Õ00000"),
+            entry("Font_getGlyph", "oO0000"),
+            entry("Font_getLineHeight", "ø00000"),
+            entry("Font_getKerning", "o00000"),
+            entry("Glyph_getXOffset", "ö00000"),
+            entry("Glyph_getXAdvance", "Ø00000"),
+            entry("Kerning_getAmount", "Ó00000"),
 
             // Fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -147,7 +164,23 @@ public class Transformations {
             entry("CombatEngine_hitParticlesGroup", "OÔ0000"),
             entry("HullSpecStore_hulls", "o00000"),
             entry("WeaponSpecStore_weapons", "new"),
-            entry("WeaponSpecStore_projectiles", "o00000")
+            entry("WeaponSpecStore_projectiles", "o00000"),
+            entry("FontRenderer_multiPassFont", "new_new"),
+            entry("FontRenderer_transformMatrix", "oÒ0000"),
+            entry("FontRenderer_highlightDisabled", "Ø00000"),
+            entry("FontRenderer_fontSize", "float"),
+            entry("FontRenderer_font", "float_new"),
+            entry("FontRenderer_text", "while_super"),
+            entry("FontRenderer_color", "Øo0000"),
+            entry("FontRenderer_colorAlpha", "Ö00000"),
+            entry("FontRenderer_highlightColor", "Ô00000"),
+            entry("FontRenderer_highlightColorAlpha", "Öo0000"),
+            entry("FontRenderer_highlightColors", "ØÓ0000"),
+            entry("FontRenderer_highlightByChar", "Oo0000"),
+            entry("FontRenderer_highlighByCharAlphas", "ÔÒ0000"),
+            entry("FontRenderer_underlineEnabled", "õo0000"),
+
+            entry("xx", "xx")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -180,7 +213,9 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
             entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
             entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
-            entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager")
+            entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager"),
+
+            entry("com/genir/renderer/overrides/render/FontRenderer", "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
