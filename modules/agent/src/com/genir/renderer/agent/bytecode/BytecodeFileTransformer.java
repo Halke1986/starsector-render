@@ -216,7 +216,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.mergeClass("com/genir/renderer/overrides/render/GLListManager");
                 return transformer;
             case "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO":
-                transformer.removeMethod("Õ00000", "(Z)V");
+                transformer.renameMethod("Õ00000", "renderGlyphs_vanilla", "(Z)V");
                 transformer.mergeClass("com/genir/renderer/overrides/render/FontRenderer");
                 return transformer;
             default:

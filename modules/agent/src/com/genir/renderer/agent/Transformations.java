@@ -139,10 +139,10 @@ public class Transformations {
             entry("Rendering_setupProjection", "o00000"),
             entry("Rendering_end", "Õ00000"),
             entry("FontRenderer_renderGlyphs", "Õ00000"),
-            entry("FontRenderer_renderGlyph", "o00000"),
-            entry("FontRenderer_renderUnderline", "o00000"),
+//            entry("FontRenderer_renderGlyph", "o00000"),
+//            entry("FontRenderer_renderUnderline", "o00000"),
             entry("FontRenderer_refreshFontFlags", "int"),
-            entry("FontRenderer_renderGlyphsWithTransform", "Ò00000"),
+//            entry("FontRenderer_renderGlyphsWithTransform", "Ò00000"),
             entry("FontRenderer_isHighlightEnd", "Ø00000"),
             entry("FontRenderer_isHighlightStart", "Ô00000"),
             entry("Font_getSize", "Õ00000"),
@@ -186,6 +186,7 @@ public class Transformations {
             entry("FontRenderer_highlightByChar", "Oo0000"),
             entry("FontRenderer_highlighByCharAlphas", "ÔÒ0000"),
             entry("FontRenderer_underlineEnabled", "õo0000"),
+            entry("FontRenderer_outlineSize", "oo0000"),
             entry("FontRenderer_outlineExpansion", "oO0000"),
 
             entry("xx", "xx")

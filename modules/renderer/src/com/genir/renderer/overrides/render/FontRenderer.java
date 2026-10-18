@@ -129,12 +129,12 @@ public class FontRenderer {
     protected void FontRenderer_refreshFontFlags() {
     }
 
-    /**
-     * STUB
-     */
-    // $FF: renamed from: Ò00000 (boolean) void
-    private void FontRenderer_renderGlyphsWithTransform(boolean var1) {
-    }
+//    /**
+//     * STUB
+//     */
+//    // $FF: renamed from: Ò00000 (boolean) void
+//    private void FontRenderer_renderGlyphsWithTransform(boolean var1) {
+//    }
 
     /**
      * STUB
@@ -152,18 +152,24 @@ public class FontRenderer {
         return false;
     }
 
-    /**
-     * STUB
-     */
-    // $FF: renamed from: o00000 (float, float, com.fs.graphics.A.oOOO, float, boolean) void
-    private void FontRenderer_renderGlyph(float var1, float var2, Glyph var3, float var4, boolean var5) {
-    }
+//    /**
+//     * STUB
+//     */
+//    // $FF: renamed from: o00000 (float, float, com.fs.graphics.A.oOOO, float, boolean) void
+//    private void FontRenderer_renderGlyph(float var1, float var2, Glyph var3, float var4, boolean var5) {
+//    }
+
+//    /**
+//     * STUB
+//     */
+//    // $FF: renamed from: o00000 (float, float, com.fs.graphics.A.oOOO, float) void
+//    private void FontRenderer_renderUnderline(float var1, float var2, Glyph var3, float var4) {
+//    }
 
     /**
      * STUB
      */
-    // $FF: renamed from: o00000 (float, float, com.fs.graphics.A.oOOO, float) void
-    private void FontRenderer_renderUnderline(float var1, float var2, Glyph var3, float var4) {
+    private void renderGlyphs_vanilla(boolean applyHighlightColors) {
     }
 
     /**
@@ -171,16 +177,15 @@ public class FontRenderer {
      */
     // $FF: renamed from: Õ00000 (boolean) void
     private void FontRenderer_renderGlyphs(boolean applyHighlightColors) {
+        // Delagate uncommon cases to vanilla.
+        if (this.FontRenderer_transformMatrix != null || this.FontRenderer_underlineEnabled || this.FontRenderer_highlightByChar != null) {
+            renderGlyphs_vanilla(applyHighlightColors);
+            return;
+        }
+
         this.FontRenderer_refreshFontFlags();
 
         int renderPassCount = this.FontRenderer_multiPassFont ? 3 : 1;
-
-        if (this.FontRenderer_transformMatrix != null) {
-            for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-                this.FontRenderer_renderGlyphsWithTransform(applyHighlightColors);
-            }
-            return;
-        }
 
         if (this.FontRenderer_highlightDisabled) {
             applyHighlightColors = false;
@@ -205,13 +210,6 @@ public class FontRenderer {
             if (applyHighlightColors && this.FontRenderer_isHighlightStart(charIndex)) {
                 Color activeHighlightColor = this.FontRenderer_highlightColor;
                 float activeHighlightAlpha = this.FontRenderer_highlightColorAlpha;
-                if (this.FontRenderer_highlightColors != null && this.FontRenderer_highlightByChar != null) {
-                    int highlightGroupIndex = this.FontRenderer_highlightByChar[charIndex];
-                    if (this.FontRenderer_highlightColors.length > highlightGroupIndex) {
-                        activeHighlightColor = this.FontRenderer_highlightColors[highlightGroupIndex];
-                        activeHighlightAlpha = this.FontRenderer_highlighByCharAlphas[highlightGroupIndex];
-                    }
-                }
 
                 com.genir.renderer.bridge.commands.GL11.glColor4ub(
                         (byte) activeHighlightColor.getRed(),
@@ -245,11 +243,7 @@ public class FontRenderer {
                     }
 
                     // Parameter 5 (highlighStartsHere) is unused. Pass false.
-                    this.FontRenderer_renderGlyph(penX, penY, glyph, fontScale, false);
-
-                    if (this.FontRenderer_underlineEnabled && this.FontRenderer_isHighlightStart(charIndex)) {
-                        this.FontRenderer_renderUnderline(penX, penY - 2.0F, glyph, fontScale);
-                    }
+                    renderGlyphWithOutline(penX, penY, glyph, fontScale);
 
                     // Advance pen position.
                     penX += fontScale * glyph.Glyph_getXAdvance();
@@ -285,7 +279,7 @@ public class FontRenderer {
         com.genir.renderer.bridge.commands.GL11.glEnd();
     }
 
-    private void drawGlyphWithOutline(float penX, float penY, Glyph glyph, float fontScale) {
+    private void renderGlyphWithOutline(float penX, float penY, Glyph glyph, float fontScale) {
         float yOffset = glyph.Glyph_getYOffset();
         float width = glyph.Glyph_getWidth();
         float height = glyph.Glyph_getHeight();
