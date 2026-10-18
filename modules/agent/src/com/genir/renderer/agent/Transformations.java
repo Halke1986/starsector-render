@@ -47,10 +47,7 @@ public class Transformations {
             entry("org/lwjgl/opengl/Display", "com/genir/renderer/bridge/commands/Display"),
             entry("org/lwjgl/opengl/GLContext", "com/genir/renderer/bridge/commands/GLContext"),
             entry("org/lwjgl/opengl/GLSync", "com/genir/renderer/bridge/commands/GLSync"),
-            entry("org/lwjgl/opengl/SharedDrawable", "com/genir/renderer/bridge/commands/SharedDrawable"),
-
-            entry("com/fs/graphics/util/GLListManager", "com/genir/renderer/overrides/render/GLListManager"),
-            entry("com/fs/graphics/util/GLListManager$GLListToken", "com/genir/renderer/overrides/render/GLListManager$GLListToken")
+            entry("org/lwjgl/opengl/SharedDrawable", "com/genir/renderer/bridge/commands/SharedDrawable")
     );
 
     public static Map<String, String> obfuscation = Map.<String, String>ofEntries(
@@ -182,7 +179,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/particle/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
             entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
             entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
-            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup")
+            entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
+            entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(

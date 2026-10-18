@@ -207,6 +207,14 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.removeMethod("getParticles", "()Ljava/util/List;");
                 transformer.mergeClass("com/genir/renderer/overrides/render/particle/DynamicParticleGroup");
                 return transformer;
+            case "com/fs/graphics/util/GLListManager":
+                transformer.removeMethod("nextFrame", "()V");
+                transformer.removeMethod("invalidateList", "(Lcom/fs/graphics/util/GLListManager$GLListToken;)V");
+                transformer.removeMethod("callList", "(Lcom/fs/graphics/util/GLListManager$GLListToken;)Z");
+                transformer.removeMethod("beginList", "()Lcom/fs/graphics/util/GLListManager$GLListToken;");
+                transformer.removeMethod("endList", "()V");
+                transformer.mergeClass("com/genir/renderer/overrides/render/GLListManager");
+                return transformer;
             default:
                 return null;
         }

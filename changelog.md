@@ -1,3 +1,5 @@
+- Fixed a NoClassDefFoundError during game startup when using Shadowverse/szb. Reported by IamNooBZaii.
+
 v0.9.6rc1
 
 - Removed Starsector's use of OpenGL display lists to simplify the OpenGL simulation layer.
