@@ -7,8 +7,6 @@ import com.fs.graphics.font.Kerning;
 import java.awt.*;
 import java.nio.FloatBuffer;
 
-import static com.genir.renderer.Noop.breakpoint;
-
 /**
  * OVERRIDES com.fs.graphics.font.FontRenderer
  */
@@ -111,10 +109,10 @@ public class FontRenderer {
     private boolean FontRenderer_highlightDisabled;
     // $FF: renamed from: oÒ0000 java.nio.FloatBuffer
     protected FloatBuffer FontRenderer_transformMatrix;
-//    // $FF: renamed from: oo0000 int
-//    private int int_6;
-//    // $FF: renamed from: oO0000 float
-//    private float float_12;
+    // $FF: renamed from: oo0000 int
+    private int FontRenderer_outlineSize;
+    // $FF: renamed from: oO0000 float
+    private float FontRenderer_outlineExpansion;
 //    // $FF: renamed from: öo0000 int
 //    private static int int_7 = 0;
 //    // $FF: renamed from: OO0000 org.apache.log4j.Logger
@@ -173,8 +171,6 @@ public class FontRenderer {
      */
     // $FF: renamed from: Õ00000 (boolean) void
     private void FontRenderer_renderGlyphs(boolean applyHighlightColors) {
-        breakpoint();
-
         this.FontRenderer_refreshFontFlags();
 
         int renderPassCount = this.FontRenderer_multiPassFont ? 3 : 1;
@@ -186,36 +182,60 @@ public class FontRenderer {
             return;
         }
 
+        if (this.FontRenderer_highlightDisabled) {
+            applyHighlightColors = false;
+        }
+
+        // TODO all passes are the same?
         for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-            if (this.FontRenderer_highlightDisabled) {
-                applyHighlightColors = false;
+            renderGlyphs(applyHighlightColors);
+        }
+    }
+
+    private void renderGlyphs(boolean applyHighlightColors) {
+        float fontScale = this.FontRenderer_fontSize / this.FontRenderer_font.Font_getSize();
+        float penX = 0.0F;
+        float penY = 0.0F;
+        int previousCharId = -1;
+
+        com.genir.renderer.bridge.commands.GL11.glBegin(7);
+
+        for (int charIndex = 0; charIndex < this.FontRenderer_text.length(); charIndex++) {
+            // Start highlight.
+            if (applyHighlightColors && this.FontRenderer_isHighlightStart(charIndex)) {
+                Color activeHighlightColor = this.FontRenderer_highlightColor;
+                float activeHighlightAlpha = this.FontRenderer_highlightColorAlpha;
+                if (this.FontRenderer_highlightColors != null && this.FontRenderer_highlightByChar != null) {
+                    int highlightGroupIndex = this.FontRenderer_highlightByChar[charIndex];
+                    if (this.FontRenderer_highlightColors.length > highlightGroupIndex) {
+                        activeHighlightColor = this.FontRenderer_highlightColors[highlightGroupIndex];
+                        activeHighlightAlpha = this.FontRenderer_highlighByCharAlphas[highlightGroupIndex];
+                    }
+                }
+
+                com.genir.renderer.bridge.commands.GL11.glColor4ub(
+                        (byte) activeHighlightColor.getRed(),
+                        (byte) activeHighlightColor.getGreen(),
+                        (byte) activeHighlightColor.getBlue(),
+                        (byte) (255.0F * activeHighlightAlpha)
+                );
             }
 
-            float fontScale = this.FontRenderer_fontSize / this.FontRenderer_font.Font_getSize();
-            float penX = 0.0F;
-            float penY = 0.0F;
-            int previousCharId = -1;
-            com.genir.renderer.bridge.commands.GL11.glBegin(7);
-
-            for (int charIndex = 0; charIndex < this.FontRenderer_text.length(); charIndex++) {
+            try {
                 char currentChar = this.FontRenderer_text.charAt(charIndex);
                 Glyph glyph = this.FontRenderer_font.Font_getGlyph(currentChar);
+
+
                 if (currentChar != '\n') {
+                    // Handle a character with no corresponding glyph.
                     if (glyph == null) {
                         glyph = this.FontRenderer_font.Font_getGlyph(63);
                         if (glyph == null) {
-                            if (applyHighlightColors && this.FontRenderer_isHighlightEnd(charIndex)) {
-                                com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                                        (byte) this.FontRenderer_color.getRed(),
-                                        (byte) this.FontRenderer_color.getGreen(),
-                                        (byte) this.FontRenderer_color.getBlue(),
-                                        (byte) (255.0F * this.FontRenderer_colorAlpha)
-                                );
-                            }
                             continue;
                         }
                     }
 
+                    // Apply kerning.
                     penX += fontScale * glyph.Glyph_getXOffset();
                     if (previousCharId != -1) {
                         Kerning kerning = this.FontRenderer_font.Font_getKerning(previousCharId, currentChar);
@@ -224,35 +244,18 @@ public class FontRenderer {
                         }
                     }
 
-                    boolean highlightStartsHere = false;
-                    if (applyHighlightColors && this.FontRenderer_isHighlightStart(charIndex)) {
-                        highlightStartsHere = true;
-                        Color activeHighlightColor = this.FontRenderer_highlightColor;
-                        float activeHighlightAlpha = this.FontRenderer_highlightColorAlpha;
-                        if (this.FontRenderer_highlightColors != null && this.FontRenderer_highlightByChar != null) {
-                            int highlightGroupIndex = this.FontRenderer_highlightByChar[charIndex];
-                            if (this.FontRenderer_highlightColors.length > highlightGroupIndex) {
-                                activeHighlightColor = this.FontRenderer_highlightColors[highlightGroupIndex];
-                                activeHighlightAlpha = this.FontRenderer_highlighByCharAlphas[highlightGroupIndex];
-                            }
-                        }
+                    // Parameter 5 (highlighStartsHere) is unused. Pass false.
+                    this.FontRenderer_renderGlyph(penX, penY, glyph, fontScale, false);
 
-                        com.genir.renderer.bridge.commands.GL11.glColor4ub((byte) activeHighlightColor.getRed(), (byte) activeHighlightColor.getGreen(), (byte) activeHighlightColor.getBlue(), (byte) (255.0F * activeHighlightAlpha));
-                    }
-
-                    this.FontRenderer_renderGlyph(penX, penY, glyph, fontScale, highlightStartsHere);
                     if (this.FontRenderer_underlineEnabled && this.FontRenderer_isHighlightStart(charIndex)) {
                         this.FontRenderer_renderUnderline(penX, penY - 2.0F, glyph, fontScale);
                     }
 
+                    // Advance pen position.
                     penX += fontScale * glyph.Glyph_getXAdvance();
                     previousCharId = currentChar;
-                    if (applyHighlightColors && this.FontRenderer_isHighlightEnd(charIndex)) {
-                        com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                                (byte) this.FontRenderer_color.getRed(), (byte) this.FontRenderer_color.getGreen(), (byte) this.FontRenderer_color.getBlue(), (byte) (255.0F * this.FontRenderer_colorAlpha)
-                        );
-                    }
                 } else {
+                    // Handle line break.
                     if (penX == 0.0F && this.FontRenderer_fontSize == 18.0F && previousCharId == 10) {
                         penY -= 10.0F;
                     } else if (penX == 0.0F && this.FontRenderer_fontSize == 15.0F && previousCharId == 10) {
@@ -262,18 +265,67 @@ public class FontRenderer {
                     }
 
                     penX = 0.0F;
-                    if (applyHighlightColors && this.FontRenderer_isHighlightEnd(charIndex)) {
-                        com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                                (byte) this.FontRenderer_color.getRed(), (byte) this.FontRenderer_color.getGreen(), (byte) this.FontRenderer_color.getBlue(), (byte) (255.0F * this.FontRenderer_colorAlpha)
-                        );
-                    }
 
                     previousCharId = currentChar;
+                }
+            } finally {
 
+                // End highlight.
+                if (applyHighlightColors && this.FontRenderer_isHighlightEnd(charIndex)) {
+                    com.genir.renderer.bridge.commands.GL11.glColor4ub(
+                            (byte) this.FontRenderer_color.getRed(),
+                            (byte) this.FontRenderer_color.getGreen(),
+                            (byte) this.FontRenderer_color.getBlue(),
+                            (byte) (255.0F * this.FontRenderer_colorAlpha)
+                    );
                 }
             }
-
-            com.genir.renderer.bridge.commands.GL11.glEnd();
         }
+
+        com.genir.renderer.bridge.commands.GL11.glEnd();
+    }
+
+    private void drawGlyphWithOutline(float penX, float penY, Glyph glyph, float fontScale) {
+        float yOffset = glyph.Glyph_getYOffset();
+        float width = glyph.Glyph_getWidth();
+        float height = glyph.Glyph_getHeight();
+
+        float texX = glyph.Glyph_getTexX();
+        float texY = glyph.Glyph_getTexY();
+        float texHeigth = glyph.Glyph_getTexHeight();
+        float texWidth = glyph.Glyph_getTexWidth();
+
+        if (this.FontRenderer_outlineSize > 0) {
+            for (float outlineLayer = 1.0F; outlineLayer < this.FontRenderer_outlineSize + 1; outlineLayer++) {
+                float layerExpansion = outlineLayer * this.FontRenderer_outlineExpansion;
+                float horizontalExpansion = layerExpansion;
+                float verticalExpansion = layerExpansion;
+                if (width > height) {
+                    verticalExpansion *= height / width;
+                }
+
+                if (height > width) {
+                    horizontalExpansion *= width / height;
+                }
+
+                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY + texHeigth);
+                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX - horizontalExpansion, penY - fontScale * yOffset - verticalExpansion);
+                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY);
+                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX - horizontalExpansion, penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F);
+                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY);
+                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width + horizontalExpansion * 2.0F, penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F);
+                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY + texHeigth);
+                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width + horizontalExpansion * 2.0F, penY - fontScale * yOffset - verticalExpansion);
+            }
+        }
+
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY + texHeigth);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX, penY - fontScale * yOffset);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX, penY - fontScale * height - fontScale * yOffset);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width, penY - fontScale * height - fontScale * yOffset);
+        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY + texHeigth);
+        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width, penY - fontScale * yOffset);
     }
 }

@@ -149,9 +149,16 @@ public class Transformations {
             entry("Font_getGlyph", "oO0000"),
             entry("Font_getLineHeight", "ø00000"),
             entry("Font_getKerning", "o00000"),
-            entry("Glyph_getXOffset", "ö00000"),
-            entry("Glyph_getXAdvance", "Ø00000"),
             entry("Kerning_getAmount", "Ó00000"),
+            entry("Glyph_getXOffset", "ö00000"),
+            entry("Glyph_getYOffset", "Ò00000"),
+            entry("Glyph_getXAdvance", "Ø00000"),
+            entry("Glyph_getWidth", "ø00000"),
+            entry("Glyph_getHeight", "ÒO0000"),
+            entry("Glyph_getTexX", "int"),
+            entry("Glyph_getTexY", "oO0000"),
+            entry("Glyph_getTexHeight", "ô00000"),
+            entry("Glyph_getTexWidth", "Ô00000"),
 
             // Fields
             entry("ScriptStore_objectRepository", "Õ00000"),
@@ -179,6 +186,7 @@ public class Transformations {
             entry("FontRenderer_highlightByChar", "Oo0000"),
             entry("FontRenderer_highlighByCharAlphas", "ÔÒ0000"),
             entry("FontRenderer_underlineEnabled", "õo0000"),
+            entry("FontRenderer_outlineExpansion", "oO0000"),
 
             entry("xx", "xx")
     );
