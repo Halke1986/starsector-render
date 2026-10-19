@@ -274,4 +274,24 @@ public class Matrix {
         buf.put(m23);
         buf.put(m33);
     }
+
+    @Override
+    public String toString() {
+        String r0 = "[" + format(m00) + ", " + format(m01) + ", " + format(m02) + ", " + format(m03) + "]";
+        String r1 = "[" + format(m10) + ", " + format(m11) + ", " + format(m12) + ", " + format(m13) + "]";
+        String r2 = "[" + format(m20) + ", " + format(m21) + ", " + format(m22) + ", " + format(m23) + "]";
+        String r3 = "[" + format(m30) + ", " + format(m31) + ", " + format(m32) + ", " + format(m33) + "]";
+
+        return r0 + r1 + r2 + r3;
+    }
+
+    private String format(float val) {
+        if (val == 0.0f) {
+            return "0";
+        } else if (val == 1.0f) {
+            return "1";
+        } else {
+            return String.valueOf(val);
+        }
+    }
 }
