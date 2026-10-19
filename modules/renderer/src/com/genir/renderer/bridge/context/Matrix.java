@@ -26,7 +26,7 @@ public class Matrix {
     public Matrix() {
     }
 
-    public void setIdentity() {
+    public void glLoadIdentity() {
         // 1 0 0 0
         // 0 1 0 0
         // 0 0 1 0
@@ -50,7 +50,7 @@ public class Matrix {
         m33 = 1;
     }
 
-    public void translate(float x, float y, float z) {
+    public void glTranslatef(float x, float y, float z) {
         // 1 0 0 x
         // 0 1 0 y
         // 0 0 1 z
@@ -62,7 +62,7 @@ public class Matrix {
         m33 = x * m30 + y * m31 + z * m32 + m33;
     }
 
-    public void rotate(float angle, float x, float y, float z) {
+    public void glRotatef(float angle, float x, float y, float z) {
         // k = (1-c)
         // xxk+1c xyk-zs xzk+ys 0
         // xyk+zs yyk+1c yzk-xs 0
@@ -141,7 +141,7 @@ public class Matrix {
         }
     }
 
-    public void scale(float x, float y, float z) {
+    public void glScalef(float x, float y, float z) {
         // x 0 0 0
         // 0 y 0 0
         // 0 0 z 0
@@ -161,7 +161,7 @@ public class Matrix {
         m32 = z * m32;
     }
 
-    public void ortho(double left, double right, double bottom, double top, double zNear, double zFar) {
+    public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         Matrix p = new Matrix();
 
         float l = (float) left;

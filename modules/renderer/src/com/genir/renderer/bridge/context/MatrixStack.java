@@ -10,7 +10,7 @@ public class MatrixStack {
 
     public MatrixStack() {
         stack[0] = new Matrix();
-        stack[0].setIdentity();
+        stack[0].glLoadIdentity();
         current = stack[0];
     }
 
@@ -45,19 +45,19 @@ public class MatrixStack {
     }
 
     public void glLoadIdentity() {
-        current.setIdentity();
+        current.glLoadIdentity();
     }
 
     public void glTranslatef(float x, float y, float z) {
-        current.translate(x, y, z);
+        current.glTranslatef(x, y, z);
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        current.rotate(angle, x, y, z);
+        current.glRotatef(angle, x, y, z);
     }
 
     public void glScalef(float x, float y, float z) {
-        current.scale(x, y, z);
+        current.glScalef(x, y, z);
     }
 
     public void glMultMatrix(FloatBuffer buf) {
@@ -72,6 +72,6 @@ public class MatrixStack {
     }
 
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        current.ortho(left, right, bottom, top, zNear, zFar);
+        current.glOrtho(left, right, bottom, top, zNear, zFar);
     }
 }

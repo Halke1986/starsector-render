@@ -15,7 +15,7 @@ public class MatrixManager {
 
     public MatrixManager(AttribManager attribManager) {
         this.attribManager = attribManager;
-        this.identity.setIdentity();
+        this.identity.glLoadIdentity();
     }
 
     public void setCPUMode() {
