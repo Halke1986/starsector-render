@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.overrides.render.Sprite;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -58,6 +59,11 @@ public class Display {
                 }
             }
         }
+
+        Logger.getLogger(Sprite.class).info(Sprite.skipped + " / " + Sprite.all);
+
+        Sprite.all = 0;
+        Sprite.skipped = 0;
 
         final Context context = ContextManager.getThreadContext();
         context.exec.execute(new update(processMessages));

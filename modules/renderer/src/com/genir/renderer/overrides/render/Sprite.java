@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.overrides.render.core.Clip;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -49,6 +50,9 @@ public class Sprite {
         renderRegion(posX, posY, 0, 0, 1, 1, false);
     }
 
+    public static int all = 0;
+    public static int skipped = 0;
+
     /**
      * REPLACED METHOD
      * <p>
@@ -71,8 +75,6 @@ public class Sprite {
 
         final Context context = ContextManager.getThreadContext();
 
-        RenderState command = getCommand();
-
         float pivotX = regionFractionX * width;
         float pivotY = regionFractionY * height;
 
@@ -84,11 +86,23 @@ public class Sprite {
             pivotY -= height / 2;
         }
 
-        command.m.set(context.matrixTracker.getModelView());
-        command.m.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0); // set sprite location, anchored at pivot
-        command.m.glRotatef(angle, 0, 0, 1);
-        command.m.glTranslatef(pivotX, pivotY, 0); // set sprite pivot
-        command.m.glScalef(regionFractionWidth * width, regionFractionHeight * height, 0);
+        Matrix model = Clip.model;
+
+        model.set(context.matrixTracker.getModelView());
+        model.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0); // set sprite location, anchored at pivot
+        model.glRotatef(angle, 0, 0, 1);
+        model.glTranslatef(pivotX, pivotY, 0); // set sprite pivot
+        model.glScalef(regionFractionWidth * width, regionFractionHeight * height, 0);
+
+        all++;
+        if (!Clip.rectangleTest(model, context.matrixTracker.getProjection())) {
+            skipped++;
+            return;
+        }
+
+        RenderState command = getCommand();
+
+        command.m.set(model);
 
         command.r = (byte) color.getRed();
         command.g = (byte) color.getGreen();
