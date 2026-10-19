@@ -7,68 +7,78 @@ import org.lwjgl.opengl.GL11;
 import java.nio.FloatBuffer;
 
 public class MatrixTracker {
-    private final AttribTracker attribTracker;
     private final MatrixStack modelView = new MatrixStack();
+    private final MatrixStack projection = new MatrixStack();
 
-    public MatrixTracker(AttribTracker attribTracker) {
-        this.attribTracker = attribTracker;
-    }
+    private MatrixStack current = modelView;
 
     public Matrix getModelView() {
         return modelView.getMatrix();
     }
 
+    //
+    // GL calls.
+    //
+
+    public void glMatrixMode(int mode) {
+        current = switch (mode) {
+            case GL11.GL_MODELVIEW -> modelView;
+            case GL11.GL_PROJECTION -> projection;
+            default -> null;
+        };
+    }
+
     public void glPushMatrix() {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glPushMatrix();
+        if (current != null) {
+            current.glPushMatrix();
         }
     }
 
     public void glPopMatrix() {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glPopMatrix();
+        if (current != null) {
+            current.glPopMatrix();
         }
     }
 
     public void glLoadIdentity() {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glLoadIdentity();
+        if (current != null) {
+            current.glLoadIdentity();
         }
     }
 
     public void glTranslatef(float x, float y, float z) {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glTranslatef(x, y, z);
+        if (current != null) {
+            current.glTranslatef(x, y, z);
         }
     }
 
     public void glRotatef(float angle, float x, float y, float z) {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glRotatef(angle, x, y, z);
+        if (current != null) {
+            current.glRotatef(angle, x, y, z);
         }
     }
 
     public void glScalef(float x, float y, float z) {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glScalef(x, y, z);
+        if (current != null) {
+            current.glScalef(x, y, z);
         }
     }
 
     public void glMultMatrix(FloatBuffer m) {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glMultMatrix(m);
+        if (current != null) {
+            current.glMultMatrix(m);
         }
     }
 
     public void glLoadMatrix(FloatBuffer m) {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glLoadMatrix(m);
+        if (current != null) {
+            current.glLoadMatrix(m);
         }
     }
 
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        if (attribTracker.getMatrixMode() == GL11.GL_MODELVIEW) {
-            modelView.glOrtho(left, right, bottom, top, zNear, zFar);
+        if (current != null) {
+            current.glOrtho(left, right, bottom, top, zNear, zFar);
         }
     }
 }

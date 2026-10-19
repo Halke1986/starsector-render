@@ -69,7 +69,7 @@ public class Context {
 
     // Context-local client state. Runs on main thread.
     public final AttribTracker attribTracker = new AttribTracker(exec);
-    public final MatrixTracker matrixTracker = new MatrixTracker(attribTracker);
+    public final MatrixTracker matrixTracker = new MatrixTracker();
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
     public final BufferManager bufferManager = new BufferManager();
     // Context-shared client state, that can however be safely run per-context.

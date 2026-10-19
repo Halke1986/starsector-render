@@ -412,6 +412,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glMatrixMode(mode);
+        context.matrixTracker.glMatrixMode(mode);
         context.exec.execute(new glMatrixMode(mode));
     }
 
@@ -739,6 +740,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glPopAttrib();
+        context.matrixTracker.glMatrixMode(context.attribTracker.getMatrixMode()); // sync matrix tracker mode.
         context.exec.execute(new glPopAttrib());
     }
 
