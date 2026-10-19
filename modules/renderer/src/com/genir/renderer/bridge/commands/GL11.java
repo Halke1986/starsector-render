@@ -1347,6 +1347,8 @@ public class GL11 {
                 // in a display list, they cause visual glitches. Correct handling of
                 // VBOs inside display lists is possible, but complicated and offers
                 // no performance benefits.
+                // UPDATE: display lists are disabled, but this optimization remains.
+                // That way FR does not need to support GL_ARB_vertex_buffer_object.
                 return extensions.replace("GL_ARB_vertex_buffer_object", "");
 
             case org.lwjgl.opengl.GL11.GL_VENDOR:
