@@ -16,6 +16,10 @@ public class MatrixTracker {
         return modelView.getMatrix();
     }
 
+    public Matrix getProjection() {
+        return projection.getMatrix();
+    }
+
     //
     // GL calls.
     //

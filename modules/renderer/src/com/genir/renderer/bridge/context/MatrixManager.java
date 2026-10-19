@@ -139,6 +139,19 @@ public class MatrixManager {
         }
     }
 
+    public void glLoadMatrix(Matrix m) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
+            modelView.glLoadMatrix(m);
+        }
+
+        if (shouldDelegate()) {
+            attribManager.applyMatrixMode();
+
+            m.storeTranspose(matrixBuffer.clear());
+            org.lwjgl.opengl.GL11.glLoadMatrix(matrixBuffer.flip());
+        }
+    }
+
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
             modelView.glOrtho(left, right, bottom, top, zNear, zFar);

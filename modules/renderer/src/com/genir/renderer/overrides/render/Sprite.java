@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.render;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -36,6 +37,20 @@ public class Sprite {
 
     /**
      * REPLACED METHOD
+     */
+    public void render(float posX, float posY) {
+        renderRegion(posX, posY, 0, 0, 1, 1, true);
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public void renderNoBind(float posX, float posY) {
+        renderRegion(posX, posY, 0, 0, 1, 1, false);
+    }
+
+    /**
+     * REPLACED METHOD
      * <p>
      * Executes vanilla Sprite rendering directly on the rendering thread,
      * avoiding the overhead of passing individual OpenGL calls across
@@ -54,16 +69,18 @@ public class Sprite {
             return;
         }
 
+        final Context context = ContextManager.getThreadContext();
+
         RenderState command = getCommand();
 
-        command.spriteX = posX + (float) offsetX;
-        command.spriteY = posY + (float) offsetY;
-        command.spriteWidth = width;
-        command.spriteHeight = height;
-
-        command.centerX = centerX;
-        command.centerY = centerY;
-        command.angle = angle;
+        command.m.set(context.matrixTracker.getModelView());
+        command.m.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0);
+        command.m.glRotatef(angle, 0, 0, 1);
+        if (centerX != -1 && centerY != -1) {
+            command.m.glTranslatef(-centerX, -centerY, 0);
+        } else {
+            command.m.glTranslatef(-width / 2, -height / 2, 0);
+        }
 
         command.r = (byte) color.getRed();
         command.g = (byte) color.getGreen();
@@ -95,29 +112,18 @@ public class Sprite {
     }
 
     /**
-     * REPLACED METHOD
-     */
-    public void render(float posX, float posY) {
-        renderRegion(posX, posY, 0, 0, 1, 1, true);
-    }
-
-    /**
-     * REPLACED METHOD
-     */
-    public void renderNoBind(float posX, float posY) {
-        renderRegion(posX, posY, 0, 0, 1, 1, false);
-    }
-
-    /**
      * ADDED METHOD
      */
     private RenderState getCommand() {
         Object pooledCommand = Pools.spritePool.get();
-        if (pooledCommand == null) {
-            pooledCommand = new RenderState();
+        if (pooledCommand != null) {
+            return (RenderState) pooledCommand;
         }
 
-        return (RenderState) pooledCommand;
+        RenderState newState = new RenderState();
+        newState.m = new Matrix();
+
+        return newState;
     }
 
     /**
@@ -140,25 +146,23 @@ public class Sprite {
     }
 
     public static class RenderState implements GLCommand {
-        public float spriteX;
-        public float spriteY;
-        public float spriteWidth;
-        public float spriteHeight;
-        public float centerX;
-        public float centerY;
-        public float angle;
+        public Matrix m;
+
         public byte r;
         public byte g;
         public byte b;
         public byte a;
+
         public float quadX;
         public float quadY;
         public float quadWidth;
         public float quadHeight;
+
         public float texX;
         public float texY;
         public float texWidth;
         public float texHeight;
+
         public int textureID;
         public int blendSrc;
         public int blendDest;
@@ -178,16 +182,7 @@ public class Sprite {
             }
 
             context.matrixManager.glPushMatrix();
-            context.matrixManager.glTranslatef(spriteX, spriteY, 0);
-            if (centerX != -1 && centerY != -1) {
-                context.matrixManager.glTranslatef(spriteWidth / 2, spriteHeight / 2, 0);
-                context.matrixManager.glRotatef(angle, 0, 0, 1);
-                context.matrixManager.glTranslatef(-centerX, -centerY, 0);
-            } else {
-                context.matrixManager.glTranslatef(spriteWidth / 2, spriteHeight / 2, 0);
-                context.matrixManager.glRotatef(angle, 0, 0, 1);
-                context.matrixManager.glTranslatef(-spriteWidth / 2, -spriteHeight / 2, 0);
-            }
+            context.matrixManager.glLoadMatrix(m);
 
             context.attribManager.glEnable(GL11.GL_TEXTURE_2D);
             context.attribManager.glEnable(GL11.GL_BLEND);

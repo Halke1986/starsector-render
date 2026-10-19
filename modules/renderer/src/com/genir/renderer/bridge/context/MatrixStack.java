@@ -71,6 +71,10 @@ public class MatrixStack {
         current.loadTranspose(buf.duplicate());
     }
 
+    public void glLoadMatrix(Matrix m) {
+        current.set(m);
+    }
+
     public void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
         current.glOrtho(left, right, bottom, top, zNear, zFar);
     }
