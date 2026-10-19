@@ -73,24 +73,27 @@ public class Sprite {
 
         RenderState command = getCommand();
 
-        command.m.set(context.matrixTracker.getModelView());
-        command.m.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0);
-        command.m.glRotatef(angle, 0, 0, 1);
+        float pivotX = regionFractionX * width;
+        float pivotY = regionFractionY * height;
+
         if (centerX != -1 && centerY != -1) {
-            command.m.glTranslatef(-centerX, -centerY, 0);
+            pivotX -= centerX;
+            pivotY -= centerY;
         } else {
-            command.m.glTranslatef(-width / 2, -height / 2, 0);
+            pivotX -= width / 2;
+            pivotY -= height / 2;
         }
+
+        command.m.set(context.matrixTracker.getModelView());
+        command.m.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0); // set sprite location, anchored at pivot
+        command.m.glRotatef(angle, 0, 0, 1);
+        command.m.glTranslatef(pivotX, pivotY, 0); // set sprite pivot
+        command.m.glScalef(regionFractionWidth * width, regionFractionHeight * height, 0);
 
         command.r = (byte) color.getRed();
         command.g = (byte) color.getGreen();
         command.b = (byte) color.getBlue();
         command.a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
-
-        command.quadX = regionFractionX * width;
-        command.quadY = regionFractionY * height;
-        command.quadWidth = regionFractionWidth * width;
-        command.quadHeight = regionFractionHeight * height;
 
         if (regionFractionX != 0 || regionFractionY != 0) {
             command.texX = regionFractionX * texWidth;
@@ -153,11 +156,6 @@ public class Sprite {
         public byte b;
         public byte a;
 
-        public float quadX;
-        public float quadY;
-        public float quadWidth;
-        public float quadHeight;
-
         public float texX;
         public float texY;
         public float texWidth;
@@ -197,13 +195,13 @@ public class Sprite {
 
             context.vertexInterceptor.glBegin(GL11.GL_QUADS);
             context.vertexInterceptor.glTexCoord4f(texX, texY, 0, 1);
-            context.vertexInterceptor.glVertex3f(quadX, quadY, 0);
+            context.vertexInterceptor.glVertex3f(0, 0, 0);
             context.vertexInterceptor.glTexCoord4f(texX, texY + texHeight, 0, 1);
-            context.vertexInterceptor.glVertex3f(quadX, quadY + quadHeight, 0);
+            context.vertexInterceptor.glVertex3f(0, 1, 0);
             context.vertexInterceptor.glTexCoord4f(texX + texWidth, texY + texHeight, 0, 1);
-            context.vertexInterceptor.glVertex3f(quadX + quadWidth, quadY + quadHeight, 0);
+            context.vertexInterceptor.glVertex3f(1, 1, 0);
             context.vertexInterceptor.glTexCoord4f(texX + texWidth, texY, 0, 1);
-            context.vertexInterceptor.glVertex3f(quadX + quadWidth, quadY, 0);
+            context.vertexInterceptor.glVertex3f(1, 0, 0);
             context.vertexInterceptor.glEnd();
 
             context.attribManager.glDisable(GL11.GL_BLEND);
