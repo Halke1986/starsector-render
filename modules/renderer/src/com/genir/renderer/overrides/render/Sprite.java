@@ -4,6 +4,7 @@ import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
+import com.genir.renderer.bridge.context.Pool;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.overrides.render.core.Clip;
 import org.lwjgl.opengl.GL11;
@@ -35,6 +36,11 @@ public class Sprite {
     private int blendSrc;
     private int blendDest;
     private boolean texClamp;
+
+    /**
+     * ADDED FIELD
+     */
+    private static final Pool spritePool = new Pool();
 
     /**
      * REPLACED METHOD
@@ -132,7 +138,7 @@ public class Sprite {
      * ADDED METHOD
      */
     private RenderState getCommand() {
-        Object pooledCommand = Pools.spritePool.get();
+        Object pooledCommand = spritePool.get();
         if (pooledCommand != null) {
             return (RenderState) pooledCommand;
         }
@@ -226,7 +232,7 @@ public class Sprite {
                 org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
             }
 
-            Pools.spritePool.put(this);
+            spritePool.put(this);
         }
     }
 }
