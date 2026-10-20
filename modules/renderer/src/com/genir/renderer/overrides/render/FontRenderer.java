@@ -1,11 +1,11 @@
 package com.genir.renderer.overrides.render;
 
 import com.fs.graphics.font.Font;
-import com.fs.graphics.font.Glyph;
-import com.fs.graphics.font.Kerning;
 
 import java.awt.*;
 import java.nio.FloatBuffer;
+
+import static com.genir.renderer.overrides.render.FontRendererImpl.fontRendererImpl;
 
 /**
  * OVERRIDES com.fs.graphics.font.FontRenderer
@@ -156,7 +156,7 @@ public class FontRenderer {
             applyHighlightColors = false;
         }
 
-        TextParams params = new TextParams(
+        FontRendererImpl.TextParams params = new FontRendererImpl.TextParams(
                 this.FontRenderer_font,
                 this.FontRenderer_text,
                 this.FontRenderer_textSize,
@@ -175,150 +175,7 @@ public class FontRenderer {
 
         // TODO all passes are the same?
         for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-            renderGlyphs(params);
+            fontRendererImpl.renderGlyphs(params);
         }
-    }
-
-    public record TextParams(
-            // Text.
-            Font font,
-            String text,
-            float textSize,
-            Color color,
-            float alpha,
-
-            // Highlight.
-            boolean applyHighlight,
-            int highlightStart,
-            int highlightEnd,
-            Color highlightColor,
-            float highlighAlpha,
-
-            // Outline.
-            int outlineSize,
-            float outlineExpansion
-    ) {
-    }
-
-    private static void renderGlyphs(TextParams params) {
-        float fontScale = params.textSize() / params.font().Font_getSize();
-        float penX = 0.0F;
-        float penY = 0.0F;
-        int previousCharId = -1;
-
-        com.genir.renderer.bridge.commands.GL11.glBegin(7);
-
-        for (int charIndex = 0; charIndex < params.text().length(); charIndex++) {
-            // Start highlight.
-            if (params.applyHighlight() && charIndex == params.highlightStart()) {
-                com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                        (byte) params.highlightColor().getRed(),
-                        (byte) params.highlightColor().getGreen(),
-                        (byte) params.highlightColor().getBlue(),
-                        (byte) (255.0F * params.highlighAlpha())
-                );
-            }
-
-            try {
-                char currentChar = params.text().charAt(charIndex);
-                Glyph glyph = params.font().Font_getGlyph(currentChar);
-
-                if (currentChar != '\n') {
-                    // Handle a character with no corresponding glyph.
-                    if (glyph == null) {
-                        glyph = params.font().Font_getGlyph(63);
-                        if (glyph == null) {
-                            continue;
-                        }
-                    }
-
-                    // Apply kerning.
-                    penX += fontScale * glyph.Glyph_getXOffset();
-                    if (previousCharId != -1) {
-                        Kerning kerning = params.font().Font_getKerning(previousCharId, currentChar);
-                        if (kerning != null) {
-                            penX += fontScale * kerning.Kerning_getAmount();
-                        }
-                    }
-
-                    // Parameter 5 (highlighStartsHere) is unused. Pass false.
-                    renderGlyphWithOutline(penX, penY, glyph, fontScale, params.outlineSize(), params.outlineExpansion());
-
-                    // Advance pen position.
-                    penX += fontScale * glyph.Glyph_getXAdvance();
-                    previousCharId = currentChar;
-                } else {
-                    // Handle line break.
-                    if (penX == 0.0F && params.textSize() == 18.0F && previousCharId == 10) {
-                        penY -= 10.0F;
-                    } else if (penX == 0.0F && params.textSize() == 15.0F && previousCharId == 10) {
-                        penY -= 10.0F;
-                    } else {
-                        penY -= fontScale * params.font().Font_getLineHeight();
-                    }
-
-                    penX = 0.0F;
-
-                    previousCharId = currentChar;
-                }
-            } finally {
-
-                // End highlight.
-                if (params.applyHighlight() && charIndex == params.highlightEnd()) {
-                    com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                            (byte) params.color().getRed(),
-                            (byte) params.color().getGreen(),
-                            (byte) params.color().getBlue(),
-                            (byte) (255.0F * params.alpha())
-                    );
-                }
-            }
-        }
-
-        com.genir.renderer.bridge.commands.GL11.glEnd();
-    }
-
-    private static void renderGlyphWithOutline(float penX, float penY, Glyph glyph, float fontScale, int outlineSize, float outlineExpansion) {
-        float yOffset = glyph.Glyph_getYOffset();
-        float width = glyph.Glyph_getWidth();
-        float height = glyph.Glyph_getHeight();
-
-        float texX = glyph.Glyph_getTexX();
-        float texY = glyph.Glyph_getTexY();
-        float texHeigth = glyph.Glyph_getTexHeight();
-        float texWidth = glyph.Glyph_getTexWidth();
-
-        if (outlineSize > 0) {
-            for (float outlineLayer = 1.0F; outlineLayer < outlineExpansion + 1; outlineLayer++) {
-                float layerExpansion = outlineLayer * outlineExpansion;
-                float horizontalExpansion = layerExpansion;
-                float verticalExpansion = layerExpansion;
-                if (width > height) {
-                    verticalExpansion *= height / width;
-                }
-
-                if (height > width) {
-                    horizontalExpansion *= width / height;
-                }
-
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY + texHeigth);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX - horizontalExpansion, penY - fontScale * yOffset - verticalExpansion);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX - horizontalExpansion, penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width + horizontalExpansion * 2.0F, penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F);
-                com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY + texHeigth);
-                com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width + horizontalExpansion * 2.0F, penY - fontScale * yOffset - verticalExpansion);
-            }
-        }
-
-        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY + texHeigth);
-        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX, penY - fontScale * yOffset);
-        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY);
-        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX, penY - fontScale * height - fontScale * yOffset);
-        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY);
-        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width, penY - fontScale * height - fontScale * yOffset);
-        com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY + texHeigth);
-        com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width, penY - fontScale * yOffset);
     }
 }
