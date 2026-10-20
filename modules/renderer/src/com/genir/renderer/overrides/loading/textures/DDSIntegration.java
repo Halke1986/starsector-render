@@ -79,7 +79,7 @@ public class DDSIntegration {
         );
 
         // Notify texture tracker of the texture definition.
-        context.textureTracker.updateTextureData(context, GL11.GL_TEXTURE_2D, 0, target, texData.width, texData.height);
+        context.textureTracker.updateTextureData(textureID, 0, target, texData.width, texData.height);
 
         return textureID;
     }

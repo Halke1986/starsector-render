@@ -126,23 +126,20 @@ public class TextureTracker { // Context-shared object.
         return targets;
     }
 
-    public void updateTextureData(Context context, int target, int level, int internalformat, int width, int height) {
+    public void updateTextureData(int texture, int level, int internalformat, int width, int height) {
         // Do not track mipmaps.
         if (level != 0) {
             return;
         }
 
-        // TextureTracker object is shared between contexts, therefore
-        // it cannot have a static reference to the context-local AttribTracker.
-        int textureID = context.attribTracker.getTextureBinding(target);
-        if (textureID == 0) {
+        if (texture == 0) {
             return;
         }
 
-        asert(glIsTextureImpl(textureID));
+        asert(glIsTextureImpl(texture));
 
         TexData data = new TexData(internalformat, width, height);
-        parameterCache.put(textureID, data);
+        parameterCache.put(texture, data);
     }
 
     public Integer getTextureData(Context context, int target, int level, int pname) {
@@ -169,6 +166,8 @@ public class TextureTracker { // Context-shared object.
                 return null;
         }
 
+        // TextureTracker object is shared between contexts, therefore
+        // it cannot have a static reference to the context-local AttribTracker.
         int textureID = context.attribTracker.getTextureBinding(target);
         TexData data = parameterCache.get(textureID);
         if (data == null) {

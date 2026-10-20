@@ -61,8 +61,6 @@ public class Context {
     public final MatrixManager matrixManager = new MatrixManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
     public final TextureReadManager textureReadManager = new TextureReadManager();
-    // Context-shared server state.
-    public final TextureManager textureManager;
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
@@ -82,6 +80,7 @@ public class Context {
     // Context-shared client state.
     public final ShaderTracker shaderTracker;
     public final TextureTracker textureTracker;
+    public final TextureManager textureManager;
     public final BufferTracker bufferTracker;
 
     public void update() {
