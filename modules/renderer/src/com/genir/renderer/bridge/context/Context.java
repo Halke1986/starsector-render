@@ -73,6 +73,7 @@ public class Context {
     public final MatrixTracker matrixTracker = new MatrixTracker();
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
     public final BufferManager bufferManager = new BufferManager();
+    public final ColorTracker colorTracker = new ColorTracker();
     // Context-shared client state, that can however be safely run per-context.
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);

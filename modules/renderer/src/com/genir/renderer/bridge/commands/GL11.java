@@ -116,6 +116,7 @@ public class GL11 {
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
         final Context context = ContextManager.getThreadContext();
+        context.colorTracker.glColor4f(red, green, blue, alpha);
         context.exec.execute(glColor4fCommand, red, green, blue, alpha);
     }
 
