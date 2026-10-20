@@ -11,6 +11,8 @@ import java.nio.FloatBuffer;
  * OVERRIDES com.fs.graphics.font.FontRenderer
  */
 public class FontRenderer {
+    // TODO Cleanup (also Transforms)
+
     //    // $FF: renamed from: OÓ0000 float
 //    public static float float_0 = 1.0F;
 //    // $FF: renamed from: while.new int
@@ -24,7 +26,7 @@ public class FontRenderer {
     // $FF: renamed from: float.new com.fs.graphics.A.F
     private Font FontRenderer_font;
     // $FF: renamed from: float float
-    private float FontRenderer_fontSize;
+    private float FontRenderer_textSize;
     // $FF: renamed from: Øo0000 java.awt.Color
     private Color FontRenderer_color;
     //    // $FF: renamed from: ÖÓ0000 java.awt.Color
@@ -83,10 +85,10 @@ public class FontRenderer {
     protected boolean FontRenderer_multiPassFont;
     //    // $FF: renamed from: Óo0000 java.lang.String
 //    protected String string_12;
-//    // $FF: renamed from: interface.new int
-//    private int int_3;
-//    // $FF: renamed from: interface.super int
-//    private int int_4;
+    // $FF: renamed from: interface.new int
+    private int FontRenderer_highlightStart;
+    // $FF: renamed from: interface.super int
+    private int FontRenderer_highlightEnd;
     // $FF: renamed from: õo0000 boolean
     private boolean FontRenderer_underlineEnabled;
     // $FF: renamed from: Ô00000 java.awt.Color
@@ -129,43 +131,6 @@ public class FontRenderer {
     protected void FontRenderer_refreshFontFlags() {
     }
 
-//    /**
-//     * STUB
-//     */
-//    // $FF: renamed from: Ò00000 (boolean) void
-//    private void FontRenderer_renderGlyphsWithTransform(boolean var1) {
-//    }
-
-    /**
-     * STUB
-     */
-    // $FF: renamed from: Ø00000 (int) boolean
-    private boolean FontRenderer_isHighlightEnd(int var1) {
-        return false;
-    }
-
-    /**
-     * STUB
-     */
-    // $FF: renamed from: Ô00000 (int) boolean
-    private boolean FontRenderer_isHighlightStart(int var1) {
-        return false;
-    }
-
-//    /**
-//     * STUB
-//     */
-//    // $FF: renamed from: o00000 (float, float, com.fs.graphics.A.oOOO, float, boolean) void
-//    private void FontRenderer_renderGlyph(float var1, float var2, Glyph var3, float var4, boolean var5) {
-//    }
-
-//    /**
-//     * STUB
-//     */
-//    // $FF: renamed from: o00000 (float, float, com.fs.graphics.A.oOOO, float) void
-//    private void FontRenderer_renderUnderline(float var1, float var2, Glyph var3, float var4) {
-//    }
-
     /**
      * STUB
      */
@@ -191,43 +156,77 @@ public class FontRenderer {
             applyHighlightColors = false;
         }
 
+        TextParams params = new TextParams(
+                this.FontRenderer_font,
+                this.FontRenderer_text,
+                this.FontRenderer_textSize,
+                this.FontRenderer_color,
+                this.FontRenderer_colorAlpha,
+
+                applyHighlightColors,
+                this.FontRenderer_highlightStart,
+                this.FontRenderer_highlightEnd,
+                this.FontRenderer_highlightColor,
+                this.FontRenderer_highlightColorAlpha,
+
+                this.FontRenderer_outlineSize,
+                this.FontRenderer_outlineExpansion
+        );
+
         // TODO all passes are the same?
         for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-            renderGlyphs(applyHighlightColors);
+            renderGlyphs(params);
         }
     }
 
-    private void renderGlyphs(boolean applyHighlightColors) {
-        float fontScale = this.FontRenderer_fontSize / this.FontRenderer_font.Font_getSize();
+    public record TextParams(
+            // Text.
+            Font font,
+            String text,
+            float textSize,
+            Color color,
+            float alpha,
+
+            // Highlight.
+            boolean applyHighlight,
+            int highlightStart,
+            int highlightEnd,
+            Color highlightColor,
+            float highlighAlpha,
+
+            // Outline.
+            int outlineSize,
+            float outlineExpansion
+    ) {
+    }
+
+    private static void renderGlyphs(TextParams params) {
+        float fontScale = params.textSize() / params.font().Font_getSize();
         float penX = 0.0F;
         float penY = 0.0F;
         int previousCharId = -1;
 
         com.genir.renderer.bridge.commands.GL11.glBegin(7);
 
-        for (int charIndex = 0; charIndex < this.FontRenderer_text.length(); charIndex++) {
+        for (int charIndex = 0; charIndex < params.text().length(); charIndex++) {
             // Start highlight.
-            if (applyHighlightColors && this.FontRenderer_isHighlightStart(charIndex)) {
-                Color activeHighlightColor = this.FontRenderer_highlightColor;
-                float activeHighlightAlpha = this.FontRenderer_highlightColorAlpha;
-
+            if (params.applyHighlight() && charIndex == params.highlightStart()) {
                 com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                        (byte) activeHighlightColor.getRed(),
-                        (byte) activeHighlightColor.getGreen(),
-                        (byte) activeHighlightColor.getBlue(),
-                        (byte) (255.0F * activeHighlightAlpha)
+                        (byte) params.highlightColor().getRed(),
+                        (byte) params.highlightColor().getGreen(),
+                        (byte) params.highlightColor().getBlue(),
+                        (byte) (255.0F * params.highlighAlpha())
                 );
             }
 
             try {
-                char currentChar = this.FontRenderer_text.charAt(charIndex);
-                Glyph glyph = this.FontRenderer_font.Font_getGlyph(currentChar);
-
+                char currentChar = params.text().charAt(charIndex);
+                Glyph glyph = params.font().Font_getGlyph(currentChar);
 
                 if (currentChar != '\n') {
                     // Handle a character with no corresponding glyph.
                     if (glyph == null) {
-                        glyph = this.FontRenderer_font.Font_getGlyph(63);
+                        glyph = params.font().Font_getGlyph(63);
                         if (glyph == null) {
                             continue;
                         }
@@ -236,26 +235,26 @@ public class FontRenderer {
                     // Apply kerning.
                     penX += fontScale * glyph.Glyph_getXOffset();
                     if (previousCharId != -1) {
-                        Kerning kerning = this.FontRenderer_font.Font_getKerning(previousCharId, currentChar);
+                        Kerning kerning = params.font().Font_getKerning(previousCharId, currentChar);
                         if (kerning != null) {
                             penX += fontScale * kerning.Kerning_getAmount();
                         }
                     }
 
                     // Parameter 5 (highlighStartsHere) is unused. Pass false.
-                    renderGlyphWithOutline(penX, penY, glyph, fontScale);
+                    renderGlyphWithOutline(penX, penY, glyph, fontScale, params.outlineSize(), params.outlineExpansion());
 
                     // Advance pen position.
                     penX += fontScale * glyph.Glyph_getXAdvance();
                     previousCharId = currentChar;
                 } else {
                     // Handle line break.
-                    if (penX == 0.0F && this.FontRenderer_fontSize == 18.0F && previousCharId == 10) {
+                    if (penX == 0.0F && params.textSize() == 18.0F && previousCharId == 10) {
                         penY -= 10.0F;
-                    } else if (penX == 0.0F && this.FontRenderer_fontSize == 15.0F && previousCharId == 10) {
+                    } else if (penX == 0.0F && params.textSize() == 15.0F && previousCharId == 10) {
                         penY -= 10.0F;
                     } else {
-                        penY -= fontScale * this.FontRenderer_font.Font_getLineHeight();
+                        penY -= fontScale * params.font().Font_getLineHeight();
                     }
 
                     penX = 0.0F;
@@ -265,12 +264,12 @@ public class FontRenderer {
             } finally {
 
                 // End highlight.
-                if (applyHighlightColors && this.FontRenderer_isHighlightEnd(charIndex)) {
+                if (params.applyHighlight() && charIndex == params.highlightEnd()) {
                     com.genir.renderer.bridge.commands.GL11.glColor4ub(
-                            (byte) this.FontRenderer_color.getRed(),
-                            (byte) this.FontRenderer_color.getGreen(),
-                            (byte) this.FontRenderer_color.getBlue(),
-                            (byte) (255.0F * this.FontRenderer_colorAlpha)
+                            (byte) params.color().getRed(),
+                            (byte) params.color().getGreen(),
+                            (byte) params.color().getBlue(),
+                            (byte) (255.0F * params.alpha())
                     );
                 }
             }
@@ -279,7 +278,7 @@ public class FontRenderer {
         com.genir.renderer.bridge.commands.GL11.glEnd();
     }
 
-    private void renderGlyphWithOutline(float penX, float penY, Glyph glyph, float fontScale) {
+    private static void renderGlyphWithOutline(float penX, float penY, Glyph glyph, float fontScale, int outlineSize, float outlineExpansion) {
         float yOffset = glyph.Glyph_getYOffset();
         float width = glyph.Glyph_getWidth();
         float height = glyph.Glyph_getHeight();
@@ -289,9 +288,9 @@ public class FontRenderer {
         float texHeigth = glyph.Glyph_getTexHeight();
         float texWidth = glyph.Glyph_getTexWidth();
 
-        if (this.FontRenderer_outlineSize > 0) {
-            for (float outlineLayer = 1.0F; outlineLayer < this.FontRenderer_outlineSize + 1; outlineLayer++) {
-                float layerExpansion = outlineLayer * this.FontRenderer_outlineExpansion;
+        if (outlineSize > 0) {
+            for (float outlineLayer = 1.0F; outlineLayer < outlineExpansion + 1; outlineLayer++) {
+                float layerExpansion = outlineLayer * outlineExpansion;
                 float horizontalExpansion = layerExpansion;
                 float verticalExpansion = layerExpansion;
                 if (width > height) {

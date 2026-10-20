@@ -139,12 +139,7 @@ public class Transformations {
             entry("Rendering_setupProjection", "o00000"),
             entry("Rendering_end", "Õ00000"),
             entry("FontRenderer_renderGlyphs", "Õ00000"),
-//            entry("FontRenderer_renderGlyph", "o00000"),
-//            entry("FontRenderer_renderUnderline", "o00000"),
             entry("FontRenderer_refreshFontFlags", "int"),
-//            entry("FontRenderer_renderGlyphsWithTransform", "Ò00000"),
-            entry("FontRenderer_isHighlightEnd", "Ø00000"),
-            entry("FontRenderer_isHighlightStart", "Ô00000"),
             entry("Font_getSize", "Õ00000"),
             entry("Font_getGlyph", "oO0000"),
             entry("Font_getLineHeight", "ø00000"),
@@ -175,7 +170,7 @@ public class Transformations {
             entry("FontRenderer_multiPassFont", "new_new"),
             entry("FontRenderer_transformMatrix", "oÒ0000"),
             entry("FontRenderer_highlightDisabled", "Ø00000"),
-            entry("FontRenderer_fontSize", "float"),
+            entry("FontRenderer_textSize", "float"),
             entry("FontRenderer_font", "float_new"),
             entry("FontRenderer_text", "while_super"),
             entry("FontRenderer_color", "Øo0000"),
@@ -188,6 +183,8 @@ public class Transformations {
             entry("FontRenderer_underlineEnabled", "õo0000"),
             entry("FontRenderer_outlineSize", "oo0000"),
             entry("FontRenderer_outlineExpansion", "oO0000"),
+            entry("FontRenderer_highlightStart", "interface_new"),
+            entry("FontRenderer_highlightEnd", "interface_super"),
 
             entry("xx", "xx")
     );
