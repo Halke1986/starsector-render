@@ -79,12 +79,13 @@ public class DDSIntegration {
         );
 
         // Notify texture tracker of the texture definition.
-        context.textureTracker.updateTextureData(context, GL11.GL_TEXTURE_2D, 0, target, texData.width, texData.height);
+        context.textureTracker.updateTextureData(textureID, 0, target, texData.width, texData.height);
 
         return textureID;
     }
 
     // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
+    // TODO move to client thread since display lists are removed?
     private static void commitTextureLazy(TextureData texData, int textureID, byte[] bytes) {
         if (hasUploadDDSTexture()) {
             int err = uploadDDSTexture(textureID, bytes);

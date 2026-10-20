@@ -412,6 +412,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glMatrixMode(mode);
+        context.matrixTracker.glMatrixMode(mode);
         context.exec.execute(new glMatrixMode(mode));
     }
 
@@ -739,6 +740,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glPopAttrib();
+        context.matrixTracker.glMatrixMode(context.attribTracker.getMatrixMode()); // sync matrix tracker mode.
         context.exec.execute(new glPopAttrib());
     }
 
@@ -1001,15 +1003,17 @@ public class GL11 {
         record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels.buffer);
                 pixels.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, 1);
+        context.textureManager.textureModified(texture);
+
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, 1);
         context.exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
@@ -1017,15 +1021,17 @@ public class GL11 {
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
                 pixels.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
+        context.textureManager.textureModified(texture);
+
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, height);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1033,15 +1039,17 @@ public class GL11 {
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
                 pixels.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
+        context.textureManager.textureModified(texture);
+
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, height);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1107,13 +1115,13 @@ public class GL11 {
         record glDeleteTextures(int texture) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.glDeleteTextures(texture);
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
         context.textureTracker.glDeleteTextures(texture);
+        context.textureManager.glDeleteTextures(texture);
         context.attribTracker.glDeleteTextures(texture);
         context.exec.execute(new glDeleteTextures(texture));
     }
@@ -1129,13 +1137,15 @@ public class GL11 {
         record glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.textureTracker.updateTextureData(context, target, level, internalFormat, width, height);
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalFormat, width, height);
+        context.textureManager.textureModified(texture);
+
         context.exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
     }
 
@@ -1347,6 +1357,8 @@ public class GL11 {
                 // in a display list, they cause visual glitches. Correct handling of
                 // VBOs inside display lists is possible, but complicated and offers
                 // no performance benefits.
+                // UPDATE: display lists are disabled, but this optimization remains.
+                // That way FR does not need to support GL_ARB_vertex_buffer_object.
                 return extensions.replace("GL_ARB_vertex_buffer_object", "");
 
             case org.lwjgl.opengl.GL11.GL_VENDOR:

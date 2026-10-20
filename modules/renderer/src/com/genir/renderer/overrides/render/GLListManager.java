@@ -16,11 +16,6 @@ public class GLListManager {
     public static boolean suspend = false;
 
     /**
-     * ADDED FIELD
-     */
-    private static int id = 0;
-
-    /**
      * REPLACED METHOD
      */
     public static void nextFrame() {
@@ -44,7 +39,7 @@ public class GLListManager {
      * REPLACED METHOD
      */
     public static GLListToken beginList() {
-        return new GLListToken(id++);
+        return null;
     }
 
     /**

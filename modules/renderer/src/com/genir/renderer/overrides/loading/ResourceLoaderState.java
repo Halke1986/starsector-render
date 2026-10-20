@@ -197,8 +197,7 @@ public class ResourceLoaderState {
         MarkovNames.loadIfNeeded();
 
         // Conclude asset loading phase.
-        final Context context = ContextManager.getThreadContext();
-        context.textureManager.assetLoadingFinished();
+        GameState.assetLoadingFinished = true;
         FileLoader.FileLoader_getInstance().initModLoading();
 
         // Initialize mods.
@@ -225,6 +224,7 @@ public class ResourceLoaderState {
         com.genir.renderer.bridge.commands.Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
 
         // Initialize Fast Rendering functionality.
+        final Context context = ContextManager.getThreadContext();
         BaseParticle.initStatic();
         RoilingSwarmEffect.initStatic();
         context.stallDetector.enableDetection();

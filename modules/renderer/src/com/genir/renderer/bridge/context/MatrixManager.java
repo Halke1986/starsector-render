@@ -15,7 +15,7 @@ public class MatrixManager {
 
     public MatrixManager(AttribManager attribManager) {
         this.attribManager = attribManager;
-        this.identity.setIdentity();
+        this.identity.glLoadIdentity();
     }
 
     public void setCPUMode() {
@@ -136,6 +136,19 @@ public class MatrixManager {
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
             org.lwjgl.opengl.GL11.glLoadMatrix(m);
+        }
+    }
+
+    public void glLoadMatrix(Matrix m) {
+        if (attribManager.getMatrixMode() == GL11.GL_MODELVIEW) {
+            modelView.glLoadMatrix(m);
+        }
+
+        if (shouldDelegate()) {
+            attribManager.applyMatrixMode();
+
+            m.storeTranspose(matrixBuffer.clear());
+            org.lwjgl.opengl.GL11.glLoadMatrix(matrixBuffer.flip());
         }
     }
 

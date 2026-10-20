@@ -23,6 +23,9 @@ public class Context {
     public Profiler.Frame mainProfilerFrame = null;
     public Profiler.Frame renderingProfilerFrame = null;
 
+    // Allocation avoidance.
+    public Matrix sharedMatrix = new Matrix();
+
     public Context() {
         Logger.getLogger(Context.class).info("Created new virtual main OpenGL context.");
 
@@ -58,8 +61,6 @@ public class Context {
     public final MatrixManager matrixManager = new MatrixManager(attribManager);
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
     public final TextureReadManager textureReadManager = new TextureReadManager();
-    // Context-shared server state.
-    public final TextureManager textureManager;
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
@@ -69,7 +70,7 @@ public class Context {
 
     // Context-local client state. Runs on main thread.
     public final AttribTracker attribTracker = new AttribTracker(exec);
-    public final MatrixTracker matrixTracker = new MatrixTracker(attribTracker);
+    public final MatrixTracker matrixTracker = new MatrixTracker();
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
     public final BufferManager bufferManager = new BufferManager();
     // Context-shared client state, that can however be safely run per-context.
@@ -79,6 +80,7 @@ public class Context {
     // Context-shared client state.
     public final ShaderTracker shaderTracker;
     public final TextureTracker textureTracker;
+    public final TextureManager textureManager;
     public final BufferTracker bufferTracker;
 
     public void update() {
