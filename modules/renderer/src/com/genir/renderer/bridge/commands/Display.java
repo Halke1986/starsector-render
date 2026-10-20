@@ -60,11 +60,6 @@ public class Display {
             }
         }
 
-        Logger.getLogger(Sprite.class).info(Sprite.skipped + " / " + Sprite.all);
-
-        Sprite.all = 0;
-        Sprite.skipped = 0;
-
         final Context context = ContextManager.getThreadContext();
         context.exec.execute(new update(processMessages));
         context.exec.swapFramesAndSync();

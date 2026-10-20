@@ -3,8 +3,6 @@ package com.genir.renderer.overrides.render.core;
 import com.genir.renderer.bridge.context.Matrix;
 
 public class Clip {
-    public static Matrix model = new Matrix();
-
     /**
      * Conservatively tests whether the unit rectangle [0, 1] × [0, 1] at Z = 0
      * may intersect the viewport after model and projection transforms.
@@ -20,13 +18,7 @@ public class Clip {
 
         float x2 = c00 + c01;
 
-        float xMin = Math.min(Math.min(0f, c01), Math.min(x2, c00)) + c03;
-        if (xMin > 1f) {
-            return false;
-        }
-
-        float xMax = Math.max(Math.max(0f, c01), Math.max(x2, c00)) + c03;
-        if (xMax < -1f) {
+        if (!coordTest(0f, c01, x2, c00, c03)) {
             return false;
         }
 
@@ -36,13 +28,43 @@ public class Clip {
 
         float y2 = c10 + c11;
 
-        float yMin = Math.min(Math.min(0f, c11), Math.min(y2, c10)) + c13;
-        if (yMin > 1f) {
+        if (!coordTest(0f, c11, y2, c10, c13)) {
             return false;
         }
 
-        float yMax = Math.max(Math.max(0f, c11), Math.max(y2, c10)) + c13;
-        if (yMax < -1f) {
+        return true;
+    }
+
+    private static boolean coordTest(float c0, float c1, float c2, float c3, float offset) {
+        float smaller0;
+        float larger0;
+
+        if (c0 < c1) {
+            smaller0 = c0;
+            larger0 = c1;
+        } else {
+            smaller0 = c1;
+            larger0 = c0;
+        }
+
+        float smaller1;
+        float larger1;
+
+        if (c2 < c3) {
+            smaller1 = c2;
+            larger1 = c3;
+        } else {
+            smaller1 = c3;
+            larger1 = c2;
+        }
+
+        float min = (smaller0 < smaller1 ? smaller0 : smaller1) + offset;
+        if (min > 1f) {
+            return false;
+        }
+
+        float max = (larger0 > larger1 ? larger1 : larger1) + offset;
+        if (max < -1f) {
             return false;
         }
 

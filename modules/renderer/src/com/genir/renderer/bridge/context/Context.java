@@ -23,6 +23,9 @@ public class Context {
     public Profiler.Frame mainProfilerFrame = null;
     public Profiler.Frame renderingProfilerFrame = null;
 
+    // Allocation avoidance.
+    public Matrix sharedMatrix = new Matrix();
+
     public Context() {
         Logger.getLogger(Context.class).info("Created new virtual main OpenGL context.");
 

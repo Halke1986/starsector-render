@@ -50,9 +50,6 @@ public class Sprite {
         renderRegion(posX, posY, 0, 0, 1, 1, false);
     }
 
-    public static int all = 0;
-    public static int skipped = 0;
-
     /**
      * REPLACED METHOD
      * <p>
@@ -86,7 +83,7 @@ public class Sprite {
             pivotY -= height / 2;
         }
 
-        Matrix model = Clip.model;
+        Matrix model = context.sharedMatrix;
 
         model.set(context.matrixTracker.getModelView());
         model.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0); // set sprite location, anchored at pivot
@@ -94,9 +91,12 @@ public class Sprite {
         model.glTranslatef(pivotX, pivotY, 0); // set sprite pivot
         model.glScalef(regionFractionWidth * width, regionFractionHeight * height, 0);
 
-        all++;
+        // Skip sprites outside the clip volume.
+        // Starsector already culls off-screen sprites relatively effectively,
+        // so this additional test eliminates only 2–10% of draw calls,
+        // with no noticeable performance gain. It is retained primarily
+        // as a reference implementation and for testing and benchmarking.
         if (!Clip.rectangleTest(model, context.matrixTracker.getProjection())) {
-            skipped++;
             return;
         }
 
