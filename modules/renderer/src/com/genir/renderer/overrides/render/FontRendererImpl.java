@@ -6,11 +6,9 @@ import com.fs.graphics.font.Kerning;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.overrides.render.core.ArrayPool;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -22,22 +20,26 @@ public class FontRendererImpl {
     private float[] glyphScratchpad = new float[GLYPH_SIZE];
     private int glyphsNum = 0;
 
-//    private FloatBuffer vertexPointer = null;
-
     public record TextParams(
             // Text.
             Font font,
             String text,
             float textSize,
-            Color color,
+
+            // Color.
+            float red,
+            float green,
+            float blue,
             float alpha,
 
             // Highlight.
             boolean applyHighlight,
             int highlightStart,
             int highlightEnd,
-            Color highlightColor,
-            float highlighAlpha,
+            float highlightRed,
+            float highlightGreen,
+            float highlightBlue,
+            float highlightAlpha,
 
             // Outline.
             int outlineSize,
@@ -46,16 +48,16 @@ public class FontRendererImpl {
     }
 
     public void renderGlyphs(TextParams params) {
+        if (params.text.isEmpty()) {
+            return;
+        }
+
         float fontScale = params.textSize / params.font.Font_getSize();
         float penX = 0.0F;
         float penY = 0.0F;
         int previousCharId = -1;
 
-//        vertexPointer = BufferUtils.createFloatBuffer(params.text.length() * 32);
-
         this.glyphsNum = 0;
-
-//        com.genir.renderer.bridge.commands.GL11.glBegin(7);
 
         for (int charIndex = 0; charIndex < params.text.length(); charIndex++) {
             char currentChar = params.text.charAt(charIndex);
@@ -84,7 +86,6 @@ public class FontRendererImpl {
 
                 // Advance pen position.
                 penX += fontScale * glyph.Glyph_getXAdvance();
-                previousCharId = currentChar;
             } else {
                 // Handle line break.
                 if (penX == 0.0F && params.textSize == 18.0F && previousCharId == 10) {
@@ -96,9 +97,9 @@ public class FontRendererImpl {
                 }
 
                 penX = 0.0F;
-
-                previousCharId = currentChar;
             }
+
+            previousCharId = currentChar;
         }
 
         final Context context = ContextManager.getThreadContext();
@@ -107,29 +108,29 @@ public class FontRendererImpl {
         vertexPointer.put(0, glyphScratchpad, 0, glyphsNum * GLYPH_SIZE);
 
         context.exec.execute(new renderText(vertexPointer, glyphsNum));
-
-//        com.genir.renderer.bridge.commands.GL11.glEnd();
     }
 
     private void renderGlyphWithOutline(TextParams params, float penX, float penY, Glyph glyph, float fontScale, boolean highlight) {
         float width = glyph.Glyph_getWidth();
         float height = glyph.Glyph_getHeight();
 
-        Color color;
-        float alpha;
+        float r;
+        float g;
+        float b;
+        float a;
 
         if (highlight) {
-            color = params.highlightColor;
-            alpha = params.highlighAlpha;
-        } else {
-            color = params.color;
-            alpha = params.alpha;
-        }
+            r = params.highlightRed;
+            g = params.highlightGreen;
+            b = params.highlightBlue;
+            a = params.highlightAlpha;
 
-        float r = color.getRed() / 255f;
-        float g = color.getGreen() / 255f;
-        float b = color.getBlue() / 255f;
-        float a = alpha;
+        } else {
+            r = params.red;
+            g = params.green;
+            b = params.blue;
+            a = params.alpha;
+        }
 
         if (params.outlineSize > 0) {
             for (float outlineLayer = 1.0F; outlineLayer < params.outlineExpansion + 1; outlineLayer++) {
@@ -158,8 +159,14 @@ public class FontRendererImpl {
 
         float texX = glyph.Glyph_getTexX();
         float texY = glyph.Glyph_getTexY();
-        float texHeigth = glyph.Glyph_getTexHeight();
+        float texHeight = glyph.Glyph_getTexHeight();
         float texWidth = glyph.Glyph_getTexWidth();
+
+        float x0 = penX - horizontalExpansion;
+        float x1 = penX + fontScale * width + horizontalExpansion * 2.0F;
+
+        float y0 = penY - fontScale * yOffset - verticalExpansion;
+        float y1 = penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F;
 
         if (glyphScratchpad.length < (glyphsNum + 1) * GLYPH_SIZE) {
             glyphScratchpad = Arrays.copyOf(glyphScratchpad, glyphScratchpad.length * 2);
@@ -167,49 +174,41 @@ public class FontRendererImpl {
 
         int offset = glyphsNum * GLYPH_SIZE;
 
-        // com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY + texHeigth);
-        glyphScratchpad[offset + 0] = texX;
-        glyphScratchpad[offset + 1] = texY + texHeigth;
-        // com.genir.renderer.bridge.commands.GL11.glVertex2f(penX - horizontalExpansion, penY - fontScale * yOffset - verticalExpansion);
-        glyphScratchpad[offset + 2] = penX - horizontalExpansion;
-        glyphScratchpad[offset + 3] = penY - fontScale * yOffset - verticalExpansion;
-        glyphScratchpad[offset + 4] = r;
-        glyphScratchpad[offset + 5] = g;
-        glyphScratchpad[offset + 6] = b;
-        glyphScratchpad[offset + 7] = a;
+        glyphScratchpad[offset + 0] = x0;
+        glyphScratchpad[offset + 1] = y0;
+        glyphScratchpad[offset + 2] = r;
+        glyphScratchpad[offset + 3] = g;
+        glyphScratchpad[offset + 4] = b;
+        glyphScratchpad[offset + 5] = a;
+        glyphScratchpad[offset + 6] = texX;
+        glyphScratchpad[offset + 7] = texY + texHeight;
 
-        // com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX, texY);
-        glyphScratchpad[offset + 8] = texX;
-        glyphScratchpad[offset + 9] = texY;
-        // com.genir.renderer.bridge.commands.GL11.glVertex2f(penX - horizontalExpansion, penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F);
-        glyphScratchpad[offset + 10] = penX - horizontalExpansion;
-        glyphScratchpad[offset + 11] = penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F;
-        glyphScratchpad[offset + 12] = r;
-        glyphScratchpad[offset + 13] = g;
-        glyphScratchpad[offset + 14] = b;
-        glyphScratchpad[offset + 15] = a;
+        glyphScratchpad[offset + 8] = x0;
+        glyphScratchpad[offset + 9] = y1;
+        glyphScratchpad[offset + 10] = r;
+        glyphScratchpad[offset + 11] = g;
+        glyphScratchpad[offset + 12] = b;
+        glyphScratchpad[offset + 13] = a;
+        glyphScratchpad[offset + 14] = texX;
+        glyphScratchpad[offset + 15] = texY;
 
-        // com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY);
-        glyphScratchpad[offset + 16] = texX + texWidth;
-        glyphScratchpad[offset + 17] = texY;
-        // com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width + horizontalExpansion * 2.0F, penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F);
-        glyphScratchpad[offset + 18] = penX + fontScale * width + horizontalExpansion * 2.0F;
-        glyphScratchpad[offset + 19] = penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F;
-        glyphScratchpad[offset + 20] = r;
-        glyphScratchpad[offset + 21] = g;
-        glyphScratchpad[offset + 22] = b;
-        glyphScratchpad[offset + 23] = a;
+        glyphScratchpad[offset + 16] = x1;
+        glyphScratchpad[offset + 17] = y1;
+        glyphScratchpad[offset + 18] = r;
+        glyphScratchpad[offset + 19] = g;
+        glyphScratchpad[offset + 20] = b;
+        glyphScratchpad[offset + 21] = a;
+        glyphScratchpad[offset + 22] = texX + texWidth;
+        glyphScratchpad[offset + 23] = texY;
 
-        // com.genir.renderer.bridge.commands.GL11.glTexCoord2f(texX + texWidth, texY + texHeigth);
-        glyphScratchpad[offset + 24] = texX + texWidth;
-        glyphScratchpad[offset + 25] = texY + texHeigth;
-        // com.genir.renderer.bridge.commands.GL11.glVertex2f(penX + fontScale * width + horizontalExpansion * 2.0F, penY - fontScale * yOffset - verticalExpansion);
-        glyphScratchpad[offset + 26] = penX + fontScale * width + horizontalExpansion * 2.0F;
-        glyphScratchpad[offset + 27] = penY - fontScale * yOffset - verticalExpansion;
-        glyphScratchpad[offset + 28] = r;
-        glyphScratchpad[offset + 29] = g;
-        glyphScratchpad[offset + 30] = b;
-        glyphScratchpad[offset + 31] = a;
+        glyphScratchpad[offset + 24] = x1;
+        glyphScratchpad[offset + 25] = y0;
+        glyphScratchpad[offset + 26] = r;
+        glyphScratchpad[offset + 27] = g;
+        glyphScratchpad[offset + 28] = b;
+        glyphScratchpad[offset + 29] = a;
+        glyphScratchpad[offset + 30] = texX + texWidth;
+        glyphScratchpad[offset + 31] = texY + texHeight;
 
         glyphsNum++;
     }
@@ -223,14 +222,12 @@ public class FontRendererImpl {
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
             GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
-            GL11.glTexCoordPointer(2, STRIDE * Float.BYTES, vertexPointer.position(0));
-            GL11.glVertexPointer(2, STRIDE * Float.BYTES, vertexPointer.duplicate().position(2));
-            GL11.glColorPointer(4, STRIDE * Float.BYTES, vertexPointer.duplicate().position(4));
+            GL11.glVertexPointer(2, STRIDE * Float.BYTES, vertexPointer.position(0));
+            GL11.glColorPointer(4, STRIDE * Float.BYTES, vertexPointer.duplicate().position(2));
+            GL11.glTexCoordPointer(2, STRIDE * Float.BYTES, vertexPointer.duplicate().position(6));
 
             context.matrixManager.setGPUMode();
-
             context.attribManager.applyDrawAttribs();
-
 
             GL11.glDrawArrays(GL11.GL_QUADS, 0, glyphsNum * 4);
 

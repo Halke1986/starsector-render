@@ -179,12 +179,12 @@ public class Transformations {
             entry("FontRenderer_highlightColorAlpha", "öO0000"),
             entry("FontRenderer_highlightColors", "ØÓ0000"),
             entry("FontRenderer_highlightByChar", "Oo0000"),
-            entry("FontRenderer_highlighByCharAlphas", "ÔÒ0000"),
             entry("FontRenderer_underlineEnabled", "õo0000"),
             entry("FontRenderer_outlineSize", "oo0000"),
             entry("FontRenderer_outlineExpansion", "oO0000"),
             entry("FontRenderer_highlightStart", "interface_new"),
             entry("FontRenderer_highlightEnd", "interface_super"),
+            entry("FontRenderer_backgroundColor", "ÖÓ0000"),
 
             entry("xx", "xx")
     );
