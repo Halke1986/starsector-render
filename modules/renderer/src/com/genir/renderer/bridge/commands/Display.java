@@ -12,7 +12,7 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 
-import static com.genir.renderer.overrides.render.FontRendererImpl.fontRendererImpl;
+import static com.genir.renderer.overrides.render.font.FontRendererImpl.fontRendererImpl;
 
 public class Display {
     public static void create(PixelFormat pixel_format) {

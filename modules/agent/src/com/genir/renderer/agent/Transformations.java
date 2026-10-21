@@ -220,8 +220,7 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
             entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
             entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager"),
-
-            entry("com/genir/renderer/overrides/render/FontRenderer", "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+            entry("com/genir/renderer/overrides/render/font/FontRenderer", "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(

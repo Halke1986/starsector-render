@@ -1,14 +1,13 @@
-package com.genir.renderer.overrides.render;
+package com.genir.renderer.overrides.render.font;
 
 import com.fs.graphics.font.Font;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.stall.ColorTracker;
 
 import java.awt.*;
 import java.nio.FloatBuffer;
 
-import static com.genir.renderer.overrides.render.FontRendererImpl.fontRendererImpl;
+import static com.genir.renderer.overrides.render.font.FontRendererImpl.fontRendererImpl;
 
 /**
  * OVERRIDES com.fs.graphics.font.FontRenderer
@@ -68,9 +67,9 @@ public class FontRenderer {
         Color color = this.FontRenderer_color;
         Color highlightColor = this.FontRenderer_highlightColor;
 
-        FontRendererImpl.TextParams params;
+        TextParams params;
         if (applyHighlightColors) {
-            params = new FontRendererImpl.TextParams(
+            params = new TextParams(
                     this.FontRenderer_font,
                     this.FontRenderer_text,
                     this.FontRenderer_textSize,
@@ -92,7 +91,7 @@ public class FontRenderer {
                     this.FontRenderer_outlineExpansion
             );
         } else {
-            params = new FontRendererImpl.TextParams(
+            params = new TextParams(
                     this.FontRenderer_font,
                     this.FontRenderer_text,
                     this.FontRenderer_textSize,
