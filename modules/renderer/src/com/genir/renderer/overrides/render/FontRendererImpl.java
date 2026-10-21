@@ -13,7 +13,9 @@ import org.lwjgl.opengl.GL11;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class FontRendererImpl {
     public static final FontRendererImpl fontRendererImpl = new FontRendererImpl();
@@ -23,8 +25,7 @@ public class FontRendererImpl {
     private float[] glyphScratchpad = new float[GLYPH_SIZE];
     private int glyphsNum = 0;
 
-    private Map<TextParams, FloatBuffer> textCache = new HashMap<>();
-    private Map<TextParams, FloatBuffer> oldCache = new HashMap<>();
+    private final Map<TextParams, FloatBuffer> textCache = new HashMap<>();
 
     private int hit = 0;
     private int miss = 0;
@@ -54,6 +55,63 @@ public class FontRendererImpl {
             int outlineSize,
             float outlineExpansion
     ) {
+        @Override
+        public int hashCode() {
+            int h = 0;
+
+            h = 31 * h + System.identityHashCode(font);
+            h = 31 * h + System.identityHashCode(text);
+            h = 31 * h + Float.floatToIntBits(textSize);
+
+            h = 31 * h + Float.floatToIntBits(red);
+            h = 31 * h + Float.floatToIntBits(green);
+            h = 31 * h + Float.floatToIntBits(blue);
+            h = 31 * h + Float.floatToIntBits(alpha);
+
+            h = 31 * h + (applyHighlight ? 1 : 0);
+            if (applyHighlight) {
+                h = 31 * h + highlightStart;
+                h = 31 * h + highlightEnd;
+                h = 31 * h + Float.floatToIntBits(highlightRed);
+                h = 31 * h + Float.floatToIntBits(highlightGreen);
+                h = 31 * h + Float.floatToIntBits(highlightBlue);
+                h = 31 * h + Float.floatToIntBits(highlightAlpha);
+            }
+
+            h = 31 * h + outlineSize;
+            h = 31 * h + Float.floatToIntBits(outlineExpansion);
+
+            return h;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
+            }
+
+            if (!(other instanceof TextParams o)) {
+                return false;
+            }
+
+            return font == o.font
+                    && text == o.text
+                    && red == o.red
+                    && green == o.green
+                    && blue == o.blue
+                    && alpha == o.alpha
+                    && outlineSize == o.outlineSize
+                    && highlightAlpha == o.highlightAlpha
+                    && applyHighlight == o.applyHighlight
+                    && (!applyHighlight || (
+                    highlightStart == o.highlightStart
+                            && highlightEnd == o.highlightEnd
+                            && highlightRed == o.highlightRed
+                            && highlightGreen == o.highlightGreen
+                            && highlightBlue == o.highlightBlue
+                            && highlightAlpha == o.highlightAlpha
+            ));
+        }
     }
 
     public void renderGlyphs(TextParams params) {
@@ -67,15 +125,7 @@ public class FontRendererImpl {
     }
 
     private FloatBuffer getVertices(TextParams params) {
-        FloatBuffer vertexPointer = oldCache.get(params);
-        if (vertexPointer != null) {
-            textCache.put(params, vertexPointer);
-            hit++;
-            return vertexPointer;
-        }
-
-
-        vertexPointer = textCache.get(params);
+        FloatBuffer vertexPointer = textCache.get(params);
         if (vertexPointer != null) {
             hit++;
             return vertexPointer;
@@ -92,15 +142,21 @@ public class FontRendererImpl {
     }
 
     public void update() {
-        oldCache.clear();
-        var tmp = oldCache;
+        if (!textCache.isEmpty()) {
+            int index = ThreadLocalRandom.current().nextInt(textCache.size());
+            Iterator<?> iterator = textCache.values().iterator();
 
-        oldCache = textCache;
-        textCache = tmp;
+            while (index-- > 0) {
+                iterator.next();
+            }
 
-//        Logger.getLogger(FontRendererImpl.class).info(hit + " / " + (hit + miss));
+            iterator.next();
+            iterator.remove();
+        }
 
-        Logger.getLogger(FontRendererImpl.class).info(miss == 0 ? "" : miss);
+        Logger.getLogger(FontRendererImpl.class).info(hit + " / " + (hit + miss) + "   " + textCache.size());
+
+//        Logger.getLogger(FontRendererImpl.class).info(miss == 0 ? "" : miss);
         hit = 0;
         miss = 0;
     }
