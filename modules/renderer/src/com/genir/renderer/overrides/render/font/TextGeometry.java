@@ -4,6 +4,11 @@ import java.nio.FloatBuffer;
 
 public record TextGeometry(
         int glyphsNum,
-        FloatBuffer vertexPointer
+        FloatBuffer vertexPointer,
+
+        float quadX,
+        float quadY,
+        float quadWidth,
+        float quadHeight
 ) {
 }

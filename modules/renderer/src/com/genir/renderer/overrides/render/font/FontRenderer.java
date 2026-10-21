@@ -53,6 +53,12 @@ public class FontRenderer {
     private void FontRenderer_renderGlyphs(boolean applyHighlightColors) {
         // Delagate uncommon cases to vanilla.
         if (this.FontRenderer_transformMatrix != null || this.FontRenderer_underlineEnabled || this.FontRenderer_highlightByChar != null) {
+            String txt = this.FontRenderer_text;
+
+            FloatBuffer m = this.FontRenderer_transformMatrix;
+            boolean underline = this.FontRenderer_underlineEnabled;
+            var col = this.FontRenderer_highlightByChar;
+
             renderGlyphs_vanilla(applyHighlightColors);
             return;
         }

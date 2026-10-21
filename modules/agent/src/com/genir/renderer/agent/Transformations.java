@@ -219,8 +219,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
             entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
             entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
-            entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager"),
-            entry("com/genir/renderer/overrides/render/font/FontRenderer", "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+            entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager")
+//            entry("com/genir/renderer/overrides/render/font/FontRenderer", "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
     );
 
     public static Map<String, String> overridesDebug = Map.<String, String>ofEntries(
@@ -234,5 +234,7 @@ public class Transformations {
 //            entry("com/fs/starfarer/renderers/fx/DetailedSmokeParticle", "com/genir/renderer/overrides/render/particle/DetailedSmokeParticle")
 //            entry("com/fs/starfarer/loading/ResourceLoaderState", "com/genir/renderer/overrides/loading/ResourceLoaderState"),
 //            entry("com/fs/graphics/TextureLoader", "com/genir/renderer/overrides/loading/textures/TextureLoader")
+            entry("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "com/genir/renderer/overrides/render/font/FontRenderer")
+
     );
 }

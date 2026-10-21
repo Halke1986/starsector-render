@@ -2,7 +2,9 @@ package com.genir.renderer.overrides.render.font;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.overrides.render.core.Clip;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
@@ -28,20 +30,32 @@ public class FontRendererImpl {
 
         final Context context = ContextManager.getThreadContext();
         TextGeometry geometry = getVertices(params);
+
+        Matrix model = context.sharedMatrix;
+        model.set(context.matrixTracker.getModelView());
+        model.glTranslatef(geometry.quadX(), geometry.quadY(), 0);
+        model.glScalef(geometry.quadWidth(), geometry.quadHeight(), 0);
+
+        if (!Clip.rectangleTest(model, context.matrixTracker.getProjection())) {
+            miss++;
+            return;
+        }
+
+        hit++;
         context.exec.execute(new renderText(geometry));
     }
 
     private TextGeometry getVertices(TextParams params) {
         TextGeometry geometry = textCache.get(params);
         if (geometry != null) {
-            hit++;
+//            hit++;
             return geometry;
         }
 
         geometry = builder.buildText(params);
 
         textCache.put(params, geometry);
-        miss++;
+//        miss++;
         return geometry;
     }
 
@@ -58,7 +72,8 @@ public class FontRendererImpl {
             iterator.remove();
         }
 
-        Logger.getLogger(FontRendererImpl.class).info(hit + " / " + (hit + miss) + "   " + textCache.size());
+        Logger.getLogger(FontRendererImpl.class).info(hit + " / " + (hit + miss));
+//        Logger.getLogger(FontRendererImpl.class).info(hit + " / " + (hit + miss) + "   " + textCache.size());
 
 //        Logger.getLogger(FontRendererImpl.class).info(miss == 0 ? "" : miss);
         hit = 0;

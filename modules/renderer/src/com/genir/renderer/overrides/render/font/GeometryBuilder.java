@@ -13,15 +13,32 @@ public class GeometryBuilder {
     private float[] glyphScratchpad = new float[GLYPH_SIZE];
     private int glyphsNum;
 
+    private float minX;
+    private float maxX;
+    private float minY;
+    private float maxY;
+
     public TextGeometry buildText(TextParams params) {
         glyphsNum = 0;
+
+        minX = Float.MAX_VALUE;
+        maxX = -Float.MAX_VALUE;
+        minY = Float.MAX_VALUE;
+        maxY = -Float.MAX_VALUE;
 
         buildGlyphs(params);
 
         FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(glyphsNum * GLYPH_SIZE);
         vertexPointer.put(0, glyphScratchpad, 0, glyphsNum * GLYPH_SIZE);
 
-        return new TextGeometry(glyphsNum, vertexPointer);
+        return new TextGeometry(
+                glyphsNum,
+                vertexPointer,
+                minX,
+                minY,
+                maxX - minX,
+                maxY - minY
+        );
     }
 
     private void buildGlyphs(TextParams params) {
@@ -142,6 +159,11 @@ public class GeometryBuilder {
 
         float y0 = penY - fontScale * yOffset - verticalExpansion;
         float y1 = penY - fontScale * height - fontScale * yOffset + verticalExpansion * 2.0F;
+
+        minX = Math.min(minX, Math.min(x0, x1));
+        maxX = Math.max(maxX, Math.max(x0, x1));
+        minY = Math.min(minY, Math.min(y0, y1));
+        maxY = Math.max(maxY, Math.max(y0, y1));
 
         if (glyphScratchpad.length < (glyphsNum + 1) * GLYPH_SIZE) {
             glyphScratchpad = Arrays.copyOf(glyphScratchpad, glyphScratchpad.length * 2);

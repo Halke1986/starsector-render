@@ -292,6 +292,11 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.renameMethod("o00000", "loadTexture_vanilla", "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
                 transformer.mergeClass(className, donorBytes);
                 return transformer;
+            case "com/genir/renderer/overrides/render/font/FontRenderer":
+                transformer = new BytecodeTransformer("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+                transformer.renameMethod("Õ00000", "renderGlyphs_vanilla", "(Z)V");
+                transformer.mergeClass(className, donorBytes);
+                return transformer;
             default:
                 return null;
         }
