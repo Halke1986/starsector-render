@@ -6,11 +6,14 @@ import com.fs.graphics.font.Kerning;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import org.apache.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FontRendererImpl {
     public static final FontRendererImpl fontRendererImpl = new FontRendererImpl();
@@ -19,6 +22,12 @@ public class FontRendererImpl {
 
     private float[] glyphScratchpad = new float[GLYPH_SIZE];
     private int glyphsNum = 0;
+
+    private Map<TextParams, FloatBuffer> textCache = new HashMap<>();
+    private Map<TextParams, FloatBuffer> oldCache = new HashMap<>();
+
+    private int hit = 0;
+    private int miss = 0;
 
     public record TextParams(
             // Text.
@@ -52,6 +61,51 @@ public class FontRendererImpl {
             return;
         }
 
+        final Context context = ContextManager.getThreadContext();
+        FloatBuffer vertexPointer = getVertices(params);
+        context.exec.execute(new renderText(vertexPointer));
+    }
+
+    private FloatBuffer getVertices(TextParams params) {
+        FloatBuffer vertexPointer = oldCache.get(params);
+        if (vertexPointer != null) {
+            textCache.put(params, vertexPointer);
+            hit++;
+            return vertexPointer;
+        }
+
+
+        vertexPointer = textCache.get(params);
+        if (vertexPointer != null) {
+            hit++;
+            return vertexPointer;
+        }
+
+        buildGlyphs(params);
+
+        vertexPointer = BufferUtils.createFloatBuffer(glyphsNum * GLYPH_SIZE);
+        vertexPointer.put(0, glyphScratchpad, 0, glyphsNum * GLYPH_SIZE);
+
+        textCache.put(params, vertexPointer);
+        miss++;
+        return vertexPointer;
+    }
+
+    public void update() {
+        oldCache.clear();
+        var tmp = oldCache;
+
+        oldCache = textCache;
+        textCache = tmp;
+
+//        Logger.getLogger(FontRendererImpl.class).info(hit + " / " + (hit + miss));
+
+        Logger.getLogger(FontRendererImpl.class).info(miss == 0 ? "" : miss);
+        hit = 0;
+        miss = 0;
+    }
+
+    public void buildGlyphs(TextParams params) {
         float fontScale = params.textSize / params.font.Font_getSize();
         float penX = 0.0F;
         float penY = 0.0F;
@@ -82,7 +136,7 @@ public class FontRendererImpl {
                 }
 
                 boolean highlight = params.applyHighlight && (charIndex >= params.highlightStart && charIndex <= params.highlightEnd);
-                renderGlyphWithOutline(params, penX, penY, glyph, fontScale, highlight);
+                buildGlyphWithOutline(params, penX, penY, glyph, fontScale, highlight);
 
                 // Advance pen position.
                 penX += fontScale * glyph.Glyph_getXAdvance();
@@ -101,16 +155,9 @@ public class FontRendererImpl {
 
             previousCharId = currentChar;
         }
-
-        final Context context = ContextManager.getThreadContext();
-
-        FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(glyphsNum * GLYPH_SIZE);
-        vertexPointer.put(0, glyphScratchpad, 0, glyphsNum * GLYPH_SIZE);
-
-        context.exec.execute(new renderText(vertexPointer, glyphsNum));
     }
 
-    private void renderGlyphWithOutline(TextParams params, float penX, float penY, Glyph glyph, float fontScale, boolean highlight) {
+    private void buildGlyphWithOutline(TextParams params, float penX, float penY, Glyph glyph, float fontScale, boolean highlight) {
         float width = glyph.Glyph_getWidth();
         float height = glyph.Glyph_getHeight();
 
@@ -145,14 +192,14 @@ public class FontRendererImpl {
                     horizontalExpansion *= width / height;
                 }
 
-                renderGlyph(penX, penY, glyph, fontScale, r, g, b, a, horizontalExpansion, verticalExpansion);
+                buildGlyph(penX, penY, glyph, fontScale, r, g, b, a, horizontalExpansion, verticalExpansion);
             }
         }
 
-        renderGlyph(penX, penY, glyph, fontScale, r, g, b, a, 0, 0);
+        buildGlyph(penX, penY, glyph, fontScale, r, g, b, a, 0, 0);
     }
 
-    private void renderGlyph(float penX, float penY, Glyph glyph, float fontScale, float r, float g, float b, float a, float horizontalExpansion, float verticalExpansion) {
+    private void buildGlyph(float penX, float penY, Glyph glyph, float fontScale, float r, float g, float b, float a, float horizontalExpansion, float verticalExpansion) {
         float yOffset = glyph.Glyph_getYOffset();
         float width = glyph.Glyph_getWidth();
         float height = glyph.Glyph_getHeight();
@@ -213,7 +260,7 @@ public class FontRendererImpl {
         glyphsNum++;
     }
 
-    private record renderText(FloatBuffer vertexPointer, int glyphsNum) implements GLCommand {
+    private record renderText(FloatBuffer vertexPointer) implements GLCommand {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             final int STRIDE = 8;
@@ -229,6 +276,7 @@ public class FontRendererImpl {
             context.matrixManager.setGPUMode();
             context.attribManager.applyDrawAttribs();
 
+            int glyphsNum = vertexPointer.remaining() / GLYPH_SIZE;
             GL11.glDrawArrays(GL11.GL_QUADS, 0, glyphsNum * 4);
 
             context.matrixManager.setCPUMode();
