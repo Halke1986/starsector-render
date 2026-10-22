@@ -10,14 +10,10 @@ import com.genir.renderer.overrides.render.core.Clip;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class FontRendererImpl {
     private final GeometryBuilder builder = new GeometryBuilder();
-    private final Map<TextParams, TextGeometry> textCache = new HashMap<>();
+    private final Cache cache = new Cache();
 
     // Allocation avoidance.
     private final TextParams key = new TextParams();
@@ -76,15 +72,24 @@ public class FontRendererImpl {
             key.highlightAlpha = 0;
         }
 
-        // TODO all passes are the same?
-        for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-            renderGlyphs(key);
+        if (renderPassCount != 1){
+            int x = 0;
         }
+
+        // TODO all passes are the same?
+//        for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
+            renderGlyphs(key);
+//        }
     }
 
     private void renderGlyphs(TextParams params) {
         final Context context = ContextManager.getThreadContext();
-        TextGeometry geometry = getVertices(params);
+        Cache.Entry entry = cache.findEntry(params);
+        if (entry.geometry == null) {
+            entry.geometry = builder.buildText(params);
+        }
+
+        TextGeometry geometry = entry.geometry;
 
         model.set(context.matrixTracker.getModelView());
         model.glTranslatef(geometry.quadX(), geometry.quadY(), 0);
@@ -97,30 +102,8 @@ public class FontRendererImpl {
         context.exec.execute(new renderText(geometry));
     }
 
-    private TextGeometry getVertices(TextParams params) {
-        TextGeometry geometry = textCache.get(params);
-        if (geometry != null) {
-            return geometry;
-        }
-
-        geometry = builder.buildText(params);
-
-        textCache.put(params.clone(), geometry);
-        return geometry;
-    }
-
     public void update() {
-        if (!textCache.isEmpty()) {
-            int index = ThreadLocalRandom.current().nextInt(textCache.size());
-            Iterator<?> iterator = textCache.values().iterator();
-
-            while (index-- > 0) {
-                iterator.next();
-            }
-
-            iterator.next();
-            iterator.remove();
-        }
+        cache.update();
     }
 
     private record renderText(TextGeometry geometry) implements GLCommand {
