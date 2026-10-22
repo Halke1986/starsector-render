@@ -4,63 +4,53 @@ import com.fs.graphics.font.Font;
 
 public class TextParams {
     // Text.
-    public final Font font;
-    public final String text;
-    public final float textSize;
+    public Font font;
+    public String text;
+    public float textSize;
 
     // Color.
-    public final float red;
-    public final float green;
-    public final float blue;
-    public final float alpha;
+    public float red;
+    public float green;
+    public float blue;
+    public float alpha;
 
     // Highlight.
-    public final boolean applyHighlight;
-    public final int highlightStart;
-    public final int highlightEnd;
-    public final float highlightRed;
-    public final float highlightGreen;
-    public final float highlightBlue;
-    public final float highlightAlpha;
+    public boolean applyHighlight;
+    public int highlightStart;
+    public int highlightEnd;
+    public float highlightRed;
+    public float highlightGreen;
+    public float highlightBlue;
+    public float highlightAlpha;
 
     // Outline.
     int outlineSize;
     float outlineExpansion;
 
-    public TextParams(
-            Font font,
-            String text,
-            float textSize,
-            float red,
-            float green,
-            float blue,
-            float alpha,
-            boolean applyHighlight,
-            int highlightStart,
-            int highlightEnd,
-            float highlightRed,
-            float highlightGreen,
-            float highlightBlue,
-            float highlightAlpha,
-            int outlineSize,
-            float outlineExpansion
-    ) {
-        this.font = font;
-        this.text = text;
-        this.textSize = textSize;
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-        this.applyHighlight = applyHighlight;
-        this.highlightStart = highlightStart;
-        this.highlightEnd = highlightEnd;
-        this.highlightRed = highlightRed;
-        this.highlightGreen = highlightGreen;
-        this.highlightBlue = highlightBlue;
-        this.highlightAlpha = highlightAlpha;
-        this.outlineSize = outlineSize;
-        this.outlineExpansion = outlineExpansion;
+    public TextParams clone() {
+        TextParams c = new TextParams();
+
+        c.font = font;
+        c.text = text;
+        c.textSize = textSize;
+
+        c.red = red;
+        c.green = green;
+        c.blue = blue;
+        c.alpha = alpha;
+
+        c.applyHighlight = applyHighlight;
+        c.highlightStart = highlightStart;
+        c.highlightEnd = highlightEnd;
+        c.highlightRed = highlightRed;
+        c.highlightGreen = highlightGreen;
+        c.highlightBlue = highlightBlue;
+        c.highlightAlpha = highlightAlpha;
+
+        c.outlineSize = outlineSize;
+        c.outlineExpansion = outlineExpansion;
+
+        return c;
     }
 
     @Override

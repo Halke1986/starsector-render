@@ -19,77 +19,66 @@ public class FontRendererImpl {
     private final GeometryBuilder builder = new GeometryBuilder();
     private final Map<TextParams, TextGeometry> textCache = new HashMap<>();
 
+    // Allocation avoidance.
+    private final TextParams key = new TextParams();
+    private final Matrix model = new Matrix();
+
     public void renderFont(
             Font font,
             String text,
             float textSize,
-
             Color color,
             float colorAlpha,
-
             boolean applyHighlight,
             int highlightStart,
             int highlightEnd,
             Color highlightColor,
             float highlightColorAlpha,
-
             int outlineSize,
             float outlineExpansion,
-
             int renderPassCount
     ) {
         final Context context = ContextManager.getThreadContext();
 
-        TextParams params;
+        key.font = font;
+        key.text = text;
+        key.textSize = textSize;
+        key.outlineSize = outlineSize;
+        key.outlineExpansion = outlineExpansion;
+
         if (applyHighlight) {
-            params = new TextParams(
-                    font,
-                    text,
-                    textSize,
+            key.red = color.getRed() / 255f;
+            key.green = color.getGreen() / 255f;
+            key.blue = color.getBlue() / 255f;
+            key.alpha = colorAlpha;
 
-                    color.getRed() / 255f,
-                    color.getGreen() / 255f,
-                    color.getBlue() / 255f,
-                    colorAlpha,
+            key.applyHighlight = true;
+            key.highlightStart = highlightStart;
+            key.highlightEnd = highlightEnd;
 
-                    true,
-                    highlightStart,
-                    highlightEnd,
-                    highlightColor.getRed() / 255f,
-                    highlightColor.getGreen() / 255f,
-                    highlightColor.getBlue() / 255f,
-                    highlightColorAlpha,
-
-                    outlineSize,
-                    outlineExpansion
-            );
+            key.highlightRed = highlightColor.getRed() / 255f;
+            key.highlightGreen = highlightColor.getGreen() / 255f;
+            key.highlightBlue = highlightColor.getBlue() / 255f;
+            key.highlightAlpha = highlightColorAlpha;
         } else {
-            params = new TextParams(
-                    font,
-                    text,
-                    textSize,
+            key.red = context.colorTracker.r;
+            key.green = context.colorTracker.g;
+            key.blue = context.colorTracker.b;
+            key.alpha = context.colorTracker.a;
 
-                    context.colorTracker.r,
-                    context.colorTracker.g,
-                    context.colorTracker.b,
-                    context.colorTracker.a,
+            key.applyHighlight = false;
+            key.highlightStart = 0;
+            key.highlightRed = 0;
 
-                    false,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-
-                    outlineSize,
-                    outlineExpansion
-            );
+            key.highlightEnd = 0;
+            key.highlightGreen = 0;
+            key.highlightBlue = 0;
+            key.highlightAlpha = 0;
         }
 
         // TODO all passes are the same?
         for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-            renderGlyphs(params);
+            renderGlyphs(key);
         }
     }
 
@@ -97,7 +86,6 @@ public class FontRendererImpl {
         final Context context = ContextManager.getThreadContext();
         TextGeometry geometry = getVertices(params);
 
-        Matrix model = context.sharedMatrix;
         model.set(context.matrixTracker.getModelView());
         model.glTranslatef(geometry.quadX(), geometry.quadY(), 0);
         model.glScalef(geometry.quadWidth(), geometry.quadHeight(), 0);
@@ -117,7 +105,7 @@ public class FontRendererImpl {
 
         geometry = builder.buildText(params);
 
-        textCache.put(params, geometry);
+        textCache.put(params.clone(), geometry);
         return geometry;
     }
 
