@@ -275,6 +275,26 @@ public class Matrix {
         buf.put(m33);
     }
 
+    // Storing values in an array is MUCH faster than in FloatBuffer.
+    public void storeTranspose(float[] arr) {
+        arr[0] = m00;
+        arr[1] = m10;
+        arr[2] = m20;
+        arr[3] = m30;
+        arr[4] = m01;
+        arr[5] = m11;
+        arr[6] = m21;
+        arr[7] = m31;
+        arr[8] = m02;
+        arr[9] = m12;
+        arr[10] = m22;
+        arr[11] = m32;
+        arr[12] = m03;
+        arr[13] = m13;
+        arr[14] = m23;
+        arr[15] = m33;
+    }
+
     @Override
     public String toString() {
         String r0 = "[" + format(m00) + ", " + format(m01) + ", " + format(m02) + ", " + format(m03) + "]";

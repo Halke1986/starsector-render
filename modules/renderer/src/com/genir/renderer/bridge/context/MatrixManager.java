@@ -9,7 +9,10 @@ public class MatrixManager {
     private final AttribManager attribManager;
     private final MatrixStack modelView = new MatrixStack();
 
+    // Allocation avoidance.
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+    private final float[] matrixArray = new float[16];
+
     private boolean cpuMode = true;
     private final Matrix identity = new Matrix();
 
@@ -37,8 +40,10 @@ public class MatrixManager {
 
         // Synchronize GPU model view state.
         attribManager.forceMatrixMode(GL11.GL_MODELVIEW);
-        modelView.getMatrix().storeTranspose(matrixBuffer.clear());
-        org.lwjgl.opengl.GL11.glMultMatrix(matrixBuffer.flip());
+
+        modelView.getMatrix().storeTranspose(matrixArray);
+        matrixBuffer.put(0, matrixArray, 0, 16);
+        org.lwjgl.opengl.GL11.glMultMatrix(matrixBuffer);
 
         cpuMode = false;
     }
@@ -147,8 +152,9 @@ public class MatrixManager {
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
 
-            m.storeTranspose(matrixBuffer.clear());
-            org.lwjgl.opengl.GL11.glLoadMatrix(matrixBuffer.flip());
+            modelView.getMatrix().storeTranspose(matrixArray);
+            matrixBuffer.put(0, matrixArray, 0, 16);
+            org.lwjgl.opengl.GL11.glLoadMatrix(matrixBuffer);
         }
     }
 
