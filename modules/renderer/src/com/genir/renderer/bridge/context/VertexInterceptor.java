@@ -14,18 +14,18 @@ import java.util.Arrays;
 import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class VertexInterceptor {
-    private static final int VERTEX_SIZE = 3;
-    private static final int COLOR_SIZE = 4;
-    private static final int TEX_SIZE = 4;
-    private static final int TEX1_SIZE = 2;
-    private static final int NORMAL_SIZE = 3;
-    private static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE + NORMAL_SIZE;
+    public static final int VERTEX_SIZE = 3;
+    public static final int COLOR_SIZE = 4;
+    public static final int TEX_SIZE = 4;
+    public static final int TEX1_SIZE = 2;
+    public static final int NORMAL_SIZE = 3;
+    public static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE + NORMAL_SIZE;
 
-    private static final int VERTEX_FLAG = 1;
-    private static final int COLOR_FLAG = 2;
-    private static final int TEX_FLAG = 4;
-    private static final int TEX1_FLAG = 8;
-    private static final int NORMAL_FLAG = 16;
+    public static final int VERTEX_FLAG = 1;
+    public static final int COLOR_FLAG = 2;
+    public static final int TEX_FLAG = 4;
+    public static final int TEX1_FLAG = 8;
+    public static final int NORMAL_FLAG = 16;
 
     // GL State.
     private final MatrixManager matrixManager;
@@ -256,6 +256,14 @@ public class VertexInterceptor {
 
         snapshot.store(pointer.clear());
         return pointer.flip();
+    }
+
+    public void drawExternalArray(int mode, float[] externalScratchpad, int vertexCount, int flags) {
+        prepareVertexPointers(vertexCount, flags);
+        primaryVertexPointer.put(0, externalScratchpad, 0, vertexCount * STRIDE);
+
+        attribManager.applyDrawAttribs();
+        org.lwjgl.opengl.GL11.glDrawArrays(mode, 0, vertexCount);
     }
 
     /**

@@ -3,6 +3,8 @@ game is responsive when loading mods
 flicker after alt-tab
 faster CSV
 
+campaign radar line (another one) and radar transparency
+
 LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
 insignia42LTaa
 https://discord.com/channels/187635036525166592/1549091275167240272/1556998414678368288

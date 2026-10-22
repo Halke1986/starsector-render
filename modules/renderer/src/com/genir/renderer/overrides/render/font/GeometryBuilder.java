@@ -2,13 +2,12 @@ package com.genir.renderer.overrides.render.font;
 
 import com.fs.graphics.font.Glyph;
 import com.fs.graphics.font.Kerning;
-import org.lwjgl.BufferUtils;
+import com.genir.renderer.bridge.context.VertexInterceptor;
 
-import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 public class GeometryBuilder {
-    public static final int GLYPH_SIZE = 32;
+    public static final int GLYPH_SIZE = VertexInterceptor.STRIDE * 4;
 
     private float[] glyphScratchpad = new float[GLYPH_SIZE];
     private int glyphsNum;
@@ -28,12 +27,9 @@ public class GeometryBuilder {
 
         buildGlyphs(params);
 
-        FloatBuffer vertexPointer = BufferUtils.createFloatBuffer(glyphsNum * GLYPH_SIZE);
-        vertexPointer.put(0, glyphScratchpad, 0, glyphsNum * GLYPH_SIZE);
-
         return new TextGeometry(
                 glyphsNum,
-                vertexPointer,
+                Arrays.copyOf(glyphScratchpad, glyphsNum * GLYPH_SIZE),
                 minX,
                 minY,
                 maxX - minX,
@@ -171,42 +167,37 @@ public class GeometryBuilder {
 
         int offset = glyphsNum * GLYPH_SIZE;
 
-        glyphScratchpad[offset + 0] = x0;
-        glyphScratchpad[offset + 1] = y0;
-        glyphScratchpad[offset + 2] = r;
-        glyphScratchpad[offset + 3] = g;
-        glyphScratchpad[offset + 4] = b;
-        glyphScratchpad[offset + 5] = a;
-        glyphScratchpad[offset + 6] = texX;
-        glyphScratchpad[offset + 7] = texY + texHeight;
-
-        glyphScratchpad[offset + 8] = x0;
-        glyphScratchpad[offset + 9] = y1;
-        glyphScratchpad[offset + 10] = r;
-        glyphScratchpad[offset + 11] = g;
-        glyphScratchpad[offset + 12] = b;
-        glyphScratchpad[offset + 13] = a;
-        glyphScratchpad[offset + 14] = texX;
-        glyphScratchpad[offset + 15] = texY;
-
-        glyphScratchpad[offset + 16] = x1;
-        glyphScratchpad[offset + 17] = y1;
-        glyphScratchpad[offset + 18] = r;
-        glyphScratchpad[offset + 19] = g;
-        glyphScratchpad[offset + 20] = b;
-        glyphScratchpad[offset + 21] = a;
-        glyphScratchpad[offset + 22] = texX + texWidth;
-        glyphScratchpad[offset + 23] = texY;
-
-        glyphScratchpad[offset + 24] = x1;
-        glyphScratchpad[offset + 25] = y0;
-        glyphScratchpad[offset + 26] = r;
-        glyphScratchpad[offset + 27] = g;
-        glyphScratchpad[offset + 28] = b;
-        glyphScratchpad[offset + 29] = a;
-        glyphScratchpad[offset + 30] = texX + texWidth;
-        glyphScratchpad[offset + 31] = texY + texHeight;
+        buildVertex(offset + 0 * VertexInterceptor.STRIDE, x0, y0, r, g, b, a, texX, texY + texHeight);
+        buildVertex(offset + 1 * VertexInterceptor.STRIDE, x0, y1, r, g, b, a, texX, texY);
+        buildVertex(offset + 2 * VertexInterceptor.STRIDE, x1, y1, r, g, b, a, texX + texWidth, texY);
+        buildVertex(offset + 3 * VertexInterceptor.STRIDE, x1, y0, r, g, b, a, texX + texWidth, texY + texHeight);
 
         glyphsNum++;
+    }
+
+    private void buildVertex(
+            int offset,
+            float vertX,
+            float vertY,
+            float r,
+            float g,
+            float b,
+            float a,
+            float texX,
+            float texY
+    ) {
+        glyphScratchpad[offset + 0] = vertX;
+        glyphScratchpad[offset + 1] = vertY;
+        glyphScratchpad[offset + 3] = 0;
+
+        glyphScratchpad[offset + 3] = r;
+        glyphScratchpad[offset + 4] = g;
+        glyphScratchpad[offset + 5] = b;
+        glyphScratchpad[offset + 6] = a;
+
+        glyphScratchpad[offset + 7] = texX;
+        glyphScratchpad[offset + 8] = texY;
+        glyphScratchpad[offset + 9] = 0;
+        glyphScratchpad[offset + 10] = 1;
     }
 }
