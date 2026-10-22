@@ -27,6 +27,18 @@ public class GeometryBuilder {
 
         buildGlyphs(params);
 
+        if (params.renderPasses > 1) {
+            while (glyphScratchpad.length < glyphsNum * params.renderPasses * GLYPH_SIZE) {
+                glyphScratchpad = Arrays.copyOf(glyphScratchpad, glyphScratchpad.length * 2);
+            }
+
+            for (int i = 1; i < params.renderPasses; i++) {
+                System.arraycopy(glyphScratchpad, 0, glyphScratchpad, i * glyphsNum * GLYPH_SIZE, glyphsNum * GLYPH_SIZE);
+            }
+
+            glyphsNum *= params.renderPasses;
+        }
+
         return new TextGeometry(
                 glyphsNum,
                 Arrays.copyOf(glyphScratchpad, glyphsNum * GLYPH_SIZE),

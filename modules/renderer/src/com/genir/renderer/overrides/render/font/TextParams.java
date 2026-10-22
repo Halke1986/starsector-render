@@ -7,6 +7,7 @@ public class TextParams {
     public Font font;
     public String text;
     public float textSize;
+    int renderPasses;
 
     // Color.
     public float red;
@@ -33,6 +34,7 @@ public class TextParams {
         c.font = font;
         c.text = text;
         c.textSize = textSize;
+        c.renderPasses = renderPasses;
 
         c.red = red;
         c.green = green;
@@ -62,6 +64,7 @@ public class TextParams {
         h = 31 * h + System.identityHashCode(font);
         h = 31 * h + System.identityHashCode(text);
         h = 31 * h + Float.floatToIntBits(textSize);
+        h = 31 * h + renderPasses;
 
         h = 31 * h + Float.floatToIntBits(red);
         h = 31 * h + Float.floatToIntBits(green);
@@ -96,6 +99,8 @@ public class TextParams {
 
         return font == o.font
                 && text == o.text
+                && textSize == o.textSize
+                && renderPasses == o.renderPasses
                 && red == o.red
                 && green == o.green
                 && blue == o.blue

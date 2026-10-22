@@ -39,6 +39,7 @@ public class FontRendererImpl {
         key.font = font;
         key.text = text;
         key.textSize = textSize;
+        key.renderPasses = renderPassCount;
         key.outlineSize = outlineSize;
         key.outlineExpansion = outlineExpansion;
 
@@ -72,14 +73,7 @@ public class FontRendererImpl {
             key.highlightAlpha = 0;
         }
 
-        if (renderPassCount != 1){
-            int x = 0;
-        }
-
-        // TODO all passes are the same?
-//        for (int renderPassIndex = 0; renderPassIndex < renderPassCount; renderPassIndex++) {
-            renderGlyphs(key);
-//        }
+        renderGlyphs(key);
     }
 
     private void renderGlyphs(TextParams params) {
