@@ -63,7 +63,7 @@ public class Clip {
             return false;
         }
 
-        float max = (larger0 > larger1 ? larger1 : larger1) + offset;
+        float max = (larger0 > larger1 ? larger0 : larger1) + offset;
         if (max < -1f) {
             return false;
         }
