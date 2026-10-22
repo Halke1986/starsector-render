@@ -48,6 +48,7 @@ public class GL32 {
 
         // Execute commands, so other rendering threads waiting for this
         // glSync can proceed and do not deadlock on a get or wait call.
+        context.updateClient();
         context.exec.swapFrames();
 
         return new GLSync(future, context);

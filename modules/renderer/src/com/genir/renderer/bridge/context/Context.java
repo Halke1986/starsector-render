@@ -86,6 +86,12 @@ public class Context {
     public final TextureManager textureManager;
     public final BufferTracker bufferTracker;
 
+    public void updateClient() {
+        // Runs on client thread.
+
+        renderers.update();
+    }
+
     public void update() {
         // Runs on rendering thread.
 
@@ -98,7 +104,7 @@ public class Context {
             texGenerator.update();
             arrayGenerator.update();
             bufferGenerator.update();
-            renderers.update();
+
 
             if (isMain) {
                 textureManager.update();

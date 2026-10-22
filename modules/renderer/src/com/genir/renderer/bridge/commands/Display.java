@@ -29,6 +29,7 @@ public class Display {
         }
 
         final Context context = ContextManager.createMainContext();
+        context.updateClient();
         context.exec.wait(new create(pixel_format));
     }
 
@@ -60,6 +61,7 @@ public class Display {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.updateClient();
         context.exec.execute(new update(processMessages));
         context.exec.swapFramesAndSync();
     }
@@ -128,6 +130,7 @@ public class Display {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.updateClient();
         context.exec.wait(new setFullscreen(fullscreen));
     }
 
@@ -141,6 +144,7 @@ public class Display {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.updateClient();
         context.exec.execute(new processMessages());
         context.exec.swapFramesAndSync();
     }
