@@ -103,6 +103,7 @@ public class Transformations {
             entry("ProgressBar_render", "o00000"),
             entry("ProgressBar_renderWithDescription", "o00000"),
             entry("TextureHandler_getTextureID", "ö00000"),
+            entry("TextureHandler_getPath", "Õ00000"),
             entry("TextureHandler_setPath", "o00000"),
             entry("TextureHandler_setHeight", "Ô00000"),
             entry("TextureHandler_setWidth", "Object"),
