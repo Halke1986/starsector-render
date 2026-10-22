@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.debug.Profiler;
+import com.genir.renderer.overrides.render.Renderers;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 
@@ -67,6 +68,7 @@ public class Context {
     public final Executor exec = new AsyncExecutor(this);
     public final StateCache glStateCache = new StateCache();
     public final BufferPool bufferPool = new BufferPool();
+    public final Renderers renderers = new Renderers();
 
     // Context-local client state. Runs on main thread.
     public final AttribTracker attribTracker = new AttribTracker(exec);
@@ -96,6 +98,7 @@ public class Context {
             texGenerator.update();
             arrayGenerator.update();
             bufferGenerator.update();
+            renderers.update();
 
             if (isMain) {
                 textureManager.update();

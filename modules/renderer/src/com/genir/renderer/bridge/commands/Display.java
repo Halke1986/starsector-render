@@ -12,8 +12,6 @@ import org.lwjgl.opengl.PixelFormat;
 
 import java.nio.ByteBuffer;
 
-import static com.genir.renderer.overrides.render.font.FontRendererImpl.fontRendererImpl;
-
 public class Display {
     public static void create(PixelFormat pixel_format) {
         record create(PixelFormat pixel_format) implements GLCommand {
@@ -60,8 +58,6 @@ public class Display {
                 }
             }
         }
-
-        fontRendererImpl.update();
 
         final Context context = ContextManager.getThreadContext();
         context.exec.execute(new update(processMessages));
