@@ -1,3 +1,5 @@
+- Optimized font rendering performance.
+
 v0.9.6rc2
 
 - Fixed a NoClassDefFoundError during game startup when using Shadowverse/szb. Reported by IamNooBZaii.

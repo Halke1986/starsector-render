@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Caches text geometry, evicting entries not accessed between update calls.
+ * Tracks usage in a partitioned array to avoid iterating over the map.
+ */
 public class Cache {
     private final Map<TextParams, Entry> fullCache = new HashMap<>();
 
