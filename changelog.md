@@ -1,3 +1,5 @@
+v0.9.6rc3
+
 - Optimized font rendering performance.
 
 v0.9.6rc2
