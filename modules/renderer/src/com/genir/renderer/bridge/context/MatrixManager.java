@@ -152,7 +152,7 @@ public class MatrixManager {
         if (shouldDelegate()) {
             attribManager.applyMatrixMode();
 
-            modelView.getMatrix().storeTranspose(matrixArray);
+            m.storeTranspose(matrixArray);
             matrixBuffer.put(0, matrixArray, 0, 16);
             org.lwjgl.opengl.GL11.glLoadMatrix(matrixBuffer);
         }
