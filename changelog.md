@@ -1,3 +1,7 @@
+v0.9.6rc4
+
+- Fixed visual artifacts visible when using Combat Chatter. Reported by lChronosl and MiniRockytheOracle.
+
 v0.9.6rc3
 
 - Optimized font rendering performance.
