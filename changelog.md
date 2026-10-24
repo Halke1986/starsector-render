@@ -1,3 +1,5 @@
+- Game window remains responsive during game loading.
+
 v0.9.6
  
 - Fixed an issue where portraits in Combat Chatter message boxes were not rendering.

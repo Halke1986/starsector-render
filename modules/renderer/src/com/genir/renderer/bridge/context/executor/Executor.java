@@ -4,12 +4,14 @@ import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
+import java.util.concurrent.Future;
+
 public interface Executor {
     void execute(GLCommand command);
 
     void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3);
 
-    void executeSync(GLCommand command, GLSync fence);
+    void executeFence(GLCommand command, GLSync fence);
 
     <T> T get(GLGetter<T> task);
 
@@ -19,7 +21,9 @@ public interface Executor {
 
     void swapFrames();
 
+    Future<?> injectOutOfOrder(Runnable privilegedCommand);
+
     void shutdown();
 
-    boolean isIdle();
+    boolean isServerThreadIdle();
 }

@@ -55,7 +55,7 @@ public class AsyncExecutor implements Executor {
     }
 
     @Override
-    public void executeSync(GLCommand command, GLSync fence) {
+    public void executeFence(GLCommand command, GLSync fence) {
         currentFrame.add(command, fence);
     }
 
@@ -183,6 +183,15 @@ public class AsyncExecutor implements Executor {
         });
     }
 
+    /**
+     * Queue a privileged command for execution.
+     * The command will be executed between frames.
+     */
+    @Override
+    public Future<?> injectOutOfOrder(Runnable command) {
+        return execActual.submit(command);
+    }
+
     private void waitForFrame(Future<?> future) {
         try {
             future.get();
@@ -239,7 +248,7 @@ public class AsyncExecutor implements Executor {
      * Returns true if no commands are being executed.
      */
     @Override
-    public boolean isIdle() {
+    public boolean isServerThreadIdle() {
         return currentSwapFuture.isDone();
     }
 

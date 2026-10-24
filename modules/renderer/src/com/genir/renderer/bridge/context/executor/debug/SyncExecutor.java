@@ -1,9 +1,13 @@
-package com.genir.renderer.bridge.context.executor;
+package com.genir.renderer.bridge.context.executor.debug;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Runs commands immediately on caller thread.
@@ -32,7 +36,7 @@ public class SyncExecutor implements Executor {
     }
 
     @Override
-    public void executeSync(GLCommand command, GLSync fence) {
+    public void executeFence(GLCommand command, GLSync fence) {
         command.run(context, args, 0);
     }
 
@@ -55,11 +59,17 @@ public class SyncExecutor implements Executor {
     }
 
     @Override
+    public Future<?> injectOutOfOrder(Runnable privilegedCommand) {
+        // There's no command ordering to bypass. Do nothing.
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
     public void shutdown() {
     }
 
     @Override
-    public boolean isIdle() {
+    public boolean isServerThreadIdle() {
         return true;
     }
 }

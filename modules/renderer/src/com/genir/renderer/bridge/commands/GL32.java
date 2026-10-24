@@ -71,7 +71,7 @@ public class GL32 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.executeSync(new glWaitSync(sync, flags, timeout), sync);
+        context.exec.executeFence(new glWaitSync(sync, flags, timeout), sync);
     }
 
     public static void glDeleteSync(GLSync sync) {
@@ -90,6 +90,6 @@ public class GL32 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.executeSync(new glDeleteSync(sync), sync);
+        context.exec.executeFence(new glDeleteSync(sync), sync);
     }
 }

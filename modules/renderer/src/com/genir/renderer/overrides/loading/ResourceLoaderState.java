@@ -37,10 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -59,11 +56,14 @@ public class ResourceLoaderState {
      */
     public static BlockingQueue<Runnable> mainThreadQueue;
     public static AtomicInteger mainThreadWaitGroup;
+    public static AsyncException asyncException;
     public static ExecutorService textureWorkers;
     public static ExecutorService scriptWorkers;
     public static ExecutorService soundWorkers;
     public static ExecutorService resourceWorker;
-    public static AsyncException asyncException;
+    public static ExecutorService messageHandler;
+    public static boolean shutdownSignal;
+
 
     private LoadingBar loadingBar;
 
@@ -99,6 +99,9 @@ public class ResourceLoaderState {
             scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
             soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);
             resourceWorker = ExecutorFactory.newExecutor(1, "FR-Resource-Loader", asyncException);
+            messageHandler = ExecutorFactory.newExecutor(1, "FR-Message-Handler", asyncException);
+
+            shutdownSignal = false;
         }
     }
 
@@ -112,15 +115,19 @@ public class ResourceLoaderState {
             initRun(session);
         } catch (Throwable t) {
             // Interrupt workers.
+            shutdownSignal = true;
+
             resourceWorker.shutdownNow();
             textureWorkers.shutdownNow();
             scriptWorkers.shutdownNow();
             soundWorkers.shutdownNow();
+            messageHandler.shutdownNow();
 
             ExecutorFactory.awaitTermination(resourceWorker);
             ExecutorFactory.awaitTermination(textureWorkers);
             ExecutorFactory.awaitTermination(scriptWorkers);
             ExecutorFactory.awaitTermination(soundWorkers);
+            ExecutorFactory.awaitTermination(messageHandler);
 
             throw t;
         }
@@ -128,8 +135,8 @@ public class ResourceLoaderState {
 
     private void initRun(Map session) throws Exception {
         initStaticFields();
-
         initLoadingBar();
+        startMessagePorcessor();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
         DDSIntegration.initialize();
@@ -155,7 +162,10 @@ public class ResourceLoaderState {
             }
 
             // Animate progress bar after each completed task.
-            if (ContextManager.getThreadContext().exec.isIdle()) {
+            // Do not attempt to animate when the rendering thread is busy with
+            // uploading textures, as this leads to additional buffer swaps and
+            // increased latency.
+            if (ContextManager.getThreadContext().exec.isServerThreadIdle()) {
                 renderLoadingBar(0);
             }
 
@@ -166,6 +176,8 @@ public class ResourceLoaderState {
         resourceWorker.shutdown();
         ExecutorFactory.awaitTermination(resourceWorker);
 
+        // resourceWorker is terminated and will not enqueue any more
+        // resources. It's safe to shudown resource loaders now.
         textureWorkers.shutdown();
         scriptWorkers.shutdown();
         ExecutorFactory.awaitTermination(textureWorkers);
@@ -178,6 +190,10 @@ public class ResourceLoaderState {
 
         soundWorkers.shutdown();
         ExecutorFactory.awaitTermination(soundWorkers);
+
+        shutdownSignal = true;
+        messageHandler.shutdown();
+        ExecutorFactory.awaitTermination(messageHandler);
 
         // Rethrow any exception in sound thread.
         rethrowAsyncException();
@@ -344,6 +360,9 @@ public class ResourceLoaderState {
         // overriden and controlled by renderLoadingBarOverride().
     }
 
+    /**
+     * ADDED METHOD
+     */
     private void initLoadingBar() throws IOException {
         Global.getSettings().loadTexture("graphics/ui/loading_widget.png");
         Global.getSettings().loadTexture("graphics/ui/loading_widget_glow.png");
@@ -379,6 +398,38 @@ public class ResourceLoaderState {
 
         Rendering.Rendering_end();
         com.genir.renderer.bridge.commands.Display.update(true);
+    }
+
+    /**
+     * ADDED METHOD
+     * <p>
+     * Periodically queues window message processing on the main GL context,
+     * keeping the window responsive during all phases of game initialization.
+     */
+    private void startMessagePorcessor() {
+        final Context context = ContextManager.getThreadContext();
+
+        messageHandler.execute(() -> {
+            Future<?> prevExecution = CompletableFuture.completedFuture(null);
+
+            try {
+                while (!shutdownSignal) {
+                    // Processing occurs between GL command batches,
+                    // never within a glBegin/glEnd pair.
+                    prevExecution = context.exec.injectOutOfOrder(() -> {
+                        org.lwjgl.opengl.Display.processMessages();
+                    });
+
+                    Thread.sleep(50);
+
+                    // Wait for previous massage processing to finish
+                    // to avoid accumulation.
+                    prevExecution.get();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
