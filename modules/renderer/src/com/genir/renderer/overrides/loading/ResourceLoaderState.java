@@ -34,6 +34,7 @@ import com.genir.renderer.overrides.render.particle.SmoothParticle;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -127,13 +128,14 @@ public class ResourceLoaderState {
 
     private void initRun(Map session) throws Exception {
         initStaticFields();
-        loadingBar = new LoadingBar();
+
+        initLoadingBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
         DDSIntegration.initialize();
 
         try {
-            // init_vanilla will call 'initSpecStore', which triggers most of asset loading.
+            // init_vanilla will call 'initSpecStore', which triggers most of the asset loading.
             // initSpecStore throws an exception to skip the middle section of vanilla init.
             init_vanilla(session);
         } catch (RuntimeException e) {
@@ -154,8 +156,7 @@ public class ResourceLoaderState {
 
             // Animate progress bar after each completed task.
             if (ContextManager.getThreadContext().exec.isIdle()) {
-                renderProgress();
-                com.genir.renderer.bridge.commands.Display.update(true);
+                renderLoadingBar(0);
             }
 
             // Abort if worker has thrown.
@@ -171,14 +172,6 @@ public class ResourceLoaderState {
         ExecutorFactory.awaitTermination(scriptWorkers);
 
         rethrowAsyncException();
-
-        // Fill the progress bar.
-        loadingBar.forwardOnly = true;
-        while (loadingBar.barIsNotFull()) {
-            renderProgress();
-            com.genir.renderer.bridge.commands.Display.update();
-            Thread.sleep(10);
-        }
 
         // Run skipped vanilla ResourceLoader init epilogue.
         initEpilogue();
@@ -202,13 +195,12 @@ public class ResourceLoaderState {
 
         // Initialize mods.
         ScriptStore.loadModClasses();
-        for (ModPlugin mod : Global.getSettings().getModManager().getEnabledModPlugins()) {
-            mod.onApplicationLoad();
-
-            // Clean OpenGL state before loading next mod.
-            com.genir.renderer.bridge.commands.Display.processMessages();
-            com.genir.renderer.bridge.commands.GL11.glFinish();
+        List<ModPlugin> plugins = Global.getSettings().getModManager().getEnabledModPlugins();
+        for (int i = 0; i < plugins.size(); i++) {
+            renderLoadingBar((float) (i) / (float) plugins.size());
+            plugins.get(i).onApplicationLoad();
         }
+        renderLoadingBar(1);
 
 //        Global.getSettings().setDevMode(true);
 
@@ -349,13 +341,27 @@ public class ResourceLoaderState {
      */
     private void renderProgress(float progress) {
         // Do nothing. The progress bar animation is completely
-        // overriden and controlled by renderProgress().
+        // overriden and controlled by renderLoadingBarOverride().
+    }
+
+    private void initLoadingBar() throws IOException {
+        Global.getSettings().loadTexture("graphics/ui/loading_widget.png");
+        Global.getSettings().loadTexture("graphics/ui/loading_widget_glow.png");
+        Global.getSettings().loadTexture("graphics/ui/starsector_title_alpha.png");
+
+        this.barBg = new Sprite("graphics/ui/loading_widget.png");
+        this.title = new Sprite("graphics/ui/starsector_title_alpha.png");
+        this.bar = new Sprite("graphics/ui/loading_widget_glow.png");
+
+        this.loadingBar = new LoadingBar(this.bar);
+
+        renderLoadingBar(-1);
     }
 
     /**
      * ADDED METHOD
      */
-    private void renderProgress() {
+    private void renderLoadingBar(float progress) {
         float width = Global.getSettings().getScreenWidth();
         float height = Global.getSettings().getScreenHeight();
 
@@ -364,9 +370,15 @@ public class ResourceLoaderState {
 
         title.renderAtCenter(width / 2.0F, height / 2.0F + 48.0F + 5.0F);
         barBg.renderAtCenter(width / 2.0F, height / 2.0F);
-        loadingBar.animate(bar);
+
+        if (progress == 0f) {
+            loadingBar.animateRandom();
+        } else if (progress > 0f) {
+            loadingBar.animateProgress(progress);
+        }
 
         Rendering.Rendering_end();
+        com.genir.renderer.bridge.commands.Display.update(true);
     }
 
     /**

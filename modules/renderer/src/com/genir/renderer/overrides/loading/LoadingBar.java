@@ -6,32 +6,64 @@ import com.fs.starfarer.api.Global;
 import java.util.Random;
 
 public class LoadingBar {
-    private final boolean[] barSegments = new boolean[200];
+    private static final int SEGMENTS = 200;
+
+    private final Sprite barSprite;
+    private final boolean[] barSegments = new boolean[SEGMENTS];
     private final Random rand = new Random();
 
-    public boolean forwardOnly = false;
+    public LoadingBar(Sprite barSprite) {
+        this.barSprite = barSprite;
+    }
 
-    public void animate(Sprite bar) {
-        float x = Global.getSettings().getScreenWidth() / 2;
-        float y = Global.getSettings().getScreenHeight() / 2;
+    public void animateRandom() {
+        int flipIdx = Math.abs(rand.nextInt()) % SEGMENTS;
+        barSegments[flipIdx] = !barSegments[flipIdx];
 
-        int segments = barSegments.length;
+        renderBar();
+    }
 
-        int flipIdx = Math.abs(rand.nextInt()) % segments;
-        if (forwardOnly && barIsNotFull()) {
-            while (barSegments[flipIdx]) {
-                flipIdx = Math.abs(rand.nextInt()) % segments;
+    public void animateProgress(float progress) {
+        int count = 0;
+        for (int i = 0; i < SEGMENTS; i++) {
+            if (barSegments[i]) {
+                count++;
             }
         }
 
-        barSegments[flipIdx] = !barSegments[flipIdx];
+        int expectedCount = (int) (SEGMENTS / 2 * (1 + progress));
+
+        while (count < expectedCount) {
+            int flipOffset = Math.abs(rand.nextInt()) % (SEGMENTS - count);
+            for (int i = 0; i < SEGMENTS; i++) {
+                if (barSegments[i]) {
+                    continue;
+                }
+
+                if (flipOffset == 0) {
+                    barSegments[i] = true;
+                    break;
+                } else {
+                    flipOffset--;
+                }
+            }
+
+            count++;
+        }
+
+        renderBar();
+    }
+
+    private void renderBar() {
+        float x = Global.getSettings().getScreenWidth() / 2;
+        float y = Global.getSettings().getScreenHeight() / 2;
 
         int start = 0;
         int length = 0;
 
-        for (int i = 0; i < segments; i++) {
+        for (int i = 0; i < SEGMENTS; i++) {
             if (!barSegments[i]) {
-                renderBar(x, y, length, start, segments, bar);
+                renderSegment(x, y, length, start);
 
                 start = 0;
                 length = 0;
@@ -43,26 +75,16 @@ public class LoadingBar {
             }
         }
 
-        renderBar(x, y, length, start, segments, bar);
+        renderSegment(x, y, length, start);
     }
 
-    private void renderBar(float x, float y, int length, int start, int segments, Sprite bar) {
+    private void renderSegment(float x, float y, int length, int start) {
         if (length > 0) {
-            bar.renderRegionAtCenter(
+            barSprite.renderRegionAtCenter(
                     x, y,
-                    (float) start / (float) segments, 0,
-                    (float) length / (float) segments, 1
+                    (float) start / (float) SEGMENTS, 0,
+                    (float) length / (float) SEGMENTS, 1
             );
         }
-    }
-
-    public boolean barIsNotFull() {
-        for (boolean barSegment : barSegments) {
-            if (!barSegment) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

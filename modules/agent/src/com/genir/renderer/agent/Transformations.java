@@ -115,7 +115,7 @@ public class Transformations {
             entry("TextureTransformer_apply", "o00000"),
             entry("TextureHandler_setStringID", "Ò00000"),
             entry("DeploymentManager_pickReinforcement", "o00000"),
-            entry("TextureLoader_loadTexture", "o00000"),
+            entry("TextureLoader_loadTextureSynchronous", "o00000"),
             entry("SoundStore_getInstance", "ö00000"),
             entry("SoundStore_loadWav", "Ò00000"),
             entry("SoundStore_getIsInitialized", "o00000"),

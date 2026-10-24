@@ -1,6 +1,9 @@
 package com.fs.graphics;
 
 public class Sprite {
+    public Sprite(String texturePath) {
+    }
+
     public void renderRegionAtCenter(float x, float y, float tx, float ty, float tdx, float tdy) {
     }
 

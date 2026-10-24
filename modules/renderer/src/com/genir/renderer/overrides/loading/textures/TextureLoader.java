@@ -108,8 +108,9 @@ public class TextureLoader {
      * REPLACED METHOD
      * <p>
      * Texture loading during single-threaded gameplay phase.
+     * Used in the very early stage of asset loading and in actual gameplay.
      */
-    public TextureHandler TextureLoader_loadTexture(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
+    public TextureHandler TextureLoader_loadTextureSynchronous(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
         // Delegate uncommon cases to vanilla.
         if (target != null || var3 != GL11.GL_TEXTURE_2D || var4 != GL11.GL_RGBA || var5 != GL11.GL_LINEAR || var6 != GL11.GL_LINEAR || generateSubImage) {
             return loadTexture_vanilla(target, path, var3, var4, var5, var6, generateSubImage);

@@ -20,4 +20,10 @@ public class Noop {
 
         int x = 0;
     }
+
+    public static void breakpoint(Object obj) {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        int x = 0;
+    }
 }
