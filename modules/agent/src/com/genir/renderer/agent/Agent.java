@@ -17,6 +17,9 @@ public final class Agent {
         Logger logger = Logger.getLogger(Agent.class);
         logger.info("Fast Rendering: " + Version.getVersion());
 
+        // Set version property for other mods to check.
+        System.setProperty("fr.version", Version.getVersion());
+
         // Expected Windows Starsector 0.98a-RC8 checksum: 5dd222b9e266d2ac2d63b3dad4983eb05caaf5a247d7dfb82aaeba47ea774cc8
         String checksum = getSha256(Path.of("starfarer_obf.jar"));
         logger.info("starfarer_obf.jar SHA-256 checksum: " + checksum);

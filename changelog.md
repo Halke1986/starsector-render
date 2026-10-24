@@ -1,4 +1,7 @@
+v0.9.6
+ 
 - Fixed an issue where portraits in Combat Chatter message boxes were not rendering.
+- Added fr.version.txt file and fr.version system property. Suggested by Lukas04 and Numan.
 
 v0.9.6rc4
 
