@@ -5,7 +5,7 @@ import com.fs.starfarer.api.Global;
 
 import java.util.Random;
 
-public class ProgressBar {
+public class LoadingBar {
     private final boolean[] barSegments = new boolean[200];
     private final Random rand = new Random();
 

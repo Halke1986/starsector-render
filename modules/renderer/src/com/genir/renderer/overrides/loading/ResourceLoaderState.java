@@ -64,7 +64,7 @@ public class ResourceLoaderState {
     public static ExecutorService resourceWorker;
     public static AsyncException asyncException;
 
-    private ProgressBar barAnimation;
+    private LoadingBar barAnimation;
 
     /**
      * STUB
@@ -127,7 +127,7 @@ public class ResourceLoaderState {
 
     private void initRun(Map session) throws Exception {
         initStaticFields();
-        barAnimation = new ProgressBar();
+        barAnimation = new LoadingBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
         DDSIntegration.initialize();
