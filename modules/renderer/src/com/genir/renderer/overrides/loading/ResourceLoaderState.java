@@ -64,7 +64,7 @@ public class ResourceLoaderState {
     public static ExecutorService resourceWorker;
     public static AsyncException asyncException;
 
-    private LoadingBar barAnimation;
+    private LoadingBar loadingBar;
 
     /**
      * STUB
@@ -127,7 +127,7 @@ public class ResourceLoaderState {
 
     private void initRun(Map session) throws Exception {
         initStaticFields();
-        barAnimation = new LoadingBar();
+        loadingBar = new LoadingBar();
 
         FileLoader.FileLoader_getInstance().initResourceLoading();
         DDSIntegration.initialize();
@@ -173,8 +173,8 @@ public class ResourceLoaderState {
         rethrowAsyncException();
 
         // Fill the progress bar.
-        barAnimation.forwardOnly = true;
-        while (barAnimation.barIsNotFull()) {
+        loadingBar.forwardOnly = true;
+        while (loadingBar.barIsNotFull()) {
             renderProgress();
             com.genir.renderer.bridge.commands.Display.update();
             Thread.sleep(10);
@@ -364,7 +364,7 @@ public class ResourceLoaderState {
 
         title.renderAtCenter(width / 2.0F, height / 2.0F + 48.0F + 5.0F);
         barBg.renderAtCenter(width / 2.0F, height / 2.0F);
-        barAnimation.animate(bar);
+        loadingBar.animate(bar);
 
         Rendering.Rendering_end();
     }
