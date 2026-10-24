@@ -1,3 +1,5 @@
+- Fixed an issue where portraits in Combat Chatter message boxes were not rendering.
+
 v0.9.6rc4
 
 - Fixed visual artifacts visible when using Combat Chatter. Reported by lChronosl and MiniRockytheOracle.

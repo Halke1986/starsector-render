@@ -3,10 +3,8 @@ package com.genir.renderer.overrides.render;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.context.Pool;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.overrides.render.core.Clip;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -76,45 +74,28 @@ public class Sprite {
             return;
         }
 
-        final Context context = ContextManager.getThreadContext();
-
-        float pivotX = regionFractionX * width;
-        float pivotY = regionFractionY * height;
-
-        if (centerX != -1 && centerY != -1) {
-            pivotX -= centerX;
-            pivotY -= centerY;
-        } else {
-            pivotX -= width / 2;
-            pivotY -= height / 2;
-        }
-
-        Matrix model = context.sharedMatrix;
-
-        model.set(context.matrixTracker.getModelView());
-        model.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0); // set sprite location, anchored at pivot
-        model.glRotatef(angle, 0, 0, 1);
-        model.glTranslatef(pivotX, pivotY, 0); // set sprite pivot
-        model.glScalef(regionFractionWidth * width, regionFractionHeight * height, 0);
-
-        // Skip sprites outside the clip volume.
-        // Starsector already culls off-screen sprites relatively effectively,
-        // so this additional test eliminates only 2–10% of draw calls,
-        // with no noticeable performance gain. It is retained primarily
-        // as a reference implementation and for testing and benchmarking.
-        if (!Clip.rectangleTest(model, context.matrixTracker.getProjection())) {
-            return;
-        }
-
         RenderState command = getCommand();
 
         command.spritePool = spritePool;
-        command.m.set(model);
+
+        command.spriteX = posX + (float) offsetX;
+        command.spriteY = posY + (float) offsetY;
+        command.spriteWidth = width;
+        command.spriteHeight = height;
+
+        command.centerX = centerX;
+        command.centerY = centerY;
+        command.angle = angle;
 
         command.r = (byte) color.getRed();
         command.g = (byte) color.getGreen();
         command.b = (byte) color.getBlue();
         command.a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
+
+        command.quadX = regionFractionX * width;
+        command.quadY = regionFractionY * height;
+        command.quadWidth = regionFractionWidth * width;
+        command.quadHeight = regionFractionHeight * height;
 
         if (regionFractionX != 0 || regionFractionY != 0) {
             command.texX = regionFractionX * texWidth;
@@ -148,10 +129,7 @@ public class Sprite {
             return (RenderState) pooledCommand;
         }
 
-        RenderState newState = new RenderState();
-        newState.m = new Matrix();
-
-        return newState;
+        return new RenderState();
     }
 
     /**
@@ -175,12 +153,24 @@ public class Sprite {
 
     public static class RenderState implements GLCommand {
         public Pool spritePool;
-        public Matrix m;
+
+        public float spriteX;
+        public float spriteY;
+        public float spriteWidth;
+        public float spriteHeight;
+        public float centerX;
+        public float centerY;
+        public float angle;
 
         public byte r;
         public byte g;
         public byte b;
         public byte a;
+
+        public float quadX;
+        public float quadY;
+        public float quadWidth;
+        public float quadHeight;
 
         public float texX;
         public float texY;
@@ -206,7 +196,13 @@ public class Sprite {
             }
 
             context.matrixManager.glPushMatrix();
-            context.matrixManager.glLoadMatrix(m);
+            context.matrixManager.glTranslatef(spriteX + spriteWidth / 2, spriteY + spriteHeight / 2, 0);
+            context.matrixManager.glRotatef(angle, 0, 0, 1);
+            if (centerX != -1 && centerY != -1) {
+                context.matrixManager.glTranslatef(-centerX, -centerY, 0);
+            } else {
+                context.matrixManager.glTranslatef(-spriteWidth / 2, -spriteHeight / 2, 0);
+            }
 
             context.attribManager.glEnable(GL11.GL_TEXTURE_2D);
             context.attribManager.glEnable(GL11.GL_BLEND);
@@ -221,13 +217,13 @@ public class Sprite {
 
             context.vertexInterceptor.glBegin(GL11.GL_QUADS);
             context.vertexInterceptor.glTexCoord4f(texX, texY, 0, 1);
-            context.vertexInterceptor.glVertex3f(0, 0, 0);
+            context.vertexInterceptor.glVertex3f(quadX, quadY, 0);
             context.vertexInterceptor.glTexCoord4f(texX, texY + texHeight, 0, 1);
-            context.vertexInterceptor.glVertex3f(0, 1, 0);
+            context.vertexInterceptor.glVertex3f(quadX, quadY + quadHeight, 0);
             context.vertexInterceptor.glTexCoord4f(texX + texWidth, texY + texHeight, 0, 1);
-            context.vertexInterceptor.glVertex3f(1, 1, 0);
+            context.vertexInterceptor.glVertex3f(quadX + quadWidth, quadY + quadHeight, 0);
             context.vertexInterceptor.glTexCoord4f(texX + texWidth, texY, 0, 1);
-            context.vertexInterceptor.glVertex3f(1, 0, 0);
+            context.vertexInterceptor.glVertex3f(quadX + quadWidth, quadY, 0);
             context.vertexInterceptor.glEnd();
 
             context.attribManager.glDisable(GL11.GL_BLEND);
