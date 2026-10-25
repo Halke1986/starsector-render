@@ -1,4 +1,6 @@
-- Game window remains responsive during game loading.
+v0.9.7rc1
+
+- The game window now remains responsive during loading. It is possible to Alt+Tab in and out or close the window at any time.
 
 v0.9.6
  
