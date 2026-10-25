@@ -137,7 +137,7 @@ public class ResourceLoaderState {
         // Shutdown sound loader later than other loaders to give
         // it more time to finish work. Later shutdown is possible,
         // because mod loading does not rely on sounds being loaded
-        // (hopefully). // TODO check if no sound loading race regression
+        // (hopefully).
         soundWorkers.shutdown();
         heavyWorker.shutdown();
         ExecutorFactory.awaitTermination(soundWorkers);
