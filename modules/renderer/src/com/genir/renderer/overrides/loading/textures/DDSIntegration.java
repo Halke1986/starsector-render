@@ -79,8 +79,8 @@ public class DDSIntegration {
         return textureID;
     }
 
-    // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
-    // TODO move to client thread since display lists are removed?
+    // commitTextureLazy runs on rendering thread to allow asynchronous texture file loading
+    // before the rendering thread processes the commit method.
     private static void commitTextureLazy(TextureData texData, int textureID, byte[] bytes) {
         int err = uploadDDSTexture(textureID, bytes);
         if (err != 0) {

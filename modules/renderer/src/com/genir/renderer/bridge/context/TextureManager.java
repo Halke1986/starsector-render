@@ -85,7 +85,7 @@ public class TextureManager {
     }
 
     private void uploadTexture(Context context, int texture, TextureCallbacks loaders) {
-        // Load texture.
+        // Load texture bytes.
         final Future<byte[]> bufferFuture = workers.submit(() -> {
             try {
                 return loaders.loadFn.call();
