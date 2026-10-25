@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL42;
@@ -18,14 +17,12 @@ import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.genir.renderer.debug.Debug.asert;
 
@@ -39,8 +36,6 @@ public class DDSIntegration {
 
     private static Map<Path, TextureData> cache = null;
 
-    private static Method methodBeforeTextureUpload = null; // deprecated since VRAM Optimizer 1.0.38
-    private static Method methodAfterTextureUpload = null; // deprecated since VRAM Optimizer 1.0.38
     private static Method methodUploadDDSTexture = null;
 
     public static void initialize() {
@@ -87,47 +82,17 @@ public class DDSIntegration {
     // commitTextureLazy runs on rendering thread, mostly to avoid issues with lazy texture loading in OpenGL display lists.
     // TODO move to client thread since display lists are removed?
     private static void commitTextureLazy(TextureData texData, int textureID, byte[] bytes) {
-        if (hasUploadDDSTexture()) {
-            int err = uploadDDSTexture(textureID, bytes);
-            if (err != 0) {
-                throw new RuntimeException(String.valueOf(err));
-            }
-
-            // Revert to default vanilla texture config after DDS texture was uploaded.
-            // This is because DDS upload disables GPU mipmap generation. When subsequent
-            // code re-defines the texture with uncompressed data, this results in
-            // compressed/uncompressed mismatch for mipmap levels and subsequently,
-            // failure to draw the texture.
-            configureVanillaTexture();
-
-            return;
+        int err = uploadDDSTexture(textureID, bytes);
+        if (err != 0) {
+            throw new RuntimeException(String.valueOf(err));
         }
 
-        // Fallback to deprecated VRAM Optimizer integration.
-        int ddsHeaderLength = 148;
-        int imageSize = bytes.length - ddsHeaderLength;
-
-        ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length - ddsHeaderLength);
-        buffer.put(bytes, ddsHeaderLength, imageSize);
-        buffer.clear();
-
-        String path = texData.imagePath.toString();
-        int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
-
-        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-
-        if (hasBeforeTextureUpload()) {
-            beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-        }
-
+        // Revert to default vanilla texture config after DDS texture was uploaded.
+        // This is because DDS upload disables GPU mipmap generation. When subsequent
+        // code re-defines the texture with uncompressed data, this results in
+        // compressed/uncompressed mismatch for mipmap levels and subsequently,
+        // failure to draw the texture.
         configureVanillaTexture();
-
-        org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        org.lwjgl.opengl.GL13.glCompressedTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, buffer);
-
-        if (hasAfterTextureUpload()) {
-            afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-        }
     }
 
     private static void configureVanillaTexture() {
@@ -258,37 +223,9 @@ public class DDSIntegration {
         return texData;
     }
 
-    public static boolean hasUploadDDSTexture() {
-        return methodUploadDDSTexture != null;
-    }
-
-    public static boolean hasBeforeTextureUpload() {
-        return methodBeforeTextureUpload != null;
-    }
-
-    public static boolean hasAfterTextureUpload() {
-        return methodAfterTextureUpload != null;
-    }
-
     public static int uploadDDSTexture(int textureID, byte[] fileBytes) {
         try {
             return (Integer) methodUploadDDSTexture.invoke(null, textureID, fileBytes);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void beforeTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
-        try {
-            methodBeforeTextureUpload.invoke(null, width, height, textureID, texturePath, textureType);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void afterTextureUpload(int width, int height, int textureID, String texturePath, int textureType) {
-        try {
-            methodAfterTextureUpload.invoke(null, width, height, textureID, texturePath, textureType);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -305,40 +242,8 @@ public class DDSIntegration {
             methodUploadDDSTexture = loadingClass.getMethod("UploadDDSTexture", int.class, byte[].class);
 
             logger.info("Initialized VramOptimizer UploadDDSTexture method.");
-            return;
         } catch (Throwable e) {
-            logger.error("Failed to initialize VramOptimizer UploadDDSTexture method.", e);
-        }
-
-        // Fallback to deprecated VRAM Optimizer integration.
-        try {
-            Class<?> texturesClass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.Textures");
-            methodBeforeTextureUpload = texturesClass.getMethod("BeforeTextureUpload", int.class, int.class, int.class, String.class, int.class);
-            methodAfterTextureUpload = texturesClass.getMethod("AfterTextureUpload", int.class, int.class, int.class, String.class, int.class);
-
-            // VOpt Init must be run on rendering thread as
-            // it contains un-intercepted OpenGL calls.
-            final Context context = ContextManager.getThreadContext();
-            final AtomicReference<Throwable> asyncException = new AtomicReference<>();
-            context.exec.wait((ctx, args, offset) -> {
-                try {
-                    texturesClass.getMethod("Init").invoke(null);
-                } catch (Throwable t) {
-                    asyncException.set(t);
-                }
-            });
-
-            Throwable t = asyncException.get();
-            if (t != null) {
-                throw t;
-            }
-
-            logger.info("Initialized VramOptimizer BeforeTextureUpload and AfterTextureUpload methods.");
-        } catch (Throwable t) {
-            methodBeforeTextureUpload = null;
-            methodAfterTextureUpload = null;
-
-            logger.error("Failed to initialize VramOptimizer BeforeTextureUpload and AfterTextureUpload methods.", t);
+            throw new RuntimeException("Failed to initialize VRAM Optimizer. VRAM Optimizer may be out of date.", e);
         }
     }
 }

@@ -1,3 +1,5 @@
+- Removed support for VRAM Optimizer 1.0.37 and earlier.
+
 v0.9.7rc1
 
 - The game window now remains responsive during loading. It is possible to Alt+Tab in and out or close the window at any time.
