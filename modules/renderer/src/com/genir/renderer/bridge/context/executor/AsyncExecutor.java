@@ -11,10 +11,7 @@ import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Default implementation. Runs commands in batched on a dedicated thread.
@@ -188,7 +185,7 @@ public class AsyncExecutor implements Executor {
      * The command will be executed between frames.
      */
     @Override
-    public Future<?> injectOutOfOrder(Runnable command) {
+    public Future<Object> injectOutOfOrder(Callable<Object> command) {
         return execActual.submit(command);
     }
 

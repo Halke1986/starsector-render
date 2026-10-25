@@ -8,6 +8,7 @@ import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -82,7 +83,7 @@ public class SyncBatchExecutor implements Executor {
     }
 
     @Override
-    public Future<?> injectOutOfOrder(Runnable privilegedCommand) {
+    public Future<Object> injectOutOfOrder(Callable<Object> command) {
         // There's no command ordering to bypass. Do nothing.
         return CompletableFuture.completedFuture(null);
     }

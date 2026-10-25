@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public interface Executor {
@@ -21,7 +22,7 @@ public interface Executor {
 
     void swapFrames();
 
-    Future<?> injectOutOfOrder(Runnable privilegedCommand);
+    Future<Object> injectOutOfOrder(Callable<Object> privilegedCommand);
 
     void shutdown();
 

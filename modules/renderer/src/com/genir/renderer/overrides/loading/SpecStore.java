@@ -21,39 +21,21 @@ public class SpecStore {
     }
 
     /**
-     * REPLACED METHOD
+     * ADDED METHOD
+     * <p>
+     * Public wrapper around loadingSoundSets_vanilla.
      */
-    public static void SpecStore_init(ResourceLoaderState state) throws Exception {
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.resourceWorker.execute(() -> {
-            try {
-                // Initiate sound loading at the very beginning of spec store
-                // initialization, to maximize parallel thread work time.
-                loadingSoundSets_vanilla(state);
-
-                // Delegate the remaining work, except sound loading, to vanilla implementation.
-                init_vanilla(state);
-
-                // Most sprites were already optionally queued in
-                // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
-                // But vanilla is the final judge on what should be loaded.
-                state.queueShipAndWeaponSprites_public();
-            } catch (Throwable e) {
-                ResourceLoaderState.asyncException.set(e);
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
-            }
-        });
-
-        // Skip a redundant section of vanilla resource loading.
-        throw new RuntimeException("Skip vanilla epilogue");
+    public static void loadingSoundSets(ResourceLoaderState state) throws JSONException, IOException {
+        loadingSoundSets_vanilla(state);
     }
 
     /**
-     * ADDED METHOD
+     * REPLACED METHOD
      */
-    public static void initActual(ResourceLoaderState state) throws JSONException, IOException {
-
+    public static void SpecStore_init(ResourceLoaderState state) throws Exception {
+        // Skip a redundant section of ResourceLoaderState.init_vanilla()
+        // and yield control to overriden ResourceLoaderState.initRun().
+        throw new RuntimeException("Skip vanilla epilogue");
     }
 
     /**

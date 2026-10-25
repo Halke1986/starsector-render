@@ -76,6 +76,7 @@ public class Transformations {
             entry("com/fs/graphics/font/Font", "com/fs/graphics/A/F"),
             entry("com/fs/graphics/font/Glyph", "com/fs/graphics/A/oOOO"),
             entry("com/fs/graphics/font/Kerning", "com/fs/graphics/A/class"),
+            entry("com/fs/starfarer/ShutdownException", "com/fs/starfarer/super"),
 
             // Methods
             entry("TextureRepository_addTexture", "super"),
