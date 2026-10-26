@@ -88,8 +88,6 @@ public class ResourceLoaderState {
      * REPLACED METHOD
      */
     public void init(Map session) throws Exception {
-        Watchdog.start();
-
         try {
             initMain(session);
         } catch (Throwable t) {
