@@ -122,7 +122,7 @@ public class ResourceLoaderState {
         scriptWorkers.shutdown();
         ExecutorFactory.awaitTermination(textureWorkers);
         ExecutorFactory.awaitTermination(scriptWorkers);
-        rethrowAsyncException();
+        asyncException.rethrowIfSet();
 
         // Conclude asset loading phase.
         GameState.assetLoadingFinished = true;
@@ -141,7 +141,7 @@ public class ResourceLoaderState {
         heavyWorker.shutdown();
         ExecutorFactory.awaitTermination(soundWorkers);
         ExecutorFactory.awaitTermination(heavyWorker);
-        rethrowAsyncException();
+        asyncException.rethrowIfSet();
 
 //        Global.getSettings().setDevMode(true);
 
@@ -210,7 +210,7 @@ public class ResourceLoaderState {
         while (!heavyFuture.isDone()) {
             loadingBar.render(LoadingBar.ProgressType.STILL, 0);
 
-            rethrowAsyncException();
+            asyncException.rethrowIfSet();
             processMessagesAndSleep(50);
         }
 
@@ -281,7 +281,7 @@ public class ResourceLoaderState {
                 }
             }
 
-            rethrowAsyncException();
+            asyncException.rethrowIfSet();
             processMessagesAndSleep(0);
         } while (mainThreadWaitGroup.get() > 0);
     }
@@ -307,22 +307,11 @@ public class ResourceLoaderState {
         });
 
         while (!heavyFuture.isDone()) {
-            rethrowAsyncException();
+            asyncException.rethrowIfSet();
             processMessagesAndSleep(50);
         }
 
         heavyFuture.get(); // Drain exceptions.
-    }
-
-    private void rethrowAsyncException() throws Exception {
-        Throwable t = asyncException.get();
-        if (t != null) {
-            if (t instanceof Exception e) {
-                throw e;
-            } else {
-                throw new RuntimeException(t);
-            }
-        }
     }
 
     /**
