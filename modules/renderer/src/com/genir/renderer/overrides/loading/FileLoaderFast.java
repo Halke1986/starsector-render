@@ -2,6 +2,8 @@ package com.genir.renderer.overrides.loading;
 
 import com.fs.util.FileLoader.ResourceLocation;
 import com.fs.util.container.Pair;
+import com.genir.renderer.async.AsyncException;
+import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import org.apache.log4j.Logger;
 
@@ -10,6 +12,9 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+
+import static com.genir.renderer.async.ExecutorFactory.awaitTermination;
 
 public class FileLoaderFast {
     private final static String DIRECTORY = "DIRECTORY";
@@ -229,79 +234,124 @@ public class FileLoaderFast {
      * algorithm, for approximately 50% performance improvement.
      */
     private class DirectoryCrawler {
-        private int cacheLocations() {
-            int cachedFilesNumber = 0;
+        private final List<Object> collector = new ArrayList<>();
+        private final List<Runnable> tasks = new ArrayList<>();
 
+        private static final AsyncException asyncException = new AsyncException();
+
+        private int cacheLocations() {
+            planEnumeration();
+            runEnumeration();
+
+            int fileNumber = 0;
+
+            for (Object obj : collector) {
+                if (obj instanceof List) {
+                    for (FileHandle fileHandle : (List<FileHandle>) obj) {
+                        saveFile(fileHandle);
+                        fileNumber++;
+                    }
+                } else {
+                    saveFile((FileHandle) obj);
+                    fileNumber++;
+                }
+            }
+
+            return fileNumber;
+        }
+
+        private void saveFile(FileHandle fileHandle) {
+            String fileName = fileHandle.file.getPath();
+
+            // String location path, leaving only the file name.
+            Path locationPath = Path.of(getLocationPath(fileHandle.location)).toAbsolutePath();
+            String resourceKey = normalize(fileName.replace(locationPath.toString(), ""));
+            if (resourceKey.isEmpty()) {
+                return;
+            }
+
+            List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
+                    resourceKey, k -> new ArrayList<>()
+            );
+
+            knownFiles.add(fileHandle);
+        }
+
+        private void planEnumeration() {
             for (ResourceLocation location : allLocations) {
                 if (isExcludedLocation(location)) {
                     continue;
                 }
 
-                Pair<String, List<FileHandle>> locationFiles = enumerateLocation(location);
-                if (locationFiles == null) {
-                    continue;
+                Path locationPath = Path.of(getLocationPath(location)).toAbsolutePath();
+
+                switch (location.ResourceLocation_type.toString()) {
+                    case ABSOLUTE_AND_CWD:
+                        enumeratePath(locationPath, location); // Game assets.
+                        enumeratePath(locationPath.resolve(SAVES), location); // Saved games.
+                        enumeratePath(locationPath.resolve(MODS).resolve("enabled_mods.json"), location); // Enabled mods list.
+                        enumeratePath(locationPath.resolve("..").resolve("mikohime"), location); // Mikohime Java mod.
+
+                        break;
+                    case DIRECTORY:
+                        enumeratePath(locationPath, location); // Mod assets.
+
+                        break;
                 }
+            }
+        }
 
-                String locationPath = locationFiles.one;
-                List<FileHandle> fileHandles = locationFiles.two;
+        private void runEnumeration() {
+            ExecutorService fileWorkers = ExecutorFactory.newExecutor(4, "FR-File-Loader", asyncException);
 
-                cachedFilesNumber += fileHandles.size();
+            for (Runnable task : tasks) {
+                fileWorkers.execute(task);
+            }
 
-                for (FileHandle fileHandle : fileHandles) {
-                    String fileName = fileHandle.file.getPath();
+            fileWorkers.shutdown();
+            awaitTermination(fileWorkers);
 
-                    // String location path, leaving only the file name.
-                    String resourceKey = normalize(fileName.replace(locationPath, ""));
-                    if (resourceKey.isEmpty()) {
-                        continue;
+            asyncException.rethrowIfSet();
+
+            Throwable t = asyncException.get();
+            if (t != null) {
+                throw new RuntimeException(t);
+            }
+        }
+
+        private void enumeratePath(Path path, ResourceLocation location) {
+            enumeratePath(path.toFile(), location, 0);
+        }
+
+        private void enumeratePath(File file, ResourceLocation location, int depth) {
+            if (depth == 2) {
+                List<FileHandle> asyncCollector = new ArrayList<>();
+                collector.add(asyncCollector);
+                tasks.add(() -> {
+                    if (asyncException.get() == null) {
+                        asyncEnumeratePath(file, location, asyncCollector);
                     }
-
-                    List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
-                            resourceKey, k -> new ArrayList<>()
-                    );
-
-                    knownFiles.add(fileHandle);
-                }
+                });
+                return;
             }
 
-            return cachedFilesNumber;
-        }
-
-        private Pair<String, List<FileHandle>> enumerateLocation(ResourceLocation location) {
-            Path locationPath = Path.of(getLocationPath(location)).toAbsolutePath();
-            List<FileHandle> fileCollector = new ArrayList<>();
-
-            switch (location.ResourceLocation_type.toString()) {
-                case CLASSPATH:
-                    return null;
-
-                case ABSOLUTE_AND_CWD:
-                    enumeratePath(locationPath, fileCollector, location); // Game assets.
-                    enumeratePath(locationPath.resolve(SAVES), fileCollector, location); // Saved games.
-                    enumeratePath(locationPath.resolve(MODS).resolve("enabled_mods.json"), fileCollector, location); // Enabled mods list.
-                    enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, location); // Mikohime Java mod.
-
-                    break;
-                case DIRECTORY:
-                    enumeratePath(locationPath, fileCollector, location); // Mod assets.
-
-                    break;
-            }
-
-            return new Pair<>(locationPath.toString(), fileCollector);
-        }
-
-        private void enumeratePath(Path path, List<FileHandle> fileCollector, ResourceLocation location) {
-            enumeratePath(path.toFile(), fileCollector, location);
-        }
-
-        private void enumeratePath(File file, List<FileHandle> fileCollector, ResourceLocation location) {
-            fileCollector.add(new FileHandle(file, location));
+            collector.add(new FileHandle(file, location));
 
             File[] files = file.listFiles();
             if (files != null) {
                 for (File child : files) {
-                    enumeratePath(child, fileCollector, location);
+                    enumeratePath(child, location, depth + 1);
+                }
+            }
+        }
+
+        private void asyncEnumeratePath(File file, ResourceLocation location, List<FileHandle> collector) {
+            collector.add(new FileHandle(file, location));
+
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    asyncEnumeratePath(child, location, collector);
                 }
             }
         }
