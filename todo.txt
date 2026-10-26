@@ -1,16 +1,26 @@
 
-game is responsive when loading mods
 flicker after alt-tab
 faster CSV
 
 campaign radar line (another one) and radar transparency
 
-LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
-insignia42LTaa
-https://discord.com/channels/187635036525166592/1549091275167240272/1556998414678368288
+FINISH:
 
-  Global.getSettings().loadTexture("graphics/fonts/insignia42LTaa_0.png");
+1: support for VO 1.0.46
 
-            com.genir.renderer.bridge.commands.GL11.glPushAttrib(1048575 ^ GL11.GL_TEXTURE_BIT);
-            com.genir.renderer.bridge.commands.GL11.glBindTexture(3553, 2747);
-            com.genir.renderer.bridge.commands.GL11.glPopAttrib();
+    Test:
+    LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
+    insignia42LTaa
+    https://discord.com/channels/187635036525166592/1549091275167240272/1556998414678368288
+
+      Global.getSettings().loadTexture("graphics/fonts/insignia42LTaa_0.png");
+
+                com.genir.renderer.bridge.commands.GL11.glPushAttrib(1048575 ^ GL11.GL_TEXTURE_BIT);
+                com.genir.renderer.bridge.commands.GL11.glBindTexture(3553, 2747);
+                com.genir.renderer.bridge.commands.GL11.glPopAttrib();
+
+2: loading bar rendering when initializing mods
+
+3: driver hang in glSwapBuffers
+
+4: texture wrap issue after ASM refactor
