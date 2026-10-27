@@ -122,10 +122,8 @@ public class LoadingBar {
     synchronized public void render(Context context) {
         try {
             sharedDrawable.makeCurrent();
-
             renderBar();
-
-//            org.lwjgl.opengl.GL11.glFinish();
+            org.lwjgl.opengl.GL11.glFinish();
         } catch (LWJGLException e) {
             throw new RuntimeException(e);
         } finally {
@@ -150,7 +148,7 @@ public class LoadingBar {
         org.lwjgl.opengl.GL11.glScalef(screenScaleMult, screenScaleMult, 1);
 
         background.renderRegionAtCenterNative(0, 0, 0, 0, 1, 1);
-        title.renderRegionAtCenterNative(0, 53, 0, 0, 1, 1);
+        title.renderRegionAtCenterNative(0, 55, 0, 0, 1, 1);
 
         renderSegments();
     }

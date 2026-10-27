@@ -205,7 +205,7 @@ public class ResourceLoaderState {
 
         while (!heavyFuture.isDone()) {
             asyncException.rethrowIfSet();
-            processMessagesAndSleep(50);
+            renderLoadingBarAndSleep(50);
         }
 
         heavyFuture.get(); // Drain exceptions.
@@ -274,7 +274,7 @@ public class ResourceLoaderState {
             }
 
             asyncException.rethrowIfSet();
-            processMessagesAndSleep(0);
+            renderLoadingBarAndSleep(0);
         } while (mainThreadWaitGroup.get() > 0);
     }
 
@@ -303,7 +303,7 @@ public class ResourceLoaderState {
 
         while (!heavyFuture.isDone()) {
             asyncException.rethrowIfSet();
-            processMessagesAndSleep(50);
+            renderLoadingBarAndSleep(50);
         }
 
         heavyFuture.get(); // Drain exceptions.
@@ -326,7 +326,7 @@ public class ResourceLoaderState {
     /**
      * ADDED METHOD
      */
-    private void processMessagesAndSleep(long millis) throws InterruptedException, ExecutionException {
+    private void renderLoadingBarAndSleep(long millis) throws InterruptedException, ExecutionException {
         final Context context = ContextManager.getThreadContext();
 
         // Periodically queues window message processing on the main GL context,
@@ -351,13 +351,15 @@ public class ResourceLoaderState {
     /**
      * ADDED METHOD
      */
-    private void regressLoadingBar() { // TODO make regress work
+    private void regressLoadingBar() {
         int count = loadingBar.getFilledSegmentCount();
-        for (int i = 0; i < count; i++) {
-            loadingBar.setProgress(LoadingBar.ProgressType.REGRESSION, 0);
+        for (int i = 0; i < count / 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                loadingBar.setProgress(LoadingBar.ProgressType.REGRESSION, 0);
+            }
 
             try {
-                Thread.sleep(2);
+                renderLoadingBarAndSleep(32);
             } catch (Exception ignored) {
             }
         }
