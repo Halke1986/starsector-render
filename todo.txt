@@ -21,6 +21,11 @@ FINISH:
 
 2: loading bar rendering when initializing mods
 
-3: driver hang in glSwapBuffers
+3: driver hang in glSwapBuffers (nah, it's actually a deadlock in asset loading)
 
 4: texture wrap issue after ASM refactor
+
+
+bugs:
+https://discord.com/channels/187635036525166592/1402763865913036831/1564706773095686289
+(QoL's shield status triggers the crash)
