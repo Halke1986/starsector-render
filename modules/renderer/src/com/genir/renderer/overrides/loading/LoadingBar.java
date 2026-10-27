@@ -3,6 +3,11 @@ package com.genir.renderer.overrides.loading;
 import com.fs.graphics.Sprite;
 import com.fs.graphics.util.Rendering;
 import com.fs.starfarer.api.Global;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.interfaces.GLGetter;
+import org.lwjgl.LWJGLException;
 
 import java.util.Random;
 
@@ -16,10 +21,39 @@ public class LoadingBar {
     private final boolean[] barSegments = new boolean[SEGMENTS];
     private final Random rand = new Random();
 
+    private final org.lwjgl.opengl.SharedDrawable sharedDrawable;
+
     public LoadingBar(Sprite bar, Sprite title, Sprite background) {
         this.bar = bar;
         this.title = title;
         this.background = background;
+
+        record makeSharedDrawable() implements GLGetter<org.lwjgl.opengl.SharedDrawable> {
+            @Override
+            public org.lwjgl.opengl.SharedDrawable call(Context context) {
+                try {
+                    org.lwjgl.opengl.Drawable drawable = org.lwjgl.opengl.Display.getDrawable();
+                    return new org.lwjgl.opengl.SharedDrawable(drawable);
+                } catch (LWJGLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        sharedDrawable = context.exec.get(new makeSharedDrawable());
+    }
+
+    public void shutdown() {
+        record destroySharedDrawable(org.lwjgl.opengl.SharedDrawable sharedDrawable) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                sharedDrawable.destroy();
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new destroySharedDrawable(sharedDrawable));
     }
 
     public void setProgress(LoadingBar.ProgressType type, float progress) {
@@ -34,6 +68,17 @@ public class LoadingBar {
                 setProgressRegression();
                 break;
         }
+    }
+
+    public int getFilledSegmentCount() {
+        int count = 0;
+        for (int i = 0; i < SEGMENTS; i++) {
+            if (barSegments[i]) {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     private void setProgressRandom() {
@@ -73,7 +118,7 @@ public class LoadingBar {
         }
     }
 
-
+    // Runs on rendering thread, injected between client-requested command batches.
     public void render() {
         float width = Global.getSettings().getScreenWidth();
         float height = Global.getSettings().getScreenHeight();
@@ -88,17 +133,6 @@ public class LoadingBar {
 
         Rendering.Rendering_end();
         com.genir.renderer.bridge.commands.Display.update(true);
-    }
-
-    public int getFilledSegmentCount() {
-        int count = 0;
-        for (int i = 0; i < SEGMENTS; i++) {
-            if (barSegments[i]) {
-                count++;
-            }
-        }
-
-        return count;
     }
 
     private void renderBar() {

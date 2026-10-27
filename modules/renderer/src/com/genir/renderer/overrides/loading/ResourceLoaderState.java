@@ -131,6 +131,7 @@ public class ResourceLoaderState {
         initMods();
         loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, 1f);
         loadingBar.render();
+        loadingBar.shutdown();
 
         // Shutdown sound loader later than other loaders to give
         // it more time to finish work. Later shutdown is possible,
