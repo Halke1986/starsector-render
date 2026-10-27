@@ -1,3 +1,4 @@
+- Removed support for VRAM Optimizer 1.0.37 and earlier.
 - Optimized game startup time.
 
 v0.9.7rc1

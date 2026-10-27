@@ -3,7 +3,6 @@ package com.genir.renderer.overrides.loading;
 import com.fs.graphics.Sprite;
 import com.fs.graphics.font.FontRepository;
 import com.fs.graphics.util.Fps;
-import com.fs.graphics.util.Rendering;
 import com.fs.starfarer.ShutdownException;
 import com.fs.starfarer.Version;
 import com.fs.starfarer.api.Global;
@@ -212,6 +211,8 @@ public class ResourceLoaderState {
             asyncException.rethrowIfSet();
             processMessagesAndSleep(50);
         }
+
+        heavyFuture.get(); // Drain exceptions.
     }
 
     private void initSpecStore(Map session) throws Exception {
@@ -307,6 +308,8 @@ public class ResourceLoaderState {
             asyncException.rethrowIfSet();
             processMessagesAndSleep(50);
         }
+
+        heavyFuture.get(); // Drain exceptions.
     }
 
     /**
