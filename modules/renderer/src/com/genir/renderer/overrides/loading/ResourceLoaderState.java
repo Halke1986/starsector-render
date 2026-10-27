@@ -175,7 +175,7 @@ public class ResourceLoaderState {
             mainThreadWaitGroup = new AtomicInteger(0);
             asyncException = new AsyncException();
 
-            heavyWorker = ExecutorFactory.newExecutor(1, "FR-Main-Loader", asyncException);
+            heavyWorker = ExecutorFactory.newExecutorSingleThread("FR-Main-Loader", asyncException);
             textureWorkers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
             scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
             soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);

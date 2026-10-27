@@ -31,7 +31,7 @@ public class Watchdog {
 
         Logger.getLogger(Watchdog.class).info("Logging thread stacks every " + period + " seconds");
 
-        ExecutorService exec = ExecutorFactory.newSingleThreadExecutor("FR-Watchdog", asyncException);
+        ExecutorService exec = ExecutorFactory.newExecutorSingleThread("FR-Watchdog", asyncException);
         exec.execute(Watchdog::run);
     }
 

@@ -302,7 +302,7 @@ public class FileLoaderFast {
         }
 
         private void runEnumeration() {
-            ExecutorService fileWorkers = ExecutorFactory.newExecutor(4, "FR-File-Loader", asyncException);
+            ExecutorService fileWorkers = ExecutorFactory.newExecutor(4, "FR-Directory-Crawler", asyncException);
 
             for (Runnable task : tasks) {
                 fileWorkers.execute(task);

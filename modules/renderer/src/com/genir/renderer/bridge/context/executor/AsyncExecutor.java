@@ -31,7 +31,7 @@ public class AsyncExecutor implements Executor {
     private boolean isStateCorrupted = false;
     private boolean isExceptionRecovery = false;
 
-    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exceptionHandler);
+    private final ExecutorService execActual = ExecutorFactory.newExecutorSingleThread("FR-Render", exceptionHandler);
     private static final Object execMutex = new Object();
 
     public AsyncExecutor(Context context) {
