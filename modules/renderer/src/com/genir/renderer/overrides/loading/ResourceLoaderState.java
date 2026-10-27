@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.graphics.Sprite;
 import com.fs.graphics.font.FontRepository;
 import com.fs.graphics.util.Fps;
 import com.fs.starfarer.ShutdownException;
@@ -29,6 +28,7 @@ import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import com.genir.renderer.overrides.loading.textures.TextureRepository;
 import com.genir.renderer.overrides.render.RoilingSwarmEffect;
+import com.genir.renderer.overrides.render.Sprite;
 import com.genir.renderer.overrides.render.particle.BaseParticle;
 import com.genir.renderer.overrides.render.particle.SmoothParticle;
 

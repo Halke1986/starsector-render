@@ -1,12 +1,12 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.graphics.Sprite;
 import com.fs.graphics.util.Rendering;
 import com.fs.starfarer.api.Global;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.overrides.render.Sprite;
 import org.lwjgl.LWJGLException;
 
 import java.util.Random;

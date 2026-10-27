@@ -41,6 +41,24 @@ public class Sprite {
     private static Pool spritePool;
 
     /**
+     * STUB
+     */
+    public Sprite(String texturePath) {
+    }
+
+    /**
+     * STUB
+     */
+    public void renderRegionAtCenter(float x, float y, float tx, float ty, float tdx, float tdy) {
+    }
+
+    /**
+     * STUB
+     */
+    public void renderAtCenter(float var1, float var2) {
+    }
+
+    /**
      * REPLACED METHOD
      */
     public void render(float posX, float posY) {
