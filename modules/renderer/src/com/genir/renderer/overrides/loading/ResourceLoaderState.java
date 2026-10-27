@@ -129,8 +129,6 @@ public class ResourceLoaderState {
         // Mod initialization may be the longest part
         // of the game loading when using many mods.
         initMods();
-        loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, 1f);
-        loadingBar.render();
         loadingBar.shutdown();
 
         // Shutdown sound loader later than other loaders to give
@@ -197,9 +195,6 @@ public class ResourceLoaderState {
         this.bar = new Sprite("graphics/ui/loading_widget_glow.png");
 
         this.loadingBar = new LoadingBar(this.bar, this.title, this.barBg);
-
-        // Render empty loading bar.
-        loadingBar.render();
     }
 
     private void initFileLoaders() throws Exception {
@@ -209,9 +204,6 @@ public class ResourceLoaderState {
         });
 
         while (!heavyFuture.isDone()) {
-            // Render empty loading bar.
-            loadingBar.render();
-
             asyncException.rethrowIfSet();
             processMessagesAndSleep(50);
         }
@@ -279,7 +271,6 @@ public class ResourceLoaderState {
                     loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
                     animateProgress = false;
                 }
-                loadingBar.render();
             }
 
             asyncException.rethrowIfSet();
@@ -298,7 +289,6 @@ public class ResourceLoaderState {
             List<ModPlugin> plugins = Global.getSettings().getModManager().getEnabledModPlugins();
             for (int i = 0; i < plugins.size(); i++) {
                 loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, (float) (i) / (float) plugins.size());
-                loadingBar.render();
 
                 try {
                     plugins.get(i).onApplicationLoad();
@@ -306,6 +296,9 @@ public class ResourceLoaderState {
                     throw new RuntimeException(e);
                 }
             }
+
+            // Fill the bar after all mods are loaded.
+            loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, 1);
         });
 
         while (!heavyFuture.isDone()) {
@@ -320,8 +313,14 @@ public class ResourceLoaderState {
      * REPLACED METHOD
      */
     private void renderProgress(float progress) {
-        // Do nothing. The progress bar animation is completely
-        // overriden and controlled by renderLoadingBarOverride().
+        // Do nothing. The progress bar animation is completely overriden.
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    private void renderBg() {
+        // Do nothing. The progress bar animation is completely overriden.
     }
 
     /**
@@ -335,7 +334,9 @@ public class ResourceLoaderState {
         // Processing occurs between GL command batches,
         // never within a glBegin/glEnd pair.
         Future<Object> messageProcessingFuture = context.exec.injectOutOfOrder(() -> {
-            org.lwjgl.opengl.Display.processMessages();
+            loadingBar.render(context);
+
+            org.lwjgl.opengl.Display.update(true);
             return org.lwjgl.opengl.Display.isCloseRequested();
         });
 
@@ -350,11 +351,10 @@ public class ResourceLoaderState {
     /**
      * ADDED METHOD
      */
-    private void regressLoadingBar() {
+    private void regressLoadingBar() { // TODO make regress work
         int count = loadingBar.getFilledSegmentCount();
         for (int i = 0; i < count; i++) {
             loadingBar.setProgress(LoadingBar.ProgressType.REGRESSION, 0);
-            loadingBar.render();
 
             try {
                 Thread.sleep(2);
