@@ -68,18 +68,16 @@ public class TextureLoader {
 
         ResourceLoaderState.initStaticFields();
 
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
         ResourceLoaderState.textureWorkers.execute(() -> {
             try {
                 loadTextureAsync(type, path);
+                ResourceLoaderState.renderProgress = true;
             } catch (Throwable t) {
                 if (optional) {
                     knownImages.remove(path);
                 } else {
                     throw t;
                 }
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
             }
         });
     }
@@ -94,14 +92,11 @@ public class TextureLoader {
 
         TextureData texData = loadTextureData(type, path);
 
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.mainThreadQueue.add(() -> {
-            try {
-                commitAndCacheTexture(path, path, texData);
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
-            }
-        });
+        // Upload textures from different threads, leveraging the fast that
+        // during asset loading all GL calls are intercepted by main context.
+        synchronized (this) {
+            commitAndCacheTexture(path, path, texData);
+        }
     }
 
     /**

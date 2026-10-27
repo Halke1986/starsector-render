@@ -31,14 +31,17 @@ import com.genir.renderer.overrides.render.RoilingSwarmEffect;
 import com.genir.renderer.overrides.render.Sprite;
 import com.genir.renderer.overrides.render.particle.BaseParticle;
 import com.genir.renderer.overrides.render.particle.SmoothParticle;
+import org.json.JSONException;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OVERRIDES com.fs.starfarer.loading.ResourceLoaderState
@@ -54,13 +57,12 @@ public class ResourceLoaderState {
     /**
      * ADDED FIELDS
      */
-    public static BlockingQueue<Runnable> mainThreadQueue;
-    public static AtomicInteger mainThreadWaitGroup;
-    public static AsyncException asyncException;
-    public static ExecutorService heavyWorker;
+    private static AsyncException asyncException;
+    private static ExecutorService heavyWorker;
     public static ExecutorService textureWorkers;
     public static ExecutorService scriptWorkers;
     public static ExecutorService soundWorkers;
+    public static boolean renderProgress;
 
     private LoadingBar loadingBar;
 
@@ -113,15 +115,6 @@ public class ResourceLoaderState {
         // Init spec store. This triggers most of the game asset loading.
         initSpecStore(session);
 
-        // spec store initialization is terminated and will not
-        // enqueue any more assets. It's safe to shutdown
-        // resource loaders now.
-        textureWorkers.shutdown();
-        scriptWorkers.shutdown();
-        ExecutorFactory.awaitTermination(textureWorkers);
-        ExecutorFactory.awaitTermination(scriptWorkers);
-        asyncException.rethrowIfSet();
-
         // Conclude asset loading phase.
         GameState.assetLoadingFinished = true;
         FileLoader.FileLoader_getInstance().initModLoading();
@@ -170,9 +163,7 @@ public class ResourceLoaderState {
      * ADDED METHOD
      */
     public static synchronized void initStaticFields() {
-        if (mainThreadQueue == null) {
-            mainThreadQueue = new LinkedBlockingQueue<>();
-            mainThreadWaitGroup = new AtomicInteger(0);
+        if (asyncException == null) {
             asyncException = new AsyncException();
 
             heavyWorker = ExecutorFactory.newExecutorSingleThread("FR-Main-Loader", asyncException);
@@ -212,9 +203,11 @@ public class ResourceLoaderState {
     }
 
     private void initSpecStore(Map session) throws Exception {
+        // init_vanilla will call 'initSpecStore',
+        // which triggers most of the asset loading.
         try {
-            // init_vanilla will call 'initSpecStore', which triggers most of the asset loading.
-            // initSpecStore throws an exception to skip the middle section of vanilla init.
+            // initSpecStore throws an exception to skip
+            // the middle section of vanilla init.
             init_vanilla(session);
         } catch (RuntimeException e) {
             if (e.getMessage().equals("Skip vanilla epilogue")) {
@@ -225,8 +218,7 @@ public class ResourceLoaderState {
             }
         }
 
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.heavyWorker.execute(() -> {
+        Future<?> heavyFuture = ResourceLoaderState.heavyWorker.submit(() -> {
             try {
                 // Initiate sound loading at the very beginning of spec store
                 // initialization, to maximize parallel thread work time.
@@ -239,43 +231,34 @@ public class ResourceLoaderState {
                 // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
                 // But vanilla is the final judge on what should be loaded.
                 queueShipAndWeaponSprites_public();
-            } catch (Throwable e) {
-                ResourceLoaderState.asyncException.set(e);
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
+            } catch (IOException | JSONException e) {
+                throw new RuntimeException(e);
             }
+
+            // Wait for the asset loading, excluding sound, to finish.
+            scriptWorkers.shutdown();
+            textureWorkers.shutdown();
+            ExecutorFactory.awaitTermination(textureWorkers);
+            ExecutorFactory.awaitTermination(scriptWorkers);
         });
 
-        // Run commands on main thread, as if it was an Executor.
-        long lastProgress = 0;
-        long lastRender = 0;
-        boolean animateProgress = false;
-        do {
-            Runnable r = mainThreadQueue.poll(16, TimeUnit.MILLISECONDS);
-
-            long now = System.nanoTime();
-            if (r != null) {
-                lastProgress = now;
-                animateProgress = true;
-                r.run();
-            }
-
+        while (!heavyFuture.isDone()) {
             // Animate progress bar after each completed task.
             // Do not attempt to animate when the rendering thread is busy with
             // uploading textures, as this leads to additional buffer swaps and
             // increased latency.
-            if ((now - lastRender) / 1e6 >= 16 && ContextManager.getThreadContext().exec.isServerThreadIdle()) {
-                lastRender = now;
-
-                if (animateProgress) {
+            if (ContextManager.getThreadContext().exec.isServerThreadIdle()) {
+                if (renderProgress) {
                     loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
-                    animateProgress = false;
+                    renderProgress = false;
                 }
             }
 
             asyncException.rethrowIfSet();
-            renderLoadingBarAndSleep(0);
-        } while (mainThreadWaitGroup.get() > 0);
+            renderLoadingBarAndSleep(16);
+        }
+
+        heavyFuture.get(); // Drain exceptions.
     }
 
     /**
