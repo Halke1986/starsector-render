@@ -22,58 +22,26 @@ public class LoadingBar {
         this.background = background;
     }
 
-    public void render(LoadingBar.ProgressType type, float progress) {
-        float width = Global.getSettings().getScreenWidth();
-        float height = Global.getSettings().getScreenHeight();
-
-        Rendering.Rendering_begin();
-        Rendering.Rendering_setupProjection(0.0F, width, 0.0F, height, 1000.0F);
-
-        title.renderAtCenter(width / 2.0F, height / 2.0F + 48.0F + 5.0F);
-        background.renderAtCenter(width / 2.0F, height / 2.0F);
-
+    public void setProgress(LoadingBar.ProgressType type, float progress) {
         switch (type) {
-            case STILL:
-                animateStill();
-                break;
             case RANDOM:
-                animateRandom();
+                setProgressRandom();
                 break;
             case FORWARD:
-                animateProgress(progress);
+                setProgressForward(progress);
                 break;
-            case BACKWARD:
-                animateRegression();
+            case REGRESSION:
+                setProgressRegression();
                 break;
         }
-
-        Rendering.Rendering_end();
-        com.genir.renderer.bridge.commands.Display.update(true);
     }
 
-    public int getFilledSegmentCount() {
-        int count = 0;
-        for (int i = 0; i < SEGMENTS; i++) {
-            if (barSegments[i]) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private void animateStill() {
-        renderBar();
-    }
-
-    private void animateRandom() {
+    private void setProgressRandom() {
         int flipIdx = Math.abs(rand.nextInt()) % SEGMENTS;
         barSegments[flipIdx] = !barSegments[flipIdx];
-
-        renderBar();
     }
 
-    private void animateProgress(float progress) {
+    private void setProgressForward(float progress) {
         int count = getFilledSegmentCount();
         int expectedCount = (int) (SEGMENTS / 2 * (1 + progress));
 
@@ -94,19 +62,43 @@ public class LoadingBar {
 
             count++;
         }
-
-        renderBar();
     }
 
-    private void animateRegression() {
+    private void setProgressRegression() {
         for (int i = SEGMENTS - 1; i > 0; i--) {
             if (barSegments[i]) {
                 barSegments[i] = false;
-                break;
+                return;
+            }
+        }
+    }
+
+
+    public void render() {
+        float width = Global.getSettings().getScreenWidth();
+        float height = Global.getSettings().getScreenHeight();
+
+        Rendering.Rendering_begin();
+        Rendering.Rendering_setupProjection(0.0F, width, 0.0F, height, 1000.0F);
+
+        title.renderAtCenter(width / 2.0F, height / 2.0F + 48.0F + 5.0F);
+        background.renderAtCenter(width / 2.0F, height / 2.0F);
+
+        renderBar();
+
+        Rendering.Rendering_end();
+        com.genir.renderer.bridge.commands.Display.update(true);
+    }
+
+    public int getFilledSegmentCount() {
+        int count = 0;
+        for (int i = 0; i < SEGMENTS; i++) {
+            if (barSegments[i]) {
+                count++;
             }
         }
 
-        renderBar();
+        return count;
     }
 
     private void renderBar() {
@@ -144,9 +136,8 @@ public class LoadingBar {
     }
 
     public enum ProgressType {
-        STILL,
         RANDOM,
         FORWARD,
-        BACKWARD,
+        REGRESSION,
     }
 }

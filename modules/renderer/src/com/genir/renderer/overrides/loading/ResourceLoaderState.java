@@ -129,7 +129,8 @@ public class ResourceLoaderState {
         // Mod initialization may be the longest part
         // of the game loading when using many mods.
         initMods();
-        loadingBar.render(LoadingBar.ProgressType.FORWARD, 1);
+        loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, 1f);
+        loadingBar.render();
 
         // Shutdown sound loader later than other loaders to give
         // it more time to finish work. Later shutdown is possible,
@@ -196,7 +197,8 @@ public class ResourceLoaderState {
 
         this.loadingBar = new LoadingBar(this.bar, this.title, this.barBg);
 
-        loadingBar.render(LoadingBar.ProgressType.STILL, 0);
+        // Render empty loading bar.
+        loadingBar.render();
     }
 
     private void initFileLoaders() throws Exception {
@@ -206,7 +208,8 @@ public class ResourceLoaderState {
         });
 
         while (!heavyFuture.isDone()) {
-            loadingBar.render(LoadingBar.ProgressType.STILL, 0);
+            // Render empty loading bar.
+            loadingBar.render();
 
             asyncException.rethrowIfSet();
             processMessagesAndSleep(50);
@@ -272,11 +275,10 @@ public class ResourceLoaderState {
                 lastRender = now;
 
                 if (animateProgress) {
-                    loadingBar.render(LoadingBar.ProgressType.RANDOM, 0);
+                    loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
                     animateProgress = false;
-                } else {
-                    loadingBar.render(LoadingBar.ProgressType.STILL, 0);
                 }
+                loadingBar.render();
             }
 
             asyncException.rethrowIfSet();
@@ -294,7 +296,8 @@ public class ResourceLoaderState {
             ScriptStore.loadModClasses();
             List<ModPlugin> plugins = Global.getSettings().getModManager().getEnabledModPlugins();
             for (int i = 0; i < plugins.size(); i++) {
-                loadingBar.render(LoadingBar.ProgressType.FORWARD, (float) (i) / (float) plugins.size());
+                loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, (float) (i) / (float) plugins.size());
+                loadingBar.render();
 
                 try {
                     plugins.get(i).onApplicationLoad();
@@ -349,7 +352,8 @@ public class ResourceLoaderState {
     private void regressLoadingBar() {
         int count = loadingBar.getFilledSegmentCount();
         for (int i = 0; i < count; i++) {
-            loadingBar.render(LoadingBar.ProgressType.BACKWARD, 0);
+            loadingBar.setProgress(LoadingBar.ProgressType.REGRESSION, 0);
+            loadingBar.render();
 
             try {
                 Thread.sleep(2);
