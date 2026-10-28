@@ -447,7 +447,6 @@ public class ResourceLoaderState {
         textureLoader.queueImageOptional("TEXTURE", texture);
     }
 
-
     /**
      * STUB
      */
