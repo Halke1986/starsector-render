@@ -231,6 +231,7 @@ public class AsyncExecutor implements Executor {
                     continue;
                 }
 
+                logFrame(frame, i + 1);
                 throw e;
             }
         }
@@ -247,6 +248,51 @@ public class AsyncExecutor implements Executor {
     @Override
     public boolean isServerThreadIdle() {
         return currentSwapFuture.isDone();
+    }
+
+    private void logFrame(Frame frame, int logCount) {
+        GLCommand[] commands = frame.getCommands();
+        float[] args = frame.getArgs();
+
+        StringBuilder builder = new StringBuilder();
+
+        int skippedCount = 0;
+
+        for (int i = 0; i < logCount; i++) {
+            GLCommand command = commands[i];
+
+            // Skip common commands to avoid noise in the log.
+            String cmdName = command.getClass().getName();
+            boolean skip = cmdName.contains("GlVertex3f")
+                    || cmdName.contains("GlTexCoord4f")
+                    || cmdName.contains("GlColor4f")
+                    || cmdName.contains("glNormal3f");
+
+            if (skip) {
+                skippedCount++;
+                continue;
+            }
+
+            if (skippedCount != 0) {
+                builder.append(System.lineSeparator());
+                builder.append(i);
+                builder.append(": [...").append(skippedCount).append("]");
+
+                skippedCount = 0;
+            }
+
+            builder.append(System.lineSeparator());
+            builder.append(i);
+            builder.append(": ");
+
+            if (command instanceof DebugString printable) {
+                builder.append(printable.debugString(context, args, i * Frame.ARGS_NUM));
+            } else {
+                builder.append(command);
+            }
+        }
+
+        logger.info(builder.toString());
     }
 
     private void logCommand(Context context, float[] args, int argsOffset, GLCommand command) {

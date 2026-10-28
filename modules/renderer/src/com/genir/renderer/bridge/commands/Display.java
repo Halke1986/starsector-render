@@ -4,7 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import com.genir.renderer.debug.Debug;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -57,14 +56,6 @@ public class Display {
 
                 if (context.renderingProfilerFrame != null) {
                     context.renderingProfilerFrame.addNSwapTime(System.nanoTime() - start);
-                }
-
-
-                try {
-                    Debug.crashOnDemand();
-                } catch (Exception e) {
-                    Debug.asertEqual(false, true, this);
-                    //                    throw new AssertionError("crash requested");
                 }
             }
         }
