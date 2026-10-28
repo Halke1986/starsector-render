@@ -41,7 +41,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * OVERRIDES com.fs.starfarer.loading.ResourceLoaderState
@@ -101,6 +100,11 @@ public class ResourceLoaderState {
             }
 
             throw t;
+        } finally {
+            // Leaving an existing sharedContext may
+            // cause crashes when exiting the program.
+            // Be sure to destroy it in all cases.
+            loadingBar.shutdown();
         }
     }
 
@@ -122,7 +126,6 @@ public class ResourceLoaderState {
         // Mod initialization may be the longest part
         // of the game loading when using many mods.
         initMods();
-        loadingBar.shutdown();
 
         // Shutdown sound loader later than other loaders to give
         // it more time to finish work. Later shutdown is possible,
@@ -244,14 +247,9 @@ public class ResourceLoaderState {
 
         while (!heavyFuture.isDone()) {
             // Animate progress bar after each completed task.
-            // Do not attempt to animate when the rendering thread is busy with
-            // uploading textures, as this leads to additional buffer swaps and
-            // increased latency.
-            if (ContextManager.getThreadContext().exec.isServerThreadIdle()) {
-                if (renderProgress) {
-                    loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
-                    renderProgress = false;
-                }
+            if (renderProgress) {
+                loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
+                renderProgress = false;
             }
 
             asyncException.rethrowIfSet();
@@ -317,9 +315,13 @@ public class ResourceLoaderState {
         // Processing occurs between GL command batches,
         // never within a glBegin/glEnd pair.
         Future<Object> messageProcessingFuture = context.exec.injectOutOfOrder(() -> {
-            loadingBar.render(context);
-
-            org.lwjgl.opengl.Display.update(true);
+            // Do not attempt to animate when the rendering thread is busy with
+            // uploading textures, as this leads to additional buffer swaps and
+            // increased latency.
+            if (context.exec.isServerThreadIdle()) {
+                loadingBar.render(context);
+                org.lwjgl.opengl.Display.update(true);
+            }
             return org.lwjgl.opengl.Display.isCloseRequested();
         });
 

@@ -2,6 +2,8 @@ package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
@@ -92,11 +94,10 @@ public class TextureLoader {
 
         TextureData texData = loadTextureData(type, path);
 
-        // Upload textures from different threads, leveraging the fast that
-        // during asset loading all GL calls are intercepted by main context.
-        synchronized (this) {
-            commitAndCacheTexture(path, path, texData);
-        }
+        // Upload textures from different threads, leveraging the fact
+        // that during asset loading all GL calls are intercepted by
+        // the main simulated context.
+        commitAndCacheTexture(path, path, texData);
     }
 
     /**
@@ -158,21 +159,11 @@ public class TextureLoader {
 
     /**
      * ADDED METHOD
-     */
-    private int commitTexture(String path, TextureData texData) {
-        if (texData.isDDS()) {
-            return DDSIntegration.commitTexture(texData);
-        } else {
-            return TextureBuilder.commitTexture(path, texData);
-        }
-    }
-
-    /**
-     * ADDED METHOD
      * <p>
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
+     * Synchronized for async access during asset loading.
      */
-    private void commitAndCacheTexture(String name, String path, TextureData texData) {
+    synchronized private void commitAndCacheTexture(String name, String path, TextureData texData) {
         try {
             int textureID = commitTexture(path, texData);
 
@@ -180,6 +171,19 @@ public class TextureLoader {
             TextureRepository.TextureRepository_addTexture(name, handler);
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+        }
+    }
+
+    /**
+     * ADDED METHOD
+     * <p>
+     * Synchronized for async access during asset loading.
+     */
+    synchronized private int commitTexture(String path, TextureData texData) {
+        if (texData.isDDS()) {
+            return DDSIntegration.commitTexture(texData);
+        } else {
+            return TextureBuilder.commitTexture(path, texData);
         }
     }
 
