@@ -170,6 +170,11 @@ public class LoadingBar {
         org.lwjgl.opengl.GL11.glTranslatef(width / 2f, height / 2f, 0);
         org.lwjgl.opengl.GL11.glScalef(screenScaleMult, screenScaleMult, 1);
 
+        // Black background to cover visual artifacts.
+        org.lwjgl.opengl.GL11.glDisable(GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glColor3f(0, 0, 0);
+        org.lwjgl.opengl.GL11.glRectf(-width / 2f, -height / 2f, width / 2f, height / 2f);
+
         background.renderRegionAtCenterNative(0, 0, 0, 0, 1, 1);
         title.renderRegionAtCenterNative(0, 55, 0, 0, 1, 1);
 

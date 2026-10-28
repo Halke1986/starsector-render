@@ -24,7 +24,6 @@ INCOMPATIBLE MODS
 
 - BoxUtil versions 1.6.0 and later are compatible only on a GPU that supports OpenGL 4.5.
 - Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
-- The loading bar animation at game startup may display visual errors when Reshade is enabled. This does not impact the gameplay.
 
 BYTECODE MODIFICATION DISCLOSURE
 
