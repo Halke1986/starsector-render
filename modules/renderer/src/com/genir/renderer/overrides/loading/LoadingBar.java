@@ -70,7 +70,7 @@ public class LoadingBar {
         }
     }
 
-    public int getFilledSegmentCount() {
+    private int getFilledSegmentCount() {
         int count = 0;
         for (int i = 0; i < SEGMENTS; i++) {
             if (barSegments[i]) {
@@ -128,6 +128,29 @@ public class LoadingBar {
             throw new RuntimeException(e);
         } finally {
             context.restoreCurrent();
+        }
+    }
+
+    // Runs on rendering thread, injected between client-requested command batches.
+    public void animateRegression() {
+        // Perform the entire loading bar regression animation in a single call.
+        // This avoids injecting multiple separate method calls into the GL stream,
+        // making the animation more likely to succeed without switching GL sharedContexts.
+        // Switching GL sharedContexts would support separate injections,
+        // but testing showed that it causes the animation to flicker.
+        try {
+            int count = getFilledSegmentCount();
+            for (int i = 0; i < count / 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    setProgress(LoadingBar.ProgressType.REGRESSION, 0);
+                }
+
+                renderBar();
+                org.lwjgl.opengl.Display.update(true);
+                Thread.sleep(16);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

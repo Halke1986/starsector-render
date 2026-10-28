@@ -96,7 +96,7 @@ public class ResourceLoaderState {
             soundWorkers.shutdownNow();
 
             if (t instanceof ShutdownException) {
-                regressLoadingBar();
+                animateLoadingBarRegression();
             }
 
             throw t;
@@ -336,17 +336,16 @@ public class ResourceLoaderState {
     /**
      * ADDED METHOD
      */
-    private void regressLoadingBar() {
-        int count = loadingBar.getFilledSegmentCount();
-        for (int i = 0; i < count / 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                loadingBar.setProgress(LoadingBar.ProgressType.REGRESSION, 0);
-            }
+    private void animateLoadingBarRegression() {
+        final Context context = ContextManager.getThreadContext();
+        Future<?> regressionFuture = context.exec.injectOutOfOrder(() -> {
+            loadingBar.animateRegression();
+            return null;
+        });
 
-            try {
-                renderLoadingBarAndSleep(32);
-            } catch (Exception ignored) {
-            }
+        try {
+            regressionFuture.get();
+        } catch (Exception ignored) {
         }
     }
 
