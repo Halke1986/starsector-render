@@ -1,3 +1,5 @@
+v0.9.7rc2
+
 - Removed support for VRAM Optimizer 1.0.37 and earlier.
 - Optimized game startup time.
 - Fixed an issue where the screen could remain black after Alt+Tabbing back into the game during loading.
