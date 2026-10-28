@@ -41,6 +41,24 @@ public class Sprite {
     private static Pool spritePool;
 
     /**
+     * STUB
+     */
+    public Sprite(String texturePath) {
+    }
+
+    /**
+     * STUB
+     */
+    public void renderRegionAtCenter(float x, float y, float tx, float ty, float tdx, float tdy) {
+    }
+
+    /**
+     * STUB
+     */
+    public void renderAtCenter(float var1, float var2) {
+    }
+
+    /**
      * REPLACED METHOD
      */
     public void render(float posX, float posY) {
@@ -235,6 +253,104 @@ public class Sprite {
             }
 
             spritePool.put(this);
+        }
+    }
+
+    public void renderRegionAtCenterNative(
+            float posX,
+            float posY,
+            float regionFractionX,
+            float regionFractionY,
+            float regionFractionWidth,
+            float regionFractionHeight
+    ) {
+        renderRegionNative(
+                posX - width / 2,
+                posY - height / 2,
+                regionFractionX,
+                regionFractionY,
+                regionFractionWidth,
+                regionFractionHeight
+        );
+    }
+
+    // Render the Sprite directly on the rendering thread,
+    // bypassing Fast Rendering OpenGL context simulation.
+    // Should be executed in a dedicated GL sharedDrawable.
+    public void renderRegionNative(
+            float posX,
+            float posY,
+            float regionFractionX,
+            float regionFractionY,
+            float regionFractionWidth,
+            float regionFractionHeight
+    ) {
+        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.TextureHandler_getTextureID());
+
+        if (texClamp) {
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+        }
+
+        org.lwjgl.opengl.GL11.glPushMatrix();
+        org.lwjgl.opengl.GL11.glTranslatef(posX + (float) offsetX + width / 2, posY + (float) offsetY + height / 2, 0);
+        org.lwjgl.opengl.GL11.glRotatef(angle, 0, 0, 1);
+        if (centerX != -1 && centerY != -1) {
+            org.lwjgl.opengl.GL11.glTranslatef(-centerX, -centerY, 0);
+        } else {
+            org.lwjgl.opengl.GL11.glTranslatef(-width / 2, -height / 2, 0);
+        }
+
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
+        org.lwjgl.opengl.GL11.glBlendFunc(blendSrc, blendDest);
+
+        byte r = (byte) color.getRed();
+        byte g = (byte) color.getGreen();
+        byte b = (byte) color.getBlue();
+        byte a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
+
+        org.lwjgl.opengl.GL11.glColor4f(
+                (r & 0xFF) / 255f,
+                (g & 0xFF) / 255f,
+                (b & 0xFF) / 255f,
+                (a & 0xFF) / 255f
+        );
+
+        float quadX = regionFractionX * width;
+        float quadY = regionFractionY * height;
+        float quadWidth = regionFractionWidth * width;
+        float quadHeight = regionFractionHeight * height;
+
+        float texX;
+        float texY;
+        if (regionFractionX != 0 || regionFractionY != 0) {
+            texX = regionFractionX * texWidth;
+            texY = regionFractionY * texHeight;
+        } else {
+            texX = this.texX;
+            texY = this.texY;
+        }
+        float texWidth = regionFractionWidth * this.texWidth;
+        float texHeight = regionFractionHeight * this.texHeight;
+
+        org.lwjgl.opengl.GL11.glBegin(GL11.GL_QUADS);
+        org.lwjgl.opengl.GL11.glTexCoord4f(texX, texY, 0, 1);
+        org.lwjgl.opengl.GL11.glVertex3f(quadX, quadY, 0);
+        org.lwjgl.opengl.GL11.glTexCoord4f(texX, texY + texHeight, 0, 1);
+        org.lwjgl.opengl.GL11.glVertex3f(quadX, quadY + quadHeight, 0);
+        org.lwjgl.opengl.GL11.glTexCoord4f(texX + texWidth, texY + texHeight, 0, 1);
+        org.lwjgl.opengl.GL11.glVertex3f(quadX + quadWidth, quadY + quadHeight, 0);
+        org.lwjgl.opengl.GL11.glTexCoord4f(texX + texWidth, texY, 0, 1);
+        org.lwjgl.opengl.GL11.glVertex3f(quadX + quadWidth, quadY, 0);
+        org.lwjgl.opengl.GL11.glEnd();
+
+        org.lwjgl.opengl.GL11.glDisable(GL11.GL_BLEND);
+        org.lwjgl.opengl.GL11.glPopMatrix();
+
+        if (texClamp) {
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+            org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         }
     }
 }

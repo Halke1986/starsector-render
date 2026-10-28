@@ -155,6 +155,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.renameMethod("init", "init_vanilla", "(Ljava/util/Map;)V");
                 transformer.removeMethod("queueResource", "(Lcom/fs/starfarer/loading/ResourceLoaderState$o;Ljava/lang/String;I)V");
                 transformer.removeMethod("renderProgress", "(F)V");
+                transformer.removeMethod("renderBg", "()V");
                 transformer.mergeClass("com/genir/renderer/overrides/loading/ResourceLoaderState");
                 return transformer;
             case "com/fs/starfarer/combat/CombatState":

@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.graphics.Sprite;
 import com.fs.graphics.font.FontRepository;
 import com.fs.graphics.util.Fps;
 import com.fs.starfarer.ShutdownException;
@@ -29,16 +28,19 @@ import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import com.genir.renderer.overrides.loading.textures.TextureRepository;
 import com.genir.renderer.overrides.render.RoilingSwarmEffect;
+import com.genir.renderer.overrides.render.Sprite;
 import com.genir.renderer.overrides.render.particle.BaseParticle;
 import com.genir.renderer.overrides.render.particle.SmoothParticle;
+import org.json.JSONException;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * OVERRIDES com.fs.starfarer.loading.ResourceLoaderState
@@ -54,13 +56,12 @@ public class ResourceLoaderState {
     /**
      * ADDED FIELDS
      */
-    public static BlockingQueue<Runnable> mainThreadQueue;
-    public static AtomicInteger mainThreadWaitGroup;
-    public static AsyncException asyncException;
-    public static ExecutorService heavyWorker;
+    private static AsyncException asyncException;
+    private static ExecutorService heavyWorker;
     public static ExecutorService textureWorkers;
     public static ExecutorService scriptWorkers;
     public static ExecutorService soundWorkers;
+    public static boolean renderProgress;
 
     private LoadingBar loadingBar;
 
@@ -95,10 +96,15 @@ public class ResourceLoaderState {
             soundWorkers.shutdownNow();
 
             if (t instanceof ShutdownException) {
-                regressLoadingBar();
+                animateLoadingBarRegression();
             }
 
             throw t;
+        } finally {
+            // Leaving an existing sharedContext may
+            // cause crashes when exiting the program.
+            // Be sure to destroy it in all cases.
+            loadingBar.shutdown();
         }
     }
 
@@ -113,15 +119,6 @@ public class ResourceLoaderState {
         // Init spec store. This triggers most of the game asset loading.
         initSpecStore(session);
 
-        // spec store initialization is terminated and will not
-        // enqueue any more assets. It's safe to shutdown
-        // resource loaders now.
-        textureWorkers.shutdown();
-        scriptWorkers.shutdown();
-        ExecutorFactory.awaitTermination(textureWorkers);
-        ExecutorFactory.awaitTermination(scriptWorkers);
-        asyncException.rethrowIfSet();
-
         // Conclude asset loading phase.
         GameState.assetLoadingFinished = true;
         FileLoader.FileLoader_getInstance().initModLoading();
@@ -129,7 +126,6 @@ public class ResourceLoaderState {
         // Mod initialization may be the longest part
         // of the game loading when using many mods.
         initMods();
-        loadingBar.render(LoadingBar.ProgressType.FORWARD, 1);
 
         // Shutdown sound loader later than other loaders to give
         // it more time to finish work. Later shutdown is possible,
@@ -170,12 +166,10 @@ public class ResourceLoaderState {
      * ADDED METHOD
      */
     public static synchronized void initStaticFields() {
-        if (mainThreadQueue == null) {
-            mainThreadQueue = new LinkedBlockingQueue<>();
-            mainThreadWaitGroup = new AtomicInteger(0);
+        if (asyncException == null) {
             asyncException = new AsyncException();
 
-            heavyWorker = ExecutorFactory.newExecutor(1, "FR-Main-Loader", asyncException);
+            heavyWorker = ExecutorFactory.newExecutorSingleThread("FR-Main-Loader", asyncException);
             textureWorkers = ExecutorFactory.newExecutor(3, "FR-Texture-Loader", asyncException);
             scriptWorkers = ExecutorFactory.newExecutor(3, "FR-Script-Loader", asyncException);
             soundWorkers = ExecutorFactory.newExecutor(2, "FR-Sound-Loader", asyncException);
@@ -195,8 +189,6 @@ public class ResourceLoaderState {
         this.bar = new Sprite("graphics/ui/loading_widget_glow.png");
 
         this.loadingBar = new LoadingBar(this.bar, this.title, this.barBg);
-
-        loadingBar.render(LoadingBar.ProgressType.STILL, 0);
     }
 
     private void initFileLoaders() throws Exception {
@@ -206,19 +198,19 @@ public class ResourceLoaderState {
         });
 
         while (!heavyFuture.isDone()) {
-            loadingBar.render(LoadingBar.ProgressType.STILL, 0);
-
             asyncException.rethrowIfSet();
-            processMessagesAndSleep(50);
+            renderLoadingBarAndSleep(50);
         }
 
         heavyFuture.get(); // Drain exceptions.
     }
 
     private void initSpecStore(Map session) throws Exception {
+        // init_vanilla will call 'initSpecStore',
+        // which triggers most of the asset loading.
         try {
-            // init_vanilla will call 'initSpecStore', which triggers most of the asset loading.
-            // initSpecStore throws an exception to skip the middle section of vanilla init.
+            // initSpecStore throws an exception to skip
+            // the middle section of vanilla init.
             init_vanilla(session);
         } catch (RuntimeException e) {
             if (e.getMessage().equals("Skip vanilla epilogue")) {
@@ -229,8 +221,7 @@ public class ResourceLoaderState {
             }
         }
 
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.heavyWorker.execute(() -> {
+        Future<?> heavyFuture = ResourceLoaderState.heavyWorker.submit(() -> {
             try {
                 // Initiate sound loading at the very beginning of spec store
                 // initialization, to maximize parallel thread work time.
@@ -243,45 +234,29 @@ public class ResourceLoaderState {
                 // queueWeaponSprite, queueProjectileSprite and queueShipSprite.
                 // But vanilla is the final judge on what should be loaded.
                 queueShipAndWeaponSprites_public();
-            } catch (Throwable e) {
-                ResourceLoaderState.asyncException.set(e);
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
+            } catch (IOException | JSONException e) {
+                throw new RuntimeException(e);
             }
+
+            // Wait for the asset loading, excluding sound, to finish.
+            scriptWorkers.shutdown();
+            textureWorkers.shutdown();
+            ExecutorFactory.awaitTermination(textureWorkers);
+            ExecutorFactory.awaitTermination(scriptWorkers);
         });
 
-        // Run commands on main thread, as if it was an Executor.
-        long lastProgress = 0;
-        long lastRender = 0;
-        boolean animateProgress = false;
-        do {
-            Runnable r = mainThreadQueue.poll(16, TimeUnit.MILLISECONDS);
-
-            long now = System.nanoTime();
-            if (r != null) {
-                lastProgress = now;
-                animateProgress = true;
-                r.run();
-            }
-
+        while (!heavyFuture.isDone()) {
             // Animate progress bar after each completed task.
-            // Do not attempt to animate when the rendering thread is busy with
-            // uploading textures, as this leads to additional buffer swaps and
-            // increased latency.
-            if ((now - lastRender) / 1e6 >= 16 && ContextManager.getThreadContext().exec.isServerThreadIdle()) {
-                lastRender = now;
-
-                if (animateProgress) {
-                    loadingBar.render(LoadingBar.ProgressType.RANDOM, 0);
-                    animateProgress = false;
-                } else {
-                    loadingBar.render(LoadingBar.ProgressType.STILL, 0);
-                }
+            if (renderProgress) {
+                loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
+                renderProgress = false;
             }
 
             asyncException.rethrowIfSet();
-            processMessagesAndSleep(0);
-        } while (mainThreadWaitGroup.get() > 0);
+            renderLoadingBarAndSleep(16);
+        }
+
+        heavyFuture.get(); // Drain exceptions.
     }
 
     /**
@@ -294,7 +269,7 @@ public class ResourceLoaderState {
             ScriptStore.loadModClasses();
             List<ModPlugin> plugins = Global.getSettings().getModManager().getEnabledModPlugins();
             for (int i = 0; i < plugins.size(); i++) {
-                loadingBar.render(LoadingBar.ProgressType.FORWARD, (float) (i) / (float) plugins.size());
+                loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, (float) (i) / (float) plugins.size());
 
                 try {
                     plugins.get(i).onApplicationLoad();
@@ -302,11 +277,14 @@ public class ResourceLoaderState {
                     throw new RuntimeException(e);
                 }
             }
+
+            // Fill the bar after all mods are loaded.
+            loadingBar.setProgress(LoadingBar.ProgressType.FORWARD, 1);
         });
 
         while (!heavyFuture.isDone()) {
             asyncException.rethrowIfSet();
-            processMessagesAndSleep(50);
+            renderLoadingBarAndSleep(50);
         }
 
         heavyFuture.get(); // Drain exceptions.
@@ -316,14 +294,20 @@ public class ResourceLoaderState {
      * REPLACED METHOD
      */
     private void renderProgress(float progress) {
-        // Do nothing. The progress bar animation is completely
-        // overriden and controlled by renderLoadingBarOverride().
+        // Do nothing. The progress bar animation is completely overriden.
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    private void renderBg() {
+        // Do nothing. The progress bar animation is completely overriden.
     }
 
     /**
      * ADDED METHOD
      */
-    private void processMessagesAndSleep(long millis) throws InterruptedException, ExecutionException {
+    private void renderLoadingBarAndSleep(long millis) throws InterruptedException, ExecutionException {
         final Context context = ContextManager.getThreadContext();
 
         // Periodically queues window message processing on the main GL context,
@@ -331,7 +315,13 @@ public class ResourceLoaderState {
         // Processing occurs between GL command batches,
         // never within a glBegin/glEnd pair.
         Future<Object> messageProcessingFuture = context.exec.injectOutOfOrder(() -> {
-            org.lwjgl.opengl.Display.processMessages();
+            // Do not attempt to animate when the rendering thread is busy with
+            // uploading textures, as this leads to additional buffer swaps and
+            // increased latency.
+            if (context.exec.isServerThreadIdle()) {
+                loadingBar.render(context);
+                org.lwjgl.opengl.Display.update(true);
+            }
             return org.lwjgl.opengl.Display.isCloseRequested();
         });
 
@@ -346,15 +336,16 @@ public class ResourceLoaderState {
     /**
      * ADDED METHOD
      */
-    private void regressLoadingBar() {
-        int count = loadingBar.getFilledSegmentCount();
-        for (int i = 0; i < count; i++) {
-            loadingBar.render(LoadingBar.ProgressType.BACKWARD, 0);
+    private void animateLoadingBarRegression() {
+        final Context context = ContextManager.getThreadContext();
+        Future<?> regressionFuture = context.exec.injectOutOfOrder(() -> {
+            loadingBar.animateRegression();
+            return null;
+        });
 
-            try {
-                Thread.sleep(2);
-            } catch (Exception ignored) {
-            }
+        try {
+            regressionFuture.get();
+        } catch (Exception ignored) {
         }
     }
 
@@ -455,7 +446,6 @@ public class ResourceLoaderState {
         String texture = ((ShipHullSpecAPI) hullSpec).getSpriteName();
         textureLoader.queueImageOptional("TEXTURE", texture);
     }
-
 
     /**
      * STUB
