@@ -320,6 +320,9 @@ public class ResourceLoaderState {
             // increased latency.
             if (context.exec.isServerThreadIdle()) {
                 loadingBar.render(context);
+
+                // NOTE: Calling Display.update instead of Display.processMassages
+                // causes visual errors when rendering loading bar when using Reshade.
                 org.lwjgl.opengl.Display.update(true);
             }
             return org.lwjgl.opengl.Display.isCloseRequested();
