@@ -117,7 +117,7 @@ public class BufferTracker {
     }
 
     public boolean glIsBuffer(int buffer) {
-        record glIsBuffer(int buffer, boolean expected) implements GLCommand {
+        record BufferTracker$glIsBuffer(int buffer, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -128,12 +128,12 @@ public class BufferTracker {
 
         boolean result = buffers.contains(buffer);
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glIsBuffer(buffer, result));
+        context.exec.execute(new BufferTracker$glIsBuffer(buffer, result));
         return result;
     }
 
     public boolean glIsFramebuffer(int framebuffer) {
-        record glIsFramebuffer(int framebuffer, boolean expected) implements GLCommand {
+        record BufferTracker$glIsFramebuffer(int framebuffer, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -144,12 +144,12 @@ public class BufferTracker {
 
         boolean result = framebuffers.contains(framebuffer);
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glIsFramebuffer(framebuffer, result));
+        context.exec.execute(new BufferTracker$glIsFramebuffer(framebuffer, result));
         return result;
     }
 
     public boolean glIsRenderbuffer(int renderbuffer) {
-        record glIsRenderbuffer(int renderbuffer, boolean expected) implements GLCommand {
+        record BufferTracker$glIsRenderbuffer(int renderbuffer, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -160,7 +160,7 @@ public class BufferTracker {
 
         boolean result = renderbuffers.contains(renderbuffer);
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glIsRenderbuffer(renderbuffer, result));
+        context.exec.execute(new BufferTracker$glIsRenderbuffer(renderbuffer, result));
         return result;
     }
 }

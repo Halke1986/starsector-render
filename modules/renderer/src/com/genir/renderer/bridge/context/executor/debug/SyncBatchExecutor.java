@@ -48,12 +48,12 @@ public class SyncBatchExecutor implements Executor {
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
 
-        wait(new GetWrapper(task, result));
+        wait(new SyncBatchExecutor$getWrapper(task, result));
 
         return (T) result[0];
     }
 
-    private record GetWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
+    private record SyncBatchExecutor$getWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             result[0] = task.call(context);

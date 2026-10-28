@@ -4,6 +4,7 @@ import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Pool;
+import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -92,7 +93,7 @@ public class Sprite {
             return;
         }
 
-        RenderState command = getCommand();
+        Sprite$render command = getCommand();
 
         command.spritePool = spritePool;
 
@@ -137,23 +138,23 @@ public class Sprite {
     /**
      * ADDED METHOD
      */
-    private RenderState getCommand() {
+    private Sprite$render getCommand() {
         if (spritePool == null) {
             spritePool = new Pool();
         }
 
         Object pooledCommand = spritePool.get();
         if (pooledCommand != null) {
-            return (RenderState) pooledCommand;
+            return (Sprite$render) pooledCommand;
         }
 
-        return new RenderState();
+        return new Sprite$render();
     }
 
     /**
      * ADDED METHOD
      */
-    private void runCommand(RenderState command) {
+    private void runCommand(Sprite$render command) {
         final Context context = ContextManager.getThreadContext();
 
         if (command.bind) {
@@ -169,7 +170,7 @@ public class Sprite {
         context.exec.execute(command);
     }
 
-    public static class RenderState implements GLCommand {
+    public static class Sprite$render implements GLCommand, DebugString {
         public Pool spritePool;
 
         public float spriteX;
@@ -253,6 +254,11 @@ public class Sprite {
             }
 
             spritePool.put(this);
+        }
+
+        @Override
+        public String debugString(Context context, float[] args, int argsOffset) {
+            return "Sprite$render[texture=" + textureID + "]";
         }
     }
 

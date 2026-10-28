@@ -205,7 +205,7 @@ public class RectangleRenderer {
     }
 
     public void render() {
-        record rectangleRenderer(
+        record RectangleRenderer$render(
                 RectangleRenderer renderer,
                 float[] snapshot,
                 int rectangles
@@ -325,6 +325,6 @@ public class RectangleRenderer {
         System.arraycopy(scratchpad, 0, snapshot, 0, rectangles * RECTANGLE_SIZE);
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new rectangleRenderer(this, snapshot, rectangles));
+        context.exec.execute(new RectangleRenderer$render(this, snapshot, rectangles));
     }
 }

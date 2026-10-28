@@ -93,14 +93,14 @@ public class FontRendererImpl {
             return;
         }
 
-        context.exec.execute(new renderText(geometry));
+        context.exec.execute(new FontRendererImpl$render(geometry));
     }
 
     public void update() {
         cache.update();
     }
 
-    private record renderText(TextGeometry geometry) implements GLCommand {
+    private record FontRendererImpl$render(TextGeometry geometry) implements GLCommand {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             context.matrixManager.setGPUMode();

@@ -45,7 +45,7 @@ public class LoadingBar {
     }
 
     public void shutdown() {
-        record destroySharedDrawable(org.lwjgl.opengl.SharedDrawable sharedDrawable) implements GLCommand {
+        record LoadingBar$destroySharedDrawable(org.lwjgl.opengl.SharedDrawable sharedDrawable) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 sharedDrawable.destroy();
@@ -53,7 +53,7 @@ public class LoadingBar {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new destroySharedDrawable(sharedDrawable));
+        context.exec.execute(new LoadingBar$destroySharedDrawable(sharedDrawable));
     }
 
     synchronized public void setProgress(LoadingBar.ProgressType type, float progress) {
