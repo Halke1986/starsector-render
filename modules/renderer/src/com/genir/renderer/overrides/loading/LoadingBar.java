@@ -40,8 +40,10 @@ public class LoadingBar {
             }
         }
 
-        final Context context = ContextManager.getThreadContext();
-        sharedDrawable = context.exec.get(new makeSharedDrawable());
+        synchronized (ResourceLoaderLock.executorLock) {
+            final Context context = ContextManager.getThreadContext();
+            sharedDrawable = context.exec.get(new makeSharedDrawable());
+        }
     }
 
     public void shutdown() {
@@ -52,8 +54,10 @@ public class LoadingBar {
             }
         }
 
-        final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new LoadingBar$destroySharedDrawable(sharedDrawable));
+        synchronized (ResourceLoaderLock.executorLock) {
+            final Context context = ContextManager.getThreadContext();
+            context.exec.wait(new LoadingBar$destroySharedDrawable(sharedDrawable));
+        }
     }
 
     synchronized public void setProgress(LoadingBar.ProgressType type, float progress) {
