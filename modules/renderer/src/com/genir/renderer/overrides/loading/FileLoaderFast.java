@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.util.FileLoader.ResourceLocation;
 import com.fs.util.container.Pair;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
@@ -25,10 +24,10 @@ public class FileLoaderFast {
     private final String MODS = System.getProperty("com.fs.starfarer.settings.paths.mods");
     private final String SAVES = System.getProperty("com.fs.starfarer.settings.paths.saves");
 
-    private final List<ResourceLocation> allLocations;
+    private final List<FileLoader.ResourceLocation> allLocations;
     private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
 
-    public FileLoaderFast(List<ResourceLocation> locations) {
+    public FileLoaderFast(List<FileLoader.ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
         this.allLocations = locations;
 
@@ -40,10 +39,10 @@ public class FileLoaderFast {
     }
 
     public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) {
-        List<Pair<ResourceLocation, InputStream>> resources = loadInputStreams(path);
+        List<Pair<FileLoader.ResourceLocation, InputStream>> resources = loadInputStreams(path);
 
-        for (Pair<ResourceLocation, InputStream> resource : resources) {
-            ResourceLocation location = resource.one;
+        for (Pair<FileLoader.ResourceLocation, InputStream> resource : resources) {
+            FileLoader.ResourceLocation location = resource.one;
 
             if (skipMods && location.ResourceLocation_isMod) {
                 continue;
@@ -62,7 +61,7 @@ public class FileLoaderFast {
         throw new RuntimeException("Resource [" + path + "] not found in game and mod resources.");
     }
 
-    public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) {
+    public List<Pair<FileLoader.ResourceLocation, InputStream>> loadInputStreams(String path) {
         // Vanilla may pass absolute path when it loads core game resource.
         String pathRelative = path;
         boolean isAbsolute = pathRelative.startsWith(PWD);
@@ -72,7 +71,7 @@ public class FileLoaderFast {
 
         String resourceKey = normalize(pathRelative);
         List<FileHandle> knownResources = cachedFiles.get(resourceKey);
-        List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
+        List<Pair<FileLoader.ResourceLocation, InputStream>> resources = new ArrayList<>();
 
         // Convert resources to output format.
         if (knownResources != null) {
@@ -96,8 +95,8 @@ public class FileLoaderFast {
         InputStream stream = FileLoaderFast.class.getClassLoader().getResourceAsStream(path);
         if (stream != null) {
             // Find the classpath location.
-            ResourceLocation classpath = null;
-            for (ResourceLocation location : allLocations) {
+            FileLoader.ResourceLocation classpath = null;
+            for (FileLoader.ResourceLocation location : allLocations) {
                 if (Objects.equals(location.ResourceLocation_type.toString(), CLASSPATH)) {
                     classpath = location;
                     break;
@@ -173,7 +172,7 @@ public class FileLoaderFast {
         return path.substring(lastDot + 1);
     }
 
-    private String getLocationPath(ResourceLocation location) {
+    private String getLocationPath(FileLoader.ResourceLocation location) {
         return switch (location.ResourceLocation_type.toString()) {
             case "DIRECTORY" -> location.ResourceLocation_path;
             case "ABSOLUTE_AND_CWD" -> PWD;
@@ -181,7 +180,7 @@ public class FileLoaderFast {
         };
     }
 
-    private boolean isExcludedLocation(ResourceLocation location) {
+    private boolean isExcludedLocation(FileLoader.ResourceLocation location) {
         if (location.ResourceLocation_type.toString().equals(CLASSPATH)) {
             return true;
         }
@@ -278,7 +277,7 @@ public class FileLoaderFast {
         }
 
         private void planEnumeration() {
-            for (ResourceLocation location : allLocations) {
+            for (FileLoader.ResourceLocation location : allLocations) {
                 if (isExcludedLocation(location)) {
                     continue;
                 }
@@ -319,11 +318,11 @@ public class FileLoaderFast {
             }
         }
 
-        private void enumeratePath(Path path, ResourceLocation location) {
+        private void enumeratePath(Path path, FileLoader.ResourceLocation location) {
             enumeratePath(path.toFile(), location, 0);
         }
 
-        private void enumeratePath(File file, ResourceLocation location, int depth) {
+        private void enumeratePath(File file, FileLoader.ResourceLocation location, int depth) {
             if (depth == 2) {
                 List<FileHandle> asyncCollector = new ArrayList<>();
                 collector.add(asyncCollector);
@@ -345,7 +344,7 @@ public class FileLoaderFast {
             }
         }
 
-        private void asyncEnumeratePath(File file, ResourceLocation location, List<FileHandle> collector) {
+        private void asyncEnumeratePath(File file, FileLoader.ResourceLocation location, List<FileHandle> collector) {
             collector.add(new FileHandle(file, location));
 
             File[] files = file.listFiles();
