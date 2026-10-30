@@ -68,9 +68,4 @@ public class SyncExecutor implements Executor {
     @Override
     public void shutdown() {
     }
-
-    @Override
-    public boolean isServerThreadIdle() {
-        return true;
-    }
 }

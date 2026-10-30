@@ -242,14 +242,6 @@ public class AsyncExecutor implements Executor {
         execActual.shutdown();
     }
 
-    /**
-     * Returns true if no commands are being executed.
-     */
-    @Override
-    public boolean isServerThreadIdle() {
-        return currentSwapFuture.isDone();
-    }
-
     private void logFrame(Frame frame, int logCount) {
         GLCommand[] commands = frame.getCommands();
         float[] args = frame.getArgs();

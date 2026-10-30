@@ -105,9 +105,4 @@ public class SyncBatchExecutor implements Executor {
     @Override
     public void shutdown() {
     }
-
-    @Override
-    public boolean isServerThreadIdle() {
-        return true;
-    }
 }

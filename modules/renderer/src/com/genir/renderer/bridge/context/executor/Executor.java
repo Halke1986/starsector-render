@@ -25,6 +25,4 @@ public interface Executor {
     Future<Object> injectOutOfOrder(Callable<Object> privilegedCommand);
 
     void shutdown();
-
-    boolean isServerThreadIdle();
 }
