@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.overrides.loading.ScriptStore;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -27,7 +28,7 @@ import java.util.*;
 import static com.genir.renderer.debug.Debug.asert;
 
 /**
- * DDSIntegration provides integration with VramOptimizer mod. When VramOptimizer is enabled,
+ * DDSIntegration provides integration with VRAM Optimizer mod. When VRAM Optimizer is enabled,
  * vanilla texture loading is replaced with the much faster DDS texture loading.
  */
 public class DDSIntegration {
@@ -37,6 +38,7 @@ public class DDSIntegration {
     private static Map<Path, TextureData> cache = null;
 
     private static Method methodUploadDDSTexture = null;
+    private static Method methodSetDDSTextureParameters = null; // Since VRAM Optimizer 1.0.46
 
     public static void initialize() {
         if (!vramOptimizerEnabled()) {
@@ -59,18 +61,36 @@ public class DDSIntegration {
     }
 
     public static int commitTexture(TextureData texData) {
+        final Context context = ContextManager.getThreadContext();
+
         int target = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
         int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
+
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        final Context context = ContextManager.getThreadContext();
+        // Since VRAM Optimizer 1.0.46
+        if (hasSetDDSTextureParameters() && texData.mipCount != -1) {
+            record setTextureParameters(int textureID, int mipCount) implements GLCommand {
+                @Override
+                public void run(Context context, float[] args, int argsOffset) {
+                    setDDSTextureParameters(textureID, mipCount, false);
+                    configureVanillaTexture();
+                }
+            }
+
+            // Set texture parameters immediately after texture definition,
+            // before lazy texture data upload. This prevents glPushAttrib/glPopAttrib
+            // around the upload from restoring outdated parameters.
+            context.exec.execute(new setTextureParameters(textureID, texData.mipCount));
+        }
+
         context.textureManager.manageTexture(
                 context,
                 target,
                 textureID,
                 texData,
                 () -> readTextureBytes(texData),
-                (bytes) -> commitTextureLazy(texData, textureID, bytes)
+                (bytes) -> uploadTextureLazy(texData, textureID, bytes)
         );
 
         // Notify texture tracker of the texture definition.
@@ -79,9 +99,9 @@ public class DDSIntegration {
         return textureID;
     }
 
-    // commitTextureLazy runs on rendering thread to allow asynchronous texture file loading
+    // uploadTextureLazy runs on rendering thread to allow asynchronous texture file loading
     // before the rendering thread processes the commit method.
-    private static void commitTextureLazy(TextureData texData, int textureID, byte[] bytes) {
+    private static void uploadTextureLazy(TextureData texData, int textureID, byte[] bytes) {
         int err = uploadDDSTexture(textureID, bytes);
         if (err != 0) {
             throw new RuntimeException(String.valueOf(err));
@@ -203,6 +223,16 @@ public class DDSIntegration {
         texData.height = texData.imageHeight;
         texData.hasAlpha = true;
 
+        // Since VRAM Optimizer 1.0.46
+        if (hasSetDDSTextureParameters()) {
+            if (dds.has("MipCount")) {
+                texData.mipCount = dds.getInt("MipCount");
+            } else {
+                // DDS cache was not regenerated with VRAM Optimizer 1.0.46.
+                texData.mipCount = -1;
+            }
+        }
+
         JSONArray mean = dds.getJSONArray("Mean");
         JSONArray weighted = dds.getJSONArray("Weighted");
         JSONArray median = dds.getJSONArray("Median");
@@ -210,22 +240,37 @@ public class DDSIntegration {
         texData.mean = new Color(
                 (float) mean.getDouble(0),
                 (float) mean.getDouble(1),
-                (float) mean.getDouble(2));
+                (float) mean.getDouble(2)
+        );
         texData.weighted = new Color(
                 (float) weighted.getDouble(0),
                 (float) weighted.getDouble(1),
-                (float) weighted.getDouble(2));
+                (float) weighted.getDouble(2)
+        );
         texData.median = new Color(
                 (float) median.getDouble(0),
                 (float) median.getDouble(1),
-                (float) median.getDouble(2));
+                (float) median.getDouble(2)
+        );
 
         return texData;
+    }
+
+    public static boolean hasSetDDSTextureParameters() {
+        return methodSetDDSTextureParameters != null;
     }
 
     public static int uploadDDSTexture(int textureID, byte[] fileBytes) {
         try {
             return (Integer) methodUploadDDSTexture.invoke(null, textureID, fileBytes);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void setDDSTextureParameters(int textureID, int mipCount, boolean bind) {
+        try {
+            methodSetDDSTextureParameters.invoke(null, textureID, mipCount, bind);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -239,9 +284,18 @@ public class DDSIntegration {
 
         try {
             Class<?> loadingClass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.TextureLoading");
+            methodSetDDSTextureParameters = loadingClass.getMethod("SetDDSTextureParamaters", int.class, int.class, boolean.class);
+
+            logger.info("Initialized VRAM Optimizer SetDDSTextureParamaters method.");
+        } catch (Throwable e) {
+            logger.error("Failed to initialize VRAM Optimizer SetDDSTextureParamaters method.", e);
+        }
+
+        try {
+            Class<?> loadingClass = scriptLoader.loadClass("DeCell.VOpt.Commons.Rendering.TextureLoading");
             methodUploadDDSTexture = loadingClass.getMethod("UploadDDSTexture", int.class, byte[].class);
 
-            logger.info("Initialized VramOptimizer UploadDDSTexture method.");
+            logger.info("Initialized VRAM Optimizer UploadDDSTexture method.");
         } catch (Throwable e) {
             throw new RuntimeException("Failed to initialize VRAM Optimizer. VRAM Optimizer may be out of date.", e);
         }

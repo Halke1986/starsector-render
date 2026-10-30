@@ -8,6 +8,7 @@ public class TextureData {
     // DDS data.
     public Path imagePath;
     public Path ddsImagePath;
+    public int mipCount;
 
     // Vanilla data.
     public boolean hasAlpha;
