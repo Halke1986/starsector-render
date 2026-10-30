@@ -40,20 +40,24 @@ public class LoadingBar {
             }
         }
 
-        final Context context = ContextManager.getThreadContext();
-        sharedDrawable = context.exec.get(new makeSharedDrawable());
+        synchronized (ResourceLoaderLock.executorLock) {
+            final Context context = ContextManager.getThreadContext();
+            sharedDrawable = context.exec.get(new makeSharedDrawable());
+        }
     }
 
     public void shutdown() {
-        record destroySharedDrawable(org.lwjgl.opengl.SharedDrawable sharedDrawable) implements GLCommand {
+        record LoadingBar$destroySharedDrawable(org.lwjgl.opengl.SharedDrawable sharedDrawable) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 sharedDrawable.destroy();
             }
         }
 
-        final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new destroySharedDrawable(sharedDrawable));
+        synchronized (ResourceLoaderLock.executorLock) {
+            final Context context = ContextManager.getThreadContext();
+            context.exec.wait(new LoadingBar$destroySharedDrawable(sharedDrawable));
+        }
     }
 
     synchronized public void setProgress(LoadingBar.ProgressType type, float progress) {
@@ -169,6 +173,11 @@ public class LoadingBar {
         org.lwjgl.opengl.GL11.glLoadIdentity();
         org.lwjgl.opengl.GL11.glTranslatef(width / 2f, height / 2f, 0);
         org.lwjgl.opengl.GL11.glScalef(screenScaleMult, screenScaleMult, 1);
+
+        // Black background to cover visual artifacts.
+        org.lwjgl.opengl.GL11.glDisable(GL11.GL_TEXTURE_2D);
+        org.lwjgl.opengl.GL11.glColor3f(0, 0, 0);
+        org.lwjgl.opengl.GL11.glRectf(-width / 2f, -height / 2f, width / 2f, height / 2f);
 
         background.renderRegionAtCenterNative(0, 0, 0, 0, 1, 1);
         title.renderRegionAtCenterNative(0, 55, 0, 0, 1, 1);

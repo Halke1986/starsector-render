@@ -12,7 +12,7 @@ public class SharedDrawable implements Drawable {
     private final org.lwjgl.opengl.SharedDrawable impl;
 
     public SharedDrawable(Drawable drawable) {
-        record SharedDrawableConstructor(Drawable drawable) implements GLGetter<org.lwjgl.opengl.SharedDrawable> {
+        record SharedDrawable$init(Drawable drawable) implements GLGetter<org.lwjgl.opengl.SharedDrawable> {
             @Override
             public org.lwjgl.opengl.SharedDrawable call(Context context) {
                 try {
@@ -24,12 +24,12 @@ public class SharedDrawable implements Drawable {
         }
 
         final Context context = ContextManager.getThreadContext();
-        impl = context.exec.get(new SharedDrawableConstructor(drawable));
+        impl = context.exec.get(new SharedDrawable$init(drawable));
     }
 
     @Override
     public void makeCurrent() {
-        record makeCurrent(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
+        record SharedDrawable$makeCurrent(org.lwjgl.opengl.SharedDrawable impl) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 try {
@@ -43,12 +43,12 @@ public class SharedDrawable implements Drawable {
 
         final Context context = ContextManager.createAuxContext(impl);
         context.updateClient();
-        context.exec.wait(new makeCurrent(impl));
+        context.exec.wait(new SharedDrawable$makeCurrent(impl));
     }
 
     @Override
     public void destroy() {
-        record destroy() implements GLCommand {
+        record SharedDrawable$destroy() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.destroy();
@@ -56,7 +56,7 @@ public class SharedDrawable implements Drawable {
         }
 
         final Context context = ContextManager.removeAuxContext();
-        context.exec.wait(new destroy());
+        context.exec.wait(new SharedDrawable$destroy());
     }
 
     @Override

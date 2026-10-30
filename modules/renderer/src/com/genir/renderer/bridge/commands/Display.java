@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.overrides.loading.ResourceLoaderLock;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
@@ -14,7 +15,7 @@ import java.nio.ByteBuffer;
 
 public class Display {
     public static void create(PixelFormat pixel_format) {
-        record create(PixelFormat pixel_format) implements GLCommand {
+        record Display$create(PixelFormat pixel_format) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 try {
@@ -30,11 +31,11 @@ public class Display {
 
         final Context context = ContextManager.createMainContext();
         context.updateClient();
-        context.exec.wait(new create(pixel_format));
+        context.exec.wait(new Display$create(pixel_format));
     }
 
     public static void destroy() {
-        record destroy() implements GLCommand {
+        record Display$destroy() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.destroy();
@@ -42,11 +43,11 @@ public class Display {
         }
 
         final Context context = ContextManager.removeMainContext();
-        context.exec.wait(new destroy());
+        context.exec.wait(new Display$destroy());
     }
 
     public static void update(boolean processMessages) {
-        record update(boolean processMessages) implements GLCommand {
+        record Display$update(boolean processMessages) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.update();
@@ -62,7 +63,7 @@ public class Display {
 
         final Context context = ContextManager.getThreadContext();
         context.updateClient();
-        context.exec.execute(new update(processMessages));
+        context.exec.execute(new Display$update(processMessages));
         context.exec.swapFramesAndSync();
     }
 
@@ -71,7 +72,7 @@ public class Display {
     }
 
     public static void setVSyncEnabled(boolean sync) {
-        record setVSyncEnabled(boolean sync) implements GLCommand {
+        record Display$setVSyncEnabled(boolean sync) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Drain OpenGL error queue and log errors. NOTE: As of 0.98a vanilla
@@ -105,12 +106,16 @@ public class Display {
             return;
         }
 
-        final Context context = ContextManager.getThreadContext();
-        context.exec.wait(new setVSyncEnabled(sync));
+        // Starsector code calls setVSyncEnabled during
+        // asset loading, which reqiures synchronization.
+        synchronized (ResourceLoaderLock.executorLock) {
+            final Context context = ContextManager.getThreadContext();
+            context.exec.wait(new Display$setVSyncEnabled(sync));
+        }
     }
 
     public static void setFullscreen(boolean fullscreen) throws LWJGLException {
-        record setFullscreen(boolean fullscreen) implements GLCommand {
+        record Display$setFullscreen(boolean fullscreen) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 try {
@@ -131,11 +136,11 @@ public class Display {
 
         final Context context = ContextManager.getThreadContext();
         context.updateClient();
-        context.exec.wait(new setFullscreen(fullscreen));
+        context.exec.wait(new Display$setFullscreen(fullscreen));
     }
 
     public static void processMessages() {
-        record processMessages() implements GLCommand {
+        record Display$processMessages() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.update();
@@ -145,12 +150,12 @@ public class Display {
 
         final Context context = ContextManager.getThreadContext();
         context.updateClient();
-        context.exec.execute(new processMessages());
+        context.exec.execute(new Display$processMessages());
         context.exec.swapFramesAndSync();
     }
 
     public static void sync(int fps) {
-        record sync(int fps) implements GLCommand {
+        record Display$sync(int fps) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 org.lwjgl.opengl.Display.sync(fps);
@@ -158,7 +163,7 @@ public class Display {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new sync(fps));
+        context.exec.execute(new Display$sync(fps));
     }
 
     public static Drawable getDrawable() {

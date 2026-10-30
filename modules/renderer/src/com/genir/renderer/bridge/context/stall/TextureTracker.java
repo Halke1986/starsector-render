@@ -84,7 +84,7 @@ public class TextureTracker { // Context-shared object.
     }
 
     public boolean glIsTexture(Context context, int texture) {
-        record glIsTexture(int texture, boolean expected) implements GLCommand {
+        record TextureTracker$glIsTexture(int texture, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -94,7 +94,7 @@ public class TextureTracker { // Context-shared object.
         }
 
         boolean result = glIsTextureImpl(texture);
-        context.exec.execute(new glIsTexture(texture, result));
+        context.exec.execute(new TextureTracker$glIsTexture(texture, result));
         return result;
     }
 
@@ -143,7 +143,7 @@ public class TextureTracker { // Context-shared object.
     }
 
     public Integer getTextureData(Context context, int target, int level, int pname) {
-        record getTextureData(int target, int level, int pname, int expected) implements GLCommand {
+        record TextureTracker$getTextureData(int target, int level, int pname, int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -186,7 +186,7 @@ public class TextureTracker { // Context-shared object.
             default -> null;
         };
 
-        context.exec.execute(new getTextureData(target, level, pname, result));
+        context.exec.execute(new TextureTracker$getTextureData(target, level, pname, result));
         return result;
     }
 

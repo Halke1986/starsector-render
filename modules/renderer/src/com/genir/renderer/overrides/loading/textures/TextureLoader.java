@@ -2,11 +2,10 @@ package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
+import com.genir.renderer.overrides.loading.ResourceLoaderLock;
 import com.genir.renderer.overrides.loading.ResourceLoaderState;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -161,29 +160,30 @@ public class TextureLoader {
      * ADDED METHOD
      * <p>
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
-     * Synchronized for async access during asset loading.
      */
-    synchronized private void commitAndCacheTexture(String name, String path, TextureData texData) {
-        try {
-            int textureID = commitTexture(path, texData);
+    private void commitAndCacheTexture(String name, String path, TextureData texData) {
+        synchronized (ResourceLoaderLock.executorLock) {
+            try {
+                int textureID = commitTexture(path, texData);
 
-            TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
-            TextureRepository.TextureRepository_addTexture(name, handler);
-        } catch (Exception e) {
-            throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+                TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
+                TextureRepository.TextureRepository_addTexture(name, handler);
+            } catch (Exception e) {
+                throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+            }
         }
     }
 
     /**
      * ADDED METHOD
-     * <p>
-     * Synchronized for async access during asset loading.
      */
-    synchronized private int commitTexture(String path, TextureData texData) {
-        if (texData.isDDS()) {
-            return DDSIntegration.commitTexture(texData);
-        } else {
-            return TextureBuilder.commitTexture(path, texData);
+    private int commitTexture(String path, TextureData texData) {
+        synchronized (ResourceLoaderLock.executorLock) {
+            if (texData.isDDS()) {
+                return DDSIntegration.commitTexture(texData);
+            } else {
+                return TextureBuilder.commitTexture(path, texData);
+            }
         }
     }
 
