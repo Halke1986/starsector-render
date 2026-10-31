@@ -12,7 +12,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LoadingUtilsImpl {
+/**
+ * Performance-optimized version of Starsector CSV loading and merging method.
+ */
+public class CSVLoader {
     public static JSONArray getMergedSpreadsheetDataForMod(String uniqueColumn, String path, String mod) throws IOException, JSONException {
         List<Pair<FileLoader.ResourceLocation, InputStream>> streamLocations = FileLoader.FileLoader_getInstance().FileLoader_loadInputStreams(path);
 

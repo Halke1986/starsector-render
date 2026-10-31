@@ -82,6 +82,6 @@ public class LoadingUtils {
      * REPLACED METHOD
      */
     public static JSONArray LoadingUtils_getMergedSpreadsheetDataForMod(String column, String path, String mod) throws IOException, JSONException {
-        return LoadingUtilsImpl.getMergedSpreadsheetDataForMod(column, path, mod);
+        return CSVLoader.getMergedSpreadsheetDataForMod(column, path, mod);
     }
 }
