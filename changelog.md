@@ -1,5 +1,6 @@
 - Added support for glColorPointer(int, int, int, ByteBuffer). Suggested by foiler.
 - Added support for glProgramParameteri, required by BoxUtil 1.6.x. Reported by 下北泽远野.
+- Optimized Rules loading. Suggested by yeah_im_fish.
 
 v0.9.7
 
