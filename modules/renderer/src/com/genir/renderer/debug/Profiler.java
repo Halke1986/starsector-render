@@ -180,7 +180,7 @@ public class Profiler {
                 return;
             }
 
-            var e = new FrameMark();
+            FrameMark e = new FrameMark();
             e.id = id;
 
             // Main thread.

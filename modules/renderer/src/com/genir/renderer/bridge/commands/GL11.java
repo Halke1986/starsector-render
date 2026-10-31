@@ -11,6 +11,8 @@ import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.debug.DebugTextureRepository;
+import org.apache.log4j.Logger;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -704,6 +706,14 @@ public class GL11 {
     private static GlBindTexture glBindTextureCommand = new GlBindTexture();
 
     public static void glBindTexture(int target, int texture) {
+        record glBindTextureDebug(int target, int texture, String name) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.attribManager.glBindTexture(target, texture);
+                org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
 
         // Use texture tracker to assert the correctness of binding request.
@@ -713,6 +723,7 @@ public class GL11 {
         }
 
         context.exec.execute(glBindTextureCommand, Float.intBitsToFloat(target), Float.intBitsToFloat(texture), 0, 0);
+        // context.exec.execute(new glBindTextureDebug(target, texture, DebugTextureRepository.getTextureName(texture)));
         context.textureManager.glBindTexture(context, target, texture);
     }
 

@@ -2,6 +2,7 @@ package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
+import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
 import com.genir.renderer.overrides.loading.ResourceHandle;
@@ -168,6 +169,7 @@ public class TextureLoader {
 
                 TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
                 TextureRepository.TextureRepository_addTexture(name, handler);
+                DebugTextureRepository.addTextureName(textureID, name);
             } catch (Exception e) {
                 throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
             }
