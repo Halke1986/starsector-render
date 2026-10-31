@@ -35,7 +35,7 @@ public final class GL41 {
     }
 
     public static void glProgramParameteri(int program, int pname, int value) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL41.glProgramParameteri(int, int, int)");
+        com.genir.renderer.bridge.commands.GL41.glProgramParameteri(program, pname, value);
     }
 
     public static void glUseProgramStages(int pipeline, int stages, int program) {

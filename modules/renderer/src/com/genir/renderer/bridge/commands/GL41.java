@@ -79,4 +79,16 @@ public class GL41 {
         final Context context = ContextManager.getThreadContext();
         context.exec.wait(new glGetProgramBinary(program, length, binaryFormat, binary));
     }
+
+    public static void glProgramParameteri(int program, int pname, int value) {
+        record glProgramParameteri(int program, int pname, int value) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL41.glProgramParameteri(program, pname, value);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.wait(new glProgramParameteri(program, pname, value));
+    }
 }
