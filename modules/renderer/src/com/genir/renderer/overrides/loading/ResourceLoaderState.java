@@ -315,25 +315,29 @@ public class ResourceLoaderState {
         // Processing occurs between GL command batches,
         // never within a glBegin/glEnd pair.
         Future<Object> messageProcessingFuture = context.exec.injectOutOfOrder(() -> {
-            // Do not attempt to animate when the rendering thread is busy with
-            // uploading textures, as this leads to additional buffer swaps and
-            // increased latency.
-            if (context.exec.isServerThreadIdle()) {
-                loadingBar.render(context);
+            loadingBar.render(context);
 
-                // NOTE: Calling Display.update instead of Display.processMassages
-                // causes visual errors when rendering loading bar when using Reshade.
-                org.lwjgl.opengl.Display.update(true);
-            }
+            // NOTE: Calling Display.update instead of Display.processMassages
+            // causes visual errors when rendering loading bar when using Reshade.
+            // (The errors are hidden by FR drawing a background below the loading bar).
+            org.lwjgl.opengl.Display.update(true);
+
             return org.lwjgl.opengl.Display.isCloseRequested();
         });
 
-        Thread.sleep(millis);
-
+        long waitStart = System.nanoTime();
         boolean closeRequested = (Boolean) messageProcessingFuture.get();
         if (closeRequested) {
             throw new ShutdownException();
         }
+        long waitDurationMS = (System.nanoTime() - waitStart) / 1_000_000;
+
+        // Frame limiters, such as NVIDIA Background Application Max Frame Rate,
+        // can increase the time spent in Display.update. Repeated updates can then
+        // occupy most of the render thread's time, delaying tasks such as texture uploads.
+        // Increase the caller's sleep duration after each update to give those tasks
+        // time to run before the next update is submitted.
+        Thread.sleep(Math.max(millis, waitDurationMS * 4));
     }
 
     /**
