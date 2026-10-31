@@ -299,6 +299,10 @@ public class GL11 {
         ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, type, stride, pointer);
     }
 
+    public static void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
+        ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, type, stride, pointer);
+    }
+
     public static void glColorPointer(int size, int stride, FloatBuffer pointer) {
         ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }

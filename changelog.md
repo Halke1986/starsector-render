@@ -1,3 +1,5 @@
+- Added support for glColorPointer(int, int, int, ByteBuffer). Suggested by foiler.
+
 v0.9.7
 
 - Fixed a freeze during game loading which could occur when using frame limiters, such as NVIDIA Background Application Max Frame Rate. Reported by IamNooBZaii.

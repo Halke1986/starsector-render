@@ -4,12 +4,20 @@ faster CSV
 
 campaign radar line (another one) and radar transparency
 
-FINISH:
-
-4: texture wrap issue after ASM refactor
-
-
 bugs:
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957
+4: texture wrap issue after ASM refactor Affects mac only, started most likely after Sprite update,
+which touched CLAMP_TO_EDGE / GL_REPEAT  texture setting.
+
+
+
 https://discord.com/channels/187635036525166592/1402763865913036831/1564706773095686289
 (QoL's shield status triggers the crash)
 -betatester can't reproduce
+
+
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
+GLCommand in Executor mutated to a different type again

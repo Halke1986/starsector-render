@@ -132,7 +132,7 @@ public final class GL11 {
     }
 
     public static void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glColorPointer(int, int, int, ByteBuffer)");
+        com.genir.renderer.bridge.commands.GL11.glColorPointer(size, type, stride, pointer);
     }
 
     public static void glColorMaterial(int face, int mode) {
