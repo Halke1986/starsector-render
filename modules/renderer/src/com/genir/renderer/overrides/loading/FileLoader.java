@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.util.FileLoader.ResourceLocation;
 import com.fs.util.container.Pair;
 
 import java.io.IOException;
@@ -132,5 +131,25 @@ public class FileLoader {
     public void initGameplay() {
         isModLoading = false;
         fastLoader = null;
+    }
+
+    /**
+     * STUBS
+     */
+    public static class ResourceLocation {
+        public ResourceLocationType ResourceLocation_type;
+
+        public String ResourceLocation_path;
+
+        public boolean ResourceLocation_isMod = false;
+    }
+
+    /**
+     * STUBS
+     */
+    public enum ResourceLocationType {
+        DIRECTORY,
+        ABSOLUTE_AND_CWD,
+        CLASSPATH;
     }
 }

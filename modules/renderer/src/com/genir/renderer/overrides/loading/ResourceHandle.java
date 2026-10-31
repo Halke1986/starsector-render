@@ -1,7 +1,5 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.util.FileLoader.ResourceLocation;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -88,10 +86,10 @@ public class ResourceHandle extends InputStream {
 
     public static class FileHandle {
         public final File file;
-        public final ResourceLocation location;
+        public final FileLoader.ResourceLocation location;
         public String cachedContents = null;
 
-        public FileHandle(File file, ResourceLocation location) {
+        public FileHandle(File file, FileLoader.ResourceLocation location) {
             this.file = file;
             this.location = location;
         }

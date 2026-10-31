@@ -57,9 +57,6 @@ public class Transformations {
             entry("com/fs/starfarer/loading/scripts/SecureClassLoader", "com/fs/starfarer/loading/scripts/B"),
             entry("com/fs/starfarer/loading/JavaSourceFinder", "com/fs/starfarer/loading/Objectsuper"),
             entry("com/fs/starfarer/loading/specs/ShipHullSpec", "com/fs/starfarer/loading/specs/g"),
-            entry("com/fs/util/FileLoader$ResourceLocationType", "com/fs/util/C$o"),
-            entry("com/fs/util/FileLoader$ResourceLocation", "com/fs/util/C$Oo"),
-            entry("com/fs/util/FileLoader", "com/fs/util/C"),
             entry("com/fs/starfarer/renderers/FloatingTextManager", "com/fs/starfarer/renderers/Q"),
             entry("com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
             entry("com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
@@ -129,6 +126,7 @@ public class Transformations {
             entry("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
             entry("LoadingUtils_readStreamAsString", "super"),
             entry("LoadingUtils_readPathAsString", "super"),
+            entry("LoadingUtils_getMergedSpreadsheetDataForMod", "Ò00000"),
             entry("TextureRepository_getTextureLoader", "String"),
             entry("Expression_list", "ö00000"),
             entry("Expression_map", "float"),
@@ -182,9 +180,7 @@ public class Transformations {
             entry("FontRenderer_outlineExpansion", "oO0000"),
             entry("FontRenderer_highlightStart", "interface_new"),
             entry("FontRenderer_highlightEnd", "interface_super"),
-            entry("FontRenderer_backgroundColor", "ÖÓ0000"),
-
-            entry("xx", "xx")
+            entry("FontRenderer_backgroundColor", "ÖÓ0000")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -200,6 +196,8 @@ public class Transformations {
             entry("com/genir/renderer/overrides/loading/SoundStore", "sound/C"),
             entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
             entry("com/genir/renderer/overrides/loading/FileLoader", "com/fs/util/C"),
+            entry("com/genir/renderer/overrides/loading/FileLoader$ResourceLocationType", "com/fs/util/C$o"),
+            entry("com/genir/renderer/overrides/loading/FileLoader$ResourceLocation", "com/fs/util/C$Oo"),
             entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
             entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
             entry("com/genir/renderer/overrides/CombatState", "com/fs/starfarer/combat/CombatState"),
@@ -233,6 +231,5 @@ public class Transformations {
 //            entry("com/fs/starfarer/loading/ResourceLoaderState", "com/genir/renderer/overrides/loading/ResourceLoaderState"),
 //            entry("com/fs/graphics/TextureLoader", "com/genir/renderer/overrides/loading/textures/TextureLoader")
 //            entry("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "com/genir/renderer/overrides/render/font/FontRenderer")
-
     );
 }
