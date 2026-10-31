@@ -1,3 +1,5 @@
+v0.9.7
+
 - Fixed a freeze during game loading which could occur when using frame limiters, such as NVIDIA Background Application Max Frame Rate. Reported by IamNooBZaii.
 - Added support for VRAM Optimizer 1.0.46.
 
