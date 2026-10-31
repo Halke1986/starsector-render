@@ -126,6 +126,7 @@ public class Transformations {
             entry("LoadingUtils_filesWithExtensionInDirectoryAbsolute", "Õ00000"),
             entry("LoadingUtils_readStreamAsString", "super"),
             entry("LoadingUtils_readPathAsString", "super"),
+            entry("LoadingUtils_getMergedSpreadsheetDataForMod", "Ò00000"),
             entry("TextureRepository_getTextureLoader", "String"),
             entry("Expression_list", "ö00000"),
             entry("Expression_map", "float"),
@@ -179,9 +180,7 @@ public class Transformations {
             entry("FontRenderer_outlineExpansion", "oO0000"),
             entry("FontRenderer_highlightStart", "interface_new"),
             entry("FontRenderer_highlightEnd", "interface_super"),
-            entry("FontRenderer_backgroundColor", "ÖÓ0000"),
-
-            entry("xx", "xx")
+            entry("FontRenderer_backgroundColor", "ÖÓ0000")
     );
 
     public static Map<String, String> overrides = Map.<String, String>ofEntries(
@@ -232,6 +231,5 @@ public class Transformations {
 //            entry("com/fs/starfarer/loading/ResourceLoaderState", "com/genir/renderer/overrides/loading/ResourceLoaderState"),
 //            entry("com/fs/graphics/TextureLoader", "com/genir/renderer/overrides/loading/textures/TextureLoader")
 //            entry("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "com/genir/renderer/overrides/render/font/FontRenderer")
-
     );
 }
