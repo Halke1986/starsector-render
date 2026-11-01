@@ -4,10 +4,7 @@ import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
-import com.genir.renderer.overrides.loading.FileLoader;
-import com.genir.renderer.overrides.loading.ResourceHandle;
-import com.genir.renderer.overrides.loading.ResourceLoaderLock;
-import com.genir.renderer.overrides.loading.ResourceLoaderState;
+import com.genir.renderer.overrides.loading.*;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
@@ -132,7 +129,7 @@ public class TextureLoader {
             boolean useVanillaLogic = Blacklist.doNotModify(path);
 
             // Load texture DDS override.
-            if (!useVanillaLogic && resource instanceof ResourceHandle handle) {
+            if (!useVanillaLogic && resource instanceof ResourceHandleAdapter handle) {
                 TextureData texData = DDSIntegration.getTexture(handle.getFilePath());
                 if (texData != null) {
                     return texData;

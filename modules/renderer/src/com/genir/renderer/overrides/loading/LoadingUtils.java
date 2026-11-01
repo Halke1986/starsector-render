@@ -62,7 +62,7 @@ public class LoadingUtils {
      */
     public static String LoadingUtils_readStreamAsString(InputStream stream) throws IOException {
         // Read cached string.
-        if (stream instanceof ResourceHandle resourceHandle) {
+        if (stream instanceof ResourceHandleAdapter resourceHandle) {
             return resourceHandle.getString();
         }
 

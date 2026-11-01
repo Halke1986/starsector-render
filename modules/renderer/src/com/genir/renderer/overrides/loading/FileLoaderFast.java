@@ -3,7 +3,6 @@ package com.genir.renderer.overrides.loading;
 import com.fs.util.container.Pair;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
-import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -25,7 +24,7 @@ public class FileLoaderFast {
     private final String SAVES = System.getProperty("com.fs.starfarer.settings.paths.saves");
 
     private final List<FileLoader.ResourceLocation> allLocations;
-    private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
+    private final Map<String, List<ResourceHandle>> cachedFiles = new HashMap<>();
 
     public FileLoaderFast(List<FileLoader.ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
@@ -70,18 +69,18 @@ public class FileLoaderFast {
         }
 
         String resourceKey = normalize(pathRelative);
-        List<FileHandle> knownResources = cachedFiles.get(resourceKey);
+        List<ResourceHandle> knownResources = cachedFiles.get(resourceKey);
         List<Pair<FileLoader.ResourceLocation, InputStream>> resources = new ArrayList<>();
 
         // Convert resources to output format.
         if (knownResources != null) {
-            for (FileHandle resource : knownResources) {
+            for (ResourceHandle resource : knownResources) {
                 // Avoid matching modded resource when looking for a core game resource.
-                if (isAbsolute && Objects.equals(resource.location.ResourceLocation_type.toString(), DIRECTORY)) {
+                if (isAbsolute && Objects.equals(resource.getLocation().ResourceLocation_type.toString(), DIRECTORY)) {
                     continue;
                 }
 
-                resources.add(new Pair<>(resource.location, new ResourceHandle(resource)));
+                resources.add(new Pair<>(resource.getLocation(), new ResourceHandleAdapter(resource)));
             }
         }
 
@@ -115,7 +114,7 @@ public class FileLoaderFast {
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean useAbsolutePath) {
         dir = normalize(dir);
-        List<FileHandle> knownDirectories = cachedFiles.get(dir);
+        List<ResourceHandle> knownDirectories = cachedFiles.get(dir);
         if (knownDirectories == null) {
             return new ArrayList<>();
         }
@@ -123,8 +122,8 @@ public class FileLoaderFast {
         Set<String> knownFiles = new HashSet<>();
         List<String> foundFiles = new ArrayList<>();
 
-        for (FileHandle directoryHandle : knownDirectories) {
-            File[] files = directoryHandle.file.listFiles();
+        for (ResourceHandle directoryHandle : knownDirectories) {
+            File[] files = directoryHandle.getFile().listFiles();
             if (files == null) {
                 continue;
             }
@@ -246,12 +245,12 @@ public class FileLoaderFast {
 
             for (Object obj : collector) {
                 if (obj instanceof List) {
-                    for (FileHandle fileHandle : (List<FileHandle>) obj) {
-                        saveFile(fileHandle);
+                    for (ResourceHandle ResourceHandle : (List<ResourceHandle>) obj) {
+                        saveFile(ResourceHandle);
                         fileNumber++;
                     }
                 } else {
-                    saveFile((FileHandle) obj);
+                    saveFile((ResourceHandle) obj);
                     fileNumber++;
                 }
             }
@@ -259,21 +258,21 @@ public class FileLoaderFast {
             return fileNumber;
         }
 
-        private void saveFile(FileHandle fileHandle) {
-            String fileName = fileHandle.file.getPath();
+        private void saveFile(ResourceHandle ResourceHandle) {
+            String fileName = ResourceHandle.getFile().getPath();
 
             // String location path, leaving only the file name.
-            Path locationPath = Path.of(getLocationPath(fileHandle.location)).toAbsolutePath();
+            Path locationPath = Path.of(getLocationPath(ResourceHandle.getLocation())).toAbsolutePath();
             String resourceKey = normalize(fileName.replace(locationPath.toString(), ""));
             if (resourceKey.isEmpty()) {
                 return;
             }
 
-            List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
+            List<ResourceHandle> knownFiles = cachedFiles.computeIfAbsent(
                     resourceKey, k -> new ArrayList<>()
             );
 
-            knownFiles.add(fileHandle);
+            knownFiles.add(ResourceHandle);
         }
 
         private void planEnumeration() {
@@ -324,7 +323,7 @@ public class FileLoaderFast {
 
         private void enumeratePath(File file, FileLoader.ResourceLocation location, int depth) {
             if (depth == 2) {
-                List<FileHandle> asyncCollector = new ArrayList<>();
+                List<ResourceHandle> asyncCollector = new ArrayList<>();
                 collector.add(asyncCollector);
                 tasks.add(() -> {
                     if (asyncException.get() == null) {
@@ -334,7 +333,7 @@ public class FileLoaderFast {
                 return;
             }
 
-            collector.add(new FileHandle(file, location));
+            collector.add(new ResourceHandle(file, location));
 
             File[] files = file.listFiles();
             if (files != null) {
@@ -344,8 +343,8 @@ public class FileLoaderFast {
             }
         }
 
-        private void asyncEnumeratePath(File file, FileLoader.ResourceLocation location, List<FileHandle> collector) {
-            collector.add(new FileHandle(file, location));
+        private void asyncEnumeratePath(File file, FileLoader.ResourceLocation location, List<ResourceHandle> collector) {
+            collector.add(new ResourceHandle(file, location));
 
             File[] files = file.listFiles();
             if (files != null) {
