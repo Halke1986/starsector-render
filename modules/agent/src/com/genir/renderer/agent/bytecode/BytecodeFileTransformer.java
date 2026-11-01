@@ -241,6 +241,11 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 transformer.mergeClass("com/genir/renderer/overrides/render/font/FontRenderer");
                 break;
 
+            case "com/fs/starfarer/title/TitleScreenState":
+                transformer.renameMethod("checkNewHighScore", "checkNewHighScore_vanilla", "()V");
+                transformer.mergeClass("com/genir/renderer/overrides/TitleScreenState");
+                break;
+
             default:
                 return null;
         }

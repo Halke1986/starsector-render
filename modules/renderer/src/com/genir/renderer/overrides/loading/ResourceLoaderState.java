@@ -149,7 +149,9 @@ public class ResourceLoaderState {
         ShipArrowRenderer.ShipArrowRenderer_init();
         SlipstreamManager.validateConfigs();
         com.genir.renderer.bridge.commands.Display.setVSyncEnabled(StarfarerSettings.StarfarerSettings_getBooleanValue("vsync"));
+    }
 
+    public static void initFastRendering() {
         // Initialize Fast Rendering functionality.
         final Context context = ContextManager.getThreadContext();
         BaseParticle.initStatic();
