@@ -2,6 +2,7 @@
 - Added support for glProgramParameteri, required by BoxUtil 1.6.x. Reported by 下北泽远野.
 - Optimized Rules loading. Suggested by yeah_im_fish.
 - Optimized game startup time.
+- Added logging during the initial phase of game loading.
 
 v0.9.7
 

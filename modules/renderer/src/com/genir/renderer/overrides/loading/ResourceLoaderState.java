@@ -200,6 +200,8 @@ public class ResourceLoaderState {
         });
 
         while (!heavyFuture.isDone()) {
+            loadingBar.setProgress(LoadingBar.ProgressType.RANDOM, 0);
+
             asyncException.rethrowIfSet();
             renderLoadingBarAndSleep(50);
         }
