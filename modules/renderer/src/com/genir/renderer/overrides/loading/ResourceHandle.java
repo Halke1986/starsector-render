@@ -14,10 +14,19 @@ public class ResourceHandle {
 
     private String cachedString = null;
 
-    public ResourceHandle(File file, FileLoader.ResourceLocation location) {
+    public ResourceHandle(File file, FileLoader.ResourceLocation location, String extension) {
         this.file = file;
         this.filePath = file.toPath();
         this.location = location;
+
+        try {
+            if (preloadString(extension)) {
+                getString();
+            }
+        } catch (IOException ignored) {
+            // Preloading is optional. Leave failures to normal asset loading,
+            // which will retry and report errors if the file is actually needed.
+        }
     }
 
     public boolean isCoreFile() {
@@ -49,5 +58,12 @@ public class ResourceHandle {
 
     public FileLoader.ResourceLocation getLocation() {
         return location;
+    }
+
+    private boolean preloadString(String extension) {
+        return switch (extension) {
+            case "txt", "json", "csv", "skill", "faction", "variant", "skin", "system", "wpn", "ship", "proj" -> true;
+            default -> false;
+        };
     }
 }

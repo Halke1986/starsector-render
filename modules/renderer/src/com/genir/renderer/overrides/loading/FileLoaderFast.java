@@ -11,8 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-
-import static com.genir.renderer.async.ExecutorFactory.awaitTermination;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FileLoaderFast {
     private final static String DIRECTORY = "DIRECTORY";
@@ -234,6 +234,7 @@ public class FileLoaderFast {
     private class DirectoryCrawler {
         private final List<Object> collector = new ArrayList<>();
         private final List<Runnable> tasks = new ArrayList<>();
+        private final Map<String, AtomicInteger> fileCount = new HashMap<>();
 
         private static final AsyncException asyncException = new AsyncException();
 
@@ -307,14 +308,18 @@ public class FileLoaderFast {
             }
 
             fileWorkers.shutdown();
-            awaitTermination(fileWorkers);
+
+            try {
+                while (!fileWorkers.awaitTermination(700, TimeUnit.MILLISECONDS)) {
+                    logFileCount();
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            logFileCount();
 
             asyncException.rethrowIfSet();
-
-            Throwable t = asyncException.get();
-            if (t != null) {
-                throw new RuntimeException(t);
-            }
         }
 
         private void enumeratePath(Path path, FileLoader.ResourceLocation location) {
@@ -330,10 +335,11 @@ public class FileLoaderFast {
                         asyncEnumeratePath(file, location, asyncCollector);
                     }
                 });
+
                 return;
             }
 
-            collector.add(new ResourceHandle(file, location));
+            collector.add(makeNewRosurceHandle(file, location));
 
             File[] files = file.listFiles();
             if (files != null) {
@@ -344,7 +350,7 @@ public class FileLoaderFast {
         }
 
         private void asyncEnumeratePath(File file, FileLoader.ResourceLocation location, List<ResourceHandle> collector) {
-            collector.add(new ResourceHandle(file, location));
+            collector.add(makeNewRosurceHandle(file, location));
 
             File[] files = file.listFiles();
             if (files != null) {
@@ -352,6 +358,65 @@ public class FileLoaderFast {
                     asyncEnumeratePath(child, location, collector);
                 }
             }
+        }
+
+        private ResourceHandle makeNewRosurceHandle(File file, FileLoader.ResourceLocation location) {
+            String extension = getFileExtension(file.getPath());
+
+            synchronized (fileCount) {
+                fileCount.computeIfAbsent(extension, k ->
+                        new AtomicInteger()
+                ).incrementAndGet();
+            }
+
+            return new ResourceHandle(file, location, extension);
+        }
+
+        private void logFileCount() {
+            List<Map.Entry<String, Integer>> list = new ArrayList<>(fileCount.size());
+
+            synchronized (fileCount) {
+                fileCount.forEach((ext, count) -> list.add(Map.entry(ext, count.get())));
+            }
+
+            list.sort(Map.Entry.comparingByValue());
+
+            StringBuilder builder = new StringBuilder();
+            int other = 0;
+            int lines = 0;
+
+            builder.append("CACHED FILES:");
+
+            for (int i = list.size() - 1; i >= 0; i--) {
+                Map.Entry<String, Integer> entry = list.get(i);
+
+                String extension = entry.getKey();
+                int count = entry.getValue();
+
+                if (extension.isEmpty() || lines >= 30) {
+                    other += count;
+                } else {
+                    appendLogFile(builder, extension, count);
+                    lines++;
+                }
+            }
+
+            appendLogFile(builder, "other", other);
+
+            Logger.getLogger(DirectoryCrawler.class).info(builder.toString());
+        }
+
+        private void appendLogFile(StringBuilder builder, String extension, int count) {
+            builder.append(System.lineSeparator());
+            builder.append("\t");
+            builder.append(extension);
+            builder.append(":");
+
+            for (int j = extension.length(); j <= 7; j++) {
+                builder.append(" ");
+            }
+
+            builder.append(count);
         }
     }
 }
