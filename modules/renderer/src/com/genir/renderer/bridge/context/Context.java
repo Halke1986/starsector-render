@@ -59,7 +59,7 @@ public class Context {
 
     // Server state. Runs on rendering thread.
     public final AttribManager attribManager = new AttribManager();
-    public final MatrixManager matrixManager = new MatrixManager(attribManager);
+    public final MatrixManager matrixManager = new MatrixManager();
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
     public final TextureReadManager textureReadManager = new TextureReadManager();
 

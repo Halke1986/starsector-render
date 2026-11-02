@@ -412,6 +412,8 @@ public class GL11 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glMatrixMode(mode);
+                context.matrixManager.glMatrixMode(mode);
+                org.lwjgl.opengl.GL11.glMatrixMode(mode);
             }
         }
 
@@ -748,6 +750,7 @@ public class GL11 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glPopAttrib();
+                context.matrixManager.glMatrixMode(context.attribManager.getMatrixMode());
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }
