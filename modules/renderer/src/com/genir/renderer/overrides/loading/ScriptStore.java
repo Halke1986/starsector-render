@@ -80,11 +80,8 @@ public class ScriptStore {
 
         ResourceLoaderState.scriptWorkers.execute(() -> {
             loadScript(className);
+            ResourceLoaderState.renderProgress = true;
         });
-
-        // Submit empty job to main thread to progress the loading bar.
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.mainThreadQueue.add(ResourceLoaderState.mainThreadWaitGroup::decrementAndGet);
     }
 
     /**

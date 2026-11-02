@@ -17,8 +17,6 @@ import static com.genir.renderer.debug.Debug.asertEqual;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
-    // TODO AttribManager handles glDeleteTextures.
-
     private final AttribState expected = new AttribState();
     private final AttribState actual = new AttribState();
 
@@ -47,25 +45,6 @@ public class AttribManager {
         applyBlend(expected.enableBlend, expected.blend, expected.blendEquation, expected.blendi, expected.blendEquationi);
         applyLighting(expected.enableLighting);
         applyScissor(expected.enableScissorTest);
-    }
-
-    // Apply matrix mode selected by the client.
-    public void applyMatrixMode() {
-        if (actual.matrixMode != expected.matrixMode) {
-            actual.matrixMode = expected.matrixMode;
-
-            org.lwjgl.opengl.GL11.glMatrixMode(expected.matrixMode);
-        }
-    }
-
-    // Set matrix mode required by the bridge, which may be
-    // different from mode selected by the client.
-    public void forceMatrixMode(int mode) {
-        if (actual.matrixMode != mode) {
-            actual.matrixMode = mode;
-
-            org.lwjgl.opengl.GL11.glMatrixMode(mode);
-        }
     }
 
     //
@@ -113,10 +92,21 @@ public class AttribManager {
         actual.glBindTexture(target, texture);
     }
 
+    public void glDeleteTextures(int texture) {
+        expected.glDeleteTextures(texture);
+        actual.glDeleteTextures(texture);
+    }
+
     public void glActiveTexture(int mode) {
         // Texture unit is not permanently overriden.
         expected.glActiveTexture(mode);
         actual.glActiveTexture(mode);
+    }
+
+    public void glMatrixMode(int mode) {
+        // Matrix mode is not permanently overriden.
+        expected.glMatrixMode(mode);
+        actual.glMatrixMode(mode);
     }
 
     public void glBlendFunc(int sfactorRGB, int dfactorRGB) {
@@ -137,10 +127,6 @@ public class AttribManager {
 
     public void glBlendEquationi(int buf, int mode) {
         expected.glBlendEquationi(buf, mode);
-    }
-
-    public void glMatrixMode(int mode) {
-        expected.glMatrixMode(mode);
     }
 
     public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {

@@ -27,4 +27,11 @@ public class AsyncException implements Thread.UncaughtExceptionHandler {
     public void uncaughtException(Thread t, Throwable e) {
         set(e);
     }
+
+    public void rethrowIfSet() {
+        Throwable t = asyncException.get();
+        if (t != null) {
+            throw new RuntimeException(t);
+        }
+    }
 }

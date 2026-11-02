@@ -34,6 +34,7 @@ public class SoundLoader {
         if (path != null && knownSounds.add(path)) {
             ResourceLoaderState.soundWorkers.execute(() -> {
                 loadSound(path);
+                ResourceLoaderState.renderProgress = true;
             });
         }
     }

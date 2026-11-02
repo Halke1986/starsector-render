@@ -28,15 +28,17 @@ public class GL13 {
         record glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border, BufferPool.ByteBufferSnapshot data) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL13.glCompressedTexImage2D(target, level, internalformat, width, height, border, data.buffer);
                 data.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
+        context.textureManager.textureModified(texture);
+
         final BufferPool.ByteBufferSnapshot snapshot = context.bufferPool.snapshot(data);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, height);
         context.exec.execute(new glCompressedTexImage2D(target, level, internalformat, width, height, border, snapshot));
     }
 

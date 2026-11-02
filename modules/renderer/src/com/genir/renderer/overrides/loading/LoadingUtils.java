@@ -1,5 +1,8 @@
 package com.genir.renderer.overrides.loading;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -59,7 +62,7 @@ public class LoadingUtils {
      */
     public static String LoadingUtils_readStreamAsString(InputStream stream) throws IOException {
         // Read cached string.
-        if (stream instanceof ResourceHandle resourceHandle) {
+        if (stream instanceof ResourceHandleAdapter resourceHandle) {
             return resourceHandle.getString();
         }
 
@@ -73,5 +76,12 @@ public class LoadingUtils {
         FileLoader fileLoader = FileLoader.FileLoader_getInstance();
         InputStream stream = fileLoader.FileLoader_loadInputStream(path, true);
         return LoadingUtils_readStreamAsString(stream);
+    }
+
+    /**
+     * REPLACED METHOD
+     */
+    public static JSONArray LoadingUtils_getMergedSpreadsheetDataForMod(String column, String path, String mod) throws IOException, JSONException {
+        return CSVLoader.getMergedSpreadsheetDataForMod(column, path, mod);
     }
 }

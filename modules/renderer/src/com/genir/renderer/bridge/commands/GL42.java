@@ -33,13 +33,15 @@ public class GL42 {
         record glTexStorage2D(int target, int levels, int internalformat, int width, int height) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL42.glTexStorage2D(target, levels, internalformat, width, height);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.textureTracker.updateTextureData(context, target, 0, internalformat, width, height);
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, 0, internalformat, width, height);
+        context.textureManager.textureModified(texture);
+
         context.exec.execute(new glTexStorage2D(target, levels, internalformat, width, height));
     }
 }

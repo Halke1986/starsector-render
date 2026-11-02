@@ -1,11 +1,16 @@
-package com.genir.renderer.bridge.context.executor;
+package com.genir.renderer.bridge.context.executor.debug;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.Frame;
+import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Runs commands in batched on caller thread.
@@ -31,7 +36,7 @@ public class SyncBatchExecutor implements Executor {
     }
 
     @Override
-    public void executeSync(GLCommand command, GLSync fence) {
+    public void executeFence(GLCommand command, GLSync fence) {
         frame.add(command, fence);
     }
 
@@ -43,12 +48,12 @@ public class SyncBatchExecutor implements Executor {
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
 
-        wait(new GetWrapper(task, result));
+        wait(new SyncBatchExecutor$getWrapper(task, result));
 
         return (T) result[0];
     }
 
-    private record GetWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
+    private record SyncBatchExecutor$getWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             result[0] = task.call(context);
@@ -77,6 +82,12 @@ public class SyncBatchExecutor implements Executor {
         executeCommands();
     }
 
+    @Override
+    public Future<Object> injectOutOfOrder(Callable<Object> command) {
+        // There's no command ordering to bypass. Do nothing.
+        return CompletableFuture.completedFuture(null);
+    }
+
     private void executeCommands() {
         GLCommand[] commands = frame.getCommands();
         float[] args = frame.getArgs();
@@ -93,10 +104,5 @@ public class SyncBatchExecutor implements Executor {
 
     @Override
     public void shutdown() {
-    }
-
-    @Override
-    public boolean isIdle() {
-        return true;
     }
 }

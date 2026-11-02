@@ -34,7 +34,7 @@ public class Expression {
                 // Vanilla calls newInstance() for each loaded class.
                 // This is not necessary and can lead to race conditions.
                 // TODO Starsector fixes this in next patch.
-                Global.getSettings().getScriptClassLoader().loadClass(name);
+                Global.getSettings().getScriptClassLoader().getParent().loadClass(name);
             } catch (Exception ignored) {
                 continue;
             }

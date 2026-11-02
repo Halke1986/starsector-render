@@ -24,12 +24,6 @@ public class TextureBuilder {
         // it contains un-intercepted OpenGL calls.
         final Context context = ContextManager.getThreadContext();
 
-        if (DDSIntegration.hasBeforeTextureUpload()) {
-            context.exec.execute((ctx, args, offset) -> {
-                DDSIntegration.beforeTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-            });
-        }
-
         // Starsector does not generate mipmaps if either texture dimension exceeds 1024 pixels.
         // The rationale is undocumented, and Fast Rendering does not apply this restriction.
         com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
@@ -38,12 +32,6 @@ public class TextureBuilder {
 
         com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
-
-        if (DDSIntegration.hasAfterTextureUpload()) {
-            context.exec.execute((ctx, args, offset) -> {
-                DDSIntegration.afterTextureUpload(texData.width, texData.height, textureID, path, internalFormat);
-            });
-        }
 
         return textureID;
     }

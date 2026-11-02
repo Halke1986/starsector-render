@@ -2,10 +2,9 @@ package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
+import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
-import com.genir.renderer.overrides.loading.FileLoader;
-import com.genir.renderer.overrides.loading.ResourceHandle;
-import com.genir.renderer.overrides.loading.ResourceLoaderState;
+import com.genir.renderer.overrides.loading.*;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
@@ -68,18 +67,16 @@ public class TextureLoader {
 
         ResourceLoaderState.initStaticFields();
 
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
         ResourceLoaderState.textureWorkers.execute(() -> {
             try {
                 loadTextureAsync(type, path);
+                ResourceLoaderState.renderProgress = true;
             } catch (Throwable t) {
                 if (optional) {
                     knownImages.remove(path);
                 } else {
                     throw t;
                 }
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
             }
         });
     }
@@ -94,22 +91,19 @@ public class TextureLoader {
 
         TextureData texData = loadTextureData(type, path);
 
-        ResourceLoaderState.mainThreadWaitGroup.incrementAndGet();
-        ResourceLoaderState.mainThreadQueue.add(() -> {
-            try {
-                commitAndCacheTexture(path, path, texData);
-            } finally {
-                ResourceLoaderState.mainThreadWaitGroup.decrementAndGet();
-            }
-        });
+        // Upload textures from different threads, leveraging the fact
+        // that during asset loading all GL calls are intercepted by
+        // the main simulated context.
+        commitAndCacheTexture(path, path, texData);
     }
 
     /**
      * REPLACED METHOD
      * <p>
      * Texture loading during single-threaded gameplay phase.
+     * Used in the very early stage of asset loading and in actual gameplay.
      */
-    public TextureHandler TextureLoader_loadTexture(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
+    public TextureHandler TextureLoader_loadTextureSynchronous(TextureHandler target, String path, int var3, int var4, int var5, int var6, boolean generateSubImage) throws IOException {
         // Delegate uncommon cases to vanilla.
         if (target != null || var3 != GL11.GL_TEXTURE_2D || var4 != GL11.GL_RGBA || var5 != GL11.GL_LINEAR || var6 != GL11.GL_LINEAR || generateSubImage) {
             return loadTexture_vanilla(target, path, var3, var4, var5, var6, generateSubImage);
@@ -135,7 +129,7 @@ public class TextureLoader {
             boolean useVanillaLogic = Blacklist.doNotModify(path);
 
             // Load texture DDS override.
-            if (!useVanillaLogic && resource instanceof ResourceHandle handle) {
+            if (!useVanillaLogic && resource instanceof ResourceHandleAdapter handle) {
                 TextureData texData = DDSIntegration.getTexture(handle.getFilePath());
                 if (texData != null) {
                     return texData;
@@ -162,28 +156,33 @@ public class TextureLoader {
 
     /**
      * ADDED METHOD
+     * <p>
+     * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
-    private int commitTexture(String path, TextureData texData) {
-        if (texData.isDDS()) {
-            return DDSIntegration.commitTexture(texData);
-        } else {
-            return TextureBuilder.commitTexture(path, texData);
+    private void commitAndCacheTexture(String name, String path, TextureData texData) {
+        synchronized (ResourceLoaderLock.executorLock) {
+            try {
+                int textureID = commitTexture(path, texData);
+
+                TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
+                TextureRepository.TextureRepository_addTexture(name, handler);
+                DebugTextureRepository.addTextureName(textureID, name);
+            } catch (Exception e) {
+                throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+            }
         }
     }
 
     /**
      * ADDED METHOD
-     * <p>
-     * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
-    private void commitAndCacheTexture(String name, String path, TextureData texData) {
-        try {
-            int textureID = commitTexture(path, texData);
-
-            TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
-            TextureRepository.TextureRepository_addTexture(name, handler);
-        } catch (Exception e) {
-            throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+    private int commitTexture(String path, TextureData texData) {
+        synchronized (ResourceLoaderLock.executorLock) {
+            if (texData.isDDS()) {
+                return DDSIntegration.commitTexture(texData);
+            } else {
+                return TextureBuilder.commitTexture(path, texData);
+            }
         }
     }
 

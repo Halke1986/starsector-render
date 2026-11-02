@@ -84,7 +84,7 @@ public class TextureTracker { // Context-shared object.
     }
 
     public boolean glIsTexture(Context context, int texture) {
-        record glIsTexture(int texture, boolean expected) implements GLCommand {
+        record TextureTracker$glIsTexture(int texture, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -94,7 +94,7 @@ public class TextureTracker { // Context-shared object.
         }
 
         boolean result = glIsTextureImpl(texture);
-        context.exec.execute(new glIsTexture(texture, result));
+        context.exec.execute(new TextureTracker$glIsTexture(texture, result));
         return result;
     }
 
@@ -126,27 +126,24 @@ public class TextureTracker { // Context-shared object.
         return targets;
     }
 
-    public void updateTextureData(Context context, int target, int level, int internalformat, int width, int height) {
+    public void updateTextureData(int texture, int level, int internalformat, int width, int height) {
         // Do not track mipmaps.
         if (level != 0) {
             return;
         }
 
-        // TextureTracker object is shared between contexts, therefore
-        // it cannot have a static reference to the context-local AttribTracker.
-        int textureID = context.attribTracker.getTextureBinding(target);
-        if (textureID == 0) {
+        if (texture == 0) {
             return;
         }
 
-        asert(glIsTextureImpl(textureID));
+        asert(glIsTextureImpl(texture));
 
         TexData data = new TexData(internalformat, width, height);
-        parameterCache.put(textureID, data);
+        parameterCache.put(texture, data);
     }
 
     public Integer getTextureData(Context context, int target, int level, int pname) {
-        record getTextureData(int target, int level, int pname, int expected) implements GLCommand {
+        record TextureTracker$getTextureData(int target, int level, int pname, int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -169,6 +166,8 @@ public class TextureTracker { // Context-shared object.
                 return null;
         }
 
+        // TextureTracker object is shared between contexts, therefore
+        // it cannot have a static reference to the context-local AttribTracker.
         int textureID = context.attribTracker.getTextureBinding(target);
         TexData data = parameterCache.get(textureID);
         if (data == null) {
@@ -187,7 +186,7 @@ public class TextureTracker { // Context-shared object.
             default -> null;
         };
 
-        context.exec.execute(new getTextureData(target, level, pname, result));
+        context.exec.execute(new TextureTracker$getTextureData(target, level, pname, result));
         return result;
     }
 

@@ -5,6 +5,7 @@ import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.debug.Profiler;
+import com.genir.renderer.overrides.render.Renderers;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
 
@@ -22,6 +23,9 @@ public class Context {
     public Profiler.Frame nextProfilerFrame = null;
     public Profiler.Frame mainProfilerFrame = null;
     public Profiler.Frame renderingProfilerFrame = null;
+
+    // Allocation avoidance.
+    public Matrix sharedMatrix = new Matrix();
 
     public Context() {
         Logger.getLogger(Context.class).info("Created new virtual main OpenGL context.");
@@ -55,23 +59,23 @@ public class Context {
 
     // Server state. Runs on rendering thread.
     public final AttribManager attribManager = new AttribManager();
-    public final MatrixManager matrixManager = new MatrixManager(attribManager);
+    public final MatrixManager matrixManager = new MatrixManager();
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
     public final TextureReadManager textureReadManager = new TextureReadManager();
-    // Context-shared server state.
-    public final TextureManager textureManager;
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
     public final Executor exec = new AsyncExecutor(this);
     public final StateCache glStateCache = new StateCache();
     public final BufferPool bufferPool = new BufferPool();
+    public final Renderers renderers = new Renderers();
 
     // Context-local client state. Runs on main thread.
     public final AttribTracker attribTracker = new AttribTracker(exec);
-    public final MatrixTracker matrixTracker = new MatrixTracker(attribTracker);
+    public final MatrixTracker matrixTracker = new MatrixTracker();
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
     public final BufferManager bufferManager = new BufferManager();
+    public final ColorTracker colorTracker = new ColorTracker();
     // Context-shared client state, that can however be safely run per-context.
     public final ResourceGenerator texGenerator = new ResourceGenerator(org.lwjgl.opengl.GL11::glGenTextures, exec);
     public final ResourceGenerator arrayGenerator = new ResourceGenerator(org.lwjgl.opengl.GL30::glGenVertexArrays, exec);
@@ -79,7 +83,14 @@ public class Context {
     // Context-shared client state.
     public final ShaderTracker shaderTracker;
     public final TextureTracker textureTracker;
+    public final TextureManager textureManager;
     public final BufferTracker bufferTracker;
+
+    public void updateClient() {
+        // Runs on client thread.
+
+        renderers.update();
+    }
 
     public void update() {
         // Runs on rendering thread.
@@ -93,6 +104,7 @@ public class Context {
             texGenerator.update();
             arrayGenerator.update();
             bufferGenerator.update();
+
 
             if (isMain) {
                 textureManager.update();

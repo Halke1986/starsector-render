@@ -3,7 +3,6 @@ package com.genir.renderer.overrides.render.core;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.debug.Debug;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -206,15 +205,13 @@ public class RectangleRenderer {
     }
 
     public void render() {
-        record rectangleRenderer(
+        record RectangleRenderer$render(
                 RectangleRenderer renderer,
                 float[] snapshot,
                 int rectangles
         ) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                Debug.asertEqual(context.listManager.isRecording(), false, this);
-
                 // Calculate array size.
                 int vertices = rectangles * 4;
                 int arraySize = renderer.vertexScratchpad.length;
@@ -328,6 +325,6 @@ public class RectangleRenderer {
         System.arraycopy(scratchpad, 0, snapshot, 0, rectangles * RECTANGLE_SIZE);
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new rectangleRenderer(this, snapshot, rectangles));
+        context.exec.execute(new RectangleRenderer$render(this, snapshot, rectangles));
     }
 }

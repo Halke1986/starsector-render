@@ -1,8 +1,8 @@
 package com.genir.renderer.overrides.loading;
 
-import com.fs.util.FileLoader.ResourceLocation;
 import com.fs.util.container.Pair;
-import com.genir.renderer.overrides.loading.ResourceHandle.FileHandle;
+import com.genir.renderer.async.AsyncException;
+import com.genir.renderer.async.ExecutorFactory;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -10,6 +10,9 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FileLoaderFast {
     private final static String DIRECTORY = "DIRECTORY";
@@ -20,10 +23,10 @@ public class FileLoaderFast {
     private final String MODS = System.getProperty("com.fs.starfarer.settings.paths.mods");
     private final String SAVES = System.getProperty("com.fs.starfarer.settings.paths.saves");
 
-    private final List<ResourceLocation> allLocations;
-    private final Map<String, List<FileHandle>> cachedFiles = new HashMap<>();
+    private final List<FileLoader.ResourceLocation> allLocations;
+    private final Map<String, List<ResourceHandle>> cachedFiles = new HashMap<>();
 
-    public FileLoaderFast(List<ResourceLocation> locations) {
+    public FileLoaderFast(List<FileLoader.ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
         this.allLocations = locations;
 
@@ -35,10 +38,10 @@ public class FileLoaderFast {
     }
 
     public InputStream loadInputStream(String path, String locationFilter, boolean skipMods) {
-        List<Pair<ResourceLocation, InputStream>> resources = loadInputStreams(path);
+        List<Pair<FileLoader.ResourceLocation, InputStream>> resources = loadInputStreams(path);
 
-        for (Pair<ResourceLocation, InputStream> resource : resources) {
-            ResourceLocation location = resource.one;
+        for (Pair<FileLoader.ResourceLocation, InputStream> resource : resources) {
+            FileLoader.ResourceLocation location = resource.one;
 
             if (skipMods && location.ResourceLocation_isMod) {
                 continue;
@@ -57,7 +60,7 @@ public class FileLoaderFast {
         throw new RuntimeException("Resource [" + path + "] not found in game and mod resources.");
     }
 
-    public List<Pair<ResourceLocation, InputStream>> loadInputStreams(String path) {
+    public List<Pair<FileLoader.ResourceLocation, InputStream>> loadInputStreams(String path) {
         // Vanilla may pass absolute path when it loads core game resource.
         String pathRelative = path;
         boolean isAbsolute = pathRelative.startsWith(PWD);
@@ -66,18 +69,18 @@ public class FileLoaderFast {
         }
 
         String resourceKey = normalize(pathRelative);
-        List<FileHandle> knownResources = cachedFiles.get(resourceKey);
-        List<Pair<ResourceLocation, InputStream>> resources = new ArrayList<>();
+        List<ResourceHandle> knownResources = cachedFiles.get(resourceKey);
+        List<Pair<FileLoader.ResourceLocation, InputStream>> resources = new ArrayList<>();
 
         // Convert resources to output format.
         if (knownResources != null) {
-            for (FileHandle resource : knownResources) {
+            for (ResourceHandle resource : knownResources) {
                 // Avoid matching modded resource when looking for a core game resource.
-                if (isAbsolute && Objects.equals(resource.location.ResourceLocation_type.toString(), DIRECTORY)) {
+                if (isAbsolute && Objects.equals(resource.getLocation().ResourceLocation_type.toString(), DIRECTORY)) {
                     continue;
                 }
 
-                resources.add(new Pair<>(resource.location, new ResourceHandle(resource)));
+                resources.add(new Pair<>(resource.getLocation(), new ResourceHandleAdapter(resource)));
             }
         }
 
@@ -91,8 +94,8 @@ public class FileLoaderFast {
         InputStream stream = FileLoaderFast.class.getClassLoader().getResourceAsStream(path);
         if (stream != null) {
             // Find the classpath location.
-            ResourceLocation classpath = null;
-            for (ResourceLocation location : allLocations) {
+            FileLoader.ResourceLocation classpath = null;
+            for (FileLoader.ResourceLocation location : allLocations) {
                 if (Objects.equals(location.ResourceLocation_type.toString(), CLASSPATH)) {
                     classpath = location;
                     break;
@@ -111,7 +114,7 @@ public class FileLoaderFast {
 
     public List<String> filesWithExtensionInDirectory(String dir, String extension, boolean useAbsolutePath) {
         dir = normalize(dir);
-        List<FileHandle> knownDirectories = cachedFiles.get(dir);
+        List<ResourceHandle> knownDirectories = cachedFiles.get(dir);
         if (knownDirectories == null) {
             return new ArrayList<>();
         }
@@ -119,8 +122,8 @@ public class FileLoaderFast {
         Set<String> knownFiles = new HashSet<>();
         List<String> foundFiles = new ArrayList<>();
 
-        for (FileHandle directoryHandle : knownDirectories) {
-            File[] files = directoryHandle.file.listFiles();
+        for (ResourceHandle directoryHandle : knownDirectories) {
+            File[] files = directoryHandle.getFile().listFiles();
             if (files == null) {
                 continue;
             }
@@ -168,7 +171,7 @@ public class FileLoaderFast {
         return path.substring(lastDot + 1);
     }
 
-    private String getLocationPath(ResourceLocation location) {
+    private String getLocationPath(FileLoader.ResourceLocation location) {
         return switch (location.ResourceLocation_type.toString()) {
             case "DIRECTORY" -> location.ResourceLocation_path;
             case "ABSOLUTE_AND_CWD" -> PWD;
@@ -176,7 +179,7 @@ public class FileLoaderFast {
         };
     }
 
-    private boolean isExcludedLocation(ResourceLocation location) {
+    private boolean isExcludedLocation(FileLoader.ResourceLocation location) {
         if (location.ResourceLocation_type.toString().equals(CLASSPATH)) {
             return true;
         }
@@ -229,81 +232,191 @@ public class FileLoaderFast {
      * algorithm, for approximately 50% performance improvement.
      */
     private class DirectoryCrawler {
-        private int cacheLocations() {
-            int cachedFilesNumber = 0;
+        private final List<Object> collector = new ArrayList<>();
+        private final List<Runnable> tasks = new ArrayList<>();
+        private final Map<String, AtomicInteger> fileCount = new HashMap<>();
 
-            for (ResourceLocation location : allLocations) {
+        private static final AsyncException asyncException = new AsyncException();
+
+        private int cacheLocations() {
+            planEnumeration();
+            runEnumeration();
+
+            int fileNumber = 0;
+
+            for (Object obj : collector) {
+                if (obj instanceof List) {
+                    for (ResourceHandle ResourceHandle : (List<ResourceHandle>) obj) {
+                        saveFile(ResourceHandle);
+                        fileNumber++;
+                    }
+                } else {
+                    saveFile((ResourceHandle) obj);
+                    fileNumber++;
+                }
+            }
+
+            return fileNumber;
+        }
+
+        private void saveFile(ResourceHandle ResourceHandle) {
+            String fileName = ResourceHandle.getFile().getPath();
+
+            // String location path, leaving only the file name.
+            Path locationPath = Path.of(getLocationPath(ResourceHandle.getLocation())).toAbsolutePath();
+            String resourceKey = normalize(fileName.replace(locationPath.toString(), ""));
+            if (resourceKey.isEmpty()) {
+                return;
+            }
+
+            List<ResourceHandle> knownFiles = cachedFiles.computeIfAbsent(
+                    resourceKey, k -> new ArrayList<>()
+            );
+
+            knownFiles.add(ResourceHandle);
+        }
+
+        private void planEnumeration() {
+            for (FileLoader.ResourceLocation location : allLocations) {
                 if (isExcludedLocation(location)) {
                     continue;
                 }
 
-                Pair<String, List<FileHandle>> locationFiles = enumerateLocation(location);
-                if (locationFiles == null) {
-                    continue;
+                Path locationPath = Path.of(getLocationPath(location)).toAbsolutePath();
+
+                switch (location.ResourceLocation_type.toString()) {
+                    case ABSOLUTE_AND_CWD:
+                        enumeratePath(locationPath, location); // Game assets.
+                        enumeratePath(locationPath.resolve(SAVES), location); // Saved games.
+                        enumeratePath(locationPath.resolve(MODS).resolve("enabled_mods.json"), location); // Enabled mods list.
+                        enumeratePath(locationPath.resolve("..").resolve("mikohime"), location); // Mikohime Java mod.
+
+                        break;
+                    case DIRECTORY:
+                        enumeratePath(locationPath, location); // Mod assets.
+
+                        break;
                 }
+            }
+        }
 
-                String locationPath = locationFiles.one;
-                List<FileHandle> fileHandles = locationFiles.two;
+        private void runEnumeration() {
+            ExecutorService fileWorkers = ExecutorFactory.newExecutor(4, "FR-Directory-Crawler", asyncException);
 
-                cachedFilesNumber += fileHandles.size();
+            for (Runnable task : tasks) {
+                fileWorkers.execute(task);
+            }
 
-                for (FileHandle fileHandle : fileHandles) {
-                    String fileName = fileHandle.file.getPath();
+            fileWorkers.shutdown();
 
-                    // String location path, leaving only the file name.
-                    String resourceKey = normalize(fileName.replace(locationPath, ""));
-                    if (resourceKey.isEmpty()) {
-                        continue;
+            try {
+                while (!fileWorkers.awaitTermination(700, TimeUnit.MILLISECONDS)) {
+                    logFileCount();
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            logFileCount();
+
+            asyncException.rethrowIfSet();
+        }
+
+        private void enumeratePath(Path path, FileLoader.ResourceLocation location) {
+            enumeratePath(path.toFile(), location, 0);
+        }
+
+        private void enumeratePath(File file, FileLoader.ResourceLocation location, int depth) {
+            if (depth == 2) {
+                List<ResourceHandle> asyncCollector = new ArrayList<>();
+                collector.add(asyncCollector);
+                tasks.add(() -> {
+                    if (asyncException.get() == null) {
+                        asyncEnumeratePath(file, location, asyncCollector);
                     }
+                });
 
-                    List<FileHandle> knownFiles = cachedFiles.computeIfAbsent(
-                            resourceKey, k -> new ArrayList<>()
-                    );
-
-                    knownFiles.add(fileHandle);
-                }
+                return;
             }
 
-            return cachedFilesNumber;
-        }
-
-        private Pair<String, List<FileHandle>> enumerateLocation(ResourceLocation location) {
-            Path locationPath = Path.of(getLocationPath(location)).toAbsolutePath();
-            List<FileHandle> fileCollector = new ArrayList<>();
-
-            switch (location.ResourceLocation_type.toString()) {
-                case CLASSPATH:
-                    return null;
-
-                case ABSOLUTE_AND_CWD:
-                    enumeratePath(locationPath, fileCollector, location); // Game assets.
-                    enumeratePath(locationPath.resolve(SAVES), fileCollector, location); // Saved games.
-                    enumeratePath(locationPath.resolve(MODS).resolve("enabled_mods.json"), fileCollector, location); // Enabled mods list.
-                    enumeratePath(locationPath.resolve("..").resolve("mikohime"), fileCollector, location); // Mikohime Java mod.
-
-                    break;
-                case DIRECTORY:
-                    enumeratePath(locationPath, fileCollector, location); // Mod assets.
-
-                    break;
-            }
-
-            return new Pair<>(locationPath.toString(), fileCollector);
-        }
-
-        private void enumeratePath(Path path, List<FileHandle> fileCollector, ResourceLocation location) {
-            enumeratePath(path.toFile(), fileCollector, location);
-        }
-
-        private void enumeratePath(File file, List<FileHandle> fileCollector, ResourceLocation location) {
-            fileCollector.add(new FileHandle(file, location));
+            collector.add(makeNewRosurceHandle(file, location));
 
             File[] files = file.listFiles();
             if (files != null) {
                 for (File child : files) {
-                    enumeratePath(child, fileCollector, location);
+                    enumeratePath(child, location, depth + 1);
                 }
             }
+        }
+
+        private void asyncEnumeratePath(File file, FileLoader.ResourceLocation location, List<ResourceHandle> collector) {
+            collector.add(makeNewRosurceHandle(file, location));
+
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    asyncEnumeratePath(child, location, collector);
+                }
+            }
+        }
+
+        private ResourceHandle makeNewRosurceHandle(File file, FileLoader.ResourceLocation location) {
+            String extension = getFileExtension(file.getPath());
+
+            synchronized (fileCount) {
+                fileCount.computeIfAbsent(extension, k ->
+                        new AtomicInteger()
+                ).incrementAndGet();
+            }
+
+            return new ResourceHandle(file, location, extension);
+        }
+
+        private void logFileCount() {
+            List<Map.Entry<String, Integer>> list = new ArrayList<>(fileCount.size());
+
+            synchronized (fileCount) {
+                fileCount.forEach((ext, count) -> list.add(Map.entry(ext, count.get())));
+            }
+
+            list.sort(Map.Entry.comparingByValue());
+
+            StringBuilder builder = new StringBuilder();
+            int other = 0;
+            int lines = 0;
+
+            builder.append("CACHED FILES:");
+
+            for (int i = list.size() - 1; i >= 0; i--) {
+                Map.Entry<String, Integer> entry = list.get(i);
+
+                String extension = entry.getKey();
+                int count = entry.getValue();
+
+                if (extension.isEmpty() || lines >= 30) {
+                    other += count;
+                } else {
+                    appendLogFile(builder, extension, count);
+                    lines++;
+                }
+            }
+
+            appendLogFile(builder, "other", other);
+
+            Logger.getLogger(DirectoryCrawler.class).info(builder.toString());
+        }
+
+        private void appendLogFile(StringBuilder builder, String extension, int count) {
+            builder.append(System.lineSeparator());
+            builder.append("\t");
+            builder.append(extension);
+            builder.append(":");
+
+            for (int j = extension.length(); j <= 7; j++) {
+                builder.append(" ");
+            }
+
+            builder.append(count);
         }
     }
 }

@@ -13,6 +13,11 @@ public class TextureHandler {
         return 0;
     }
 
+    // $FF: renamed from: Õ00000 () java.lang.String
+    public String TextureHandler_getPath() {
+        return null;
+    }
+
     // $FF: renamed from: o00000 (java.lang.String) void
     public void TextureHandler_setPath(String path) {
     }

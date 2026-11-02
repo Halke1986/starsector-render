@@ -116,6 +116,7 @@ public class GL11 {
 
     public static void glColor4f(float red, float green, float blue, float alpha) {
         final Context context = ContextManager.getThreadContext();
+        context.colorTracker.glColor4f(red, green, blue, alpha);
         context.exec.execute(glColor4fCommand, red, green, blue, alpha);
     }
 
@@ -296,6 +297,10 @@ public class GL11 {
         ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, type, stride, pointer);
     }
 
+    public static void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
+        ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, type, stride, pointer);
+    }
+
     public static void glColorPointer(int size, int stride, FloatBuffer pointer) {
         ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
@@ -407,11 +412,14 @@ public class GL11 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glMatrixMode(mode);
+                context.matrixManager.glMatrixMode(mode);
+                org.lwjgl.opengl.GL11.glMatrixMode(mode);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glMatrixMode(mode);
+        context.matrixTracker.glMatrixMode(mode);
         context.exec.execute(new glMatrixMode(mode));
     }
 
@@ -702,6 +710,14 @@ public class GL11 {
     private static GlBindTexture glBindTextureCommand = new GlBindTexture();
 
     public static void glBindTexture(int target, int texture) {
+        record glBindTextureDebug(int target, int texture, String name) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.attribManager.glBindTexture(target, texture);
+                org.lwjgl.opengl.GL11.glBindTexture(target, texture);
+            }
+        }
+
         final Context context = ContextManager.getThreadContext();
 
         // Use texture tracker to assert the correctness of binding request.
@@ -711,6 +727,7 @@ public class GL11 {
         }
 
         context.exec.execute(glBindTextureCommand, Float.intBitsToFloat(target), Float.intBitsToFloat(texture), 0, 0);
+        // context.exec.execute(new glBindTextureDebug(target, texture, DebugTextureRepository.getTextureName(texture)));
         context.textureManager.glBindTexture(context, target, texture);
     }
 
@@ -733,12 +750,14 @@ public class GL11 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glPopAttrib();
+                context.matrixManager.glMatrixMode(context.attribManager.getMatrixMode());
                 org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
         context.attribTracker.glPopAttrib();
+        context.matrixTracker.glMatrixMode(context.attribTracker.getMatrixMode()); // sync matrix tracker mode.
         context.exec.execute(new glPopAttrib());
     }
 
@@ -1001,15 +1020,17 @@ public class GL11 {
         record glTexImage1D(int target, int level, int internalformat, int width, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage1D(target, level, internalformat, width, border, format, type, pixels.buffer);
                 pixels.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, 1);
+        context.textureManager.textureModified(texture);
+
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, 1);
         context.exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
@@ -1017,15 +1038,17 @@ public class GL11 {
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, ByteBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
                 pixels.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
+        context.textureManager.textureModified(texture);
+
         final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, height);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1033,15 +1056,17 @@ public class GL11 {
         record glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, FloatBufferSnapshot pixels) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.buffer);
                 pixels.release();
             }
         }
 
         final Context context = ContextManager.getThreadContext();
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
+        context.textureManager.textureModified(texture);
+
         final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
-        context.textureTracker.updateTextureData(context, target, level, internalformat, width, height);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1107,13 +1132,14 @@ public class GL11 {
         record glDeleteTextures(int texture) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.glDeleteTextures(texture);
+                context.attribManager.glDeleteTextures(texture);
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
         context.textureTracker.glDeleteTextures(texture);
+        context.textureManager.glDeleteTextures(texture);
         context.attribTracker.glDeleteTextures(texture);
         context.exec.execute(new glDeleteTextures(texture));
     }
@@ -1129,13 +1155,15 @@ public class GL11 {
         record glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.textureManager.textureModified();
                 org.lwjgl.opengl.GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.textureTracker.updateTextureData(context, target, level, internalFormat, width, height);
+        int texture = context.attribTracker.getTextureBinding(target);
+        context.textureTracker.updateTextureData(texture, level, internalFormat, width, height);
+        context.textureManager.textureModified(texture);
+
         context.exec.execute(new glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
     }
 
@@ -1347,6 +1375,8 @@ public class GL11 {
                 // in a display list, they cause visual glitches. Correct handling of
                 // VBOs inside display lists is possible, but complicated and offers
                 // no performance benefits.
+                // UPDATE: display lists are disabled, but this optimization remains.
+                // That way FR does not need to support GL_ARB_vertex_buffer_object.
                 return extensions.replace("GL_ARB_vertex_buffer_object", "");
 
             case org.lwjgl.opengl.GL11.GL_VENDOR:

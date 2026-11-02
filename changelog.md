@@ -1,3 +1,44 @@
+v0.9.8rc1
+
+- Added support for glColorPointer(int, int, int, ByteBuffer). Suggested by foiler.
+- Added support for glProgramParameteri, required by BoxUtil 1.6.x. Reported by 下北泽远野.
+- Optimized Rules loading. Suggested by yeah_im_fish.
+- Optimized game startup time.
+- Added logging during the initial phase of game loading.
+
+v0.9.7
+
+- Fixed a freeze during game loading which could occur when using frame limiters, such as NVIDIA Background Application Max Frame Rate. Reported by IamNooBZaii.
+- Added support for VRAM Optimizer 1.0.46.
+
+v0.9.7rc2
+
+- Removed support for VRAM Optimizer 1.0.37 and earlier.
+- Optimized game startup time.
+- Fixed an issue where the screen could remain black after Alt+Tabbing back into the game during loading.
+- Improved logging in case of assertion errors.
+
+v0.9.7rc1
+
+- The game window now remains responsive during loading. It is possible to Alt+Tab in and out or close the window at any time.
+
+v0.9.6
+ 
+- Fixed an issue where portraits in Combat Chatter message boxes were not rendering.
+- Added fr.version.txt file and fr.version system property. Suggested by Lukas04 and Numan.
+
+v0.9.6rc4
+
+- Fixed visual artifacts visible when using Combat Chatter. Reported by lChronosl and MiniRockytheOracle.
+
+v0.9.6rc3
+
+- Optimized font rendering performance.
+
+v0.9.6rc2
+
+- Fixed a NoClassDefFoundError during game startup when using Shadowverse/szb. Reported by IamNooBZaii.
+
 v0.9.6rc1
 
 - Removed Starsector's use of OpenGL display lists to simplify the OpenGL simulation layer.

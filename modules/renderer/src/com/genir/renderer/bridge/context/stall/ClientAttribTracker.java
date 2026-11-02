@@ -40,7 +40,7 @@ public class ClientAttribTracker {
     }
 
     public int getArrayBufferBinding() {
-        record getArrayBufferBinding(int expected) implements GLCommand {
+        record ClientAttribTracker$getArrayBufferBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
@@ -49,12 +49,12 @@ public class ClientAttribTracker {
         }
 
         int result = state.arrayBuffer;
-        exec.execute(new getArrayBufferBinding(result));
+        exec.execute(new ClientAttribTracker$getArrayBufferBinding(result));
         return result;
     }
 
     public int getElementArrayBufferBinding() {
-        record getElementArrayBufferBinding(int expected) implements GLCommand {
+        record ClientAttribTracker$getElementArrayBufferBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING);
@@ -63,7 +63,7 @@ public class ClientAttribTracker {
         }
 
         int result = state.elementArrayBuffer;
-        exec.execute(new getElementArrayBufferBinding(result));
+        exec.execute(new ClientAttribTracker$getElementArrayBufferBinding(result));
         return result;
     }
 

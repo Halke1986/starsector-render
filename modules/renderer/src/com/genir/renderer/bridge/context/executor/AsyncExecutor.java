@@ -11,10 +11,7 @@ import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Default implementation. Runs commands in batched on a dedicated thread.
@@ -34,7 +31,7 @@ public class AsyncExecutor implements Executor {
     private boolean isStateCorrupted = false;
     private boolean isExceptionRecovery = false;
 
-    private final ExecutorService execActual = ExecutorFactory.newSingleThreadExecutor("FR-Render", exceptionHandler);
+    private final ExecutorService execActual = ExecutorFactory.newExecutorSingleThread("FR-Render", exceptionHandler);
     private static final Object execMutex = new Object();
 
     public AsyncExecutor(Context context) {
@@ -55,7 +52,7 @@ public class AsyncExecutor implements Executor {
     }
 
     @Override
-    public void executeSync(GLCommand command, GLSync fence) {
+    public void executeFence(GLCommand command, GLSync fence) {
         currentFrame.add(command, fence);
     }
 
@@ -67,12 +64,12 @@ public class AsyncExecutor implements Executor {
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
 
-        wait(new GetWrapper(task, result));
+        wait(new AsyncExecutor$getWrapper(task, result));
 
         return (T) result[0];
     }
 
-    private record GetWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
+    private record AsyncExecutor$getWrapper(GLGetter<?> task, Object[] result) implements GLCommand, DebugString {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             result[0] = task.call(context);
@@ -183,6 +180,15 @@ public class AsyncExecutor implements Executor {
         });
     }
 
+    /**
+     * Queue a privileged command for execution.
+     * The command will be executed between frames.
+     */
+    @Override
+    public Future<Object> injectOutOfOrder(Callable<Object> command) {
+        return execActual.submit(command);
+    }
+
     private void waitForFrame(Future<?> future) {
         try {
             future.get();
@@ -225,6 +231,7 @@ public class AsyncExecutor implements Executor {
                     continue;
                 }
 
+                logFrame(frame, i + 1);
                 throw e;
             }
         }
@@ -235,17 +242,54 @@ public class AsyncExecutor implements Executor {
         execActual.shutdown();
     }
 
-    /**
-     * Returns true if no commands are being executed.
-     */
-    @Override
-    public boolean isIdle() {
-        return currentSwapFuture.isDone();
+    private void logFrame(Frame frame, int logCount) {
+        GLCommand[] commands = frame.getCommands();
+        float[] args = frame.getArgs();
+
+        StringBuilder builder = new StringBuilder();
+
+        int skippedCount = 0;
+
+        for (int i = 0; i < logCount; i++) {
+            GLCommand command = commands[i];
+
+            // Skip common commands to avoid noise in the log.
+            String cmdName = command.getClass().getName();
+            boolean skip = cmdName.contains("GlVertex3f")
+                    || cmdName.contains("GlTexCoord4f")
+                    || cmdName.contains("GlColor4f")
+                    || cmdName.contains("glNormal3f");
+
+            if (skip) {
+                skippedCount++;
+                continue;
+            }
+
+            if (skippedCount != 0) {
+                builder.append(System.lineSeparator());
+                builder.append(i);
+                builder.append(": [...").append(skippedCount).append("]");
+
+                skippedCount = 0;
+            }
+
+            builder.append(System.lineSeparator());
+            builder.append(i);
+            builder.append(": ");
+
+            if (command instanceof DebugString printable) {
+                builder.append(printable.debugString(context, args, i * Frame.ARGS_NUM));
+            } else {
+                builder.append(command);
+            }
+        }
+
+        logger.info(builder.toString());
     }
 
     private void logCommand(Context context, float[] args, int argsOffset, GLCommand command) {
-        if (command instanceof DebugString debugString) {
-            logger.info(debugString.debugString(context, args, argsOffset));
+        if (command instanceof DebugString printable) {
+            logger.info(printable.debugString(context, args, argsOffset));
         } else {
             logger.info(command);
         }

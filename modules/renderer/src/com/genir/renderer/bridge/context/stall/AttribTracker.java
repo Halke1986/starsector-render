@@ -3,13 +3,12 @@ package com.genir.renderer.bridge.context.stall;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.debug.Debug;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
 import java.nio.IntBuffer;
 import java.util.Stack;
-
-import static com.genir.renderer.debug.Debug.asertEqual;
 
 /**
  * Tracks the state of OpenGL attributes as they would appear to the client
@@ -82,7 +81,7 @@ public class AttribTracker {
     }
 
     public int getTextureBinding(int target) {
-        record getTextureBinding2D(int target, int expected) implements GLCommand {
+        record AttribTracker$getTextureBinding2D(int target, int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int pname = switch (target) {
@@ -101,120 +100,120 @@ public class AttribTracker {
                 };
 
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(pname);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         int result = state.getBoundTexture(target);
-        exec.execute(new getTextureBinding2D(target, result));
+        exec.execute(new AttribTracker$getTextureBinding2D(target, result));
         return result;
     }
 
     public int getActiveTexture() {
-        record getActiveTexture(int expected) implements GLCommand {
+        record AttribTracker$getActiveTexture(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         int result = state.activeTexture;
-        exec.execute(new getActiveTexture(result));
+        exec.execute(new AttribTracker$getActiveTexture(result));
         return result;
     }
 
     public float getLineWidth() {
-        record getLineWidth(float expected) implements GLCommand {
+        record AttribTracker$getLineWidth(float expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 float actual = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_LINE_WIDTH);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         float result = state.lineWidth;
-        exec.execute(new getLineWidth(result));
+        exec.execute(new AttribTracker$getLineWidth(result));
         return result;
     }
 
     public int getFramebufferBinding() {
-        record getFramebufferBinding(int expected) implements GLCommand {
+        record AttribTracker$getFramebufferBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         int result = framebufferBinding;
-        exec.execute(new getFramebufferBinding(result));
+        exec.execute(new AttribTracker$getFramebufferBinding(result));
         return result;
     }
 
     public int getVertexArrayBinding() {
-        record getVertexArrayBinding(int expected) implements GLCommand {
+        record AttribTracker$getVertexArrayBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         int result = vertexArrayBinding;
-        exec.execute(new getVertexArrayBinding(result));
+        exec.execute(new AttribTracker$getVertexArrayBinding(result));
         return result;
     }
 
     public AttribState.Box getViewport() {
-        record getViewport(AttribState.Box expected) implements GLCommand {
+        record AttribTracker$getViewport(AttribState.Box expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
                 org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_VIEWPORT, actual);
 
-                asertEqual(expected.x(), actual.get(), this);
-                asertEqual(expected.y(), actual.get(), this);
-                asertEqual(expected.width(), actual.get(), this);
-                asertEqual(expected.height(), actual.get(), this);
+                Debug.asertEqual(expected.x(), actual.get(), this);
+                Debug.asertEqual(expected.y(), actual.get(), this);
+                Debug.asertEqual(expected.width(), actual.get(), this);
+                Debug.asertEqual(expected.height(), actual.get(), this);
             }
         }
 
         AttribState.Box result = state.viewport;
-        exec.execute(new getViewport(result));
+        exec.execute(new AttribTracker$getViewport(result));
         return result;
     }
 
     public AttribState.Box getScissorBox() {
-        record getScissorBox(AttribState.Box expected) implements GLCommand {
+        record AttribTracker$getScissorBox(AttribState.Box expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
                 org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_SCISSOR_BOX, actual);
 
-                asertEqual(expected.x(), actual.get(), this);
-                asertEqual(expected.y(), actual.get(), this);
-                asertEqual(expected.width(), actual.get(), this);
-                asertEqual(expected.height(), actual.get(), this);
+                Debug.asertEqual(expected.x(), actual.get(), this);
+                Debug.asertEqual(expected.y(), actual.get(), this);
+                Debug.asertEqual(expected.width(), actual.get(), this);
+                Debug.asertEqual(expected.height(), actual.get(), this);
             }
         }
 
         AttribState.Box result = state.scissorBox;
-        exec.execute(new getScissorBox(result));
+        exec.execute(new AttribTracker$getScissorBox(result));
         return result;
     }
 
     public int getCurrentProgram() {
-        record getCurrentProgram(int expected) implements GLCommand {
+        record AttribTracker$getCurrentProgram(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         int result = currentProgram;
-        exec.execute(new getCurrentProgram(result));
+        exec.execute(new AttribTracker$getCurrentProgram(result));
         return result;
     }
 

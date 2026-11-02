@@ -4,6 +4,7 @@ import com.fs.starfarer.settings.StarfarerSettings;
 import com.genir.renderer.bridge.commands.Display;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.debug.Watchdog;
@@ -28,14 +29,17 @@ public class Sync {
         SamplerRunner.samplerRunner.update();
         final Profiler.Frame nextProfilerFrame = Profiler.profiler.update();
 
-        if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginSwap();
+        if (context.mainProfilerFrame != null)
+            context.mainProfilerFrame.beginSwap();
         Display.update(processMessages);
 
-        if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginSync();
+        if (context.mainProfilerFrame != null)
+            context.mainProfilerFrame.beginSync();
         sync();
 
         // Conclude the current animation frame.
-        if (context.mainProfilerFrame != null) context.mainProfilerFrame.commit();
+        if (context.mainProfilerFrame != null)
+            context.mainProfilerFrame.commit();
 
         // The simulation normally runs one frame ahead of rendering, unless
         // there is spare CPU capacity. To record concurrent simulation and
@@ -43,12 +47,19 @@ public class Sync {
         // receives the profile collector before the simulation thread.
         context.mainProfilerFrame = context.nextProfilerFrame;
         context.nextProfilerFrame = nextProfilerFrame;
-        context.exec.execute((ctx, args, offset) ->
-                ctx.renderingProfilerFrame = nextProfilerFrame
-        );
+
+        record Sync$update(Profiler.Frame nextProfilerFrame) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                context.renderingProfilerFrame = nextProfilerFrame;
+            }
+        }
+
+        context.exec.execute(new Sync$update(nextProfilerFrame));
 
         // Mark the beginning of the next animation frame.
-        if (context.mainProfilerFrame != null) context.mainProfilerFrame.beginFrame();
+        if (context.mainProfilerFrame != null)
+            context.mainProfilerFrame.beginFrame();
     }
 
     /**

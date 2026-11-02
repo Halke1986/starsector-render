@@ -1,14 +1,23 @@
 
-game is responsive when loading mods
 flicker after alt-tab
 faster CSV
 
-LazyFont LoadFont fail during onApplicationLoad when using VO (lazy tex upload)
-insignia42LTaa
-https://discord.com/channels/187635036525166592/1549091275167240272/1556998414678368288
+campaign radar line (another one) and radar transparency
 
-  Global.getSettings().loadTexture("graphics/fonts/insignia42LTaa_0.png");
+bugs:
 
-            com.genir.renderer.bridge.commands.GL11.glPushAttrib(1048575 ^ GL11.GL_TEXTURE_BIT);
-            com.genir.renderer.bridge.commands.GL11.glBindTexture(3553, 2747);
-            com.genir.renderer.bridge.commands.GL11.glPopAttrib();
+https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957
+4: texture wrap issue after ASM refactor Affects mac only, started most likely after Sprite update,
+which touched CLAMP_TO_EDGE / GL_REPEAT  texture setting.
+
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1564706773095686289
+(QoL's shield status triggers the crash)
+-betatester can't reproduce
+
+
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
+GLCommand in Executor mutated to a different type again

@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ExecutorFactory {
-    public static ExecutorService newSingleThreadExecutor(String name, Thread.UncaughtExceptionHandler ueh) {
+    public static ExecutorService newExecutorSingleThread(String name, Thread.UncaughtExceptionHandler ueh) {
         return newExecutor(1, name, ueh);
     }
 

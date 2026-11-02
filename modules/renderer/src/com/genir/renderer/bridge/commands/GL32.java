@@ -48,6 +48,7 @@ public class GL32 {
 
         // Execute commands, so other rendering threads waiting for this
         // glSync can proceed and do not deadlock on a get or wait call.
+        context.updateClient();
         context.exec.swapFrames();
 
         return new GLSync(future, context);
@@ -70,7 +71,7 @@ public class GL32 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.executeSync(new glWaitSync(sync, flags, timeout), sync);
+        context.exec.executeFence(new glWaitSync(sync, flags, timeout), sync);
     }
 
     public static void glDeleteSync(GLSync sync) {
@@ -89,6 +90,6 @@ public class GL32 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.executeSync(new glDeleteSync(sync), sync);
+        context.exec.executeFence(new glDeleteSync(sync), sync);
     }
 }
