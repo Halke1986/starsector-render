@@ -17,8 +17,6 @@ import static com.genir.renderer.debug.Debug.asertEqual;
  * (e.g., consecutive glEnable calls).
  */
 public class AttribManager {
-    // TODO AttribManager handles glDeleteTextures.
-
     private final AttribState expected = new AttribState();
     private final AttribState actual = new AttribState();
 
@@ -111,6 +109,11 @@ public class AttribManager {
         // Texture binding is not permanently overriden.
         expected.glBindTexture(target, texture);
         actual.glBindTexture(target, texture);
+    }
+
+    public void glDeleteTextures(int texture) {
+        expected.glDeleteTextures(texture);
+        actual.glDeleteTextures(texture);
     }
 
     public void glActiveTexture(int mode) {

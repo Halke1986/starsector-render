@@ -11,8 +11,6 @@ import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import com.genir.renderer.debug.DebugTextureRepository;
-import org.apache.log4j.Logger;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -1131,6 +1129,7 @@ public class GL11 {
         record glDeleteTextures(int texture) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                context.attribManager.glDeleteTextures(texture);
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }
