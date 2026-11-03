@@ -1,3 +1,7 @@
+v0.9.8
+
+- Promoted v0.9.8rc1 to stable. No changes.
+
 v0.9.8rc1
 
 - Added support for glColorPointer(int, int, int, ByteBuffer). Suggested by foiler.
@@ -60,7 +64,7 @@ v0.9.3
 
 v0.9.2
 
-- Fixed excessive memory copying during particle rendering that reduced frame rates. Reported by folier.
+- Fixed excessive memory copying during particle rendering that reduced frame rates. Reported by foiler.
 - Optimized Sprite region rendering. Suggested by foiler.
 
 v0.9.2rc2
