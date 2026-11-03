@@ -262,7 +262,7 @@ public class VertexInterceptor {
         prepareVertexPointers(vertexCount, flags);
         primaryVertexPointer.put(0, externalScratchpad, 0, vertexCount * STRIDE);
 
-        attribManager.applyDrawAttribs();
+//        attribManager.applyDrawAttribs();
         org.lwjgl.opengl.GL11.glDrawArrays(mode, 0, vertexCount);
     }
 

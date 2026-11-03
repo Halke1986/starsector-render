@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class ParticleRenderer2 {
     private static final int PARTICLE_SIZE = 13;
@@ -65,7 +66,13 @@ public class ParticleRenderer2 {
         numParticles++;
     }
 
-    private record ParticleRenderer$render(ParticleRenderer2 renderer, int numParticles, float[] particleArray) implements GLCommand {
+    private record ParticleRenderer$render(
+            ParticleRenderer2 renderer,
+            Consumer<Context> preBatch,
+            Consumer<Context> postBatch,
+            int numParticles,
+            float[] particleArray
+    ) implements GLCommand {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             int requiredLength = numParticles * VertexInterceptor.STRIDE * 4;
@@ -164,18 +171,22 @@ public class ParticleRenderer2 {
                 vertexScratchpad[v3 + 10] = 1;
             }
 
+            preBatch.accept(context);
+
             int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.COLOR_FLAG | VertexInterceptor.TEX_FLAG;
             context.vertexInterceptor.drawExternalArray(GL11.GL_QUADS, vertexScratchpad, numParticles * 4, flags);
+
+            postBatch.accept(context);
 
             ArrayPool.arrayPool.put(particleArray);
         }
     }
 
-    public void render() {
+    public void render(Consumer<Context> preBatch, Consumer<Context> postBatch) {
         final Context context = ContextManager.getThreadContext();
         final float[] particleArraySnapshot = ArrayPool.arrayPool.get(numParticles * PARTICLE_SIZE);
         System.arraycopy(particleArray, 0, particleArraySnapshot, 0, numParticles * PARTICLE_SIZE);
 
-        context.exec.execute(new ParticleRenderer$render(this, numParticles, particleArraySnapshot));
+        context.exec.execute(new ParticleRenderer$render(this, preBatch, postBatch, numParticles, particleArraySnapshot));
     }
 }

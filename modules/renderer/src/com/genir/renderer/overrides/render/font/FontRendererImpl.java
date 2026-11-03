@@ -105,6 +105,8 @@ public class FontRendererImpl {
         public void run(Context context, float[] args, int argsOffset) {
             context.matrixManager.setGPUMode();
 
+            context.attribManager.applyDrawAttribs();
+
             int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.COLOR_FLAG | VertexInterceptor.TEX_FLAG;
             context.vertexInterceptor.drawExternalArray(GL11.GL_QUADS, geometry.vertexScratchpad(), geometry.glyphsNum() * 4, flags);
 

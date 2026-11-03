@@ -1,5 +1,8 @@
 package com.genir.renderer.overrides.render.particle;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * OVERRIDES com.fs.graphics.particle.BaseParticle
  */
@@ -8,6 +11,7 @@ public abstract class BaseParticle {
      * ADDED FIELDS
      */
     protected static ParticleRenderer2 renderer;
+    protected static Set<Integer> knownTextures;
 
     protected static float groupPosX;
     protected static float groupPosY;
@@ -101,12 +105,15 @@ public abstract class BaseParticle {
      */
     public static void initStatic() {
         renderer = new ParticleRenderer2();
+        knownTextures = new HashSet<>();
     }
 
     /**
      * ADDED METHOD
      */
-    public void setParticleGroupPosition(float posX, float posY) {
+    public void initGroupRendering(float posX, float posY) {
+        renderer.clear();
+
         groupPosX = posX;
         groupPosY = posY;
     }
