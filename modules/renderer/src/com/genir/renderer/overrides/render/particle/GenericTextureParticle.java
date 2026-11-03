@@ -48,10 +48,11 @@ public class GenericTextureParticle extends BaseParticle {
         float brightness = calculateBrightness();
 
         for (int i = 0; i < renderCount; i++) {
-            renderer.beginNewParticle();
-            renderer.setColor(color, brightness);
-            renderer.setTexture(0, 0, tw, th);
-            renderer.setVertices(this.getX() + groupPosX + (float) i, this.getY() + groupPosY, this.getAngle(), width, height);
+            renderer.addParticle(
+                    color, brightness,
+                    0, 0, tw, th,
+                    this.getX() + groupPosX + (float) i, this.getY() + groupPosY, this.getAngle(), width, height
+            );
         }
     }
 

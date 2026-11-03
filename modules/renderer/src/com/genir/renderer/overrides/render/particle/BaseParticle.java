@@ -7,7 +7,7 @@ public abstract class BaseParticle {
     /**
      * ADDED FIELDS
      */
-    protected static ParticleRenderer renderer;
+    protected static ParticleRenderer2 renderer;
 
     protected static float groupPosX;
     protected static float groupPosY;
@@ -100,7 +100,7 @@ public abstract class BaseParticle {
      * ADDED METHOD
      */
     public static void initStatic() {
-        renderer = new ParticleRenderer();
+        renderer = new ParticleRenderer2();
     }
 
     /**

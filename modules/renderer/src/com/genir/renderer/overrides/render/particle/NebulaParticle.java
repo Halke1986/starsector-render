@@ -55,10 +55,11 @@ public class NebulaParticle extends BaseParticle {
         float s = (float) i * size;
         float t = (float) j * size;
 
-        renderer.beginNewParticle();
-        renderer.setColor(color, calculateBrightness());
-        renderer.setTexture(s, t, size, size);
-        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), width, height);
+        renderer.addParticle(
+                color, calculateBrightness(),
+                s, t, size, size,
+                this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), width, height
+        );
     }
 
     /**

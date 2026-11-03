@@ -37,11 +37,11 @@ public class DetailedSmokeParticle extends BaseParticle {
      */
     @Override
     public void render() {
-        renderer.beginNewParticle();
-
-        renderer.setColor(color, this.getBrightness());
-        renderer.setTexture(0f, 0f, 1f, 1f);
-        renderer.setVertices(this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), size, size);
+        renderer.addParticle(
+                color, this.getBrightness(),
+                0f, 0f, 1f, 1f,
+                this.getX() + groupPosX, this.getY() + groupPosY, this.getAngle(), size, size
+        );
     }
 
     /**
