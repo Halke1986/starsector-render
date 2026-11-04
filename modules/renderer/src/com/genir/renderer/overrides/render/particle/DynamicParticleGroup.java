@@ -97,6 +97,8 @@ public class DynamicParticleGroup {
         }
 
         BaseParticle first = particlesArray[0];
+        first.preBatch();
+
         first.initGroupRendering(posX, posY);
 
         for (int i = 0; i < particlesNum; i++) {

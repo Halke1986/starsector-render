@@ -29,16 +29,6 @@ public class SmoothParticle extends BaseParticle {
      */
     @Override
     public void preBatch() {
-//        renderer.clear();
-//
-//        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_TEXTURE_2D);
-//        com.genir.renderer.bridge.commands.GL11.glEnable(GL11.GL_BLEND);
-//        com.genir.renderer.bridge.commands.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-//
-//        // Bind texture.
-//        TextureHandler textureHandler = override != null ? override : texture;
-//        int textureID = textureHandler.TextureHandler_getTextureID();
-//        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
 
     /**
