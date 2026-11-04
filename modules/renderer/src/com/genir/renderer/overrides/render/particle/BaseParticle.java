@@ -10,7 +10,7 @@ public abstract class BaseParticle {
     /**
      * ADDED FIELDS
      */
-    protected static ParticleRenderer2 renderer;
+    protected static ParticleRenderer renderer;
     protected static Set<Integer> knownTextures;
 
     protected static float groupPosX;
@@ -104,7 +104,7 @@ public abstract class BaseParticle {
      * ADDED METHOD
      */
     public static void initStatic() {
-        renderer = new ParticleRenderer2();
+        renderer = new ParticleRenderer();
         knownTextures = new HashSet<>();
     }
 
