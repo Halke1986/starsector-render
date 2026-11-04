@@ -3,9 +3,9 @@ package com.genir.renderer.overrides.render;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.Pool;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.pool.Pool;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 

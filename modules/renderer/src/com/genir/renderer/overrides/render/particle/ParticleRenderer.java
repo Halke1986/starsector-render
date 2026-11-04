@@ -4,7 +4,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.VertexInterceptor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.overrides.render.core.ArrayPool;
+import com.genir.renderer.bridge.pool.ArrayPool;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -178,6 +178,10 @@ public class ParticleRenderer {
     }
 
     public void render(Consumer<Context> preBatch, Consumer<Context> postBatch) {
+        if (numParticles == 0) {
+            return;
+        }
+
         final Context context = ContextManager.getThreadContext();
         final float[] particleArraySnapshot = ArrayPool.arrayPool.get(numParticles * PARTICLE_SIZE);
         System.arraycopy(particleArray, 0, particleArraySnapshot, 0, numParticles * PARTICLE_SIZE);

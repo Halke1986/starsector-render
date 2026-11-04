@@ -1,10 +1,11 @@
 package com.genir.renderer.bridge.commands;
 
-import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.pool.BufferPool;
+import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
 
 import java.nio.IntBuffer;
 
@@ -50,8 +51,8 @@ public class GL14 {
 
         final Context context = ContextManager.getThreadContext();
         final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
-        final IntBufferSnapshot piFirstSnapshot = context.bufferPool.snapshot(piFirst);
-        final IntBufferSnapshot piCountSnapshot = context.bufferPool.snapshot(piCount);
+        final IntBufferSnapshot piFirstSnapshot = BufferPool.bufferPool.snapshot(piFirst);
+        final IntBufferSnapshot piCountSnapshot = BufferPool.bufferPool.snapshot(piCount);
         context.exec.execute(new glMultiDrawArrays(mode, piFirstSnapshot, piCountSnapshot, snapshot));
     }
 }

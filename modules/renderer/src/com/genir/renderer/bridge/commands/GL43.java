@@ -1,10 +1,11 @@
 package com.genir.renderer.bridge.commands;
 
-import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.bridge.pool.BufferPool;
+import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
 import org.lwjgl.opengl.KHRDebugCallback;
 
 import java.nio.IntBuffer;
@@ -68,7 +69,7 @@ public class GL43 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(ids);
+        final IntBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(ids);
         context.exec.execute(new glDebugMessageControl(source, type, severity, snapshot, enabled));
     }
 

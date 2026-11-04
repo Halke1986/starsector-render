@@ -5,10 +5,10 @@ import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.Frame;
-import com.genir.renderer.bridge.context.Pool;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.bridge.pool.Pool;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.*;

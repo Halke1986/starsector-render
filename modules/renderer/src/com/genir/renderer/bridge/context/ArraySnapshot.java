@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.interfaces.Releasable;
+import com.genir.renderer.bridge.pool.BufferPool;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

@@ -4,7 +4,10 @@ import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
-import com.genir.renderer.overrides.loading.*;
+import com.genir.renderer.overrides.loading.FileLoader;
+import com.genir.renderer.overrides.loading.ResourceHandleAdapter;
+import com.genir.renderer.overrides.loading.ResourceLoaderLock;
+import com.genir.renderer.overrides.loading.ResourceLoaderState;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 

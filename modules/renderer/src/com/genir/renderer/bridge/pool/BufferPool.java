@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.context;
+package com.genir.renderer.bridge.pool;
 
 import com.genir.renderer.bridge.interfaces.Releasable;
 import org.lwjgl.BufferUtils;
@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BufferPool {
+    public static final BufferPool bufferPool = new BufferPool();
+
     private final List<ShortBufferSnapshot>[] shortPool = new List[32];
     private final List<IntBufferSnapshot>[] intPool = new List[32];
     private final List<ByteBufferSnapshot>[] bytePool = new List[32];

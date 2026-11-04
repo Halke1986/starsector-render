@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.ArrayPointer;
 import com.genir.renderer.bridge.context.ArraySnapshot;
-import com.genir.renderer.bridge.context.BufferPool;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
@@ -18,13 +17,11 @@ import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class ClientAttribTracker {
     private final Executor exec;
-    private final BufferPool bufferPool;
 
     public final ClientAttribState state = new ClientAttribState();
     private final Stack<Snapshot> stateStack = new Stack<>();
 
-    public ClientAttribTracker(BufferPool bufferPool, Executor exec) {
-        this.bufferPool = bufferPool;
+    public ClientAttribTracker(Executor exec) {
         this.exec = exec;
     }
 
@@ -34,9 +31,9 @@ public class ClientAttribTracker {
 
     public ArrayPointersSnapshot makeArrayPointersSnapshot() {
         return new ArrayPointersSnapshot(
-                state.enableVertexArray ? state.vertexPointer.getSnapshot(bufferPool) : null,
-                state.enableTexCoordArray ? state.texCoordPointer.getSnapshot(bufferPool) : null,
-                state.enableColorArray ? state.colorPointer.getSnapshot(bufferPool) : null);
+                state.enableVertexArray ? state.vertexPointer.getSnapshot() : null,
+                state.enableTexCoordArray ? state.texCoordPointer.getSnapshot() : null,
+                state.enableColorArray ? state.colorPointer.getSnapshot() : null);
     }
 
     public int getArrayBufferBinding() {

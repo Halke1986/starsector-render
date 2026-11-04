@@ -1,8 +1,5 @@
 package com.genir.renderer.bridge.commands;
 
-import com.genir.renderer.bridge.context.BufferPool.ByteBufferSnapshot;
-import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
-import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
@@ -11,6 +8,10 @@ import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.bridge.pool.BufferPool;
+import com.genir.renderer.bridge.pool.BufferPool.ByteBufferSnapshot;
+import com.genir.renderer.bridge.pool.BufferPool.FloatBufferSnapshot;
+import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
 import org.lwjgl.opengl.ATIMeminfo;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
@@ -386,7 +387,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final IntBufferSnapshot indicesSnapshot = context.bufferPool.snapshot(indices);
+        final IntBufferSnapshot indicesSnapshot = BufferPool.bufferPool.snapshot(indices);
         final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawElements(mode, indicesSnapshot, snapshot));
     }
@@ -573,7 +574,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(m);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(m);
         context.matrixTracker.glMultMatrix(m);
         context.exec.execute(new glMultMatrix(snapshot));
     }
@@ -589,7 +590,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(m);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(m);
         context.matrixTracker.glLoadMatrix(m);
         context.exec.execute(new glLoadMatrix(snapshot));
     }
@@ -839,7 +840,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(param);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(param);
         context.exec.execute(new glTexParameter(target, pname, snapshot));
     }
 
@@ -1030,7 +1031,7 @@ public class GL11 {
         context.textureTracker.updateTextureData(texture, level, internalformat, width, 1);
         context.textureManager.textureModified(texture);
 
-        final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        final ByteBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(pixels);
         context.exec.execute(new glTexImage1D(target, level, internalformat, width, border, format, type, snapshot));
     }
 
@@ -1048,7 +1049,7 @@ public class GL11 {
         context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
         context.textureManager.textureModified(texture);
 
-        final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        final ByteBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(pixels);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1066,7 +1067,7 @@ public class GL11 {
         context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
         context.textureManager.textureModified(texture);
 
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(pixels);
         context.exec.execute(new glTexImage2D(target, level, internalformat, width, height, border, format, type, snapshot));
     }
 
@@ -1080,7 +1081,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final ByteBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        final ByteBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(pixels);
         context.exec.execute(new glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, snapshot));
     }
 
@@ -1094,7 +1095,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(pixels);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(pixels);
         context.exec.execute(new glTexSubImage1D(target, level, xoffset, width, format, type, snapshot));
     }
 
@@ -1109,7 +1110,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(params);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(params);
         context.exec.execute(new glLight(light, pname, snapshot));
     }
 
@@ -1124,7 +1125,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(params);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(params);
         context.exec.execute(new glMaterial(face, pname, snapshot));
     }
 

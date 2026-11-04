@@ -1,11 +1,12 @@
 package com.genir.renderer.bridge.commands;
 
-import com.genir.renderer.bridge.context.BufferPool.FloatBufferSnapshot;
-import com.genir.renderer.bridge.context.BufferPool.IntBufferSnapshot;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.bridge.pool.BufferPool;
+import com.genir.renderer.bridge.pool.BufferPool.FloatBufferSnapshot;
+import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -227,7 +228,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(values);
         context.exec.execute(new glUniform1(location, snapshot));
     }
 
@@ -265,7 +266,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(values);
         context.exec.execute(new glUniform2(location, snapshot));
     }
 
@@ -303,7 +304,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(values);
         context.exec.execute(new glUniform3(location, snapshot));
     }
 
@@ -341,7 +342,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(values);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(values);
         context.exec.execute(new glUniform4(location, snapshot));
     }
 
@@ -432,7 +433,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(matrices);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(matrices);
         context.exec.execute(new glUniformMatrix4(location, transpose, snapshot));
     }
 
@@ -446,7 +447,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final FloatBufferSnapshot snapshot = context.bufferPool.snapshot(matrices);
+        final FloatBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(matrices);
         context.exec.execute(new glUniformMatrix3(location, transpose, snapshot));
     }
 
@@ -472,7 +473,7 @@ public class GL20 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final IntBufferSnapshot snapshot = context.bufferPool.snapshot(buffers);
+        final IntBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(buffers);
         context.exec.execute(new glDrawBuffers(snapshot));
     }
 

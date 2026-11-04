@@ -1,9 +1,9 @@
 package com.genir.renderer.bridge.commands;
 
-import com.genir.renderer.bridge.context.BufferPool;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.pool.BufferPool;
 
 import java.nio.ByteBuffer;
 
@@ -38,7 +38,7 @@ public class GL13 {
         context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
         context.textureManager.textureModified(texture);
 
-        final BufferPool.ByteBufferSnapshot snapshot = context.bufferPool.snapshot(data);
+        final BufferPool.ByteBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(data);
         context.exec.execute(new glCompressedTexImage2D(target, level, internalformat, width, height, border, snapshot));
     }
 

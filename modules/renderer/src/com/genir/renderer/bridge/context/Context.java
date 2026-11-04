@@ -67,13 +67,12 @@ public class Context {
     public final StallDetector stallDetector = new StallDetector();
     public final Executor exec = new AsyncExecutor(this);
     public final StateCache glStateCache = new StateCache();
-    public final BufferPool bufferPool = new BufferPool();
     public final Renderers renderers = new Renderers();
 
     // Context-local client state. Runs on main thread.
     public final AttribTracker attribTracker = new AttribTracker(exec);
     public final MatrixTracker matrixTracker = new MatrixTracker();
-    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(bufferPool, exec);
+    public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(exec);
     public final BufferManager bufferManager = new BufferManager();
     public final ColorTracker colorTracker = new ColorTracker();
     // Context-shared client state, that can however be safely run per-context.
