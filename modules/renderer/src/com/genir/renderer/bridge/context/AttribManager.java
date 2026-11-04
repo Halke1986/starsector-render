@@ -37,6 +37,10 @@ public class AttribManager {
         return expected.matrixMode;
     }
 
+    public int getTextureBinding2D(){
+        return expected.texture2DUnit0;
+    }
+
     // Apply server-side attributes selected by the client.
     public void applyDrawAttribs() {
         applyStencil(expected.enableStencilTest);

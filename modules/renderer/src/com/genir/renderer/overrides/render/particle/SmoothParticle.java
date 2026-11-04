@@ -65,7 +65,7 @@ public class SmoothParticle extends BaseParticle {
                 (Context ctx) -> {
                     ctx.attribManager.applyDrawAttribs();
 
-                    org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_TEXTURE_BIT);
+                    org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
 
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
@@ -76,6 +76,7 @@ public class SmoothParticle extends BaseParticle {
                 // Post-batch
                 (Context ctx) -> {
                     org.lwjgl.opengl.GL11.glPopAttrib();
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D,  ctx.attribManager.getTextureBinding2D());
                 }
         );
     }

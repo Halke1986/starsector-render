@@ -71,7 +71,7 @@ public class NebulaParticle extends BaseParticle {
                 (Context ctx) -> {
                     ctx.attribManager.applyDrawAttribs();
 
-                    org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_TEXTURE_BIT);
+                    org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
 
                     if (negative) {
                         org.lwjgl.opengl.GL14.glBlendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
@@ -86,6 +86,7 @@ public class NebulaParticle extends BaseParticle {
                 // Post-batch
                 (Context ctx) -> {
                     org.lwjgl.opengl.GL11.glPopAttrib();
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D,  ctx.attribManager.getTextureBinding2D());
                 }
         );
     }
