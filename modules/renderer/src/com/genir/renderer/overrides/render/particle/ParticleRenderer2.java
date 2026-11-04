@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 public class ParticleRenderer2 {
     private static final int PARTICLE_SIZE = 13;
     private float[] particleArray = new float[PARTICLE_SIZE];
-    private float[] vertexScratchpad = new float[VertexInterceptor.STRIDE];
 
     private int numParticles = 0;
 
@@ -75,11 +74,7 @@ public class ParticleRenderer2 {
     ) implements GLCommand {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            int requiredLength = numParticles * VertexInterceptor.STRIDE * 4;
-            while (renderer.vertexScratchpad.length < requiredLength) {
-                renderer.vertexScratchpad = Arrays.copyOf(renderer.vertexScratchpad, renderer.vertexScratchpad.length * 2);
-            }
-            float[] vertexScratchpad = renderer.vertexScratchpad;
+            float[] vertexScratchpad = context.vertexInterceptor.getVertexScratchpad(numParticles * 4);
 
             for (int i = 0; i < numParticles; i++) {
                 int readOffset = i * PARTICLE_SIZE;

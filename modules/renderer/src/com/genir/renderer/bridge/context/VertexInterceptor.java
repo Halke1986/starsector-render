@@ -258,11 +258,18 @@ public class VertexInterceptor {
         return pointer.flip();
     }
 
+    public float[] getVertexScratchpad(int vertices) {
+        while (vertexScratchpad.length <= vertices * STRIDE) {
+            vertexScratchpad = Arrays.copyOf(vertexScratchpad, vertexScratchpad.length * 2);
+        }
+
+        return vertexScratchpad;
+    }
+
     public void drawExternalArray(int mode, float[] externalScratchpad, int vertexCount, int flags) {
         prepareVertexPointers(vertexCount, flags);
         primaryVertexPointer.put(0, externalScratchpad, 0, vertexCount * STRIDE);
 
-//        attribManager.applyDrawAttribs();
         org.lwjgl.opengl.GL11.glDrawArrays(mode, 0, vertexCount);
     }
 
