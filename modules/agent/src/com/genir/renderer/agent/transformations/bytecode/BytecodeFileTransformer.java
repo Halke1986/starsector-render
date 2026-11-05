@@ -1,11 +1,18 @@
 package com.genir.renderer.agent.transformations.bytecode;
 
 import com.genir.renderer.agent.transformations.DeferredThrowable;
+import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class BytecodeFileTransformer implements ClassFileTransformer {
+    private final CommonTransformers commonTransformers;
+
+    public BytecodeFileTransformer(CommonTransformers common) {
+        this.commonTransformers = common;
+    }
+
     @Override
     public byte[] transform(
             ClassLoader loader,
@@ -44,7 +51,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
     }
 
     private BytecodeTransformer applyTransform(String className, byte[] targetBytes) {
-        BytecodeTransformer transformer = new BytecodeTransformer(targetBytes);
+        BytecodeTransformer transformer = makeBytecodeTransformer(targetBytes);
 
         switch (className) {
             case "com/fs/graphics/TextureLoader":
@@ -234,40 +241,40 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
 
         switch (className) {
             case "com/genir/renderer/overrides/render/Sprite":
-                transformer = new BytecodeTransformer("com/fs/graphics/Sprite");
+                transformer = makeBytecodeTransformer("com/fs/graphics/Sprite");
                 transformer.removeMethod("render", "(FF)V");
                 transformer.removeMethod("renderNoBind", "(FF)V");
                 transformer.removeMethod("renderRegion", "(FFFFFFZ)V");
                 break;
 
             case "com/genir/renderer/overrides/render/particle/SmoothParticle":
-                transformer = new BytecodeTransformer("com/fs/graphics/particle/SmoothParticle");
+                transformer = makeBytecodeTransformer("com/fs/graphics/particle/SmoothParticle");
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
                 break;
 
             case "com/genir/renderer/overrides/render/particle/NebulaParticle":
-                transformer = new BytecodeTransformer("com/fs/graphics/particle/NebulaParticle");
+                transformer = makeBytecodeTransformer("com/fs/graphics/particle/NebulaParticle");
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
                 break;
 
             case "com/genir/renderer/overrides/render/particle/DetailedSmokeParticle":
-                transformer = new BytecodeTransformer("com/fs/starfarer/renderers/fx/DetailedSmokeParticle");
+                transformer = makeBytecodeTransformer("com/fs/starfarer/renderers/fx/DetailedSmokeParticle");
                 transformer.removeMethod("render", "()V");
                 transformer.removeMethod("preBatch", "()V");
                 transformer.removeMethod("postBatch", "()V");
                 break;
 
             case "com/genir/renderer/overrides/render/particle/ContrailParticle":
-                transformer = new BytecodeTransformer("com/fs/starfarer/combat/entities/ContrailParticle");
+                transformer = makeBytecodeTransformer("com/fs/starfarer/combat/entities/ContrailParticle");
                 transformer.removeMethod("preBatch", "()V");
                 break;
 
             case "com/genir/renderer/overrides/render/particle/DynamicParticleGroup":
-                transformer = new BytecodeTransformer("com/fs/graphics/particle/DynamicParticleGroup");
+                transformer = makeBytecodeTransformer("com/fs/graphics/particle/DynamicParticleGroup");
                 transformer.removeMethod("size", "()I");
                 transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
                 transformer.removeMethod("render", "(FF)V");
@@ -277,29 +284,29 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 break;
 
             case "com/genir/renderer/overrides/render/particle/BaseParticle":
-                transformer = new BytecodeTransformer("com/fs/graphics/particle/BaseParticle");
+                transformer = makeBytecodeTransformer("com/fs/graphics/particle/BaseParticle");
                 break;
 
             case "com/genir/renderer/overrides/render/RoilingSwarmEffect":
-                transformer = new BytecodeTransformer("com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect");
+                transformer = makeBytecodeTransformer("com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect");
                 transformer.removeMethod("getNumActiveMembers", "()I");
                 transformer.removeMethod("render", "(Lcom/fs/starfarer/api/combat/CombatEngineLayers;Lcom/fs/starfarer/api/combat/ViewportAPI;)V");
                 break;
 
             case "com/genir/renderer/overrides/loading/ResourceLoaderState":
-                transformer = new BytecodeTransformer("com/fs/starfarer/loading/ResourceLoaderState");
+                transformer = makeBytecodeTransformer("com/fs/starfarer/loading/ResourceLoaderState");
                 transformer.renameMethod("init", "init_vanilla", "(Ljava/util/Map;)V");
                 transformer.removeMethod("queueResource", "(Lcom/fs/starfarer/loading/ResourceLoaderState$o;Ljava/lang/String;I)V");
                 transformer.removeMethod("renderProgress", "(F)V");
                 break;
 
             case "com/genir/renderer/overrides/loading/textures/TextureLoader":
-                transformer = new BytecodeTransformer("com/fs/graphics/TextureLoader");
+                transformer = makeBytecodeTransformer("com/fs/graphics/TextureLoader");
                 transformer.renameMethod("o00000", "loadTexture_vanilla", "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
                 break;
 
             case "com/genir/renderer/overrides/render/font/FontRenderer":
-                transformer = new BytecodeTransformer("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+                transformer = makeBytecodeTransformer("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
                 transformer.renameMethod("Õ00000", "renderGlyphs_vanilla", "(Z)V");
                 break;
 
@@ -310,5 +317,13 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
         transformer.mergeClass(className, donorBytes);
 
         return transformer;
+    }
+
+    private BytecodeTransformer makeBytecodeTransformer(String targetName) {
+        return new BytecodeTransformer(commonTransformers, targetName);
+    }
+
+    private BytecodeTransformer makeBytecodeTransformer(byte[] targetBytes) {
+        return new BytecodeTransformer(commonTransformers, targetBytes);
     }
 }

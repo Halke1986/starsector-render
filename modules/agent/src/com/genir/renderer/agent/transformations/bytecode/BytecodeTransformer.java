@@ -1,20 +1,23 @@
 package com.genir.renderer.agent.transformations.bytecode;
 
 import com.genir.renderer.agent.ClassName;
-import com.genir.renderer.agent.transformations.constants.ConstantFileTransformer;
-import com.genir.renderer.agent.transformations.constants.ConstantTransformer;
+import com.genir.renderer.agent.transformations.constants.ConstantReplacer;
+import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BytecodeTransformer {
+    private final CommonTransformers commonTransformers;
     public byte[] targetBytes;
 
-    public BytecodeTransformer(String targetName) {
+    public BytecodeTransformer(CommonTransformers common, String targetName) {
+        this.commonTransformers = common;
         this.targetBytes = loadStarfarerTransformedBytes(targetName);
     }
 
-    public BytecodeTransformer(byte[] targetBytes) {
+    public BytecodeTransformer(CommonTransformers common, byte[] targetBytes) {
+        this.commonTransformers = common;
         this.targetBytes = targetBytes;
     }
 
@@ -38,14 +41,14 @@ public class BytecodeTransformer {
     }
 
     private byte[] loadStarfarerTransformedBytes(String className) {
-        return loadTransformedBytes(className, ConstantFileTransformer.starfarerTransformer);
+        return loadTransformedBytes(className, commonTransformers.starfarerTransformer);
     }
 
     private byte[] loadFRTransformedBytes(String className) {
-        return loadTransformedBytes(className, ConstantFileTransformer.frTransformer);
+        return loadTransformedBytes(className, commonTransformers.frTransformer);
     }
 
-    private byte[] loadTransformedBytes(String className, ConstantTransformer transformer) {
+    private byte[] loadTransformedBytes(String className, ConstantReplacer transformer) {
         try {
             ClassLoader loader = this.getClass().getClassLoader();
             InputStream stream = loader.getResourceAsStream(ClassName.internal(className));

@@ -2,6 +2,8 @@ package com.genir.renderer.agent.transformations.constants;
 
 import com.genir.renderer.Version;
 import com.genir.renderer.agent.ClassName;
+import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
+import com.genir.renderer.agent.transformations.symbols.Transformations;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
@@ -11,22 +13,23 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class ConstantFileTransformer implements ClassFileTransformer {
-    private static final ConstantTransformer scriptTransformer = new ConstantTransformer(Transformations.opengl);
-    private static final ConstantTransformer xstreamTransformer = new ConstantTransformer(Transformations.xstream);
-    private static final ConstantTransformer lwjglTransformer = new ConstantTransformer(Transformations.lwjgl);
-    public static final ConstantTransformer frTransformer = new ConstantTransformer(
-            Transformations.overrides,
-            Transformations.overridesDebug,
-            Transformations.obfuscation,
-            IllegalTransformations.transformations
-    );
-    public static final ConstantTransformer starfarerTransformer = new ConstantTransformer(
-            Transformations.overridesDebug,
-            Transformations.opengl,  // Replace OpenGL calls.
-            Transformations.scriptLoader,  // Replace class loader for loading scripts.
-            Transformations.obfuscation, // Obfuscate assembled overrides.
-            IllegalTransformations.transformations  // Sanitize illegal obf symbols.
-    );
+    private final Transformations transformations;
+
+    private final ConstantReplacer scriptTransformer;
+    private final ConstantReplacer xstreamTransformer;
+    private final ConstantReplacer lwjglTransformer;
+    private final ConstantReplacer frTransformer;
+    private final ConstantReplacer starfarerTransformer;
+
+    public ConstantFileTransformer(Transformations transformations, CommonTransformers common) {
+        this.transformations = transformations;
+
+        this.scriptTransformer = new ConstantReplacer(transformations.opengl);
+        this.xstreamTransformer = new ConstantReplacer(transformations.xstream);
+        this.lwjglTransformer = new ConstantReplacer(transformations.lwjgl);
+        this.frTransformer = common.frTransformer;
+        this.starfarerTransformer = common.starfarerTransformer;
+    }
 
     @Override
     public byte[] transform(
@@ -36,7 +39,7 @@ public class ConstantFileTransformer implements ClassFileTransformer {
             ProtectionDomain protectionDomain,
             byte[] classfileBuffer
     ) {
-        ConstantTransformer transformer = selectTransformers(loader, className);
+        ConstantReplacer transformer = selectTransformers(loader, className);
         if (transformer == null) {
             return null;
         }
@@ -49,7 +52,7 @@ public class ConstantFileTransformer implements ClassFileTransformer {
         return transformedClass;
     }
 
-    private ConstantTransformer selectTransformers(ClassLoader loader, String binaryOrInternalName) {
+    private ConstantReplacer selectTransformers(ClassLoader loader, String binaryOrInternalName) {
         // No class to transform.
         if (binaryOrInternalName == null) {
             return null;
@@ -70,12 +73,12 @@ public class ConstantFileTransformer implements ClassFileTransformer {
 
         } else if (name.equals("com.fs.starfarer.Version")) {
             // Append FR version to watermark.
-            return new ConstantTransformer(starfarerTransformer.getTransforms(),
+            return new ConstantReplacer(starfarerTransformer.getTransforms(),
                     Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + Version.getVersion().replace("v0.", "FR"))));
 
         } else if (name.equals("com.fs.starfarer.BaseGameState") || name.equals("com.fs.starfarer.combat.CombatState")) {
             // Override methods related to frame update.
-            return new ConstantTransformer(starfarerTransformer.getTransforms(), Transformations.sync);
+            return new ConstantReplacer(starfarerTransformer.getTransforms(), transformations.sync);
 
         } else if (name.startsWith("com.fs.") || name.startsWith("sound.") || name.startsWith("zzz.com.fs.")) {
             return starfarerTransformer;
@@ -96,7 +99,7 @@ public class ConstantFileTransformer implements ClassFileTransformer {
 
         } else if (name.contains("FSD_PlatingHitRenderer") || name.contains("FSD_CocxisDrivePlatingRenderer")) {
             // Workaround for FarsightDrive async stall on repeated glGetError calls.
-            return new ConstantTransformer(Transformations.opengl,
+            return new ConstantReplacer(transformations.opengl,
                     Map.ofEntries(entry("glGetError", "glDrainErrors")));
 
         } else {

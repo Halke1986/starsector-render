@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ConstantTransformer {
+public class ConstantReplacer {
     private static final int CONSTANT_Utf8 = 1;
     private static final int CONSTANT_Integer = 3;
     private static final int CONSTANT_Float = 4;
@@ -32,7 +32,7 @@ public class ConstantTransformer {
     private final int maxTransformLen;
 
     @SafeVarargs
-    public ConstantTransformer(Map<String, String>... strTransforms) {
+    public ConstantReplacer(Map<String, String>... strTransforms) {
         this(mergeMaps(strTransforms));
     }
 
@@ -47,7 +47,7 @@ public class ConstantTransformer {
         return mergedMap;
     }
 
-    public ConstantTransformer(Map<String, String> strTransforms) {
+    public ConstantReplacer(Map<String, String> strTransforms) {
         int minTransformLen = Integer.MAX_VALUE;
         int maxTransformLen = 0;
         Map<byte[], byte[]> transforms = new TreeMap<>(Arrays::compareUnsigned);
