@@ -10,13 +10,12 @@ public class ResourceGenerator {
     private final Executor exec;
     private final Callable<Integer> generatorFn;
 
-    private int requiredThisFrame = 0;
-    private int cacheSize = 0;
+    private int expectedCacheSize = 0;
 
     // NOTE: generators across related GL contexts share the same resource pool.
     // As long as the actual resource generation is delegated to a GL call, it
     // is safe to maintain separate ResourceGenerator objects per context.
-    private final Stack<Integer> stash = new Stack<>();
+    private final Stack<Integer> cache = new Stack<>();
 
     public ResourceGenerator(Callable<Integer> generate, Executor exec) {
         this.exec = exec;
@@ -24,17 +23,24 @@ public class ResourceGenerator {
     }
 
     public int get() { // Main thread
+        // Synchronize only this block. Otherwise,
+        // a deadlock on executor.get may ensue.
         synchronized (this) {
-            requiredThisFrame++;
-
-            if (!stash.isEmpty()) {
-                return stash.pop();
+            if (!cache.isEmpty()) {
+                return cache.pop();
             }
+
+            // Increase cache exponentially. Linear increase may lead
+            // to asynchronous pipeline stalls if cache requirements
+            // are rising steadily.
+            expectedCacheSize = Math.max(1, expectedCacheSize * 2);
         }
 
         // If cache is empty, fall back to generating
         // the resource using an actual OpenGL call.
         return exec.get(context -> {
+            fillCache();
+
             try {
                 return generatorFn.call();
             } catch (Exception e) {
@@ -44,41 +50,23 @@ public class ResourceGenerator {
     }
 
     public void get(IntBuffer buffer) {
-        int startPosition = buffer.position();
-        while (buffer.hasRemaining()) {
-            buffer.put(get());
+        IntBuffer writer = buffer.duplicate();
+        while (writer.hasRemaining()) {
+            writer.put(get());
         }
-
-        // OpenGL calls do not modify the buffer position.
-        buffer.position(startPosition);
     }
 
     synchronized public void update() { // Render thread
-        if (cacheSize == 0 && requiredThisFrame == 0) {
-            return;
-        }
+        fillCache();
+    }
 
-        if (cacheSize == 0) {
-            cacheSize = 1;
-        }
-
-        // Increase cache exponentially. Linear increase may lead
-        // to asynchronous pipeline stalls if cache requirements
-        // are rising steadily.
-        while (cacheSize < requiredThisFrame) {
-            cacheSize *= 2;
-        }
-
-        requiredThisFrame = 0;
-
-        while (stash.size() < cacheSize) {
-            try {
-                stash.push(generatorFn.call());
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
+    private void fillCache() {
+        try {
+            while (cache.size() < expectedCacheSize) {
+                cache.push(generatorFn.call());
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
