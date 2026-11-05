@@ -1,4 +1,4 @@
-package com.genir.renderer.agent.bytecode;
+package com.genir.renderer.agent.transformations.bytecode;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
@@ -339,6 +339,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
         }
 
         transformer.mergeClass(className, donorBytes);
+
         return transformer;
     }
 }

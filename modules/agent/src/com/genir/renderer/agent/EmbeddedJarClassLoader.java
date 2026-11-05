@@ -44,7 +44,7 @@ public final class EmbeddedJarClassLoader extends ClassLoader {
 
         // Load embedded jar and its callers.
         if (type == null) {
-            if (name.startsWith("com.genir.renderer.agent.bytecode") || embeddedClasses.containsKey(ClassName.internal(name))) {
+            if (name.startsWith("com.genir.renderer.agent.transformations") || embeddedClasses.containsKey(ClassName.internal(name))) {
                 type = findClass(name);
             }
         }

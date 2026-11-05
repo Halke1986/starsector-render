@@ -1,8 +1,8 @@
-package com.genir.renderer.agent.bytecode;
+package com.genir.renderer.agent.transformations.bytecode;
 
 import com.genir.renderer.agent.ClassName;
-import com.genir.renderer.agent.ConstantFileTransformer;
-import com.genir.renderer.agent.ConstantTransformer;
+import com.genir.renderer.agent.transformations.constants.ConstantFileTransformer;
+import com.genir.renderer.agent.transformations.constants.ConstantTransformer;
 
 import java.io.IOException;
 import java.io.InputStream;

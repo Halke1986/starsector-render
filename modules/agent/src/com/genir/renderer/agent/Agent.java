@@ -1,6 +1,7 @@
 package com.genir.renderer.agent;
 
 import com.genir.renderer.Version;
+import com.genir.renderer.agent.transformations.constants.ConstantFileTransformer;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -24,14 +25,25 @@ public final class Agent {
         String checksum = getSha256(Path.of("starfarer_obf.jar"));
         logger.info("starfarer_obf.jar SHA-256 checksum: " + checksum);
 
-        loadBytecodeTransformer();
+        try {
+            ClassLoader embeddedLoader = new EmbeddedJarClassLoader(
+                    Agent.class.getClassLoader(),
+                    "asm-9.1.jar"
+            );
 
-        // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
-        // Donor bytecode is not loaded here, so its constants must be transformed by its respective loader.
-        // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.
-        instrumentation.addTransformer(new ConstantFileTransformer(), false);
+            Class<?> bytecodeTransformerClass = embeddedLoader.loadClass("com.genir.renderer.agent.transformations.bytecode.BytecodeFileTransformer");
+            var bytecodeTransformer = (ClassFileTransformer) bytecodeTransformerClass.newInstance();
 
-        instrumentation.addTransformer(loadBytecodeTransformer(), false);
+            // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
+            // Donor bytecode is not loaded here, so its constants must be transformed by its respective loader.
+            // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.
+            instrumentation.addTransformer(new ConstantFileTransformer(), false);
+
+            instrumentation.addTransformer(bytecodeTransformer, false);
+
+        } catch (IOException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String getSha256(Path path) {
@@ -44,22 +56,6 @@ public final class Agent {
             return HexFormat.of().formatHex(digest.digest());
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private static ClassFileTransformer loadBytecodeTransformer() {
-        try {
-            ClassLoader embeddedLoader = new EmbeddedJarClassLoader(
-                    Agent.class.getClassLoader(),
-                    "asm-9.1.jar"
-            );
-
-            Class<?> transformerClass = embeddedLoader.loadClass("com.genir.renderer.agent.bytecode.BytecodeFileTransformer");
-            Object transformer = transformerClass.newInstance();
-
-            return (ClassFileTransformer) transformer;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
         }
     }
 }

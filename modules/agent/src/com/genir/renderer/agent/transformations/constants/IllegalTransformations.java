@@ -1,4 +1,4 @@
-package com.genir.renderer.agent;
+package com.genir.renderer.agent.transformations.constants;
 
 import java.util.HashMap;
 import java.util.Map;

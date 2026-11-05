@@ -1,6 +1,7 @@
-package com.genir.renderer.agent;
+package com.genir.renderer.agent.transformations.constants;
 
 import com.genir.renderer.Version;
+import com.genir.renderer.agent.ClassName;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
