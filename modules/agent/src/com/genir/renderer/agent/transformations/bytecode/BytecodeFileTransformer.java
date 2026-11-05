@@ -1,14 +1,11 @@
 package com.genir.renderer.agent.transformations.bytecode;
 
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.agent.transformations.DeferredThrowable;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class BytecodeFileTransformer implements ClassFileTransformer {
-    private static Throwable deferedThrowable = null;
-
     @Override
     public byte[] transform(
             ClassLoader loader,
@@ -17,7 +14,7 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
             ProtectionDomain protectionDomain,
             byte[] classfileBuffer
     ) {
-        injectThrowableIntoRenderer();
+        DeferredThrowable.injectDeferredThrowableIntoRenderer();
 
         // No class to transform.
         if (className == null) {
@@ -41,37 +38,9 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
 
             return null;
         } catch (Throwable t) {
-            if (deferedThrowable == null) {
-                deferedThrowable = t;
-                injectThrowableIntoRenderer();
-            }
-
+            DeferredThrowable.set(t);
             throw t;
         }
-    }
-
-    /**
-     * Use the executor exception handling to crash the application
-     * in case of bytecode transformation failure.
-     */
-    private void injectThrowableIntoRenderer() {
-        if (deferedThrowable == null) {
-            return;
-        }
-
-        // Handle cases when the transformation failed
-        // before a rendering thread was started.
-        final Context context = ContextManager.getThreadContext();
-        if (context == null) {
-            return;
-        }
-
-        final Throwable injection = deferedThrowable;
-        context.exec.execute((ctx, args, offset) -> {
-            throw new RuntimeException(injection);
-        });
-
-        deferedThrowable = null;
     }
 
     private BytecodeTransformer applyTransform(String className, byte[] targetBytes) {

@@ -1,17 +1,16 @@
 package com.genir.renderer.agent;
 
 import com.genir.renderer.Version;
-import com.genir.renderer.agent.transformations.constants.ConstantFileTransformer;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.function.Consumer;
 
 public final class Agent {
     public static void premain(String agentArgs, Instrumentation instrumentation) {
@@ -31,16 +30,10 @@ public final class Agent {
                     "asm-9.1.jar"
             );
 
-            Class<?> bytecodeTransformerClass = embeddedLoader.loadClass("com.genir.renderer.agent.transformations.bytecode.BytecodeFileTransformer");
-            var bytecodeTransformer = (ClassFileTransformer) bytecodeTransformerClass.newInstance();
+            Class<?> transformerAdderClass = embeddedLoader.loadClass("com.genir.renderer.agent.transformations.TransformerAdder");
+            var transformerAdder = (Consumer<Object>) transformerAdderClass.newInstance();
 
-            // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
-            // Donor bytecode is not loaded here, so its constants must be transformed by its respective loader.
-            // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.
-            instrumentation.addTransformer(new ConstantFileTransformer(), false);
-
-            instrumentation.addTransformer(bytecodeTransformer, false);
-
+            transformerAdder.accept(instrumentation);
         } catch (IOException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e);
         }
