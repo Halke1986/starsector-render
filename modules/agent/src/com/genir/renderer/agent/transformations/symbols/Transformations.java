@@ -16,7 +16,7 @@ public class Transformations {
     public final Map<String, String> overridesDebug;
     public final Map<String, String> illegalTransformations;
 
-    public Transformations() {
+    public Transformations(Symbols symbols) {
         this.scriptLoader = Map.<String, String>ofEntries(
                 // Use memory-optimized Path implementation.
                 entry("org/codehaus/janino/JavaSourceClassLoader", "java/lang/ClassLoader")
@@ -71,7 +71,7 @@ public class Transformations {
                 entry("com/fs/starfarer/loading/specs/ShipHullSpec", "com/fs/starfarer/loading/specs/g"),
                 entry("com/fs/starfarer/renderers/FloatingTextManager", "com/fs/starfarer/renderers/Q"),
                 entry("com/fs/starfarer/campaign/save/ProgressBar", "com/fs/starfarer/campaign/save/B"),
-                entry("com/fs/graphics/TextureHandler", "com/fs/graphics/Object"),
+                entry("com/fs/graphics/TextureHandler", symbols.textureHandler),
                 entry("com/fs/graphics/TextureTransformer", "com/fs/graphics/I"),
                 entry("sound/Track", "sound/O0OO"),
                 entry("sound/SoundBuffer", "sound/G"),

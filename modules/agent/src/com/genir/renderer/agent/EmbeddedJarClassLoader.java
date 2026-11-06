@@ -44,7 +44,7 @@ public final class EmbeddedJarClassLoader extends ClassLoader {
 
         // Load embedded jar and its callers.
         if (type == null) {
-            if (name.startsWith("com.genir.renderer.agent.transformations") || embeddedClasses.containsKey(ClassName.internal(name))) {
+            if (name.startsWith("com.genir.renderer.agent.transformations") || embeddedClasses.containsKey(ClassName.resource(name))) {
                 type = findClass(name);
             }
         }
@@ -63,7 +63,7 @@ public final class EmbeddedJarClassLoader extends ClassLoader {
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        String internalName = ClassName.internal(name);
+        String internalName = ClassName.resource(name);
 
         try {
             // Load bytecode from embedded jar.

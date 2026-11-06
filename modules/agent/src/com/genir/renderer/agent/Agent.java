@@ -27,7 +27,8 @@ public final class Agent {
         try {
             ClassLoader embeddedLoader = new EmbeddedJarClassLoader(
                     Agent.class.getClassLoader(),
-                    "asm-9.1.jar"
+                    "asm-9.1.jar",
+                    "asm-tree-9.1.jar"
             );
 
             Class<?> transformerAdderClass = embeddedLoader.loadClass("com.genir.renderer.agent.transformations.TransformerAdder");

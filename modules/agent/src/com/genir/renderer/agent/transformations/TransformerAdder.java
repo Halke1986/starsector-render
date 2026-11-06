@@ -3,6 +3,7 @@ package com.genir.renderer.agent.transformations;
 import com.genir.renderer.agent.transformations.bytecode.BytecodeFileTransformer;
 import com.genir.renderer.agent.transformations.constants.ConstantFileTransformer;
 import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
+import com.genir.renderer.agent.transformations.symbols.Symbols;
 import com.genir.renderer.agent.transformations.symbols.Transformations;
 
 import java.lang.instrument.Instrumentation;
@@ -13,7 +14,8 @@ public class TransformerAdder implements Consumer<Object> {
     public void accept(Object o) {
         Instrumentation instrumentation = (Instrumentation) o;
 
-        var transformations = new Transformations();
+        var symbols = new Symbols();
+        var transformations = new Transformations(symbols);
         var commonTransformers = new CommonTransformers(transformations);
         var constantFileTransformer = new ConstantFileTransformer(transformations, commonTransformers);
         var bytecodeFileTransformer = new BytecodeFileTransformer(commonTransformers);

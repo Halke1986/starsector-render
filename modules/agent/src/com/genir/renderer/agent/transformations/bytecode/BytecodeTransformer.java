@@ -51,7 +51,7 @@ public class BytecodeTransformer {
     private byte[] loadTransformedBytes(String className, ConstantReplacer transformer) {
         try {
             ClassLoader loader = this.getClass().getClassLoader();
-            InputStream stream = loader.getResourceAsStream(ClassName.internal(className));
+            InputStream stream = loader.getResourceAsStream(ClassName.resource(className));
             return transformer.apply(stream.readAllBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
