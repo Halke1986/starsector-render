@@ -130,8 +130,6 @@ public class Transformations {
                 entry("LoadingUtils_readPathAsString", symbols.LoadingUtils_readPathAsString.name),
                 entry("LoadingUtils_getMergedSpreadsheetDataForMod", symbols.LoadingUtils_getMergedSpreadsheetDataForMod.name),
                 entry("TextureRepository_getTextureLoader", symbols.TextureRepository_getTextureLoader.name),
-                entry("Expression_list", symbols.Expression_list.name),
-                entry("Expression_map", symbols.Expression_map.name),
                 entry("Tesselator_renderAsPolygon", symbols.Tesselator_renderAsPolygon.name),
                 entry("HullSpecStore_addHullSpec", symbols.HullSpecStore_addHullSpec.name),
                 entry("WeaponSpecStore_addWeaponSpec", symbols.WeaponSpecStore_addWeaponSpec.name),
@@ -183,11 +181,13 @@ public class Transformations {
                 entry("FontRenderer_highlightStart", symbols.FontRenderer_highlightStart),
                 entry("FontRenderer_highlightEnd", symbols.FontRenderer_highlightEnd),
                 entry("FontRenderer_backgroundColor", symbols.FontRenderer_backgroundColor),
-                entry("ResourceLocation_type", symbols.ResourceLocation_type.name),
-                entry("ResourceLocation_path", symbols.ResourceLocation_path.name),
-                entry("ResourceLocation_isMod", symbols.ResourceLocation_isMod.name),
-                entry("FileLoader_locationFilter", symbols.FileLoader_locationFilter.name),
-                entry("FileLoader_withoutMods", symbols.FileLoader_withoutMods.name)
+                entry("ResourceLocation_type", symbols.ResourceLocation_type),
+                entry("ResourceLocation_path", symbols.ResourceLocation_path),
+                entry("ResourceLocation_isMod", symbols.ResourceLocation_isMod),
+                entry("FileLoader_locationFilter", symbols.FileLoader_locationFilter),
+                entry("FileLoader_withoutMods", symbols.FileLoader_withoutMods),
+                entry("Expression_list", symbols.Expression_list),
+                entry("Expression_map", symbols.Expression_map)
         );
 
         this.overrides = Map.<String, String>ofEntries(

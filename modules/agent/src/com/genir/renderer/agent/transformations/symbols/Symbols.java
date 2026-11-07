@@ -9,12 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-
-import static org.objectweb.asm.Type.getReturnType;
 
 public class Symbols {
-    // Classes
     public final ClassNode TextureHandler;
     public final ClassNode TextureRepository;
     public final ClassNode FileLoader;
@@ -59,8 +55,6 @@ public class Symbols {
     public final MethodNode ScriptStore_queueScript;
     public final MethodNode SpecStore_init;
     public final MethodNode SpecStore_loadingSoundSets;
-    public final MethodNode FileLoader_locationFilter;
-    public final MethodNode FileLoader_withoutMods;
     public final MethodNode FileLoader_getInstance;
     public final MethodNode FileLoader_getResourceList;
     public final MethodNode FileLoader_loadInputStreams;
@@ -97,8 +91,6 @@ public class Symbols {
     public final MethodNode LoadingUtils_readStreamAsString;
     public final MethodNode LoadingUtils_readPathAsString;
     public final MethodNode LoadingUtils_getMergedSpreadsheetDataForMod;
-    public final MethodNode Expression_list;
-    public final MethodNode Expression_map;
     public final MethodNode Tesselator_renderAsPolygon;
     public final MethodNode HullSpecStore_addHullSpec;
     public final MethodNode WeaponSpecStore_addWeaponSpec;
@@ -120,7 +112,6 @@ public class Symbols {
     public final MethodNode Glyph_getTexHeight;
     public final MethodNode Glyph_getTexWidth;
 
-    // Fields
     public final String ScriptStore_objectRepository;
     public final String ScriptStore_javaSourceClassLoader;
     public final String SoundStore_isOpenALInitialized2;
@@ -150,9 +141,13 @@ public class Symbols {
     public final String FontRenderer_highlightStart;
     public final String FontRenderer_highlightEnd;
     public final String FontRenderer_backgroundColor;
-    public final MethodNode ResourceLocation_type;
-    public final MethodNode ResourceLocation_path;
-    public final MethodNode ResourceLocation_isMod;
+    public final String ResourceLocation_type;
+    public final String ResourceLocation_path;
+    public final String ResourceLocation_isMod;
+    public final String Expression_list;
+    public final String Expression_map;
+    public final String FileLoader_locationFilter;
+    public final String FileLoader_withoutMods;
 
     public Symbols() {
         final ClassNode baseGameStateNode = readClassNode("com/fs/starfarer/BaseGameState");
@@ -172,6 +167,8 @@ public class Symbols {
         final ClassNode textureLoaderNode = readClassNode("com/fs/graphics/TextureLoader");
         final ClassNode starfarerSettingsNode = readClassNode("com/fs/starfarer/settings/StarfarerSettings");
         final ClassNode specStoreNode = readClassNode("com/fs/starfarer/loading/SpecStore");
+        final ClassNode loadingUtilsNode = readClassNode("com/fs/starfarer/loading/LoadingUtils");
+        final ClassNode tesselatorNode = readClassNode("com/fs/starfarer/util/Tesselator");
 
         TextureHandler = typeClass(fieldsByName(spriteNode, "texture").get(0));
         TextureRepository = onwerClass(methodInstructionsByOwner(methodsBy(spriteNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "com/fs/graphics").get(0));
@@ -212,8 +209,6 @@ public class Symbols {
         ShipHullSpec = returnTypeClass(methodsByName(shipNode, "getHullSpec").get(0));
         ShutdownException = onwerClass(methodInstructionsBy(methodsByName(baseGameStateNode, "traverse").get(0), "com/fs/starfarer", "<init>").get(0));
 
-        final ClassNode soundSpecNode = fieldList(missileNode).byName("explosionSound").getTypeClass();
-
         TextureRepository_addTexture = methodList(TextureRepository).byDesc("(Ljava/lang/String;L" + TextureHandler.name + ";)V").get();
         TextureRepository_getTextureLoader = methodList(TextureRepository).byDesc("()L" + textureLoaderNode.name).get();
         FontRepository_defineFont = methodList(FontRepository).byDesc("(Ljava/lang/String;Ljava/lang/String;)V").get();
@@ -224,64 +219,67 @@ public class Symbols {
         ScriptStore_startScriptLoadingThread = methodList(scriptStoreNode).byDesc("()V").byInstructionOwner("java/lang/Thread").byInstructionOwner("com/fs/starfarer/loading/scripts").get();
         ScriptStore_queueScript = methodList(scriptStoreNode).byDesc("(Ljava/lang/String;)V").get();
         SpecStore_init = methodList(specStoreNode).byDesc("(Lcom/fs/starfarer/loading/ResourceLoaderState;)V").byInstructionOwner("com/fs/starfarer/campaign/rules/Rules").get();
+        final ClassNode soundSpecNode = fieldList(missileNode).byName("explosionSound").getTypeClass();
         SpecStore_loadingSoundSets = methodList(specStoreNode).byInstructionOwner(soundSpecNode.name).get();
         FileLoader_getInstance = methodList(FileLoader).byDesc("()Lcom/fs/util").get();
         FileLoader_getResourceList = methodList(FileLoader).bySignature("()Ljava/util/List<Lcom/fs/util").get();
         FileLoader_loadInputStreams = methodList(FileLoader).bySignature("(Ljava/lang/String;)Ljava/util/List<Lcom/fs/util/container/Pair<Lcom/fs/util").get();
         FileLoader_loadInputStream = methodList(FileLoader).byDesc("(Ljava/lang/String;Z)Ljava/io/InputStream;").get();
         FileLoader_loadInputStreamWithMods = methodList(FileLoader).byDesc("(Ljava/lang/String;)Ljava/io/InputStream;").get();
-        FloatingTextManager_render = methodList(FloatingTextManager).byDesc("(F)V").byNotInstructionName("remove").get();//super";
-        ProgressBar_setDescription = methodList(ProgressBar).byDesc("(Ljava/lang/String;)V").get();//Ò00000";
-        ProgressBar_render = methodList(ProgressBar).get();//o00000";
-        ProgressBar_renderWithDescription = methodList(ProgressBar).get();//o00000";
-        TextureHandler_getTextureID = methodList(TextureHandler).get();//ö00000";
-        TextureHandler_getPath = methodList(TextureHandler).get();//Õ00000";
-        TextureHandler_setPath = methodList(TextureHandler).get();//o00000";
-        TextureHandler_setHeight = methodList(TextureHandler).get();//Ô00000";
-        TextureHandler_setWidth = methodList(TextureHandler).get();//Object";
-        TextureHandler_setImageHeight = methodList(TextureHandler).get();//o00000";
-        TextureHandler_setImageWidth = methodList(TextureHandler).get();//Ò00000";
-        TextureHandler_setColor1 = methodList(TextureHandler).get();//o00000";
-        TextureHandler_setColor0 = methodList(TextureHandler).get();//Object";
-        TextureHandler_setColor2 = methodList(TextureHandler).get();//Ò00000";
-        TextureHandler_setStringID = methodList(TextureHandler).get();//Ò00000";
-        DeploymentManager_pickReinforcement = methodList(DeploymentManager).get();//o00000";
-        TextureLoader_loadTextureSynchronous = methodList(textureLoaderNode).get();//o00000";
-        SoundStore_getInstance = methodList(SoundStore).get();//ö00000";
-        SoundStore_loadWav = methodList(SoundStore).get();//Ò00000";
-        SoundStore_getIsInitialized = methodList(SoundStore).get();//o00000";
-        OggLoader_load = methodList(OggLoader).get();//super";
-        AtmosphereRenderer_init = methodList(AtmosphereRenderer).get();//super";
-        ScreenshotUtil_init = methodList(ScreenshotUtil).get();//Object";
-        ShipArrowRenderer_init = methodList(ShipArrowRenderer).get();//o00000";
-        ImpactSound_init = methodList(ImpactSound).get();//o00000";
-        LoadingUtils_filesWithExtensionInDirectory = methodList(null).get();//super";
-        LoadingUtils_filesWithExtensionInDirectoryAbsolute = methodList(null).get();//Õ00000";
-        LoadingUtils_readStreamAsString = methodList(null).get();//super";
-        LoadingUtils_readPathAsString = methodList(null).get();//super";
-        LoadingUtils_getMergedSpreadsheetDataForMod = methodList(null).get();//Ò00000";
-        Expression_list = methodList(Expression).get();//ö00000";
-        Expression_map = methodList(Expression).get();//float";
-        Tesselator_renderAsPolygon = methodList(null).get();//o00000";
-        HullSpecStore_addHullSpec = methodList(HullSpecStore).get();//super";
-        WeaponSpecStore_addWeaponSpec = methodList(WeaponSpecStore).get();//super";
-        WeaponSpecStore_addProjectileSpec = methodList(WeaponSpecStore).get();//super";
-        FontRenderer_renderGlyphs = methodList(FontRenderer).get();//Õ00000";
-        FontRenderer_refreshFontFlags = methodList(FontRenderer).get();//int";
-        Font_getSize = methodList(Font).get();//Õ00000";
-        Font_getGlyph = methodList(Font).get();//oO0000";
-        Font_getLineHeight = methodList(Font).get();//ø00000";
-        Font_getKerning = methodList(Font).get();//o00000";
-        Kerning_getAmount = methodList(Kerning).get();//Ó00000";
-        Glyph_getXOffset = methodList(Glyph).get();//ö00000";
-        Glyph_getYOffset = methodList(Glyph).get();//Ò00000";
-        Glyph_getXAdvance = methodList(Glyph).get();//Ø00000";
-        Glyph_getWidth = methodList(Glyph).get();//ø00000";
-        Glyph_getHeight = methodList(Glyph).get();//ÒO0000";
-        Glyph_getTexX = methodList(Glyph).get();//int";
-        Glyph_getTexY = methodList(Glyph).get();//oO0000";
-        Glyph_getTexHeight = methodList(Glyph).get();//ô00000";
-        Glyph_getTexWidth = methodList(Glyph).get();//Ô00000";
+        FloatingTextManager_render = methodList(FloatingTextManager).byDesc("(F)V").byNotInstructionName("remove").get();
+        ProgressBar_setDescription = methodList(ProgressBar).byDesc("(Ljava/lang/String;)V").byNotName("<init>").get(1);
+        ProgressBar_render = methodList(ProgressBar).byDesc("(F)V").get();
+        ProgressBar_renderWithDescription = methodList(ProgressBar).byDesc("(Ljava/lang/String;F)V").get();
+        TextureHandler_getTextureID = methodList(TextureHandler).byDesc("()I").get(2);
+        TextureHandler_getPath = methodList(TextureHandler).byDesc("()Ljava/lang/String;").get(1);
+        TextureHandler_setStringID = methodList(TextureHandler).byDesc("(Ljava/lang/String;)V").get(0);
+        TextureHandler_setPath = methodList(TextureHandler).byDesc("(Ljava/lang/String;)V").get(1);
+        TextureHandler_setImageHeight = methodList(TextureHandler).byDesc("(I)V").get(0);
+        TextureHandler_setImageWidth = methodList(TextureHandler).byDesc("(I)V").get(1);
+        TextureHandler_setHeight = methodList(TextureHandler).byDesc("(I)V").get(2);
+        TextureHandler_setWidth = methodList(TextureHandler).byDesc("(I)V").get(3);
+        TextureHandler_setColor1 = methodList(TextureHandler).byDesc("(Ljava/awt/Color;)V").get(0);
+        TextureHandler_setColor0 = methodList(TextureHandler).byDesc("(Ljava/awt/Color;)V").get(1);
+        TextureHandler_setColor2 = methodList(TextureHandler).byDesc("(Ljava/awt/Color;)V").get(2);
+        DeploymentManager_pickReinforcement = methodList(DeploymentManager).byDesc("(L" + DeploymentManager$ReinforcementType.name + ";FLjava/util/List;Ljava/util/List;Z)Lcom/fs/starfarer/campaign/fleet/FleetMember;").get();
+        TextureLoader_loadTextureSynchronous = methodList(textureLoaderNode).byDesc("(L" + TextureHandler.name + ";Ljava/lang/String;IIIIZ)L" + TextureHandler.name + ";").get();
+        SoundStore_getInstance = methodList(SoundStore).byDesc("()Lsound").get();
+        SoundStore_loadWav = methodList(SoundStore).byDesc("(Ljava/lang/String;Ljava/io/InputStream;)Lsound").get(1);
+        SoundStore_getIsInitialized = methodList(SoundStore).byDesc("()Z").get(2);
+        OggLoader_load = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)Lsound").get();
+        AtmosphereRenderer_init = methodList(AtmosphereRenderer).byDesc("()V").byNotName("<init>").get();
+        ScreenshotUtil_init = methodList(ScreenshotUtil).byDesc("()V").byInstructionOwner("com/fs/starfarer/settings/StarfarerSettings").byNotInstructionOwner("org/lwjgl/opengl/GL11").get();
+        ShipArrowRenderer_init = methodList(ShipArrowRenderer).byDesc("()V").byNotName("<init>", "<clinit>").get();
+        ImpactSound_init = methodList(ImpactSound).byDesc("()V").byNotName("<init>", "<clinit>").get();
+        LoadingUtils_readStreamAsString = methodList(loadingUtilsNode).byDesc("(Ljava/io/InputStream;)Ljava/lang/String;").byInstructionOwner("java/lang/StringBuffer").get();
+        LoadingUtils_filesWithExtensionInDirectory = methodList(loadingUtilsNode).bySignature("(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List<Ljava/lang/String;>;").byIsCalled(specStoreNode).get();
+        LoadingUtils_filesWithExtensionInDirectoryAbsolute = methodList(loadingUtilsNode).bySignature("(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List<Ljava/lang/String;>;").byIsCalled(scriptStoreNode).get();
+        LoadingUtils_readPathAsString = methodList(loadingUtilsNode).byDesc("(Ljava/lang/String;)Ljava/lang/String;").byNotInstructionOwner("java/lang/String").get();
+        LoadingUtils_getMergedSpreadsheetDataForMod = methodList(loadingUtilsNode).byDesc("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/json/JSONArray;").get();//Ò00000";
+        Tesselator_renderAsPolygon = methodList(tesselatorNode).byDesc("(L" + Bounds.name + ";FFF)V").get();//o00000";
+        HullSpecStore_addHullSpec = methodList(HullSpecStore).byDesc("(Ljava/lang/String;L" + ShipHullSpec.name + ";)V").get();//super";
+        WeaponSpecStore_addWeaponSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;)V").get();//super";
+        WeaponSpecStore_addProjectileSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Ljava/lang/Object;)V").get();//super";
+        final MethodNode FontRenderer_renderGlyphsOuter = methodList(FontRenderer).byDesc("(FFZ)V").get();
+        final MethodNode FontRenderer_setFontSize = methodList(FontRenderer).byDesc("(L" + Font.name + ";)V").byNotName("<init>").get();
+        final MethodNode FontRenderer_renderGlyphWithOutline = methodList(FontRenderer).byDesc("(FFL" + Glyph.name + ";FZ)V").get();
+        FontRenderer_renderGlyphs = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(FontRenderer_renderGlyphsOuter).get();//Õ00000";
+        FontRenderer_refreshFontFlags = methodList(FontRenderer).byDesc("()V").byIsCalled(FontRenderer_renderGlyphs).get();//int";
+        final MethodNode createActivationCodeUI = methodList(glLauncherNode).byName("createActivationCodeUI").get();
+        Font_getSize = methodList(Font).byDesc("()I").byIsCalled(FontRenderer_setFontSize).get();//Õ00000";
+        Font_getGlyph = methodList(Font).byDesc("(I)L" + Glyph.name + ";").get();//oO0000";
+        Font_getLineHeight = methodList(Font).byDesc("()I").byIsCalled(createActivationCodeUI).get();//ø00000";
+        Font_getKerning = methodList(Font).byDesc("(II)L" + Kerning.name + ";").get();//o00000";
+        Kerning_getAmount = methodList(Kerning).byDesc("()I").byIsCalled(FontRenderer_renderGlyphs).get();//Ó00000";
+        Glyph_getXOffset = methodList(Glyph).byDesc("()I").byIsCalled(FontRenderer_renderGlyphs).get(1);//ö00000";
+        Glyph_getYOffset = methodList(Glyph).byDesc("()I").byIsCalled(FontRenderer_renderGlyphWithOutline).get(2);//Ò00000";
+        Glyph_getWidth = methodList(Glyph).byDesc("()I").byIsCalled(FontRenderer_renderGlyphWithOutline).get(1);//ø00000";
+        Glyph_getHeight = methodList(Glyph).byDesc("()I").byIsCalled(FontRenderer_renderGlyphWithOutline).get(0);//ÒO0000";
+        Glyph_getXAdvance = methodList(Glyph).byDesc("()I").byIsCalled(FontRenderer_renderGlyphs).get(0);//Ø00000";
+        Glyph_getTexX = methodList(Glyph).byDesc("()F").byIsCalled(FontRenderer_renderGlyphWithOutline).get(2);//int";
+        Glyph_getTexY = methodList(Glyph).byDesc("()F").byIsCalled(FontRenderer_renderGlyphWithOutline).get(3);//oO0000";
+        Glyph_getTexHeight = methodList(Glyph).byDesc("()F").byIsCalled(FontRenderer_renderGlyphWithOutline).get(0);//ô00000";
+        Glyph_getTexWidth = methodList(Glyph).byDesc("()F").byIsCalled(FontRenderer_renderGlyphWithOutline).get(1);//Ô00000";
 
         // Fields
         ScriptStore_objectRepository = "Õ00000";
@@ -313,11 +311,13 @@ public class Symbols {
         FontRenderer_highlightStart = "interface_new";
         FontRenderer_highlightEnd = "interface_super";
         FontRenderer_backgroundColor = "ÖÓ0000";
-        ResourceLocation_type = methodList(FileLoader$ResourceLocation).get();//super";
-        ResourceLocation_path = methodList(FileLoader$ResourceLocation).get();//Ó00000";
-        ResourceLocation_isMod = methodList(FileLoader$ResourceLocation).get();//String";
-        FileLoader_locationFilter = methodList(FileLoader).get();//String"; // field
-        FileLoader_withoutMods = methodList(FileLoader).get();//super"; // field
+        ResourceLocation_type = "super";
+        ResourceLocation_path = "Ó00000";
+        ResourceLocation_isMod = "String";
+        FileLoader_locationFilter = "String"; // field
+        FileLoader_withoutMods = "super"; // field
+        Expression_list = "ö00000";
+        Expression_map = "float";
     }
 
     private static ClassNode readClassNode(String className) {
@@ -428,7 +428,7 @@ public class Symbols {
                 continue;
             }
 
-            Type returnType = getReturnType(method.desc);
+            Type returnType = Type.getReturnType(method.desc);
             if (returnSort != null && returnType.getSort() != returnSort) {
                 continue;
             }
@@ -470,139 +470,6 @@ public class Symbols {
 
     private MethodList methodList(ClassNode classNode) {
         return new MethodList(classNode);
-    }
-
-    private static class MethodList {
-        final ClassNode classNode;
-        List<MethodNode> methods;
-
-        MethodList(ClassNode classNode) {
-            this.classNode = classNode;
-            this.methods = classNode.methods;
-        }
-
-        MethodList by(Predicate<MethodNode> predicate) {
-            List<MethodNode> filtered = new ArrayList<>();
-            for (MethodNode method : methods) {
-                if (predicate.equals(method)) {
-                    filtered.add(method);
-                }
-            }
-
-            methods = filtered;
-            return this;
-        }
-
-        MethodList byDesc(String descPrefix) {
-            List<MethodNode> filtered = new ArrayList<>();
-            for (MethodNode method : methods) {
-                if (method.desc.startsWith(descPrefix)) {
-                    filtered.add(method);
-                }
-            }
-
-            methods = filtered;
-            return this;
-        }
-
-        MethodList bySignature(String signaturePrefix) {
-            List<MethodNode> filtered = new ArrayList<>();
-            for (MethodNode method : methods) {
-                if (method.signature != null && method.signature.startsWith(signaturePrefix)) {
-                    filtered.add(method);
-                }
-            }
-
-            methods = filtered;
-            return this;
-        }
-
-        MethodList byInstructionOwner(String ownerPrefix) {
-            List<MethodNode> filtered = new ArrayList<>();
-            for (MethodNode method : methods) {
-                if (hasInstrOwner(method, ownerPrefix)) {
-                    filtered.add(method);
-                }
-            }
-
-            methods = filtered;
-            return this;
-        }
-
-//        MethodList byInstructionOwnerNegative(String ownerPrefix) {
-//            List<MethodNode> filtered = new ArrayList<>();
-//            for (MethodNode method : methods) {
-//                if (!hasInstrOwner(method, ownerPrefix)) {
-//                    filtered.add(method);
-//                }
-//            }
-//
-//            methods = filtered;
-//            return this;
-//        }
-
-        MethodList byInstructionName(String name) {
-            List<MethodNode> filtered = new ArrayList<>();
-            for (MethodNode method : methods) {
-                if (hasInstrName(method, name)) {
-                    filtered.add(method);
-                }
-            }
-
-            methods = filtered;
-            return this;
-        }
-
-        MethodList byNotInstructionName(String name) {
-            List<MethodNode> filtered = new ArrayList<>();
-            for (MethodNode method : methods) {
-                if (!hasInstrName(method, name)) {
-                    filtered.add(method);
-                }
-            }
-
-            methods = filtered;
-            return this;
-        }
-
-        MethodNode get() {
-            if (methods.size() != 1) {
-                for (MethodNode method : methods) {
-                    List<MethodInsnNode> methodsInst = new ArrayList<>();
-                    for (AbstractInsnNode ins : method.instructions) {
-                        if (ins instanceof MethodInsnNode methodIns) {
-                            methodsInst.add(methodIns);
-                        }
-                    }
-
-                    int x = 0;
-                }
-
-                throw new AssertionError("Ambiguous methods");
-            }
-
-            return methods.get(0);
-        }
-
-        boolean hasInstrName(MethodNode method, String name) {
-            for (AbstractInsnNode ins : method.instructions) {
-                if (ins instanceof MethodInsnNode methodIns && methodIns.name.equals(name)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        boolean hasInstrOwner(MethodNode method, String ownerPrefix) {
-            for (AbstractInsnNode ins : method.instructions) {
-                if (ins instanceof MethodInsnNode methodIns && methodIns.owner.startsWith(ownerPrefix)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 
     /**
