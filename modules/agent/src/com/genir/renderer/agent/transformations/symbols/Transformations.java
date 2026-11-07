@@ -62,49 +62,8 @@ public class Transformations {
                 entry("org/lwjgl/opengl/SharedDrawable", "com/genir/renderer/bridge/commands/SharedDrawable")
         );
 
-        this.overrides = Map.<String, String>ofEntries(
-                entry("com/genir/renderer/overrides/loading/textures/TextureLoader", "com/fs/graphics/TextureLoader"),
-                entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite"),
-                entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager"),
-                entry("com/genir/renderer/overrides/render/particle/BaseParticle", "com/fs/graphics/particle/BaseParticle"),
-                entry("com/genir/renderer/overrides/render/particle/NebulaParticle", "com/fs/graphics/particle/NebulaParticle"),
-                entry("com/genir/renderer/overrides/render/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
-                entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
-                entry("com/genir/renderer/overrides/render/particle/NegativeParticle", "com/fs/graphics/particle/NegativeParticle"),
-                entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
-                entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
-                entry("com/genir/renderer/overrides/render/particle/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
-                entry("com/genir/renderer/overrides/render/RoilingSwarmEffect", "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect"),
-                entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
-                entry("com/genir/renderer/overrides/CombatState", "com/fs/starfarer/combat/CombatState"),
-                entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
-                entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
-                entry("com/genir/renderer/overrides/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
-                entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
-                entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
-                entry("com/genir/renderer/overrides/TitleScreenState", "com/fs/starfarer/title/TitleScreenState"),
-
-                entry("com/genir/renderer/overrides/loading/textures/TextureRepository", symbols.textureRepository),
-                entry("com/genir/renderer/overrides/render/font/FontRenderer", symbols.fontRenderer),
-                entry("com/genir/renderer/overrides/Expression", symbols.expression),
-                entry("com/genir/renderer/overrides/ProgressBar", symbols.progressBar),
-                entry("com/genir/renderer/overrides/DeploymentManager", symbols.deploymentManager),
-                entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", symbols.deploymentManager$ReinforcementType),
-                entry("com/genir/renderer/overrides/Bounds", symbols.bounds),
-                entry("com/genir/renderer/overrides/Bounds$Segment", symbols.boundsSegment),
-                entry("com/genir/renderer/overrides/loading/SoundStore", symbols.soundStore),
-                entry("com/genir/renderer/overrides/loading/FileLoader", symbols.fileLoader),
-                entry("com/genir/renderer/overrides/loading/FileLoader$ResourceLocationType", symbols.fileLoader$resourceType),
-                entry("com/genir/renderer/overrides/loading/FileLoader$ResourceLocation", symbols.fileLoader$resourceLocation),
-                entry("com/genir/renderer/overrides/loading/HullSpecStore", symbols.hullSpecStore),
-                entry("com/genir/renderer/overrides/loading/WeaponSpecStore", symbols.weaponSpecStore),
-                entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", symbols.resourceLoaderState$resourceType)
-        );
-
         this.obfuscation = Map.<String, String>ofEntries(
                 // Classes
-                entry("com/fs/graphics/AlphaAdder", "com/fs/graphics/do"), // can be taken all
-                entry("com/fs/graphics/TextureTransformer", "com/fs/graphics/I"), // can be taken all
                 entry("com/fs/graphics/util/Fps", symbols.fps),
                 entry("com/fs/graphics/TextureHandler", symbols.textureHandler),
                 entry("com/fs/graphics/font/FontRepository", symbols.fontRepository),
@@ -159,7 +118,6 @@ public class Transformations {
                 entry("TextureHandler_setColor1", "o00000"),
                 entry("TextureHandler_setColor0", "Object"),
                 entry("TextureHandler_setColor2", "Ò00000"),
-                entry("TextureTransformer_apply", "o00000"), // can be taken all
                 entry("TextureHandler_setStringID", "Ò00000"),
                 entry("DeploymentManager_pickReinforcement", "o00000"),
                 entry("TextureLoader_loadTextureSynchronous", "o00000"),
@@ -233,6 +191,43 @@ public class Transformations {
                 entry("FontRenderer_backgroundColor", "ÖÓ0000")
         );
 
+        this.overrides = Map.<String, String>ofEntries(
+                entry("com/genir/renderer/overrides/loading/textures/TextureLoader", "com/fs/graphics/TextureLoader"),
+                entry("com/genir/renderer/overrides/render/Sprite", "com/fs/graphics/Sprite"),
+                entry("com/genir/renderer/overrides/render/GLListManager", "com/fs/graphics/util/GLListManager"),
+                entry("com/genir/renderer/overrides/render/particle/BaseParticle", "com/fs/graphics/particle/BaseParticle"),
+                entry("com/genir/renderer/overrides/render/particle/NebulaParticle", "com/fs/graphics/particle/NebulaParticle"),
+                entry("com/genir/renderer/overrides/render/particle/SmoothParticle", "com/fs/graphics/particle/SmoothParticle"),
+                entry("com/genir/renderer/overrides/render/particle/GenericTextureParticle", "com/fs/graphics/particle/GenericTextureParticle"),
+                entry("com/genir/renderer/overrides/render/particle/NegativeParticle", "com/fs/graphics/particle/NegativeParticle"),
+                entry("com/genir/renderer/overrides/render/particle/DynamicParticleGroup", "com/fs/graphics/particle/DynamicParticleGroup"),
+                entry("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle", "com/fs/starfarer/renderers/fx/DetailedSmokeParticle"),
+                entry("com/genir/renderer/overrides/render/particle/ContrailParticle", "com/fs/starfarer/combat/entities/ContrailParticle"),
+                entry("com/genir/renderer/overrides/render/RoilingSwarmEffect", "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect"),
+                entry("com/genir/renderer/overrides/CombatEngine", "com/fs/starfarer/combat/CombatEngine"),
+                entry("com/genir/renderer/overrides/CombatState", "com/fs/starfarer/combat/CombatState"),
+                entry("com/genir/renderer/overrides/loading/ScriptStore", "com/fs/starfarer/loading/scripts/ScriptStore"),
+                entry("com/genir/renderer/overrides/loading/SpecStore", "com/fs/starfarer/loading/SpecStore"),
+                entry("com/genir/renderer/overrides/loading/ResourceLoaderState", "com/fs/starfarer/loading/ResourceLoaderState"),
+                entry("com/genir/renderer/overrides/loading/LoadingUtils", "com/fs/starfarer/loading/LoadingUtils"),
+                entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
+                entry("com/genir/renderer/overrides/TitleScreenState", "com/fs/starfarer/title/TitleScreenState"),
+                entry("com/genir/renderer/overrides/loading/textures/TextureRepository", symbols.textureRepository),
+                entry("com/genir/renderer/overrides/render/font/FontRenderer", symbols.fontRenderer),
+                entry("com/genir/renderer/overrides/Expression", symbols.expression),
+                entry("com/genir/renderer/overrides/ProgressBar", symbols.progressBar),
+                entry("com/genir/renderer/overrides/DeploymentManager", symbols.deploymentManager),
+                entry("com/genir/renderer/overrides/DeploymentManager$ReinforcementType", symbols.deploymentManager$ReinforcementType),
+                entry("com/genir/renderer/overrides/Bounds", symbols.bounds),
+                entry("com/genir/renderer/overrides/Bounds$Segment", symbols.boundsSegment),
+                entry("com/genir/renderer/overrides/loading/SoundStore", symbols.soundStore),
+                entry("com/genir/renderer/overrides/loading/FileLoader", symbols.fileLoader),
+                entry("com/genir/renderer/overrides/loading/FileLoader$ResourceLocationType", symbols.fileLoader$resourceType),
+                entry("com/genir/renderer/overrides/loading/FileLoader$ResourceLocation", symbols.fileLoader$resourceLocation),
+                entry("com/genir/renderer/overrides/loading/HullSpecStore", symbols.hullSpecStore),
+                entry("com/genir/renderer/overrides/loading/WeaponSpecStore", symbols.weaponSpecStore),
+                entry("com/genir/renderer/overrides/loading/ResourceLoaderState$ResourceType", symbols.resourceLoaderState$resourceType)
+        );
 
         this.overridesDebug = Map.<String, String>ofEntries(
                 //            entry("com/fs/graphics/Sprite", "com/genir/renderer/overrides/render/Sprite")
