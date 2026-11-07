@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.objectweb.asm.Type.getReturnType;
 
@@ -52,16 +53,12 @@ public class Symbols {
     public final MethodNode TextureRepository_getTextureLoader;
     public final MethodNode FontRepository_defineFont;
     public final MethodNode StarfarerSettings_getFloatValue;
-    public final MethodNode ScriptStore_getSecureClassLoader;
     public final MethodNode ScriptStore_getScriptList;
     public final MethodNode ScriptStore_getPluginSet;
-    public final MethodNode ScriptLoader_startScriptLoadingThread;
-    public final MethodNode ScriptLoader_queueScript;
+    public final MethodNode ScriptStore_startScriptLoadingThread;
+    public final MethodNode ScriptStore_queueScript;
     public final MethodNode SpecStore_init;
     public final MethodNode SpecStore_loadingSoundSets;
-    public final MethodNode ResourceLocation_type;
-    public final MethodNode ResourceLocation_path;
-    public final MethodNode ResourceLocation_isMod;
     public final MethodNode FileLoader_locationFilter;
     public final MethodNode FileLoader_withoutMods;
     public final MethodNode FileLoader_getInstance;
@@ -153,6 +150,9 @@ public class Symbols {
     public final String FontRenderer_highlightStart;
     public final String FontRenderer_highlightEnd;
     public final String FontRenderer_backgroundColor;
+    public final MethodNode ResourceLocation_type;
+    public final MethodNode ResourceLocation_path;
+    public final MethodNode ResourceLocation_isMod;
 
     public Symbols() {
         final ClassNode baseGameStateNode = readClassNode("com/fs/starfarer/BaseGameState");
@@ -170,6 +170,8 @@ public class Symbols {
         final ClassNode missileNode = readClassNode("com/fs/starfarer/combat/entities/Missile");
         final ClassNode scriptStoreNode = readClassNode("com/fs/starfarer/loading/scripts/ScriptStore");
         final ClassNode textureLoaderNode = readClassNode("com/fs/graphics/TextureLoader");
+        final ClassNode starfarerSettingsNode = readClassNode("com/fs/starfarer/settings/StarfarerSettings");
+        final ClassNode specStoreNode = readClassNode("com/fs/starfarer/loading/SpecStore");
 
         TextureHandler = typeClass(fieldsByName(spriteNode, "texture").get(0));
         TextureRepository = onwerClass(methodInstructionsByOwner(methodsBy(spriteNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "com/fs/graphics").get(0));
@@ -210,80 +212,76 @@ public class Symbols {
         ShipHullSpec = returnTypeClass(methodsByName(shipNode, "getHullSpec").get(0));
         ShutdownException = onwerClass(methodInstructionsBy(methodsByName(baseGameStateNode, "traverse").get(0), "com/fs/starfarer", "<init>").get(0));
 
-        TextureRepository_addTexture = methodsByDescPrefix(TextureRepository, "(Ljava/lang/String;L" + TextureHandler.name + ";)V").get(0);
-        TextureRepository_getTextureLoader = methodsByDescPrefix(TextureRepository, "()L" + textureLoaderNode.name).get(0);
-        FontRepository_defineFont = methodsByDescPrefix(FontRepository, "(Ljava/lang/String;Ljava/lang/String;)V").get(0);
-        StarfarerSettings_getFloatValue = null;//ö00000";
-        StarfarerSettings_getBooleanValue = null;//class";
-        ScriptStore_getSecureClassLoader = null;//Object";
-        ScriptStore_getScriptList = null;//Õ00000";
-        ScriptStore_getPluginSet = null;//Ò00000";
-        ScriptLoader_startScriptLoadingThread = null;//int";
-        ScriptLoader_queueScript = null;//Object";
-        SpecStore_init = null;//ÓO0000";
-        SpecStore_loadingSoundSets = null;//ÖO0000";
-        ResourceLocation_type = null;//super";
-        ResourceLocation_path = null;//Ó00000";
-        ResourceLocation_isMod = null;//String";
-        FileLoader_locationFilter = null;//String";
-        FileLoader_withoutMods = null;//super";
-        FileLoader_getInstance = null;//Ó00000";
-        FileLoader_getResourceList = null;//Ô00000";
-        FileLoader_loadInputStreams = null;//new";
-        FileLoader_loadInputStream = null;//Ó00000";
-        FileLoader_loadInputStreamWithMods = null;//Ô00000";
-        FloatingTextManager_render = null;//super";
-        ProgressBar_setDescription = null;//Ò00000";
-        ProgressBar_render = null;//o00000";
-        ProgressBar_renderWithDescription = null;//o00000";
-        TextureHandler_getTextureID = null;//ö00000";
-        TextureHandler_getPath = null;//Õ00000";
-        TextureHandler_setPath = null;//o00000";
-        TextureHandler_setHeight = null;//Ô00000";
-        TextureHandler_setWidth = null;//Object";
-        TextureHandler_setImageHeight = null;//o00000";
-        TextureHandler_setImageWidth = null;//Ò00000";
-        TextureHandler_setColor1 = null;//o00000";
-        TextureHandler_setColor0 = null;//Object";
-        TextureHandler_setColor2 = null;//Ò00000";
-        TextureHandler_setStringID = null;//Ò00000";
-        DeploymentManager_pickReinforcement = null;//o00000";
-        TextureLoader_loadTextureSynchronous = null;//o00000";
-        SoundStore_getInstance = null;//ö00000";
-        SoundStore_loadWav = null;//Ò00000";
-        SoundStore_getIsInitialized = null;//o00000";
-        OggLoader_load = null;//super";
-        AtmosphereRenderer_init = null;//super";
-        ScreenshotUtil_init = null;//Object";
-        ShipArrowRenderer_init = null;//o00000";
-        ImpactSound_init = null;//o00000";
-        LoadingUtils_filesWithExtensionInDirectory = null;//super";
-        LoadingUtils_filesWithExtensionInDirectoryAbsolute = null;//Õ00000";
-        LoadingUtils_readStreamAsString = null;//super";
-        LoadingUtils_readPathAsString = null;//super";
-        LoadingUtils_getMergedSpreadsheetDataForMod = null;//Ò00000";
-        Expression_list = null;//ö00000";
-        Expression_map = null;//float";
-        Tesselator_renderAsPolygon = null;//o00000";
-        HullSpecStore_addHullSpec = null;//super";
-        WeaponSpecStore_addWeaponSpec = null;//super";
-        WeaponSpecStore_addProjectileSpec = null;//super";
-        FontRenderer_renderGlyphs = null;//Õ00000";
-        FontRenderer_refreshFontFlags = null;//int";
-        Font_getSize = null;//Õ00000";
-        Font_getGlyph = null;//oO0000";
-        Font_getLineHeight = null;//ø00000";
-        Font_getKerning = null;//o00000";
-        Kerning_getAmount = null;//Ó00000";
-        Glyph_getXOffset = null;//ö00000";
-        Glyph_getYOffset = null;//Ò00000";
-        Glyph_getXAdvance = null;//Ø00000";
-        Glyph_getWidth = null;//ø00000";
-        Glyph_getHeight = null;//ÒO0000";
-        Glyph_getTexX = null;//int";
-        Glyph_getTexY = null;//oO0000";
-        Glyph_getTexHeight = null;//ô00000";
-        Glyph_getTexWidth = null;//Ô00000";
+        final ClassNode soundSpecNode = fieldList(missileNode).byName("explosionSound").getTypeClass();
+
+        TextureRepository_addTexture = methodList(TextureRepository).byDesc("(Ljava/lang/String;L" + TextureHandler.name + ";)V").get();
+        TextureRepository_getTextureLoader = methodList(TextureRepository).byDesc("()L" + textureLoaderNode.name).get();
+        FontRepository_defineFont = methodList(FontRepository).byDesc("(Ljava/lang/String;Ljava/lang/String;)V").get();
+        StarfarerSettings_getFloatValue = methodList(starfarerSettingsNode).byDesc("(Ljava/lang/String;)F").byInstructionOwner("java/util/Map").get();
+        StarfarerSettings_getBooleanValue = methodList(starfarerSettingsNode).byDesc("(Ljava/lang/String;)Z").byInstructionOwner("java/util/Map").get();
+        ScriptStore_getScriptList = methodList(scriptStoreNode).bySignature("()Ljava/util/List<Ljava/lang/String;>;").get();
+        ScriptStore_getPluginSet = methodList(scriptStoreNode).bySignature("()Ljava/util/Set<Ljava/lang/String;>;").get();
+        ScriptStore_startScriptLoadingThread = methodList(scriptStoreNode).byDesc("()V").byInstructionOwner("java/lang/Thread").byInstructionOwner("com/fs/starfarer/loading/scripts").get();
+        ScriptStore_queueScript = methodList(scriptStoreNode).byDesc("(Ljava/lang/String;)V").get();
+        SpecStore_init = methodList(specStoreNode).byDesc("(Lcom/fs/starfarer/loading/ResourceLoaderState;)V").byInstructionOwner("com/fs/starfarer/campaign/rules/Rules").get();
+        SpecStore_loadingSoundSets = methodList(specStoreNode).byInstructionOwner(soundSpecNode.name).get();
+        FileLoader_getInstance = methodList(FileLoader).byDesc("()Lcom/fs/util").get();
+        FileLoader_getResourceList = methodList(FileLoader).bySignature("()Ljava/util/List<Lcom/fs/util").get();
+        FileLoader_loadInputStreams = methodList(FileLoader).bySignature("(Ljava/lang/String;)Ljava/util/List<Lcom/fs/util/container/Pair<Lcom/fs/util").get();
+        FileLoader_loadInputStream = methodList(FileLoader).byDesc("(Ljava/lang/String;Z)Ljava/io/InputStream;").get();
+        FileLoader_loadInputStreamWithMods = methodList(FileLoader).byDesc("(Ljava/lang/String;)Ljava/io/InputStream;").get();
+        FloatingTextManager_render = methodList(FloatingTextManager).byDesc("(F)V").byNotInstructionName("remove").get();//super";
+        ProgressBar_setDescription = methodList(ProgressBar).byDesc("(Ljava/lang/String;)V").get();//Ò00000";
+        ProgressBar_render = methodList(ProgressBar).get();//o00000";
+        ProgressBar_renderWithDescription = methodList(ProgressBar).get();//o00000";
+        TextureHandler_getTextureID = methodList(TextureHandler).get();//ö00000";
+        TextureHandler_getPath = methodList(TextureHandler).get();//Õ00000";
+        TextureHandler_setPath = methodList(TextureHandler).get();//o00000";
+        TextureHandler_setHeight = methodList(TextureHandler).get();//Ô00000";
+        TextureHandler_setWidth = methodList(TextureHandler).get();//Object";
+        TextureHandler_setImageHeight = methodList(TextureHandler).get();//o00000";
+        TextureHandler_setImageWidth = methodList(TextureHandler).get();//Ò00000";
+        TextureHandler_setColor1 = methodList(TextureHandler).get();//o00000";
+        TextureHandler_setColor0 = methodList(TextureHandler).get();//Object";
+        TextureHandler_setColor2 = methodList(TextureHandler).get();//Ò00000";
+        TextureHandler_setStringID = methodList(TextureHandler).get();//Ò00000";
+        DeploymentManager_pickReinforcement = methodList(DeploymentManager).get();//o00000";
+        TextureLoader_loadTextureSynchronous = methodList(textureLoaderNode).get();//o00000";
+        SoundStore_getInstance = methodList(SoundStore).get();//ö00000";
+        SoundStore_loadWav = methodList(SoundStore).get();//Ò00000";
+        SoundStore_getIsInitialized = methodList(SoundStore).get();//o00000";
+        OggLoader_load = methodList(OggLoader).get();//super";
+        AtmosphereRenderer_init = methodList(AtmosphereRenderer).get();//super";
+        ScreenshotUtil_init = methodList(ScreenshotUtil).get();//Object";
+        ShipArrowRenderer_init = methodList(ShipArrowRenderer).get();//o00000";
+        ImpactSound_init = methodList(ImpactSound).get();//o00000";
+        LoadingUtils_filesWithExtensionInDirectory = methodList(null).get();//super";
+        LoadingUtils_filesWithExtensionInDirectoryAbsolute = methodList(null).get();//Õ00000";
+        LoadingUtils_readStreamAsString = methodList(null).get();//super";
+        LoadingUtils_readPathAsString = methodList(null).get();//super";
+        LoadingUtils_getMergedSpreadsheetDataForMod = methodList(null).get();//Ò00000";
+        Expression_list = methodList(Expression).get();//ö00000";
+        Expression_map = methodList(Expression).get();//float";
+        Tesselator_renderAsPolygon = methodList(null).get();//o00000";
+        HullSpecStore_addHullSpec = methodList(HullSpecStore).get();//super";
+        WeaponSpecStore_addWeaponSpec = methodList(WeaponSpecStore).get();//super";
+        WeaponSpecStore_addProjectileSpec = methodList(WeaponSpecStore).get();//super";
+        FontRenderer_renderGlyphs = methodList(FontRenderer).get();//Õ00000";
+        FontRenderer_refreshFontFlags = methodList(FontRenderer).get();//int";
+        Font_getSize = methodList(Font).get();//Õ00000";
+        Font_getGlyph = methodList(Font).get();//oO0000";
+        Font_getLineHeight = methodList(Font).get();//ø00000";
+        Font_getKerning = methodList(Font).get();//o00000";
+        Kerning_getAmount = methodList(Kerning).get();//Ó00000";
+        Glyph_getXOffset = methodList(Glyph).get();//ö00000";
+        Glyph_getYOffset = methodList(Glyph).get();//Ò00000";
+        Glyph_getXAdvance = methodList(Glyph).get();//Ø00000";
+        Glyph_getWidth = methodList(Glyph).get();//ø00000";
+        Glyph_getHeight = methodList(Glyph).get();//ÒO0000";
+        Glyph_getTexX = methodList(Glyph).get();//int";
+        Glyph_getTexY = methodList(Glyph).get();//oO0000";
+        Glyph_getTexHeight = methodList(Glyph).get();//ô00000";
+        Glyph_getTexWidth = methodList(Glyph).get();//Ô00000";
 
         // Fields
         ScriptStore_objectRepository = "Õ00000";
@@ -315,9 +313,14 @@ public class Symbols {
         FontRenderer_highlightStart = "interface_new";
         FontRenderer_highlightEnd = "interface_super";
         FontRenderer_backgroundColor = "ÖÓ0000";
+        ResourceLocation_type = methodList(FileLoader$ResourceLocation).get();//super";
+        ResourceLocation_path = methodList(FileLoader$ResourceLocation).get();//Ó00000";
+        ResourceLocation_isMod = methodList(FileLoader$ResourceLocation).get();//String";
+        FileLoader_locationFilter = methodList(FileLoader).get();//String"; // field
+        FileLoader_withoutMods = methodList(FileLoader).get();//super"; // field
     }
 
-    private ClassNode readClassNode(String className) {
+    private static ClassNode readClassNode(String className) {
         try {
             ClassLoader loader = ClassLoader.getSystemClassLoader();
             InputStream stream = loader.getResourceAsStream(ClassName.resource(className));
@@ -358,6 +361,48 @@ public class Symbols {
         }
 
         return filtered;
+    }
+
+    private FieldList fieldList(ClassNode classNode) {
+        return new FieldList(classNode);
+    }
+
+    private static class FieldList {
+        final ClassNode classNode;
+        List<FieldNode> fields;
+
+        FieldList(ClassNode classNode) {
+            this.classNode = classNode;
+            this.fields = classNode.fields;
+        }
+
+        FieldList byName(String name) {
+            List<FieldNode> filtered = new ArrayList<>();
+            for (FieldNode field : fields) {
+                if (field.name.equals(name)) {
+                    filtered.add(field);
+                }
+            }
+
+            fields = filtered;
+            return this;
+        }
+
+        FieldNode get() {
+            if (fields.isEmpty()) {
+                throw new RuntimeException("Field not found");
+            }
+
+            if (fields.size() > 1) {
+                throw new RuntimeException("Ambiguous fields found");
+            }
+
+            return fields.get(0);
+        }
+
+        ClassNode getTypeClass() {
+            return readClassNode(Type.getType(get().desc).getInternalName());
+        }
     }
 
     /**
@@ -423,6 +468,143 @@ public class Symbols {
         return inst;
     }
 
+    private MethodList methodList(ClassNode classNode) {
+        return new MethodList(classNode);
+    }
+
+    private static class MethodList {
+        final ClassNode classNode;
+        List<MethodNode> methods;
+
+        MethodList(ClassNode classNode) {
+            this.classNode = classNode;
+            this.methods = classNode.methods;
+        }
+
+        MethodList by(Predicate<MethodNode> predicate) {
+            List<MethodNode> filtered = new ArrayList<>();
+            for (MethodNode method : methods) {
+                if (predicate.equals(method)) {
+                    filtered.add(method);
+                }
+            }
+
+            methods = filtered;
+            return this;
+        }
+
+        MethodList byDesc(String descPrefix) {
+            List<MethodNode> filtered = new ArrayList<>();
+            for (MethodNode method : methods) {
+                if (method.desc.startsWith(descPrefix)) {
+                    filtered.add(method);
+                }
+            }
+
+            methods = filtered;
+            return this;
+        }
+
+        MethodList bySignature(String signaturePrefix) {
+            List<MethodNode> filtered = new ArrayList<>();
+            for (MethodNode method : methods) {
+                if (method.signature != null && method.signature.startsWith(signaturePrefix)) {
+                    filtered.add(method);
+                }
+            }
+
+            methods = filtered;
+            return this;
+        }
+
+        MethodList byInstructionOwner(String ownerPrefix) {
+            List<MethodNode> filtered = new ArrayList<>();
+            for (MethodNode method : methods) {
+                if (hasInstrOwner(method, ownerPrefix)) {
+                    filtered.add(method);
+                }
+            }
+
+            methods = filtered;
+            return this;
+        }
+
+//        MethodList byInstructionOwnerNegative(String ownerPrefix) {
+//            List<MethodNode> filtered = new ArrayList<>();
+//            for (MethodNode method : methods) {
+//                if (!hasInstrOwner(method, ownerPrefix)) {
+//                    filtered.add(method);
+//                }
+//            }
+//
+//            methods = filtered;
+//            return this;
+//        }
+
+        MethodList byInstructionName(String name) {
+            List<MethodNode> filtered = new ArrayList<>();
+            for (MethodNode method : methods) {
+                if (hasInstrName(method, name)) {
+                    filtered.add(method);
+                }
+            }
+
+            methods = filtered;
+            return this;
+        }
+
+        MethodList byNotInstructionName(String name) {
+            List<MethodNode> filtered = new ArrayList<>();
+            for (MethodNode method : methods) {
+                if (!hasInstrName(method, name)) {
+                    filtered.add(method);
+                }
+            }
+
+            methods = filtered;
+            return this;
+        }
+
+        MethodNode get() {
+            if (methods.size() != 1) {
+                for (MethodNode method : methods) {
+                    List<MethodInsnNode> methodsInst = new ArrayList<>();
+                    for (AbstractInsnNode ins : method.instructions) {
+                        if (ins instanceof MethodInsnNode methodIns) {
+                            methodsInst.add(methodIns);
+                        }
+                    }
+
+                    int x = 0;
+                }
+
+                throw new AssertionError("Ambiguous methods");
+            }
+
+            return methods.get(0);
+        }
+
+        boolean hasInstrName(MethodNode method, String name) {
+            for (AbstractInsnNode ins : method.instructions) {
+                if (ins instanceof MethodInsnNode methodIns && methodIns.name.equals(name)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        boolean hasInstrOwner(MethodNode method, String ownerPrefix) {
+            for (AbstractInsnNode ins : method.instructions) {
+                if (ins instanceof MethodInsnNode methodIns && methodIns.owner.startsWith(ownerPrefix)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     /**
      * DESCRIPTION
      */
@@ -458,6 +640,4 @@ public class Symbols {
         // Disgiuse generic parameters as method descriptor to use existing Type functionality.
         return Type.getMethodType("(" + generic + ")V").getArgumentTypes();
     }
-
-
 }

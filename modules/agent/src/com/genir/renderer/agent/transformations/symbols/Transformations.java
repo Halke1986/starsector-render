@@ -87,18 +87,12 @@ public class Transformations {
                 entry("TextureRepository_addTexture", symbols.TextureRepository_addTexture.name),
                 entry("FontRepository_defineFont", symbols.FontRepository_defineFont.name),
                 entry("StarfarerSettings_getFloatValue", symbols.StarfarerSettings_getFloatValue.name),
-                entry("ScriptStore_getSecureClassLoader", symbols.ScriptStore_getSecureClassLoader.name),
                 entry("ScriptStore_getScriptList", symbols.ScriptStore_getScriptList.name),
                 entry("ScriptStore_getPluginSet", symbols.ScriptStore_getPluginSet.name),
-                entry("ScriptLoader_startScriptLoadingThread", symbols.ScriptLoader_startScriptLoadingThread.name),
-                entry("ScriptLoader_queueScript", symbols.ScriptLoader_queueScript.name),
+                entry("ScriptStore_startScriptLoadingThread", symbols.ScriptStore_startScriptLoadingThread.name),
+                entry("ScriptStore_queueScript", symbols.ScriptStore_queueScript.name),
                 entry("SpecStore_init", symbols.SpecStore_init.name),
                 entry("SpecStore_loadingSoundSets", symbols.SpecStore_loadingSoundSets.name),
-                entry("ResourceLocation_type", symbols.ResourceLocation_type.name),
-                entry("ResourceLocation_path", symbols.ResourceLocation_path.name),
-                entry("ResourceLocation_isMod", symbols.ResourceLocation_isMod.name),
-                entry("FileLoader_locationFilter", symbols.FileLoader_locationFilter.name),
-                entry("FileLoader_withoutMods", symbols.FileLoader_withoutMods.name),
                 entry("FileLoader_getInstance", symbols.FileLoader_getInstance.name),
                 entry("FileLoader_getResourceList", symbols.FileLoader_getResourceList.name),
                 entry("FileLoader_loadInputStreams", symbols.FileLoader_loadInputStreams.name),
@@ -188,7 +182,12 @@ public class Transformations {
                 entry("FontRenderer_outlineExpansion", symbols.FontRenderer_outlineExpansion),
                 entry("FontRenderer_highlightStart", symbols.FontRenderer_highlightStart),
                 entry("FontRenderer_highlightEnd", symbols.FontRenderer_highlightEnd),
-                entry("FontRenderer_backgroundColor", symbols.FontRenderer_backgroundColor)
+                entry("FontRenderer_backgroundColor", symbols.FontRenderer_backgroundColor),
+                entry("ResourceLocation_type", symbols.ResourceLocation_type.name),
+                entry("ResourceLocation_path", symbols.ResourceLocation_path.name),
+                entry("ResourceLocation_isMod", symbols.ResourceLocation_isMod.name),
+                entry("FileLoader_locationFilter", symbols.FileLoader_locationFilter.name),
+                entry("FileLoader_withoutMods", symbols.FileLoader_withoutMods.name)
         );
 
         this.overrides = Map.<String, String>ofEntries(

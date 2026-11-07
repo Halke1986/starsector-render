@@ -109,8 +109,8 @@ public class BytecodeFileTransformer implements ClassFileTransformer {
                 break;
 
             case "com/fs/starfarer/loading/scripts/ScriptStore":
-                transformer.removeMethod("Object", "(Ljava/lang/String;)V"); // ScriptLoader_queueScript
-                transformer.removeMethod("int", "()V"); // ScriptLoader_startScriptLoadingThread
+                transformer.removeMethod("Object", "(Ljava/lang/String;)V"); // ScriptStore_queueScript
+                transformer.removeMethod("int", "()V"); // ScriptStore_startScriptLoadingThread
                 transformer.mergeClass("com/genir/renderer/overrides/loading/ScriptStore");
                 break;
 

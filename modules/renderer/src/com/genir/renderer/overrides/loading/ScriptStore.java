@@ -53,7 +53,7 @@ public class ScriptStore {
     /**
      * REPLACED METHOD
      */
-    public static void ScriptLoader_startScriptLoadingThread() throws Exception {
+    public static void ScriptStore_startScriptLoadingThread() throws Exception {
         // This method is called by ResourceLoaderState.init_vanilla().
 
         initScriptClassLoader();
@@ -62,7 +62,7 @@ public class ScriptStore {
     /**
      * REPLACED METHOD
      */
-    public static void ScriptLoader_queueScript(String className) {
+    public static void ScriptStore_queueScript(String className) {
         if (className == null) {
             return;
         }
