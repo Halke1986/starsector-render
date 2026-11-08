@@ -14,7 +14,6 @@ public class FontRenderer {
     private Font FontRenderer_font;
     private float FontRenderer_textSize;
     private Color FontRenderer_color;
-    private Color FontRenderer_backgroundColor;
     private String FontRenderer_text;
     private float FontRenderer_colorAlpha;
     private float FontRenderer_highlightColorAlpha;

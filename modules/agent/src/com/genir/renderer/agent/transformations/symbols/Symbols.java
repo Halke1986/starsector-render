@@ -112,42 +112,41 @@ public class Symbols {
     public final MethodNode Glyph_getTexHeight;
     public final MethodNode Glyph_getTexWidth;
 
-    public final String ScriptStore_objectRepository;
-    public final String ScriptStore_javaSourceClassLoader;
-    public final String SoundStore_isOpenALInitialized2;
-    public final String SoundStore_trackMap;
-    public final String SoundBuffer_buffer;
-    public final String SoundBuffer_freq;
-    public final String SoundBuffer_channels;
-    public final String CombatEngine_hitParticlesGroup;
-    public final String HullSpecStore_hulls;
-    public final String WeaponSpecStore_weapons;
-    public final String WeaponSpecStore_projectiles;
-    public final String FontRenderer_multiPassFont;
-    public final String FontRenderer_transformMatrix;
-    public final String FontRenderer_highlightDisabled;
-    public final String FontRenderer_textSize;
-    public final String FontRenderer_font;
-    public final String FontRenderer_text;
-    public final String FontRenderer_color;
-    public final String FontRenderer_colorAlpha;
-    public final String FontRenderer_highlightColor;
-    public final String FontRenderer_highlightColorAlpha;
-    public final String FontRenderer_highlightColors;
-    public final String FontRenderer_highlightByChar;
-    public final String FontRenderer_underlineEnabled;
-    public final String FontRenderer_outlineSize;
-    public final String FontRenderer_outlineExpansion;
-    public final String FontRenderer_highlightStart;
-    public final String FontRenderer_highlightEnd;
-    public final String FontRenderer_backgroundColor;
-    public final String ResourceLocation_type;
-    public final String ResourceLocation_path;
-    public final String ResourceLocation_isMod;
-    public final String Expression_list;
-    public final String Expression_map;
-    public final String FileLoader_locationFilter;
-    public final String FileLoader_withoutMods;
+    public final FieldNode ScriptStore_objectRepository;
+    public final FieldNode ScriptStore_javaSourceClassLoader;
+    public final FieldNode SoundStore_isOpenALInitialized2;
+    public final FieldNode SoundStore_trackMap;
+    public final FieldNode SoundBuffer_buffer;
+    public final FieldNode SoundBuffer_freq;
+    public final FieldNode SoundBuffer_channels;
+    public final FieldNode CombatEngine_hitParticlesGroup;
+    public final FieldNode HullSpecStore_hulls;
+    public final FieldNode WeaponSpecStore_weapons;
+    public final FieldNode WeaponSpecStore_projectiles;
+    public final FieldNode FontRenderer_multiPassFont;
+    public final FieldNode FontRenderer_transformMatrix;
+    public final FieldNode FontRenderer_highlightDisabled;
+    public final FieldNode FontRenderer_textSize;
+    public final FieldNode FontRenderer_font;
+    public final FieldNode FontRenderer_text;
+    public final FieldNode FontRenderer_color;
+    public final FieldNode FontRenderer_colorAlpha;
+    public final FieldNode FontRenderer_highlightColor;
+    public final FieldNode FontRenderer_highlightColorAlpha;
+    public final FieldNode FontRenderer_highlightColors;
+    public final FieldNode FontRenderer_highlightByChar;
+    public final FieldNode FontRenderer_underlineEnabled;
+    public final FieldNode FontRenderer_outlineSize;
+    public final FieldNode FontRenderer_outlineExpansion;
+    public final FieldNode FontRenderer_highlightStart;
+    public final FieldNode FontRenderer_highlightEnd;
+    public final FieldNode ResourceLocation_type;
+    public final FieldNode ResourceLocation_path;
+    public final FieldNode ResourceLocation_isMod;
+    public final FieldNode Expression_list;
+    public final FieldNode Expression_map;
+    public final FieldNode FileLoader_locationFilter;
+    public final FieldNode FileLoader_withoutMods;
 
     public Symbols() {
         final ClassNode baseGameStateNode = readClassNode("com/fs/starfarer/BaseGameState");
@@ -169,7 +168,10 @@ public class Symbols {
         final ClassNode specStoreNode = readClassNode("com/fs/starfarer/loading/SpecStore");
         final ClassNode loadingUtilsNode = readClassNode("com/fs/starfarer/loading/LoadingUtils");
         final ClassNode tesselatorNode = readClassNode("com/fs/starfarer/util/Tesselator");
+        final ClassNode campaignFloatingTextNode = readClassNode("com/fs/starfarer/campaign/fleet/CampaignFloatingText");
+        final ClassNode standardTooltipV2Node = readClassNode("com/fs/starfarer/ui/impl/StandardTooltipV2");
 
+        // Classes
         TextureHandler = typeClass(fieldsByName(spriteNode, "texture").get(0));
         TextureRepository = onwerClass(methodInstructionsByOwner(methodsBy(spriteNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "com/fs/graphics").get(0));
         Fps = typeClass(fieldsByName(baseGameStateNode, "fps").get(0));
@@ -209,6 +211,7 @@ public class Symbols {
         ShipHullSpec = returnTypeClass(methodsByName(shipNode, "getHullSpec").get(0));
         ShutdownException = onwerClass(methodInstructionsBy(methodsByName(baseGameStateNode, "traverse").get(0), "com/fs/starfarer", "<init>").get(0));
 
+        // Methods
         TextureRepository_addTexture = methodList(TextureRepository).byDesc("(Ljava/lang/String;L" + TextureHandler.name + ";)V").get();
         TextureRepository_getTextureLoader = methodList(TextureRepository).byDesc("()L" + textureLoaderNode.name).get();
         FontRepository_defineFont = methodList(FontRepository).byDesc("(Ljava/lang/String;Ljava/lang/String;)V").get();
@@ -282,45 +285,55 @@ public class Symbols {
         Glyph_getTexWidth = methodList(Glyph).byDesc("()F").byIsCalled(FontRenderer_renderGlyphWithOutline).get(1);//Ô00000";
 
         // Fields
-        ScriptStore_objectRepository = "Õ00000";
-        ScriptStore_javaSourceClassLoader = "ø00000";
-        SoundStore_isOpenALInitialized2 = "Ö00000";
-        SoundStore_trackMap = "OO0000";
-        SoundBuffer_buffer = "Object";
-        SoundBuffer_freq = "Ò00000";
-        SoundBuffer_channels = "o00000";
-        CombatEngine_hitParticlesGroup = "OÔ0000";
-        HullSpecStore_hulls = "o00000";
-        WeaponSpecStore_weapons = "new";
-        WeaponSpecStore_projectiles = "o00000";
-        FontRenderer_multiPassFont = "new_new";
-        FontRenderer_transformMatrix = "oÒ0000";
-        FontRenderer_highlightDisabled = "Ø00000";
-        FontRenderer_textSize = "float";
-        FontRenderer_font = "float_new";
-        FontRenderer_text = "while_super";
-        FontRenderer_color = "Øo0000";
-        FontRenderer_colorAlpha = "Ö00000";
-        FontRenderer_highlightColor = "Ô00000";
-        FontRenderer_highlightColorAlpha = "öO0000";
-        FontRenderer_highlightColors = "ØÓ0000";
-        FontRenderer_highlightByChar = "Oo0000";
-        FontRenderer_underlineEnabled = "õo0000";
-        FontRenderer_outlineSize = "oo0000";
-        FontRenderer_outlineExpansion = "oO0000";
-        FontRenderer_highlightStart = "interface_new";
-        FontRenderer_highlightEnd = "interface_super";
-        FontRenderer_backgroundColor = "ÖÓ0000";
-        ResourceLocation_type = "super";
-        ResourceLocation_path = "Ó00000";
-        ResourceLocation_isMod = "String";
-        FileLoader_locationFilter = "String"; // field
-        FileLoader_withoutMods = "super"; // field
-        Expression_list = "ö00000";
-        Expression_map = "float";
+        ScriptStore_objectRepository = fieldList(scriptStoreNode).byDesc("Lcom/fs/util/container/repo/ObjectRepository;").get();//"Õ00000";
+        ScriptStore_javaSourceClassLoader = fieldList(scriptStoreNode).byDesc("Lorg/codehaus/janino/JavaSourceClassLoader;").get();//"ø00000";
+        final MethodNode SoundStore_getSize = methodList(SoundStore).byDesc("(I)I").get();
+        SoundStore_isOpenALInitialized2 = fieldList(SoundStore).byDesc("Z").byIsCalled(SoundStore_getSize).get();//"Ö00000";
+        SoundStore_trackMap = fieldList(SoundStore).bySignature("Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/Integer;>;").get();//"OO0000";
+        SoundBuffer_buffer = fieldList(SoundBuffer).byDesc("Ljava/nio/ByteBuffer;").get();//"Object";
+        SoundBuffer_freq = fieldList(SoundBuffer).byDesc("I").get(0);//"Ò00000";
+        SoundBuffer_channels = fieldList(SoundBuffer).byDesc("I").get(1);//"o00000";
+        final MethodNode CombatEngine_addHitParticle = methodList(combatEngineNode).byName("addHitParticle").byDesc("(Lorg/lwjgl/util/vector/Vector2f;Lorg/lwjgl/util/vector/Vector2f;FFFFLjava/awt/Color;)V").get();
+        CombatEngine_hitParticlesGroup = fieldList(combatEngineNode).byDesc("Lcom/fs/graphics/particle/DynamicParticleGroup;").byIsCalled(CombatEngine_addHitParticle).get();//"OÔ0000";
+        HullSpecStore_hulls = fieldList(HullSpecStore).get();//"o00000";
+        WeaponSpecStore_weapons = fieldList(WeaponSpecStore).bySignature("Ljava/util/Map<Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;>;").get();//"new";
+        WeaponSpecStore_projectiles = fieldList(WeaponSpecStore).bySignature("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;").get();//"o00000";
+        FontRenderer_multiPassFont = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_refreshFontFlags).get();//"new_new";
+        FontRenderer_transformMatrix = fieldList(FontRenderer).byDesc("Ljava/nio/FloatBuffer;").get();//"oÒ0000";
+        final ClassNode labelNode = fieldList(campaignFloatingTextNode).byName("label").getTypeClass();
+        final MethodNode Label_Pop = methodList(labelNode).byName("pop").get();
+        final MethodNode Label_SetColor = methodList(labelNode).byName("setColor").get();
+        final MethodNode Label_SetHighlight = methodList(labelNode).byDesc("(II)V").byName("setHighlight").get();
+        final MethodNode FontRenderer_GetTextSize = methodList(FontRenderer).byDesc("()F").byIsCalled(Label_Pop).get();
+        final MethodNode FontRenderer_SetColor = methodList(FontRenderer).byDesc("(Ljava/awt/Color;)V").byIsCalled(Label_SetColor).get();
+        final MethodNode StandardTooltipV2_makeExpandable = methodList(standardTooltipV2Node).byName("makeExpandable").get();
+        final MethodNode FontRenderer_SetHighlightColor = methodList(FontRenderer).byDesc("(Ljava/awt/Color;)V").byIsCalled(StandardTooltipV2_makeExpandable).get();
+        final MethodNode FontRenderer_SetHighlight = methodList(FontRenderer).byDesc("(II)V").byIsCalled(Label_SetHighlight).get();
+        FontRenderer_textSize = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_GetTextSize).get();//"float";
+        FontRenderer_font = fieldList(FontRenderer).byDesc("L" + Font.name + ";").get();//"float_new";
+        FontRenderer_text = fieldList(FontRenderer).byDesc("Ljava/lang/String;").byIsCalled(FontRenderer_renderGlyphs).get();//"while_super";
+        FontRenderer_color = fieldList(FontRenderer).byDesc("Ljava/awt/Color;").byIsCalled(FontRenderer_SetColor).get();//"Øo0000";
+        FontRenderer_colorAlpha = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_renderGlyphs).get(1);//"Ö00000";
+        FontRenderer_highlightColor = fieldList(FontRenderer).byDesc("Ljava/awt/Color;").byIsCalled(FontRenderer_SetHighlightColor).get();//"Ô00000";
+        FontRenderer_highlightColorAlpha = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_renderGlyphs).get(2);//"öO0000";
+        FontRenderer_highlightColors = fieldList(FontRenderer).byDesc("[Ljava/awt/Color;").get();//"ØÓ0000";
+        FontRenderer_highlightByChar = fieldList(FontRenderer).byDesc("[I").get();//"Oo0000";
+        FontRenderer_underlineEnabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs).get(1);//"õo0000";
+        FontRenderer_outlineSize = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_renderGlyphWithOutline).get();//"oo0000";
+        FontRenderer_outlineExpansion = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_renderGlyphWithOutline).get();//"oO0000";
+        FontRenderer_highlightStart = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_SetHighlight).get(0);//"interface_new";
+        FontRenderer_highlightEnd = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_SetHighlight).get(1);//"interface_super";
+        FontRenderer_highlightDisabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs).get(2);//"Ø00000";
+        ResourceLocation_type = fieldList(FileLoader$ResourceLocation).byDesc("L" + FileLoader$ResourceType.name + ";").get();//"super";
+        ResourceLocation_path = fieldList(FileLoader$ResourceLocation).byDesc("Ljava/lang/String;").get();//"Ó00000";
+        ResourceLocation_isMod = fieldList(FileLoader$ResourceLocation).byDesc("Z").get();//"String";
+        FileLoader_locationFilter = fieldList(FileLoader).byDesc("Ljava/lang/String;").get();//"String"; // field
+        FileLoader_withoutMods = fieldList(FileLoader).byDesc("Z").get();//"super"; // field
+        Expression_list = fieldList(Expression).bySignature("Ljava/util/List<Ljava/lang/String;>;").get();//"ö00000";
+        Expression_map = fieldList(Expression).bySignature("Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;").get();//"float";
     }
 
-    private static ClassNode readClassNode(String className) {
+    static ClassNode readClassNode(String className) {
         try {
             ClassLoader loader = ClassLoader.getSystemClassLoader();
             InputStream stream = loader.getResourceAsStream(ClassName.resource(className));
@@ -365,44 +378,6 @@ public class Symbols {
 
     private FieldList fieldList(ClassNode classNode) {
         return new FieldList(classNode);
-    }
-
-    private static class FieldList {
-        final ClassNode classNode;
-        List<FieldNode> fields;
-
-        FieldList(ClassNode classNode) {
-            this.classNode = classNode;
-            this.fields = classNode.fields;
-        }
-
-        FieldList byName(String name) {
-            List<FieldNode> filtered = new ArrayList<>();
-            for (FieldNode field : fields) {
-                if (field.name.equals(name)) {
-                    filtered.add(field);
-                }
-            }
-
-            fields = filtered;
-            return this;
-        }
-
-        FieldNode get() {
-            if (fields.isEmpty()) {
-                throw new RuntimeException("Field not found");
-            }
-
-            if (fields.size() > 1) {
-                throw new RuntimeException("Ambiguous fields found");
-            }
-
-            return fields.get(0);
-        }
-
-        ClassNode getTypeClass() {
-            return readClassNode(Type.getType(get().desc).getInternalName());
-        }
     }
 
     /**

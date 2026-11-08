@@ -86,7 +86,6 @@ public class MethodList {
         return methodList.get(0);
     }
 
-    // Method of last resort.
     public MethodNode get(int index) {
         return methods.toList().get(index);
     }
