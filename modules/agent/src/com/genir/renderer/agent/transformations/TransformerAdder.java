@@ -20,7 +20,7 @@ public class TransformerAdder implements Consumer<Object> {
         var commonTransformers = new CommonTransformers(transformations);
 
         var constantClassTransformer = new ConstantClassTransformer(transformations, commonTransformers);
-        var bytecodeClassTransformer = new BytecodeClassTransformer(commonTransformers);
+        var bytecodeClassTransformer = new BytecodeClassTransformer(symbols, commonTransformers);
         var illegalClassTransformer = new IllegalClassTransformer(transformations);
 
         // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.

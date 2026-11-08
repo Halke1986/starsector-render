@@ -2,14 +2,17 @@ package com.genir.renderer.agent.transformations.bytecode;
 
 import com.genir.renderer.agent.transformations.DeferredThrowable;
 import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
+import com.genir.renderer.agent.transformations.symbols.Symbols;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class BytecodeClassTransformer implements ClassFileTransformer {
+    private final Symbols symbols;
     private final CommonTransformers commonTransformers;
 
-    public BytecodeClassTransformer(CommonTransformers common) {
+    public BytecodeClassTransformer(Symbols symbols, CommonTransformers common) {
+        this.symbols = symbols;
         this.commonTransformers = common;
     }
 
@@ -53,184 +56,155 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
     private BytecodeTransformer applyTransform(String className, byte[] targetBytes) {
         BytecodeTransformer transformer = makeBytecodeTransformer(targetBytes);
 
-        switch (className) {
-            case "com/fs/graphics/TextureLoader":
-                transformer.renameMethod("o00000", "loadTexture_vanilla", "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
-                transformer.mergeClass("com/genir/renderer/overrides/loading/textures/TextureLoader");
-                break;
+        if (className.equals("com/fs/graphics/TextureLoader")) {
+            transformer.renameMethod(symbols.TextureLoader_loadTextureSynchronous, "loadTexture_vanilla");
+            transformer.mergeClass("com/genir/renderer/overrides/loading/textures/TextureLoader");
 
-            case "com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect":
-                transformer.removeMethod("getNumActiveMembers", "()I");
-                transformer.removeMethod("render", "(Lcom/fs/starfarer/api/combat/CombatEngineLayers;Lcom/fs/starfarer/api/combat/ViewportAPI;)V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/RoilingSwarmEffect");
-                break;
+        } else if (className.equals("com/fs/starfarer/api/impl/combat/threat/RoilingSwarmEffect")) {
+            transformer.removeMethod("getNumActiveMembers", "()I");
+            transformer.removeMethod("render", "(Lcom/fs/starfarer/api/combat/CombatEngineLayers;Lcom/fs/starfarer/api/combat/ViewportAPI;)V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/RoilingSwarmEffect");
 
-            case "com/fs/starfarer/campaign/rules/oOOO":
-                transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
-                transformer.mergeClass("com/genir/renderer/overrides/Expression");
-                break;
+        } else if (className.equals(symbols.Expression.name)) {
+            transformer.removeMethod("getCommandClass", "(Ljava/lang/String;)Ljava/lang/String;");
+            transformer.mergeClass("com/genir/renderer/overrides/Expression");
 
-            case "com/fs/starfarer/campaign/save/B":
-                transformer.removeMethod("o00000", "(Ljava/lang/String;F)V");
-                transformer.mergeClass("com/genir/renderer/overrides/ProgressBar");
-                break;
+        } else if (className.equals(symbols.ProgressBar.name)) {
+            transformer.removeMethod(symbols.ProgressBar_render);
+            transformer.mergeClass("com/genir/renderer/overrides/ProgressBar");
 
-            case "com/fs/starfarer/combat/ai/admiral/G":
-                transformer.renameMethod("o00000", "pickReinforcement_vanilla", "(Lcom/fs/starfarer/combat/ai/admiral/G$o;FLjava/util/List;Ljava/util/List;Z)Lcom/fs/starfarer/campaign/fleet/FleetMember;");
-                transformer.mergeClass("com/genir/renderer/overrides/DeploymentManager");
-                break;
+        } else if (className.equals(symbols.DeploymentManager.name)) {
+            transformer.renameMethod(symbols.DeploymentManager_pickReinforcement, "pickReinforcement_vanilla");
+            transformer.mergeClass("com/genir/renderer/overrides/DeploymentManager");
 
-            case "com/fs/starfarer/combat/E/o0OO":
-                transformer.mergeClass("com/genir/renderer/overrides/Bounds");
-                break;
+        } else if (className.equals(symbols.Bounds.name)) {
+            transformer.mergeClass("com/genir/renderer/overrides/Bounds");
 
-            case "com/fs/starfarer/util/Tesselator":
-                transformer.removeMethod("o00000", "(Lcom/fs/starfarer/combat/E/o0OO;FFF)V");
-                transformer.mergeClass("com/genir/renderer/overrides/Tesselator");
-                break;
+        } else if (className.equals("com/fs/starfarer/util/Tesselator")) {
+            transformer.removeMethod(symbols.Tesselator_renderAsPolygon);
+            transformer.mergeClass("com/genir/renderer/overrides/Tesselator");
 
-            case "sound/C":
-                transformer.mergeClass("com/genir/renderer/overrides/loading/SoundStore");
-                break;
+        } else if (className.equals(symbols.SoundStore.name)) {
+            transformer.mergeClass("com/genir/renderer/overrides/loading/SoundStore");
 
-            case "com/fs/starfarer/loading/LoadingUtils":
-                transformer.renameMethod("Õ00000", "filesWithExtensionInDirectoryAbsolute_vanilla", "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;");
-                transformer.renameMethod("super", "filesWithExtensionInDirectory_vanilla", "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;");
-                transformer.renameMethod("super", "readStreamAsString_vanilla", "(Ljava/io/InputStream;)Ljava/lang/String;");
-                transformer.removeMethod("Ò00000", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/json/JSONArray;");
-                transformer.mergeClass("com/genir/renderer/overrides/loading/LoadingUtils");
-                break;
+        } else if (className.equals("com/fs/starfarer/loading/LoadingUtils")) {
+            transformer.renameMethod(symbols.LoadingUtils_filesWithExtensionInDirectoryAbsolute, "filesWithExtensionInDirectoryAbsolute_vanilla");
+            transformer.renameMethod(symbols.LoadingUtils_filesWithExtensionInDirectory, "filesWithExtensionInDirectory_vanilla");
+            transformer.renameMethod(symbols.LoadingUtils_readStreamAsString, "readStreamAsString_vanilla");
+            transformer.removeMethod(symbols.LoadingUtils_readPathAsString);
+            transformer.removeMethod(symbols.LoadingUtils_getMergedSpreadsheetDataForMod);
+            transformer.mergeClass("com/genir/renderer/overrides/loading/LoadingUtils");
 
-            case "com/fs/util/C":
-                transformer.removeMethod("Ô00000", "(Ljava/lang/String;)Ljava/io/InputStream;");
-                transformer.renameMethod("Ó00000", "FileLoader_loadInputStream_vanilla", "(Ljava/lang/String;Z)Ljava/io/InputStream;");
-                transformer.renameMethod("new", "FileLoader_loadInputStreams_vanilla", "(Ljava/lang/String;)Ljava/util/List;");
-                transformer.mergeClass("com/genir/renderer/overrides/loading/FileLoader");
-                break;
+        } else if (className.equals(symbols.FileLoader.name)) {
+            transformer.removeMethod(symbols.FileLoader_loadInputStreamWithMods);
+            transformer.renameMethod(symbols.FileLoader_loadInputStream, "FileLoader_loadInputStream_vanilla");
+            transformer.renameMethod(symbols.FileLoader_loadInputStreams, "FileLoader_loadInputStreams_vanilla");
+            transformer.mergeClass("com/genir/renderer/overrides/loading/FileLoader");
 
-            case "com/fs/starfarer/loading/scripts/ScriptStore":
-                transformer.removeMethod("Object", "(Ljava/lang/String;)V"); // ScriptStore_queueScript
-                transformer.removeMethod("int", "()V"); // ScriptStore_startScriptLoadingThread
-                transformer.mergeClass("com/genir/renderer/overrides/loading/ScriptStore");
-                break;
+        } else if (className.equals("com/fs/starfarer/loading/scripts/ScriptStore")) {
+            transformer.removeMethod(symbols.ScriptStore_queueScript);
+            transformer.removeMethod(symbols.ScriptStore_startScriptLoadingThread);
+            transformer.mergeClass("com/genir/renderer/overrides/loading/ScriptStore");
 
-            case "com/fs/starfarer/combat/CombatEngine":
-                transformer.removeMethod("render", "(Z)V");
-                transformer.mergeClass("com/genir/renderer/overrides/CombatEngine");
-                break;
+        } else if (className.equals("com/fs/starfarer/combat/CombatEngine")) {
+            transformer.removeMethod("render", "(Z)V");
+            transformer.mergeClass("com/genir/renderer/overrides/CombatEngine");
 
-            case "com/fs/starfarer/loading/oO0O":
-                transformer.removeMethod("super", "(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/g;)V");
-                transformer.mergeClass("com/genir/renderer/overrides/loading/HullSpecStore");
-                break;
+        } else if (className.equals(symbols.HullSpecStore.name)) {
+            transformer.removeMethod(symbols.HullSpecStore_addHullSpec);
+            transformer.mergeClass("com/genir/renderer/overrides/loading/HullSpecStore");
 
-            case "com/fs/starfarer/loading/Q":
-                transformer.removeMethod("super", "(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;)V"); // WeaponSpecStore_addWeaponSpec
-                transformer.removeMethod("super", "(Ljava/lang/String;Ljava/lang/Object;)V"); // WeaponSpecStore_addProjectileSpec
-                transformer.mergeClass("com/genir/renderer/overrides/loading/WeaponSpecStore");
-                break;
+        } else if (className.equals(symbols.WeaponSpecStore.name)) {
+            transformer.removeMethod(symbols.WeaponSpecStore_addWeaponSpec);
+            transformer.removeMethod(symbols.WeaponSpecStore_addProjectileSpec);
+            transformer.mergeClass("com/genir/renderer/overrides/loading/WeaponSpecStore");
 
-            case "com/fs/starfarer/loading/SpecStore":
-                transformer.renameMethod("ÓO0000", "init_vanilla", "(Lcom/fs/starfarer/loading/ResourceLoaderState;)V");
-                transformer.renameMethod("ÖO0000", "loadingSoundSets_vanilla", "(Lcom/fs/starfarer/loading/ResourceLoaderState;)V");
-                transformer.mergeClass("com/genir/renderer/overrides/loading/SpecStore");
-                break;
+        } else if (className.equals("com/fs/starfarer/loading/SpecStore")) {
+            transformer.renameMethod(symbols.SpecStore_init, "init_vanilla");
+            transformer.renameMethod(symbols.SpecStore_loadingSoundSets, "loadingSoundSets_vanilla");
+            transformer.mergeClass("com/genir/renderer/overrides/loading/SpecStore");
 
-            case "com/fs/starfarer/loading/ResourceLoaderState":
-                transformer.renameMethod("init", "init_vanilla", "(Ljava/util/Map;)V");
-                transformer.removeMethod("queueResource", "(Lcom/fs/starfarer/loading/ResourceLoaderState$o;Ljava/lang/String;I)V");
-                transformer.removeMethod("renderProgress", "(F)V");
-                transformer.removeMethod("renderBg", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/loading/ResourceLoaderState");
-                break;
+        } else if (className.equals("com/fs/starfarer/loading/ResourceLoaderState")) {
+            transformer.renameMethod("init", "init_vanilla", "(Ljava/util/Map;)V");
+            transformer.removeMethod("queueResource", "(L" + symbols.ResourceLoaderState$ResourceType.name + ";Ljava/lang/String;I)V");
+            transformer.removeMethod("renderProgress", "(F)V");
+            transformer.removeMethod("renderBg", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/loading/ResourceLoaderState");
 
-            case "com/fs/starfarer/combat/CombatState":
-                transformer.renameMethod("reloadAssets", "reloadAssets_vanilla", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/CombatState");
-                break;
+        } else if (className.equals("com/fs/starfarer/combat/CombatState")) {
+            transformer.renameMethod("reloadAssets", "reloadAssets_vanilla", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/CombatState");
 
-            case "com/fs/graphics/Sprite":
-                transformer.removeMethod("render", "(FF)V");
-                transformer.removeMethod("renderNoBind", "(FF)V");
-                transformer.removeMethod("renderRegion", "(FFFFFFZ)V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
-                break;
+        } else if (className.equals("com/fs/graphics/Sprite")) {
+            transformer.removeMethod("render", "(FF)V");
+            transformer.removeMethod("renderNoBind", "(FF)V");
+            transformer.removeMethod("renderRegion", "(FFFFFFZ)V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/Sprite");
 
-            case "com/fs/graphics/particle/BaseParticle":
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/BaseParticle");
-                break;
+        } else if (className.equals("com/fs/graphics/particle/BaseParticle")) {
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/BaseParticle");
 
-            case "com/fs/graphics/particle/SmoothParticle":
-                transformer.removeMethod("render", "()V");
-                transformer.removeMethod("preBatch", "()V");
-                transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/SmoothParticle");
-                break;
+        } else if (className.equals("com/fs/graphics/particle/SmoothParticle")) {
+            transformer.removeMethod("render", "()V");
+            transformer.removeMethod("preBatch", "()V");
+            transformer.removeMethod("postBatch", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/SmoothParticle");
 
-            case "com/fs/starfarer/combat/entities/ContrailParticle":
-                transformer.removeMethod("preBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/ContrailParticle");
-                break;
+        } else if (className.equals("com/fs/starfarer/combat/entities/ContrailParticle")) {
+            transformer.removeMethod("preBatch", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/ContrailParticle");
 
-            case "com/fs/graphics/particle/NebulaParticle":
-                transformer.removeMethod("render", "()V");
-                transformer.removeMethod("preBatch", "()V");
-                transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/NebulaParticle");
-                break;
+        } else if (className.equals("com/fs/graphics/particle/NebulaParticle")) {
+            transformer.removeMethod("render", "()V");
+            transformer.removeMethod("preBatch", "()V");
+            transformer.removeMethod("postBatch", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/NebulaParticle");
 
-            case "com/fs/starfarer/renderers/fx/DetailedSmokeParticle":
-                transformer.removeMethod("render", "()V");
-                transformer.removeMethod("preBatch", "()V");
-                transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle");
-                break;
+        } else if (className.equals("com/fs/starfarer/renderers/fx/DetailedSmokeParticle")) {
+            transformer.removeMethod("render", "()V");
+            transformer.removeMethod("preBatch", "()V");
+            transformer.removeMethod("postBatch", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/DetailedSmokeParticle");
 
-            case "com/fs/graphics/particle/GenericTextureParticle":
-                transformer.removeMethod("render", "()V");
-                transformer.removeMethod("preBatch", "()V");
-                transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/GenericTextureParticle");
-                break;
+        } else if (className.equals("com/fs/graphics/particle/GenericTextureParticle")) {
+            transformer.removeMethod("render", "()V");
+            transformer.removeMethod("preBatch", "()V");
+            transformer.removeMethod("postBatch", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/GenericTextureParticle");
 
-            case "com/fs/graphics/particle/NegativeParticle":
-                transformer.removeMethod("render", "()V");
-                transformer.removeMethod("preBatch", "()V");
-                transformer.removeMethod("postBatch", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/NegativeParticle");
-                break;
+        } else if (className.equals("com/fs/graphics/particle/NegativeParticle")) {
+            transformer.removeMethod("render", "()V");
+            transformer.removeMethod("preBatch", "()V");
+            transformer.removeMethod("postBatch", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/NegativeParticle");
 
-            case "com/fs/graphics/particle/DynamicParticleGroup":
-                transformer.removeMethod("size", "()I");
-                transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
-                transformer.removeMethod("render", "(FF)V");
-                transformer.removeMethod("advance", "(F)V");
-                transformer.removeMethod("isEmpty", "()Z");
-                transformer.removeMethod("getParticles", "()Ljava/util/List;");
-                transformer.mergeClass("com/genir/renderer/overrides/render/particle/DynamicParticleGroup");
-                break;
+        } else if (className.equals("com/fs/graphics/particle/DynamicParticleGroup")) {
+            transformer.removeMethod("size", "()I");
+            transformer.removeMethod("add", "(Lcom/fs/graphics/particle/BaseParticle;)V");
+            transformer.removeMethod("render", "(FF)V");
+            transformer.removeMethod("advance", "(F)V");
+            transformer.removeMethod("isEmpty", "()Z");
+            transformer.removeMethod("getParticles", "()Ljava/util/List;");
+            transformer.mergeClass("com/genir/renderer/overrides/render/particle/DynamicParticleGroup");
 
-            case "com/fs/graphics/util/GLListManager":
-                transformer.removeMethod("nextFrame", "()V");
-                transformer.removeMethod("invalidateList", "(Lcom/fs/graphics/util/GLListManager$GLListToken;)V");
-                transformer.removeMethod("callList", "(Lcom/fs/graphics/util/GLListManager$GLListToken;)Z");
-                transformer.removeMethod("beginList", "()Lcom/fs/graphics/util/GLListManager$GLListToken;");
-                transformer.removeMethod("endList", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/GLListManager");
-                break;
+        } else if (className.equals("com/fs/graphics/util/GLListManager")) {
+            transformer.removeMethod("nextFrame", "()V");
+            transformer.removeMethod("invalidateList", "(Lcom/fs/graphics/util/GLListManager$GLListToken;)V");
+            transformer.removeMethod("callList", "(Lcom/fs/graphics/util/GLListManager$GLListToken;)Z");
+            transformer.removeMethod("beginList", "()Lcom/fs/graphics/util/GLListManager$GLListToken;");
+            transformer.removeMethod("endList", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/render/GLListManager");
 
-            case "com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO":
-                transformer.renameMethod("Õ00000", "renderGlyphs_vanilla", "(Z)V");
-                transformer.mergeClass("com/genir/renderer/overrides/render/font/FontRenderer");
-                break;
+        } else if (className.equals(symbols.FontRenderer.name)) {
+            transformer.renameMethod(symbols.FontRenderer_renderGlyphs, "renderGlyphs_vanilla");
+            transformer.mergeClass("com/genir/renderer/overrides/render/font/FontRenderer");
 
-            case "com/fs/starfarer/title/TitleScreenState":
-                transformer.renameMethod("checkNewHighScore", "checkNewHighScore_vanilla", "()V");
-                transformer.mergeClass("com/genir/renderer/overrides/TitleScreenState");
-                break;
+        } else if (className.equals("com/fs/starfarer/title/TitleScreenState")) {
+            transformer.renameMethod("checkNewHighScore", "checkNewHighScore_vanilla", "()V");
+            transformer.mergeClass("com/genir/renderer/overrides/TitleScreenState");
 
-            default:
-                return null;
+        } else {
+            return null;
         }
 
         return transformer;
@@ -302,11 +276,11 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
 
             case "com/genir/renderer/overrides/loading/textures/TextureLoader":
                 transformer = makeBytecodeTransformer("com/fs/graphics/TextureLoader");
-                transformer.renameMethod("o00000", "loadTexture_vanilla", "(Lcom/fs/graphics/Object;Ljava/lang/String;IIIIZ)Lcom/fs/graphics/Object;");
+                transformer.renameMethod(symbols.TextureLoader_loadTextureSynchronous, "loadTexture_vanilla");
                 break;
 
             case "com/genir/renderer/overrides/render/font/FontRenderer":
-                transformer = makeBytecodeTransformer("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+                transformer = makeBytecodeTransformer(symbols.FontRenderer.name);
                 transformer.renameMethod("Õ00000", "renderGlyphs_vanilla", "(Z)V");
                 break;
 

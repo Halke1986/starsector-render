@@ -3,6 +3,7 @@ package com.genir.renderer.agent.transformations.bytecode;
 import com.genir.renderer.agent.ClassName;
 import com.genir.renderer.agent.transformations.constants.ConstantReplacer;
 import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +22,16 @@ public class BytecodeTransformer {
         this.targetBytes = targetBytes;
     }
 
+    public void renameMethod(MethodNode method, String newName) {
+        renameMethod(method.name, newName, method.desc);
+    }
+
     public void renameMethod(String oldName, String newName, String descriptor) {
         targetBytes = MethodRenamer.renameMethod(targetBytes, oldName, newName, descriptor);
+    }
+
+    public void removeMethod(MethodNode method) {
+        removeMethod(method.name, method.desc);
     }
 
     public void removeMethod(String methodName, String descriptor) {
