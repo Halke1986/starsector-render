@@ -2,6 +2,7 @@ package com.genir.renderer.agent.transformations.symbols;
 
 import com.genir.renderer.agent.ClassName;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -148,6 +149,8 @@ public class Symbols {
     public final FieldNode FileLoader_locationFilter;
     public final FieldNode FileLoader_withoutMods;
 
+    private static final int ANY = 0;
+
     public Symbols() {
         final ClassNode baseGameStateNode = readClassNode("com/fs/starfarer/BaseGameState");
         final ClassNode combatEngineNode = readClassNode("com/fs/starfarer/combat/CombatEngine");
@@ -172,13 +175,13 @@ public class Symbols {
         final ClassNode standardTooltipV2Node = readClassNode("com/fs/starfarer/ui/impl/StandardTooltipV2");
 
         // Classes
-        TextureHandler = typeClass(fieldsByName(spriteNode, "texture").get(0));
+        TextureHandler = fieldList(spriteNode).byName("texture").getTypeClass();
         TextureRepository = onwerClass(methodInstructionsByOwner(methodsBy(spriteNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "com/fs/graphics").get(0));
-        Fps = typeClass(fieldsByName(baseGameStateNode, "fps").get(0));
+        Fps = fieldList(baseGameStateNode).byName("fps").getTypeClass();
         FloatingTextManager = returnTypeClass(methodsByName(combatEngineNode, "getFloatingTextManager").get(0));
         FontRepository = onwerClass(methodInstructionsByOwner(methodsByName(versionNode, "<init>").get(0), null).get(1));
         FontRenderer = returnTypeClass(methodsBy(Fps, null, "()", Type.OBJECT, null).get(0));
-        Font = getGenericParametersClass(fieldsByDescPrefix(FontRepository, "Ljava/util/HashMap;").get(0), 1);
+        Font = fieldList(FontRepository).byDesc("Ljava/util/HashMap;").getGenericParametersClass(1);
         Glyph = returnTypeClass(methodsBy(Font, null, "(I)", Type.OBJECT, null).get(0));
         Kerning = returnTypeClass(methodsByDescPrefix(Font, "(II)").get(0));
         SoundStore = onwerClass(methodInstructionsByOwner(methodsBy(soundNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "sound").get(0));
@@ -195,18 +198,18 @@ public class Symbols {
         ResourceLoaderState$ResourceType = argumentTypeClass(methodsByName(resourceLoaderStateNode, "queueResource").get(0), 0);
         final ClassNode rules = returnTypeClass(methodsBy(rulesNode, null, null, Type.OBJECT, "Lcom/fs/starfarer/campaign/rules").get(0));
         Expression = getGenericParametersClass(Type.getReturnType(methodsByName(rules, "getConditions").get(0).signature), 0);
-        final ClassNode saveStream = typeClass(fieldsByDescPrefix(campaignGameManagerNode, "Lcom/fs/starfarer/util").get(0));
-        ProgressBar = typeClass(fieldsByDescPrefix(saveStream, "Lcom/fs/starfarer/campaign/save").get(0));
-        DeploymentManager = typeClass(fieldsByDescPrefix(baseBattleStrategyNode, "Lcom/fs/starfarer/combat/ai/admiral").get(0));
-        DeploymentManager$ReinforcementType = getGenericParametersClass(fieldsByDescPrefix(DeploymentManager, "Ljava/util/List<Lcom/fs/starfarer/combat/ai/admiral").get(0), 0);
-        Bounds = typeClass(fieldsByName(shipNode, "visualBounds").get(0));
-        BoundsSegment = getGenericParametersClass(fieldsByDescPrefix(Bounds, "Ljava/util/List<Lcom/fs/starfarer/combat").get(0), 0);
+        final ClassNode saveStream = fieldList(campaignGameManagerNode).byDesc("Lcom/fs/starfarer/util").getTypeClass();
+        ProgressBar = fieldList(saveStream).byDesc("Lcom/fs/starfarer/campaign/save").getTypeClass();
+        DeploymentManager = fieldList(baseBattleStrategyNode).byDesc("Lcom/fs/starfarer/combat/ai/admiral").byAccess(Opcodes.ACC_PROTECTED).getTypeClass();
+        DeploymentManager$ReinforcementType = fieldList(DeploymentManager).bySignature("Ljava/util/List<Lcom/fs/starfarer/combat/ai/admiral").byIndex(ANY).getGenericParametersClass(0);
+        Bounds = fieldList(shipNode).byName("visualBounds").getTypeClass();
+        BoundsSegment = fieldList(Bounds).bySignature("Ljava/util/List<Lcom/fs/starfarer/combat").byIndex(ANY).getGenericParametersClass(0);
         FileLoader = onwerClass(methodInstructionsByOwner(methodsByName(glLauncherNode, "loadSound").get(0), "com/fs/util").get(0));
-        FileLoader$ResourceLocation = getGenericParametersClass(fieldsByDescPrefix(FileLoader, "Ljava/util/List<Lcom/fs/util").get(0), 0);
-        FileLoader$ResourceType = typeClass(fieldsByDescPrefix(FileLoader$ResourceLocation, "Lcom/fs/util").get(0));
+        FileLoader$ResourceLocation = fieldList(FileLoader).bySignature("Ljava/util/List<Lcom/fs/util").getGenericParametersClass(0);
+        FileLoader$ResourceType = fieldList(FileLoader$ResourceLocation).byDesc("Lcom/fs/util").getTypeClass();
         HullSpecStore = onwerClass(methodInstructionsByOwner(methodsByName(hullVariantSpecNode, "createEmptyVariant").get(0), "com/fs/starfarer/loading").get(0));
         WeaponSpecStore = onwerClass(methodInstructionsByOwner(methodsByName(missileNode, "setWeaponSpec").get(0), "com/fs/starfarer/loading").get(0));
-        SecureClassLoader = typeClass(fieldsByDescPrefix(scriptStoreNode, "Lcom/fs/starfarer/loading/scripts").get(0));
+        SecureClassLoader = fieldList(scriptStoreNode).byDesc("Lcom/fs/starfarer/loading/scripts").getTypeClass();
         JavaSourceFinder = onwerClass(methodInstructionsByOwner(methodsByDescPrefix(scriptStoreNode, "(Ljava/lang/ClassLoader;)V").get(0), "com/fs/starfarer/loading").get(0));
         ShipHullSpec = returnTypeClass(methodsByName(shipNode, "getHullSpec").get(0));
         ShutdownException = onwerClass(methodInstructionsBy(methodsByName(baseGameStateNode, "traverse").get(0), "com/fs/starfarer", "<init>").get(0));
@@ -351,14 +354,6 @@ public class Symbols {
      * FIELDS
      */
 
-    private List<FieldNode> fieldsByName(ClassNode classNode, String name) {
-        return fieldsBy(classNode, name, null);
-    }
-
-    private List<FieldNode> fieldsByDescPrefix(ClassNode classNode, String descPrefix) {
-        return fieldsBy(classNode, null, descPrefix);
-    }
-
     private List<FieldNode> fieldsBy(ClassNode classNode, String name, String descPrefix) {
         List<FieldNode> filtered = new ArrayList<>();
         for (FieldNode field : classNode.fields) {
@@ -451,10 +446,6 @@ public class Symbols {
      * DESCRIPTION
      */
 
-    private ClassNode typeClass(FieldNode field) {
-        return readClassNode(Type.getType(field.desc).getInternalName());
-    }
-
     private ClassNode onwerClass(MethodInsnNode inst) {
         return readClassNode(inst.owner);
     }
@@ -467,15 +458,11 @@ public class Symbols {
         return readClassNode(Type.getArgumentTypes(method.desc)[idx].getInternalName());
     }
 
-    private ClassNode getGenericParametersClass(FieldNode field, int idx) {
-        return readClassNode(getGenericParameters(field.signature)[idx].getInternalName());
-    }
-
     private ClassNode getGenericParametersClass(Type type, int idx) {
         return readClassNode(getGenericParameters(type.getDescriptor())[idx].getInternalName());
     }
 
-    private Type[] getGenericParameters(String signature) {
+    public static Type[] getGenericParameters(String signature) {
         String generic = signature.substring(signature.indexOf('<') + 1);
         generic = generic.substring(0, generic.indexOf('>'));
 

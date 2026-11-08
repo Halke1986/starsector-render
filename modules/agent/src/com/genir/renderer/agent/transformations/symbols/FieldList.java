@@ -6,15 +6,14 @@ import org.objectweb.asm.tree.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class FieldList {
     private final ClassNode classNode;
-    private Stream<FieldNode> fields;
+    private List<FieldNode> fields;
 
     public FieldList(ClassNode classNode) {
         this.classNode = classNode;
-        this.fields = classNode.fields.stream();
+        this.fields = classNode.fields;
     }
 
     public FieldList byName(String name) {
@@ -25,6 +24,10 @@ public class FieldList {
         return by((field) -> field.desc.startsWith(descPrefix));
     }
 
+    public FieldList byAccess(int access) {
+        return by((field) -> field.access == access);
+    }
+
     public FieldList bySignature(String signaturePrefix) {
         return by((field) -> field.signature != null && field.signature.startsWith(signaturePrefix));
     }
@@ -33,26 +36,34 @@ public class FieldList {
         return by((field) -> isCalledBy(field, caller));
     }
 
+    public FieldList byIndex(int index) {
+        fields = List.of(fields.get(index));
+        return this;
+    }
+
     private FieldList by(Predicate<FieldNode> predicate) {
-        fields = fields.filter(predicate);
+        fields = fields.stream().filter(predicate).toList();
         return this;
     }
 
     public FieldNode get() {
-        List<FieldNode> fieldList = fields.toList();
-        if (fieldList.size() != 1) {
+        if (fields.size() != 1) {
             throw new AssertionError("Ambiguous fields");
         }
 
-        return fieldList.get(0);
+        return fields.get(0);
     }
 
     public FieldNode get(int index) {
-        return fields.toList().get(index);
+        return fields.get(index);
     }
 
     public ClassNode getTypeClass() {
         return Symbols.readClassNode(Type.getType(get().desc).getInternalName());
+    }
+
+    public ClassNode getGenericParametersClass(int index) {
+        return Symbols.readClassNode(Symbols.getGenericParameters(get().signature)[index].getInternalName());
     }
 
     private boolean isCalledBy(FieldNode field, MethodNode caller) {
@@ -72,8 +83,6 @@ public class FieldList {
                 instructions.add(fieldIns);
             }
         }
-
-        var a = method.instructions.toArray();
 
         return instructions;
     }
