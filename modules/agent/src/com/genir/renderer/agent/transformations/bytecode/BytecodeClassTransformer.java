@@ -6,10 +6,10 @@ import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
-public class BytecodeFileTransformer implements ClassFileTransformer {
+public class BytecodeClassTransformer implements ClassFileTransformer {
     private final CommonTransformers commonTransformers;
 
-    public BytecodeFileTransformer(CommonTransformers common) {
+    public BytecodeClassTransformer(CommonTransformers common) {
         this.commonTransformers = common;
     }
 

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class ConstantFileTransformer implements ClassFileTransformer {
+public class ConstantClassTransformer implements ClassFileTransformer {
     private final Transformations transformations;
 
     private final ConstantReplacer scriptTransformer;
@@ -21,7 +21,7 @@ public class ConstantFileTransformer implements ClassFileTransformer {
     private final ConstantReplacer frTransformer;
     private final ConstantReplacer starfarerTransformer;
 
-    public ConstantFileTransformer(Transformations transformations, CommonTransformers common) {
+    public ConstantClassTransformer(Transformations transformations, CommonTransformers common) {
         this.transformations = transformations;
 
         this.scriptTransformer = new ConstantReplacer(transformations.opengl);

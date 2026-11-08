@@ -1,7 +1,8 @@
 package com.genir.renderer.agent.transformations;
 
-import com.genir.renderer.agent.transformations.bytecode.BytecodeFileTransformer;
-import com.genir.renderer.agent.transformations.constants.ConstantFileTransformer;
+import com.genir.renderer.agent.transformations.bytecode.BytecodeClassTransformer;
+import com.genir.renderer.agent.transformations.constants.ConstantClassTransformer;
+import com.genir.renderer.agent.transformations.constants.IllegalClassTransformer;
 import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
 import com.genir.renderer.agent.transformations.symbols.Symbols;
 import com.genir.renderer.agent.transformations.symbols.Transformations;
@@ -17,14 +18,18 @@ public class TransformerAdder implements Consumer<Object> {
         var symbols = new Symbols();
         var transformations = new Transformations(symbols);
         var commonTransformers = new CommonTransformers(transformations);
-        var constantFileTransformer = new ConstantFileTransformer(transformations, commonTransformers);
-        var bytecodeFileTransformer = new BytecodeFileTransformer(commonTransformers);
+
+        var constantClassTransformer = new ConstantClassTransformer(transformations, commonTransformers);
+        var bytecodeClassTransformer = new BytecodeClassTransformer(commonTransformers);
+        var illegalClassTransformer = new IllegalClassTransformer(transformations);
 
         // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
-        // Donor bytecode is not loaded here, so its constants must be transformed by its respective loader.
         // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.
-        instrumentation.addTransformer(constantFileTransformer, false);
+        instrumentation.addTransformer(constantClassTransformer, false);
 
-        instrumentation.addTransformer(bytecodeFileTransformer, false);
+        instrumentation.addTransformer(bytecodeClassTransformer, false);
+
+        // Sanitize illegal obf symbols.
+        instrumentation.addTransformer(illegalClassTransformer, false);
     }
 }

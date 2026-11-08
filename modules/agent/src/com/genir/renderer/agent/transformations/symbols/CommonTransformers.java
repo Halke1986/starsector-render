@@ -10,16 +10,13 @@ public class CommonTransformers {
         this.frTransformer = new ConstantReplacer(
                 transformations.overrides,
                 transformations.overridesDebug,
-                transformations.obfuscation,
-                transformations.illegalTransformations
+                transformations.obfuscation
         );
 
         this.starfarerTransformer = new ConstantReplacer(
                 transformations.overridesDebug,
                 transformations.opengl,  // Replace OpenGL calls.
-                transformations.scriptLoader,  // Replace class loader for loading scripts.
-                transformations.obfuscation, // Obfuscate assembled overrides.
-                transformations.illegalTransformations  // Sanitize illegal obf symbols.
+                transformations.scriptLoader  // Replace class loader for loading scripts.
         );
     }
 }
