@@ -8,15 +8,14 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class MethodList {
     private final ClassNode classNode;
-    private Stream<MethodNode> methods;
+    private List<MethodNode> methods;
 
     public MethodList(ClassNode classNode) {
         this.classNode = classNode;
-        this.methods = classNode.methods.stream();
+        this.methods = classNode.methods;
     }
 
     public MethodList byName(String name) {
@@ -66,15 +65,23 @@ public class MethodList {
         return by((method) -> isCalledBy(method, caller));
     }
 
+    public MethodList byIndex(int index) {
+        if (methods.size() == 1) {
+            throw new AssertionError("Unnecessary byIndex selector");
+        }
+
+        methods = List.of(methods.get(index));
+        return this;
+    }
+
     private MethodList by(Predicate<MethodNode> predicate) {
-        methods = methods.filter(predicate);
+        methods = methods.stream().filter(predicate).toList();
         return this;
     }
 
     public MethodNode get() {
-        List<MethodNode> methodList = methods.toList();
-        if (methodList.size() != 1) {
-            for (MethodNode method : methodList) {
+        if (methods.size() != 1) {
+            for (MethodNode method : methods) {
                 List<MethodInsnNode> methodsInst = getMethodInstructions(method);
 
                 int x = 0;
@@ -83,11 +90,7 @@ public class MethodList {
             throw new AssertionError("Ambiguous methods");
         }
 
-        return methodList.get(0);
-    }
-
-    public MethodNode get(int index) {
-        return methods.toList().get(index);
+        return methods.get(0);
     }
 
     private boolean hasInstrName(MethodNode method, String name) {

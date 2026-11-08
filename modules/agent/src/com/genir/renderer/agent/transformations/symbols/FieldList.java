@@ -37,6 +37,10 @@ public class FieldList {
     }
 
     public FieldList byIndex(int index) {
+        if (fields.size() == 1) {
+            throw new AssertionError("Unnecessary byIndex selector");
+        }
+
         fields = List.of(fields.get(index));
         return this;
     }
@@ -47,15 +51,15 @@ public class FieldList {
     }
 
     public FieldNode get() {
+        if (fields.isEmpty()) {
+            throw new AssertionError("Field not found");
+        }
+
         if (fields.size() != 1) {
             throw new AssertionError("Ambiguous fields");
         }
 
         return fields.get(0);
-    }
-
-    public FieldNode get(int index) {
-        return fields.get(index);
     }
 
     public ClassNode getTypeClass() {
