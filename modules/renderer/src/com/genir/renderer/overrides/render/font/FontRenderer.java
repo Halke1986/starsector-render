@@ -32,7 +32,6 @@ public class FontRenderer {
     /**
      * STUB
      */
-    // $FF: renamed from: int () void
     protected void FontRenderer_refreshFontFlags() {
     }
 
@@ -45,7 +44,6 @@ public class FontRenderer {
     /**
      * REPLACED METHOD
      */
-    // $FF: renamed from: Õ00000 (boolean) void
     private void FontRenderer_renderGlyphs(boolean applyHighlightColors) {
         // Delegate uncommon cases to vanilla.
         if (this.FontRenderer_transformMatrix != null || this.FontRenderer_underlineEnabled || this.FontRenderer_highlightByChar != null) {

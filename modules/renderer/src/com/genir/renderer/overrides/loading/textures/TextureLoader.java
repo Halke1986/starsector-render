@@ -210,7 +210,6 @@ public class TextureLoader {
         return handler;
     }
 
-    // $FF: renamed from: o00000 (java.awt.image.BufferedImage) java.awt.image.BufferedImage
     private BufferedImage alphaAdderApply(BufferedImage var1) {
         WritableRaster var2 = var1.getRaster();
         BufferedImage var3 = new BufferedImage(var1.getWidth(), var1.getHeight(), 2);
