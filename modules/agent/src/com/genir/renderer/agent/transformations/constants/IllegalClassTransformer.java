@@ -1,7 +1,7 @@
 package com.genir.renderer.agent.transformations.constants;
 
 import com.genir.renderer.agent.ClassName;
-import com.genir.renderer.agent.transformations.symbols.Transformations;
+import com.genir.renderer.agent.IllegalTransformations;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 public class IllegalClassTransformer implements ClassFileTransformer {
     private final ConstantReplacer illegalTransformer;
 
-    public IllegalClassTransformer(Transformations transformations) {
-        this.illegalTransformer = new ConstantReplacer(transformations.illegalTransformations);
+    public IllegalClassTransformer() {
+        this.illegalTransformer = new ConstantReplacer(IllegalTransformations.transformations);
     }
 
     @Override

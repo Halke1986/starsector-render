@@ -21,7 +21,7 @@ public class TransformerAdder implements Consumer<Object> {
 
         var constantClassTransformer = new ConstantClassTransformer(transformations, commonTransformers);
         var bytecodeClassTransformer = new BytecodeClassTransformer(symbols, commonTransformers);
-        var illegalClassTransformer = new IllegalClassTransformer(transformations);
+        var illegalClassTransformer = new IllegalClassTransformer();
 
         // Apply constant transforms before bytecode changes so that target and donor bytecode use compatible constants.
         // Transforming constants after bytecode changes could also cause unintended replacement of OpenGL calls in donor bytecode.

@@ -1,6 +1,5 @@
 package com.genir.renderer.agent.transformations.symbols;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Map.entry;
@@ -14,7 +13,6 @@ public class Transformations {
     public final Map<String, String> obfuscation;
     public final Map<String, String> overrides;
     public final Map<String, String> overridesDebug;
-    public final Map<String, String> illegalTransformations;
 
     public Transformations(Symbols symbols) {
         this.scriptLoader = Map.<String, String>ofEntries(
@@ -240,50 +238,5 @@ public class Transformations {
                 //            entry("com/fs/graphics/TextureLoader", "com/genir/renderer/overrides/loading/textures/TextureLoader")
                 //            entry("com/fs/graphics/A/ooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "com/genir/renderer/overrides/render/font/FontRenderer")
         );
-
-        this.illegalTransformations = buildIllegalTransformations();
-    }
-
-    private Map<String, String> buildIllegalTransformations() {
-        String[] symbols = {
-                "class",
-                "do",
-                "float",
-                "for",
-                "if",
-                "int",
-                "interface",
-                "new",
-                "null",
-                "Object",
-                "private",
-                "public",
-                "return",
-                "String",
-                "super",
-                "this",
-                "void",
-                "while"
-        };
-
-        Map<String, String> transformations = new HashMap<>();
-
-        for (String s1 : symbols) {
-            for (String s2 : symbols) {
-                transformations.put(
-                        s1 + "." + s2,
-                        s1 + "_" + s2
-                );
-
-                for (String s3 : symbols) {
-                    transformations.put(
-                            s1 + "." + s2 + "$" + s3,
-                            s1 + "_" + s2 + "$" + s3
-                    );
-                }
-            }
-        }
-
-        return transformations;
     }
 }
