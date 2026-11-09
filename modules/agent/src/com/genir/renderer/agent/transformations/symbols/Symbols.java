@@ -182,9 +182,9 @@ public class Symbols {
         FontRepository = onwerClass(methodInstructionsByOwner(methodList(versionNode).byName("<init>").get(), null).get(1));
         FontRenderer = fieldList(Fps).byDesc("Lcom/fs/graphics").getTypeClass();
         Font = fieldList(FontRepository).byDesc("Ljava/util/HashMap;").getGenericParametersClass(1);
-        Glyph = returnTypeClass(methodsBy(Font, null, "(I)", Type.OBJECT, null).get(0));
+        Glyph = methodList(Font).byDesc("(I)Lcom/fs/graphics").getReturnTypeClass();
         Kerning = methodList(Font).byDesc("(II)").getReturnTypeClass();
-        SoundStore = onwerClass(methodInstructionsByOwner(methodsBy(soundNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "sound").get(0));
+        SoundStore = onwerClass(methodInstructionsByOwner(methodList(soundNode).byName("<init>").byDesc("(Ljava/lang/String;)").get(), "sound").get(0));
         final MethodNode loadOggSoundtrack = methodList(SoundStore).byDesc("(Ljava/lang/String;Ljava/io/InputStream;)").byIndex(2).get();
         SoundTrack = returnTypeClass(loadOggSoundtrack);
         OggLoader = onwerClass(methodInstructionsByOwner(loadOggSoundtrack, "sound").get(1));
@@ -196,8 +196,8 @@ public class Symbols {
         ScreenshotUtil = onwerClass(methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/util").get(0));
         ImpactSound = onwerClass(methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/combat/entities/ship").get(0));
         ResourceLoaderState$ResourceType = argumentTypeClass(methodList(resourceLoaderStateNode).byName("queueResource").get(), 0);
-        final ClassNode rules = returnTypeClass(methodsBy(rulesNode, null, null, Type.OBJECT, "Lcom/fs/starfarer/campaign/rules").get(0));
-        Expression = getGenericParametersClass(Type.getReturnType(methodList(rules).byName("getConditions").get().signature), 0);
+        final ClassNode ruleNode = methodList(rulesNode).byDesc("(Ljava/lang/String;Ljava/lang/String;Lcom/fs/starfarer/api/campaign/InteractionDialogAPI;Ljava/util/Map;)Lcom/fs/starfarer/campaign/rules").getReturnTypeClass();
+        Expression = getGenericParametersClass(Type.getReturnType(methodList(ruleNode).byName("getConditions").get().signature), 0);
         final ClassNode saveStream = fieldList(campaignGameManagerNode).byDesc("Lcom/fs/starfarer/util").getTypeClass();
         ProgressBar = fieldList(saveStream).byDesc("Lcom/fs/starfarer/campaign/save").getTypeClass();
         DeploymentManager = fieldList(baseBattleStrategyNode).byDesc("Lcom/fs/starfarer/combat/ai/admiral").byAccess(Opcodes.ACC_PROTECTED).getTypeClass();
@@ -364,32 +364,6 @@ public class Symbols {
 
     private ClassNode returnTypeClass(MethodNode method) {
         return readClassNode(Type.getReturnType(method.desc).getInternalName());
-    }
-
-    private List<MethodNode> methodsBy(ClassNode classNode, String name, String descPrefix, Integer returnSort, String returnDescPrefix) {
-        List<MethodNode> filtered = new ArrayList<>();
-        for (MethodNode method : classNode.methods) {
-            if (name != null && !method.name.equals(name)) {
-                continue;
-            }
-
-            if (descPrefix != null && !method.desc.startsWith(descPrefix)) {
-                continue;
-            }
-
-            Type returnType = Type.getReturnType(method.desc);
-            if (returnSort != null && returnType.getSort() != returnSort) {
-                continue;
-            }
-
-            if (returnDescPrefix != null && !returnType.getDescriptor().startsWith(returnDescPrefix)) {
-                continue;
-            }
-
-            filtered.add(method);
-        }
-
-        return filtered;
     }
 
     private List<MethodInsnNode> methodInstructionsByOwner(MethodNode methodNode, String ownerPrefix) {
