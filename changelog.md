@@ -1,3 +1,6 @@
+- Internal code changes in preparation for Starsector update. 
+- Performance and stability improvements.
+
 v0.9.8
 
 - Promoted v0.9.8rc1 to stable. No changes.
