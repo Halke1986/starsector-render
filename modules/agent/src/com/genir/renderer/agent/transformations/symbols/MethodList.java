@@ -1,5 +1,6 @@
 package com.genir.renderer.agent.transformations.symbols;
 
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -91,6 +92,10 @@ public class MethodList {
         }
 
         return methods.get(0);
+    }
+
+    public ClassNode getReturnTypeClass() {
+        return Symbols.readClassNode(Type.getReturnType(get().desc).getInternalName());
     }
 
     private boolean hasInstrName(MethodNode method, String name) {
