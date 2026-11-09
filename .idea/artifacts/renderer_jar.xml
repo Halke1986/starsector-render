@@ -3,6 +3,11 @@
     <output-path>$PROJECT_DIR$/jars/compile</output-path>
     <root id="archive" name="fr.jar">
       <element id="module-output" name="renderer" />
+      <element id="module-output" name="agent" />
+      <element id="library" level="project" name="asm-9.1" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/modules/agent/MANIFEST.MF" />
+      </element>
     </root>
   </artifact>
 </component>

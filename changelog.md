@@ -1,4 +1,5 @@
 - Internal code changes in preparation for Starsector update. 
+- Removed the separate fr.agent.jar. Suggested by wing.
 - Performance and stability improvements.
 
 v0.9.8
