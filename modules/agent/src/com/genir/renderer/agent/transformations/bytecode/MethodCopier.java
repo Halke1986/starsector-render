@@ -1,4 +1,4 @@
-package com.genir.renderer.agent.bytecode;
+package com.genir.renderer.agent.transformations.bytecode;
 
 import org.objectweb.asm.*;
 

@@ -28,7 +28,6 @@ public class LoadingUtils {
     /**
      * STUB
      */
-    // $FF: renamed from: super (java.io.InputStream) java.lang.String
     public static String readStreamAsString_vanilla(InputStream stream) throws IOException {
         return null;
     }

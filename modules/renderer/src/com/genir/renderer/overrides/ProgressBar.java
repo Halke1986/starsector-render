@@ -22,14 +22,12 @@ public class ProgressBar {
     /**
      * STUB
      */
-    // $FF: renamed from: Ò00000 (java.lang.String) void
     public void ProgressBar_setDescription(String description) {
     }
 
     /**
      * STUB
      */
-    // $FF: renamed from: o00000 (float) void
     public void ProgressBar_render(float progress) {
     }
 

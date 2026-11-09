@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading.textures;
 
-import com.fs.graphics.AlphaAdder;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
@@ -13,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,7 +148,7 @@ public class TextureLoader {
             }
 
             if (Objects.equals(type, "TEXTURE_ALPHA_ADDER")) {
-                image = new AlphaAdder().TextureTransformer_apply(image);
+                image = alphaAdderApply(image);
             }
 
             return TextureBuilder.readAndAnalyzeImage(image, useVanillaLogic);
@@ -208,5 +208,27 @@ public class TextureLoader {
         handler.TextureHandler_setColor2(texData.median);
 
         return handler;
+    }
+
+    private BufferedImage alphaAdderApply(BufferedImage var1) {
+        WritableRaster var2 = var1.getRaster();
+        BufferedImage var3 = new BufferedImage(var1.getWidth(), var1.getHeight(), 2);
+        WritableRaster var4 = var3.getRaster();
+        int[] var5 = new int[4];
+        int[] var6 = new int[4];
+
+        for (int var7 = 0; var7 < var1.getWidth(); ++var7) {
+            for (int var8 = 0; var8 < var1.getHeight(); ++var8) {
+                var2.getPixel(var7, var8, var5);
+                int var9 = var5[0];
+                var6[0] = 255;
+                var6[1] = 255;
+                var6[2] = 255;
+                var6[3] = var9;
+                var4.setPixel(var7, var8, var6);
+            }
+        }
+
+        return var3;
     }
 }

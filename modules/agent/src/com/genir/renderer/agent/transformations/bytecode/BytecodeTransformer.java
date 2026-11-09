@@ -1,25 +1,37 @@
-package com.genir.renderer.agent.bytecode;
+package com.genir.renderer.agent.transformations.bytecode;
 
 import com.genir.renderer.agent.ClassName;
-import com.genir.renderer.agent.ConstantFileTransformer;
-import com.genir.renderer.agent.ConstantTransformer;
+import com.genir.renderer.agent.transformations.constants.ConstantReplacer;
+import com.genir.renderer.agent.transformations.symbols.CommonTransformers;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BytecodeTransformer {
+    private final CommonTransformers commonTransformers;
     public byte[] targetBytes;
 
-    public BytecodeTransformer(String targetName) {
+    public BytecodeTransformer(CommonTransformers common, String targetName) {
+        this.commonTransformers = common;
         this.targetBytes = loadStarfarerTransformedBytes(targetName);
     }
 
-    public BytecodeTransformer(byte[] targetBytes) {
+    public BytecodeTransformer(CommonTransformers common, byte[] targetBytes) {
+        this.commonTransformers = common;
         this.targetBytes = targetBytes;
+    }
+
+    public void renameMethod(MethodNode method, String newName) {
+        renameMethod(method.name, newName, method.desc);
     }
 
     public void renameMethod(String oldName, String newName, String descriptor) {
         targetBytes = MethodRenamer.renameMethod(targetBytes, oldName, newName, descriptor);
+    }
+
+    public void removeMethod(MethodNode method) {
+        removeMethod(method.name, method.desc);
     }
 
     public void removeMethod(String methodName, String descriptor) {
@@ -38,17 +50,17 @@ public class BytecodeTransformer {
     }
 
     private byte[] loadStarfarerTransformedBytes(String className) {
-        return loadTransformedBytes(className, ConstantFileTransformer.starfarerTransformer);
+        return loadTransformedBytes(className, commonTransformers.starfarerTransformer);
     }
 
     private byte[] loadFRTransformedBytes(String className) {
-        return loadTransformedBytes(className, ConstantFileTransformer.frTransformer);
+        return loadTransformedBytes(className, commonTransformers.frTransformer);
     }
 
-    private byte[] loadTransformedBytes(String className, ConstantTransformer transformer) {
+    private byte[] loadTransformedBytes(String className, ConstantReplacer transformer) {
         try {
             ClassLoader loader = this.getClass().getClassLoader();
-            InputStream stream = loader.getResourceAsStream(ClassName.internal(className));
+            InputStream stream = loader.getResourceAsStream(ClassName.resource(className));
             return transformer.apply(stream.readAllBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
