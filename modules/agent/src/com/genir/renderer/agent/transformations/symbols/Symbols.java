@@ -176,19 +176,19 @@ public class Symbols {
 
         // Classes
         TextureHandler = fieldList(spriteNode).byName("texture").getTypeClass();
-        TextureRepository = onwerClass(methodInstructionsByOwner(methodsBy(spriteNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "com/fs/graphics").get(0));
+        TextureRepository = onwerClass(methodInstructionsByOwner(methodList(glLauncherNode).byName("cleanup").get(), "com/fs/graphics").get(0));
         Fps = fieldList(baseGameStateNode).byName("fps").getTypeClass();
         FloatingTextManager = methodList(combatEngineNode).byName("getFloatingTextManager").getReturnTypeClass();
         FontRepository = onwerClass(methodInstructionsByOwner(methodList(versionNode).byName("<init>").get(), null).get(1));
-        FontRenderer = returnTypeClass(methodsBy(Fps, null, "()", Type.OBJECT, null).get(0));
+        FontRenderer = fieldList(Fps).byDesc("Lcom/fs/graphics").getTypeClass();
         Font = fieldList(FontRepository).byDesc("Ljava/util/HashMap;").getGenericParametersClass(1);
         Glyph = returnTypeClass(methodsBy(Font, null, "(I)", Type.OBJECT, null).get(0));
-        Kerning = returnTypeClass(methodsByDescPrefix(Font, "(II)").get(0));
+        Kerning = methodList(Font).byDesc("(II)").getReturnTypeClass();
         SoundStore = onwerClass(methodInstructionsByOwner(methodsBy(soundNode, "<init>", "(Ljava/lang/String;)", null, null).get(0), "sound").get(0));
-        final MethodNode loadOggSoundtrack = methodsByDescPrefix(SoundStore, "(Ljava/lang/String;Ljava/io/InputStream;)").get(2);
+        final MethodNode loadOggSoundtrack = methodList(SoundStore).byDesc("(Ljava/lang/String;Ljava/io/InputStream;)").byIndex(2).get();
         SoundTrack = returnTypeClass(loadOggSoundtrack);
         OggLoader = onwerClass(methodInstructionsByOwner(loadOggSoundtrack, "sound").get(1));
-        SoundBuffer = returnTypeClass(methodsByDescPrefix(OggLoader, "(Ljava/io/InputStream;)").get(0));
+        SoundBuffer = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)").getReturnTypeClass();
         final MethodNode resourceLoaderStateInit = methodList(resourceLoaderStateNode).byName("init").get();
         final List<MethodInsnNode> rendereresList = methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/renderers");
         AtmosphereRenderer = onwerClass(rendereresList.get(0));
@@ -210,7 +210,7 @@ public class Symbols {
         HullSpecStore = onwerClass(methodInstructionsByOwner(methodList(hullVariantSpecNode).byName("createEmptyVariant").get(), "com/fs/starfarer/loading").get(0));
         WeaponSpecStore = onwerClass(methodInstructionsByOwner(methodList(missileNode).byName("setWeaponSpec").get(), "com/fs/starfarer/loading").get(0));
         SecureClassLoader = fieldList(scriptStoreNode).byDesc("Lcom/fs/starfarer/loading/scripts").getTypeClass();
-        JavaSourceFinder = onwerClass(methodInstructionsByOwner(methodsByDescPrefix(scriptStoreNode, "(Ljava/lang/ClassLoader;)V").get(0), "com/fs/starfarer/loading").get(0));
+        JavaSourceFinder = onwerClass(methodInstructionsByOwner(methodList(scriptStoreNode).byDesc("(Ljava/lang/ClassLoader;)V").get(), "com/fs/starfarer/loading").get(0));
         ShipHullSpec = methodList(shipNode).byName("getHullSpec").byDesc("()Lcom/fs/starfarer/loading/specs").getReturnTypeClass();
         ShutdownException = onwerClass(methodInstructionsBy(methodList(baseGameStateNode).byName("traverse").get(), "com/fs/starfarer", "<init>").get(0));
 
@@ -364,10 +364,6 @@ public class Symbols {
 
     private ClassNode returnTypeClass(MethodNode method) {
         return readClassNode(Type.getReturnType(method.desc).getInternalName());
-    }
-
-    private List<MethodNode> methodsByDescPrefix(ClassNode classNode, String descPrefix) {
-        return methodsBy(classNode, null, descPrefix, null, null);
     }
 
     private List<MethodNode> methodsBy(ClassNode classNode, String name, String descPrefix, Integer returnSort, String returnDescPrefix) {
