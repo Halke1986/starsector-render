@@ -7,16 +7,9 @@ bugs:
 
 
 campaign radar line (another one) and radar transparency
+champion silhouette also has lines?
 
 
-https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957
-4: texture wrap issue after ASM refactor Affects mac only, started most likely after Sprite update,
-which touched CLAMP_TO_EDGE / GL_REPEAT  texture setting.
-
-
-https://discord.com/channels/187635036525166592/1402763865913036831/1564706773095686289
-(QoL's shield status triggers the crash)
--betatester can't reproduce
 
 
 https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
@@ -25,7 +18,23 @@ GLCommand in Executor mutated to a different type again
 
 https://discord.com/channels/187635036525166592/1568592136037732382/1568965124021026981
 loulan ship circle missing
+LouLan 3.11 END does not show the circle even without FR
 
+
+************************************ waiting for stuff to happen
 
 https://discord.com/channels/187635036525166592/1567620641451147284
 glDrawArrays EXCEPTION_ACCESS_VIOLATION
+waiting for log file
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957
+texture wrap issue after ASM refactor Affects mac only, started most likely after Sprite update,
+    which touched CLAMP_TO_EDGE / GL_REPEAT  texture setting.
+can't reproduce
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1564706773095686289
+(QoL's shield status triggers the crash)
+betatester can't reproduce
+added more logs in case this happens again
