@@ -60,7 +60,7 @@ public final class MethodRenamer {
     }
 
     private static void requireOrdinaryName(String name) {
-        if (name == null || name.isEmpty() || name.indexOf('.') >= 0
+        if (name == null || name.isEmpty()
                 || name.indexOf(';') >= 0 || name.indexOf('[') >= 0
                 || name.indexOf('/') >= 0 || name.indexOf('<') >= 0
                 || name.indexOf('>') >= 0) {

@@ -34,7 +34,7 @@ public class SpecStore {
      */
     public static void SpecStore_init(ResourceLoaderState state) throws Exception {
         // Skip a redundant section of ResourceLoaderState.init_vanilla()
-        // and yield control to overriden ResourceLoaderState.initRun().
+        // and yield control to overriden ResourceLoaderState.init().
         throw new RuntimeException("Skip vanilla epilogue");
     }
 
