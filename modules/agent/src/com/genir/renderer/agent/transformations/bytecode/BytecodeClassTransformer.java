@@ -70,7 +70,7 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
             transformer.mergeClass("com/genir/renderer/overrides/Expression");
 
         } else if (className.equals(symbols.ProgressBar.name)) {
-            transformer.removeMethod(symbols.ProgressBar_render);
+            transformer.removeMethod(symbols.ProgressBar_renderWithDescription);
             transformer.mergeClass("com/genir/renderer/overrides/ProgressBar");
 
         } else if (className.equals(symbols.DeploymentManager.name)) {
