@@ -1,4 +1,6 @@
-- Internal code changes in preparation for Starsector update. 
+v1.0.0rc1
+
+- Added compatibility with Starsector 0.98.5a. Many thanks to wing for testing Mac and Linux releases.
 - Removed the separate fr.agent.jar. Suggested by wing.
 - Performance and stability improvements.
 
