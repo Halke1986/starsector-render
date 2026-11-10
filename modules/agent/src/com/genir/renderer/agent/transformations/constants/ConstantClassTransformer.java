@@ -74,7 +74,7 @@ public class ConstantClassTransformer implements ClassFileTransformer {
         } else if (name.equals("com.fs.starfarer.Version")) {
             // Append FR version to watermark.
             return new ConstantReplacer(starfarerTransformer.getTransforms(),
-                    Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + Version.getVersion().replace("v0.", "FR"))));
+                    Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + Version.getVersion().replace("v1.", "FR"))));
 
         } else if (name.equals("com.fs.starfarer.BaseGameState") || name.equals("com.fs.starfarer.combat.CombatState")) {
             // Override methods related to frame update.
