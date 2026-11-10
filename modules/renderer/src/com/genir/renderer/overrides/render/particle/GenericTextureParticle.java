@@ -79,7 +79,7 @@ public class GenericTextureParticle extends BaseParticle {
                 // Post-batch
                 (Context ctx) -> {
                     org.lwjgl.opengl.GL11.glPopAttrib();
-                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D,  ctx.attribManager.getTextureBinding2D());
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D,  ctx.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D));
                 }
         );
     }

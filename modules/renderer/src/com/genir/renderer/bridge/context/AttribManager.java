@@ -37,8 +37,8 @@ public class AttribManager {
         return expected.matrixMode;
     }
 
-    public int getTextureBinding2D(){
-        return expected.texture2DUnit0;
+    public int getBoundTexture(int target) {
+        return expected.getBoundTexture(target);
     }
 
     // Apply server-side attributes selected by the client.
