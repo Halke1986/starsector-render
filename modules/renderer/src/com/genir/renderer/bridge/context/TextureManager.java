@@ -95,7 +95,7 @@ public class TextureManager {
         });
 
         // Commit texture.
-        context.exec.execute(new TextureManager$commitDDDTexture(texture, bufferFuture, loaders));
+        context.exec.execute(new TextureManager$commitTexture(texture, bufferFuture, loaders));
     }
 
     public void glDeleteTextures(int texture) {
@@ -137,13 +137,9 @@ public class TextureManager {
     private record TextureCallbacks(TextureData texData, Callable<byte[]> loadFn, Consumer<byte[]> commitFn) {
     }
 
-    record TextureManager$commitDDDTexture(int texture, Future<byte[]> bufferFuture, TextureCallbacks loaders) implements GLCommand {
+    record TextureManager$commitTexture(int texture, Future<byte[]> bufferFuture, TextureCallbacks loaders) implements GLCommand {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            commitTexture(context, texture, bufferFuture, loaders);
-        }
-
-        private void commitTexture(Context context, int texture, Future<byte[]> bufferFuture, TextureCallbacks loaders) {
             long start = System.nanoTime();
             try {
                 byte[] bytes = bufferFuture.get();

@@ -63,12 +63,16 @@ public class DDSIntegration {
     public static int commitTexture(TextureData texData) {
         final Context context = ContextManager.getThreadContext();
 
-        int target = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
+        int target = GL11.GL_TEXTURE_2D;
+        int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
         int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
 
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        // Since VRAM Optimizer 1.0.46
+        // Set texture parameters immediately after texture definition,
+        // before lazy texture data upload. This prevents glPushAttrib/glPopAttrib
+        // around the upload from restoring outdated parameters.
+        // Since VRAM Optimizer 1.0.46.
         if (hasSetDDSTextureParameters() && texData.mipCount != -1) {
             record setTextureParameters(int textureID, int mipCount) implements GLCommand {
                 @Override
@@ -78,12 +82,10 @@ public class DDSIntegration {
                 }
             }
 
-            // Set texture parameters immediately after texture definition,
-            // before lazy texture data upload. This prevents glPushAttrib/glPopAttrib
-            // around the upload from restoring outdated parameters.
             context.exec.execute(new setTextureParameters(textureID, texData.mipCount));
         }
 
+        // Schedule the texture for upload.
         context.textureManager.manageTexture(
                 context,
                 target,
@@ -94,7 +96,7 @@ public class DDSIntegration {
         );
 
         // Notify texture tracker of the texture definition.
-        context.textureTracker.updateTextureData(textureID, 0, target, texData.width, texData.height);
+        context.textureTracker.updateTextureData(textureID, 0, internalFormat, texData.width, texData.height);
 
         return textureID;
     }
