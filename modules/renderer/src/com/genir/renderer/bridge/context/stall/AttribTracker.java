@@ -80,8 +80,8 @@ public class AttribTracker {
         return state.matrixMode;
     }
 
-    public int getTextureBinding(int target) {
-        record AttribTracker$getTextureBinding2D(int target, int expected) implements GLCommand {
+    public int getBoundTexture(int target) {
+        record AttribTracker$assertTextureBinding(int target, int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int pname = switch (target) {
@@ -105,12 +105,12 @@ public class AttribTracker {
         }
 
         int result = state.getBoundTexture(target);
-        exec.execute(new AttribTracker$getTextureBinding2D(target, result));
+        exec.execute(new AttribTracker$assertTextureBinding(target, result));
         return result;
     }
 
     public int getActiveTexture() {
-        record AttribTracker$getActiveTexture(int expected) implements GLCommand {
+        record AttribTracker$assertActiveTexture(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
@@ -119,12 +119,12 @@ public class AttribTracker {
         }
 
         int result = state.activeTexture;
-        exec.execute(new AttribTracker$getActiveTexture(result));
+        exec.execute(new AttribTracker$assertActiveTexture(result));
         return result;
     }
 
     public float getLineWidth() {
-        record AttribTracker$getLineWidth(float expected) implements GLCommand {
+        record AttribTracker$assertLineWidth(float expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 float actual = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_LINE_WIDTH);
@@ -133,12 +133,12 @@ public class AttribTracker {
         }
 
         float result = state.lineWidth;
-        exec.execute(new AttribTracker$getLineWidth(result));
+        exec.execute(new AttribTracker$assertLineWidth(result));
         return result;
     }
 
     public int getFramebufferBinding() {
-        record AttribTracker$getFramebufferBinding(int expected) implements GLCommand {
+        record AttribTracker$assertFramebufferBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
@@ -147,12 +147,12 @@ public class AttribTracker {
         }
 
         int result = framebufferBinding;
-        exec.execute(new AttribTracker$getFramebufferBinding(result));
+        exec.execute(new AttribTracker$assertFramebufferBinding(result));
         return result;
     }
 
     public int getVertexArrayBinding() {
-        record AttribTracker$getVertexArrayBinding(int expected) implements GLCommand {
+        record AttribTracker$assertVertexArrayBinding(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
@@ -161,12 +161,12 @@ public class AttribTracker {
         }
 
         int result = vertexArrayBinding;
-        exec.execute(new AttribTracker$getVertexArrayBinding(result));
+        exec.execute(new AttribTracker$assertVertexArrayBinding(result));
         return result;
     }
 
     public AttribState.Box getViewport() {
-        record AttribTracker$getViewport(AttribState.Box expected) implements GLCommand {
+        record AttribTracker$assertViewport(AttribState.Box expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
@@ -180,12 +180,12 @@ public class AttribTracker {
         }
 
         AttribState.Box result = state.viewport;
-        exec.execute(new AttribTracker$getViewport(result));
+        exec.execute(new AttribTracker$assertViewport(result));
         return result;
     }
 
     public AttribState.Box getScissorBox() {
-        record AttribTracker$getScissorBox(AttribState.Box expected) implements GLCommand {
+        record AttribTracker$assertScissorBox(AttribState.Box expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
@@ -199,12 +199,12 @@ public class AttribTracker {
         }
 
         AttribState.Box result = state.scissorBox;
-        exec.execute(new AttribTracker$getScissorBox(result));
+        exec.execute(new AttribTracker$assertScissorBox(result));
         return result;
     }
 
     public int getCurrentProgram() {
-        record AttribTracker$getCurrentProgram(int expected) implements GLCommand {
+        record AttribTracker$assertCurrentProgram(int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
@@ -213,7 +213,7 @@ public class AttribTracker {
         }
 
         int result = currentProgram;
-        exec.execute(new AttribTracker$getCurrentProgram(result));
+        exec.execute(new AttribTracker$assertCurrentProgram(result));
         return result;
     }
 

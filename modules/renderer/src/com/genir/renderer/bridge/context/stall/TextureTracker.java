@@ -168,7 +168,7 @@ public class TextureTracker { // Context-shared object.
 
         // TextureTracker object is shared between contexts, therefore
         // it cannot have a static reference to the context-local AttribTracker.
-        int textureID = context.attribTracker.getTextureBinding(target);
+        int textureID = context.attribTracker.getBoundTexture(target);
         TexData data = parameterCache.get(textureID);
         if (data == null) {
             return null;

@@ -38,7 +38,7 @@ public class GL42 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        int texture = context.attribTracker.getTextureBinding(target);
+        int texture = context.attribTracker.getBoundTexture(target);
         context.textureTracker.updateTextureData(texture, 0, internalformat, width, height);
         context.textureManager.textureModified(texture);
 

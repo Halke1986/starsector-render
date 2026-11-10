@@ -1027,7 +1027,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        int texture = context.attribTracker.getTextureBinding(target);
+        int texture = context.attribTracker.getBoundTexture(target);
         context.textureTracker.updateTextureData(texture, level, internalformat, width, 1);
         context.textureManager.textureModified(texture);
 
@@ -1045,7 +1045,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        int texture = context.attribTracker.getTextureBinding(target);
+        int texture = context.attribTracker.getBoundTexture(target);
         context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
         context.textureManager.textureModified(texture);
 
@@ -1063,7 +1063,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        int texture = context.attribTracker.getTextureBinding(target);
+        int texture = context.attribTracker.getBoundTexture(target);
         context.textureTracker.updateTextureData(texture, level, internalformat, width, height);
         context.textureManager.textureModified(texture);
 
@@ -1161,7 +1161,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        int texture = context.attribTracker.getTextureBinding(target);
+        int texture = context.attribTracker.getBoundTexture(target);
         context.textureTracker.updateTextureData(texture, level, internalFormat, width, height);
         context.textureManager.textureModified(texture);
 
@@ -1296,7 +1296,7 @@ public class GL11 {
         final Context context = ContextManager.getThreadContext();
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-                return context.attribTracker.getTextureBinding(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
+                return context.attribTracker.getBoundTexture(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
                 return context.attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
