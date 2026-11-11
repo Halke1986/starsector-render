@@ -341,7 +341,7 @@ public class ResourceLoaderState {
         // occupy most of the render thread's time, delaying tasks such as texture uploads.
         // Increase the caller's sleep duration after each update to give those tasks
         // time to run before the next update is submitted.
-        Thread.sleep(Math.max(millis, waitDurationMS * 4));
+        Thread.sleep(Math.max(millis, Math.min(700, waitDurationMS * 4)));
     }
 
     /**
