@@ -1,4 +1,7 @@
+v1.0.0
+
 - Fixed an issue where some textures were not rendering when using BoxUtils and VRAM Optimizer. Reported by Hexxed.
+- Fixed FR watermark rendering. Reported by wing.
 
 v1.0.0rc1
 

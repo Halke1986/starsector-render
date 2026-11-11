@@ -73,8 +73,18 @@ public class ConstantClassTransformer implements ClassFileTransformer {
 
         } else if (name.equals("com.fs.starfarer.Version")) {
             // Append FR version to watermark.
+            String frVersionShort = Version.getVersion().replace("v1.", "FR");
             return new ConstantReplacer(starfarerTransformer.getTransforms(),
-                    Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + Version.getVersion().replace("v1.", "FR"))));
+                    // TODO automate
+                    Map.ofEntries(entry("Starsector 0.98a-RC8", "Starsector 0.98a-RC8 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC3", "Starsector 0.98.5a-RC3 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC4", "Starsector 0.98.5a-RC4 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC5", "Starsector 0.98.5a-RC5 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC6", "Starsector 0.98.5a-RC6 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC7", "Starsector 0.98.5a-RC7 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC8", "Starsector 0.98.5a-RC8 " + frVersionShort)),
+                    Map.ofEntries(entry("Starsector 0.98.5a-RC9", "Starsector 0.98.5a-RC9 " + frVersionShort))
+            );
 
         } else if (name.equals("com.fs.starfarer.BaseGameState") || name.equals("com.fs.starfarer.combat.CombatState")) {
             // Override methods related to frame update.
