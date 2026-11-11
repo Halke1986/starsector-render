@@ -1,7 +1,5 @@
 package com.genir.renderer.overrides.loading.textures;
 
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.ContextManager;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -19,10 +17,6 @@ public class TextureBuilder {
 
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         int internalFormat = GL11.GL_RGBA;
-
-        // DDSIntegration must be run on rendering thread as
-        // it contains un-intercepted OpenGL calls.
-        final Context context = ContextManager.getThreadContext();
 
         // Starsector does not generate mipmaps if either texture dimension exceeds 1024 pixels.
         // The rationale is undocumented, and Fast Rendering does not apply this restriction.
