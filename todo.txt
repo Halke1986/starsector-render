@@ -16,9 +16,8 @@ https://discord.com/channels/187635036525166592/1402763865913036831/156617923973
 GLCommand in Executor mutated to a different type again
 
 
-https://discord.com/channels/187635036525166592/1568592136037732382/1568965124021026981
-loulan ship circle missing
-LouLan 3.11 END does not show the circle even without FR
+https://fractalsoftworks.com/forum/index.php?msg=534327
+early crash
 
 
 ************************************ waiting for stuff to happen
