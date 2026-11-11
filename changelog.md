@@ -1,3 +1,5 @@
+- Fixed an issue where some textures were not rendering when using BoxUtils and VRAM Optimizer. Reported by Hexxed.
+
 v1.0.0rc1
 
 - Added compatibility with Starsector 0.98.5a. Many thanks to wing for testing Mac and Linux releases.

@@ -70,6 +70,7 @@ public class GL44 {
         final IntBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(textures);
 
         context.attribTracker.glBindTextures(first, count, textures, targets);
+        context.textureManager.glBindTextures(context, count, targets, textures);
         context.exec.execute(new glBindTextures(first, count, snapshot, targets));
     }
 }

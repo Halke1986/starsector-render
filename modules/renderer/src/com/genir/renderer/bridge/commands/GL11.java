@@ -727,9 +727,9 @@ public class GL11 {
             context.attribTracker.glBindTexture(target, texture);
         }
 
+        context.textureManager.glBindTexture(context, target, texture);
         context.exec.execute(glBindTextureCommand, Float.intBitsToFloat(target), Float.intBitsToFloat(texture), 0, 0);
         // context.exec.execute(new glBindTextureDebug(target, texture, DebugTextureRepository.getTextureName(texture)));
-        context.textureManager.glBindTexture(context, target, texture);
     }
 
     public static void glPushAttrib(int mask) {
