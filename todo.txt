@@ -4,8 +4,7 @@ Loading bar render in a separate thread?
 
 
 getAllVariantIds
-getActuallyAllWeaponSpecs
-getAllWeaponSpecs
+
 
 bugs:
 
@@ -15,8 +14,6 @@ Fossic stuff
 
 campaign radar line (another one) and radar transparency
 champion silhouette also has lines?
-
-
 
 
 https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
@@ -41,3 +38,8 @@ https://discord.com/channels/187635036525166592/1402763865913036831/156470677309
 (QoL's shield status triggers the crash)
 betatester can't reproduce
 added more logs in case this happens again
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1570308284714459216
+missing salvage entities
+waiting for confirmation the issue happens only with FR enabled

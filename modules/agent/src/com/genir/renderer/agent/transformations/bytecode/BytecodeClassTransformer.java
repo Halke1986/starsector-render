@@ -117,6 +117,7 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
 
         } else if (className.equals(symbols.WeaponSpecStore.name)) {
             transformer.removeMethod(symbols.WeaponSpecStore_addWeaponSpec);
+            transformer.removeMethod(symbols.WeaponSpecStore_removeWeaponSpec);
             transformer.removeMethod(symbols.WeaponSpecStore_addProjectileSpec);
             transformer.mergeClass("com/genir/renderer/overrides/loading/WeaponSpecStore");
 
@@ -206,6 +207,8 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
 
         } else if (className.equals(symbols.StarfarerSettings$SettingsAPIImpl.name)) {
             transformer.removeMethod("getAllShipHullSpecs", "()Ljava/util/List;");
+            transformer.removeMethod("getAllWeaponSpecs", "()Ljava/util/List;");
+            transformer.removeMethod("getActuallyAllWeaponSpecs", "()Ljava/util/List;");
             transformer.mergeClass("com/genir/renderer/overrides/StarfarerSettings$SettingsAPIImpl");
 
         } else {

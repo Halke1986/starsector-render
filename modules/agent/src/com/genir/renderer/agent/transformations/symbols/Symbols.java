@@ -97,6 +97,7 @@ public class Symbols {
     public final MethodNode HullSpecStore_addHullSpec;
     public final MethodNode HullSpecStore_removeHullSpec;
     public final MethodNode WeaponSpecStore_addWeaponSpec;
+    public final MethodNode WeaponSpecStore_removeWeaponSpec;
     public final MethodNode WeaponSpecStore_addProjectileSpec;
     public final MethodNode FontRenderer_renderGlyphs;
     public final MethodNode FontRenderer_refreshFontFlags;
@@ -269,6 +270,7 @@ public class Symbols {
         HullSpecStore_addHullSpec = methodList(HullSpecStore).byDesc("(Ljava/lang/String;L" + ShipHullSpec.name + ";)V").get();
         HullSpecStore_removeHullSpec = methodList(HullSpecStore).byDesc("(Ljava/lang/String;)V").get();
         WeaponSpecStore_addWeaponSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;)V").get();
+        WeaponSpecStore_removeWeaponSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;)V").get();
         WeaponSpecStore_addProjectileSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Ljava/lang/Object;)V").get();
         final MethodNode FontRenderer_renderGlyphsOuter = methodList(FontRenderer).byDesc("(FFZ)V").get();
         final MethodNode FontRenderer_setFontSize = methodList(FontRenderer).byDesc("(L" + Font.name + ";)V").byNotName("<init>").get();
