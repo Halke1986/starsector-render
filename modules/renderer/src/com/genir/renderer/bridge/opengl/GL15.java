@@ -44,7 +44,7 @@ public final class GL15 {
     }
 
     public static void glBufferData(int target, IntBuffer data, int usage) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL15.glBufferData(int, IntBuffer, int)");
+        com.genir.renderer.bridge.commands.GL15.glBufferData(target, data, usage);
     }
 
     public static void glBufferData(int target, ShortBuffer data, int usage) {
