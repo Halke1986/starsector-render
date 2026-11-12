@@ -1,3 +1,6 @@
+- Fixed a number of crashes when using Shadowverse/szb combat wheel menu. Reported by 下北泽远野.
+- Optimized game startup time.
+
 v1.0.0
 
 - Fixed an issue where some textures were not rendering when using BoxUtils and VRAM Optimizer. Reported by Hexxed.
