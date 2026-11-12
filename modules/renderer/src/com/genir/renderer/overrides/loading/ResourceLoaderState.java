@@ -15,7 +15,6 @@ import com.fs.starfarer.loading.specs.BaseWeaponSpec;
 import com.fs.starfarer.loading.specs.ShipHullSpec;
 import com.fs.starfarer.renderers.AtmosphereRenderer;
 import com.fs.starfarer.renderers.ShipArrowRenderer;
-import com.fs.starfarer.settings.StarfarerSettings;
 import com.fs.starfarer.util.ScreenshotUtil;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
@@ -24,6 +23,7 @@ import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.debug.Watchdog;
 import com.genir.renderer.overrides.GameState;
+import com.genir.renderer.overrides.StarfarerSettings;
 import com.genir.renderer.overrides.loading.textures.DDSIntegration;
 import com.genir.renderer.overrides.loading.textures.TextureLoader;
 import com.genir.renderer.overrides.loading.textures.TextureRepository;
@@ -341,7 +341,7 @@ public class ResourceLoaderState {
         // occupy most of the render thread's time, delaying tasks such as texture uploads.
         // Increase the caller's sleep duration after each update to give those tasks
         // time to run before the next update is submitted.
-        Thread.sleep(Math.max(millis, waitDurationMS * 4));
+        Thread.sleep(Math.max(millis, Math.min(700, waitDurationMS * 4)));
     }
 
     /**

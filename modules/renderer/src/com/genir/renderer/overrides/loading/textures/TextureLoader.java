@@ -1,6 +1,9 @@
 package com.genir.renderer.overrides.loading.textures;
 
 import com.fs.graphics.TextureHandler;
+import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
@@ -18,7 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Overrides com.fs.graphics.TextureLoader
@@ -97,7 +103,7 @@ public class TextureLoader {
         // Upload textures from different threads, leveraging the fact
         // that during asset loading all GL calls are intercepted by
         // the main simulated context.
-        commitAndCacheTexture(path, path, texData);
+        commitTexture(path, path, texData);
     }
 
     /**
@@ -113,8 +119,11 @@ public class TextureLoader {
         }
 
         TextureData texData = loadTextureData("", path);
-        int textureID = commitTexture(path, texData);
-        return newVanillaTextureHandler(null, path, texData, textureID);
+        try {
+            return commitTexture(null, path, texData).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -162,14 +171,73 @@ public class TextureLoader {
      * <p>
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
-    private void commitAndCacheTexture(String name, String path, TextureData texData) {
-        synchronized (ResourceLoaderLock.executorLock) {
-            try {
-                int textureID = commitTexture(path, texData);
+    private Future<TextureHandler> commitTexture(String name, String path, TextureData texData) {
+        if (texData.isDDS()) {
+            return commitTextureDDS(name, path, texData);
+        } else {
+            return commitTextureVanilla(name, path, texData);
+        }
+    }
 
-                TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
-                TextureRepository.TextureRepository_addTexture(name, handler);
-                DebugTextureRepository.addTextureName(textureID, name);
+    /**
+     * ADDED METHOD
+     */
+    private Future<TextureHandler> commitTextureDDS(String name, String path, TextureData texData) {
+        try {
+            final Context context = ContextManager.getThreadContext();
+            int textureID;
+
+            synchronized (ResourceLoaderLock.executorLock) {
+                textureID = DDSIntegration.commitTexture(texData);
+                context.exec.swapFrames();
+            }
+            TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
+
+            if (name != null) {
+                synchronized (this) {
+                    TextureRepository.TextureRepository_addTexture(name, handler);
+                    DebugTextureRepository.addTextureName(textureID, name);
+                }
+            }
+
+            return CompletableFuture.completedFuture(handler);
+        } catch (Exception e) {
+            throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+        }
+    }
+
+    /**
+     * ADDED METHOD
+     * <p>
+     * Run vanilla texture upload entirely on the rendering thread, to not block image loading thread.
+     */
+    private Future<TextureHandler> commitTextureVanilla(String name, String path, TextureData texData) {
+        final Context context = ContextManager.getThreadContext();
+        final CompletableFuture<TextureHandler> future = new CompletableFuture<>();
+
+        synchronized (ResourceLoaderLock.executorLock) {
+            context.exec.execute(new TextureLoader$commitTextureVanilla(this, future, name, path, texData));
+            context.exec.swapFrames();
+        }
+
+        return future;
+    }
+
+    public record TextureLoader$commitTextureVanilla(TextureLoader texLoader, CompletableFuture<TextureHandler> future, String name, String path, TextureData texData) implements GLCommand {
+        @Override
+        public void run(Context context, float[] args, int argsOffset) {
+            try {
+                int textureID = TextureBuilder.commitTexture(context, path, texData);
+                TextureHandler handler = texLoader.newVanillaTextureHandler(name, path, texData, textureID);
+
+                if (name != null) {
+                    synchronized (texLoader) {
+                        TextureRepository.TextureRepository_addTexture(name, handler);
+                        DebugTextureRepository.addTextureName(textureID, name);
+                    }
+                }
+
+                future.complete(handler);
             } catch (Exception e) {
                 throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
             }
@@ -179,20 +247,7 @@ public class TextureLoader {
     /**
      * ADDED METHOD
      */
-    private int commitTexture(String path, TextureData texData) {
-        synchronized (ResourceLoaderLock.executorLock) {
-            if (texData.isDDS()) {
-                return DDSIntegration.commitTexture(texData);
-            } else {
-                return TextureBuilder.commitTexture(path, texData);
-            }
-        }
-    }
-
-    /**
-     * ADDED METHOD
-     */
-    private TextureHandler newVanillaTextureHandler(String name, String path, TextureData texData, int textureID) {
+    public TextureHandler newVanillaTextureHandler(String name, String path, TextureData texData, int textureID) {
         TextureHandler handler = new TextureHandler(GL11.GL_TEXTURE_2D, textureID, path);
 
         handler.TextureHandler_setStringID(name);

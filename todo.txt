@@ -2,14 +2,18 @@
 
 Loading bar render in a separate thread?
 
+
+getAllVariantIds
+
+
 bugs:
 
+
+Fossic stuff
 
 
 campaign radar line (another one) and radar transparency
 champion silhouette also has lines?
-
-
 
 
 https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
@@ -25,6 +29,7 @@ early crash
 https://discord.com/channels/187635036525166592/1567620641451147284
 glDrawArrays EXCEPTION_ACCESS_VIOLATION
 waiting for log file
+player can't reproduce anymore (that wording, lol)
 
 
 https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957
@@ -37,3 +42,8 @@ https://discord.com/channels/187635036525166592/1402763865913036831/156470677309
 (QoL's shield status triggers the crash)
 betatester can't reproduce
 added more logs in case this happens again
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1570308284714459216
+missing salvage entities
+waiting for confirmation the issue happens only with FR enabled
