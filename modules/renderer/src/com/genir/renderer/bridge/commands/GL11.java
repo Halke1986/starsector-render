@@ -1311,6 +1311,11 @@ public class GL11 {
                 return context.bufferTracker.getBoundFramebuffer();
             case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
                 return context.bufferTracker.getBoundVertexArray();
+            case org.lwjgl.opengl.GL31.GL_UNIFORM_BUFFER_BINDING:
+                return context.bufferTracker.getBoundUniformBuffer();
+            case org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BUFFER_BINDING:
+                return context.bufferTracker.getBoundShaderStorageBuffer();
+
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:

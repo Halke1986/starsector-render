@@ -17,8 +17,10 @@ public class BufferTracker {
     private final Set<Integer> framebuffers = ConcurrentHashMap.newKeySet();
     private final Set<Integer> renderbuffers = ConcurrentHashMap.newKeySet();
 
-    private int framebufferBinding = 0;
-    private int vertexArrayBinding = 0;
+    private int boundFramebuffer = 0;
+    private int boundVertexArray = 0;
+    private int boundUniformBuffer = 0;
+    private int boundShaderStorageBuffer = 0;
 
     public BufferTracker(Executor exec) {
         this.exec = exec;
@@ -29,6 +31,11 @@ public class BufferTracker {
     //
 
     public void glBindBuffer(int target, int buffer) {
+        // Out of bounds.
+        if (buffer < 0) {
+            return;
+        }
+
         switch (target) {
             case GL15.GL_ARRAY_BUFFER:
             case GL15.GL_ELEMENT_ARRAY_BUFFER:
@@ -39,21 +46,20 @@ public class BufferTracker {
             case GL31.GL_COPY_WRITE_BUFFER:
             case GL31.GL_TEXTURE_BUFFER:
             case GL31.GL_UNIFORM_BUFFER:
+                boundUniformBuffer = buffer;
+                break;
             case GL40.GL_DRAW_INDIRECT_BUFFER:
             case GL42.GL_ATOMIC_COUNTER_BUFFER:
             case GL43.GL_DISPATCH_INDIRECT_BUFFER:
             case GL43.GL_SHADER_STORAGE_BUFFER:
+                boundShaderStorageBuffer = buffer;
+                break;
             case GL44.GL_QUERY_BUFFER:
                 break;
 
             // Unknown buffer type.
             default:
                 return;
-        }
-
-        // Out of bounds.
-        if (buffer < 0) {
-            return;
         }
 
         // Unbinding a buffer.
@@ -65,10 +71,15 @@ public class BufferTracker {
     }
 
     public void glBindVertexArray(int array) {
-        vertexArrayBinding = array;
+        boundVertexArray = array;
     }
 
     public void glBindFramebuffer(int target, int framebuffer) {
+        // Out of bounds.
+        if (framebuffer < 0) {
+            return;
+        }
+
         switch (target) {
             case GL30.GL_DRAW_FRAMEBUFFER:
             case GL30.GL_READ_FRAMEBUFFER:
@@ -80,12 +91,7 @@ public class BufferTracker {
                 return;
         }
 
-        // Out of bounds.
-        if (framebuffer < 0) {
-            return;
-        }
-
-        framebufferBinding = framebuffer;
+        boundFramebuffer = framebuffer;
 
         // Unbinding a buffer.
         if (framebuffer == 0) {
@@ -184,30 +190,38 @@ public class BufferTracker {
     //
 
     public int getBoundFramebuffer() {
-        record BufferTracker$assertGetBoundFramebuffer(int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
-                Debug.asertEqual(expected, actual, this);
-            }
-        }
-
-        int result = framebufferBinding;
-        exec.execute(new BufferTracker$assertGetBoundFramebuffer(result));
+        int result = boundFramebuffer;
+        assertBoundBuffer(result, GL30.GL_FRAMEBUFFER_BINDING);
         return result;
     }
 
     public int getBoundVertexArray() {
-        record BufferTracker$assertGetBoundVertexArray(int expected) implements GLCommand {
+        int result = boundVertexArray;
+        assertBoundBuffer(result, GL30.GL_VERTEX_ARRAY_BINDING);
+        return result;
+    }
+
+    public int getBoundUniformBuffer() {
+        int result = boundUniformBuffer;
+        assertBoundBuffer(result, GL31.GL_UNIFORM_BUFFER_BINDING);
+        return result;
+    }
+
+    public int getBoundShaderStorageBuffer() {
+        int result = boundShaderStorageBuffer;
+        assertBoundBuffer(result, GL43.GL_SHADER_STORAGE_BUFFER_BINDING);
+        return result;
+    }
+
+    private void assertBoundBuffer(int expected, int pname) {
+        record BufferTracker$assertBoundBuffer(int expected, int pname) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(pname);
                 Debug.asertEqual(expected, actual, this);
             }
         }
 
-        int result = vertexArrayBinding;
-        exec.execute(new BufferTracker$assertGetBoundVertexArray(result));
-        return result;
+        exec.execute(new BufferTracker$assertBoundBuffer(expected, pname));
     }
 }
