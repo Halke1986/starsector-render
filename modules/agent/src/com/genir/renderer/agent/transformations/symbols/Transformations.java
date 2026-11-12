@@ -130,6 +130,7 @@ public class Transformations {
                 entry("TextureRepository_getTextureLoader", symbols.TextureRepository_getTextureLoader.name),
                 entry("Tesselator_renderAsPolygon", symbols.Tesselator_renderAsPolygon.name),
                 entry("HullSpecStore_addHullSpec", symbols.HullSpecStore_addHullSpec.name),
+                entry("HullSpecStore_removeHullSpec", symbols.HullSpecStore_removeHullSpec.name),
                 entry("WeaponSpecStore_addWeaponSpec", symbols.WeaponSpecStore_addWeaponSpec.name),
                 entry("WeaponSpecStore_addProjectileSpec", symbols.WeaponSpecStore_addProjectileSpec.name),
                 entry("FontRenderer_renderGlyphs", symbols.FontRenderer_renderGlyphs.name),

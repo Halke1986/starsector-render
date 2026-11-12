@@ -2,8 +2,15 @@
 
 Loading bar render in a separate thread?
 
+
+getAllVariantIds
+getActuallyAllWeaponSpecs
+getAllWeaponSpecs
+
 bugs:
 
+
+Fossic stuff
 
 
 campaign radar line (another one) and radar transparency
@@ -16,16 +23,12 @@ https://discord.com/channels/187635036525166592/1402763865913036831/156617923973
 GLCommand in Executor mutated to a different type again
 
 
-https://discord.com/channels/187635036525166592/1568592136037732382/1568965124021026981
-loulan ship circle missing
-LouLan 3.11 END does not show the circle even without FR
-
-
 ************************************ waiting for stuff to happen
 
 https://discord.com/channels/187635036525166592/1567620641451147284
 glDrawArrays EXCEPTION_ACCESS_VIOLATION
 waiting for log file
+player can't reproduce anymore (that wording, lol)
 
 
 https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957

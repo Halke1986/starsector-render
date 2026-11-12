@@ -112,6 +112,7 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
 
         } else if (className.equals(symbols.HullSpecStore.name)) {
             transformer.removeMethod(symbols.HullSpecStore_addHullSpec);
+            transformer.removeMethod(symbols.HullSpecStore_removeHullSpec);
             transformer.mergeClass("com/genir/renderer/overrides/loading/HullSpecStore");
 
         } else if (className.equals(symbols.WeaponSpecStore.name)) {
@@ -202,6 +203,10 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
         } else if (className.equals("com/fs/starfarer/title/TitleScreenState")) {
             transformer.renameMethod("checkNewHighScore", "checkNewHighScore_vanilla", "()V");
             transformer.mergeClass("com/genir/renderer/overrides/TitleScreenState");
+
+        } else if (className.equals(symbols.StarfarerSettings$SettingsAPIImpl.name)) {
+            transformer.removeMethod("getAllShipHullSpecs", "()Ljava/util/List;");
+            transformer.mergeClass("com/genir/renderer/overrides/StarfarerSettings$SettingsAPIImpl");
 
         } else {
             return null;

@@ -45,6 +45,7 @@ public class Symbols {
     public final ClassNode DeploymentManager$ReinforcementType;
     public final ClassNode Bounds;
     public final ClassNode BoundsSegment;
+    public final ClassNode StarfarerSettings$SettingsAPIImpl;
 
     public final MethodNode TextureRepository_addTexture;
     public final MethodNode TextureRepository_getTextureLoader;
@@ -94,6 +95,7 @@ public class Symbols {
     public final MethodNode LoadingUtils_getMergedSpreadsheetDataForMod;
     public final MethodNode Tesselator_renderAsPolygon;
     public final MethodNode HullSpecStore_addHullSpec;
+    public final MethodNode HullSpecStore_removeHullSpec;
     public final MethodNode WeaponSpecStore_addWeaponSpec;
     public final MethodNode WeaponSpecStore_addProjectileSpec;
     public final MethodNode FontRenderer_renderGlyphs;
@@ -213,6 +215,7 @@ public class Symbols {
         JavaSourceFinder = onwerClass(methodInstructionsByOwner(methodList(scriptStoreNode).byDesc("(Ljava/lang/ClassLoader;)V").get(), "com/fs/starfarer/loading").get(0));
         ShipHullSpec = methodList(shipNode).byName("getHullSpec").byDesc("()Lcom/fs/starfarer/loading/specs").getReturnTypeClass();
         ShutdownException = onwerClass(methodInstructionsBy(methodList(baseGameStateNode).byName("traverse").get(), "com/fs/starfarer", "<init>").get(0));
+        StarfarerSettings$SettingsAPIImpl = readClassNode(starfarerSettingsNode.innerClasses.stream().filter((innerClassNode) -> innerClassNode.access == 0).findFirst().get().name);
 
         // Methods
         TextureRepository_addTexture = methodList(TextureRepository).byDesc("(Ljava/lang/String;L" + TextureHandler.name + ";)V").get();
@@ -264,6 +267,7 @@ public class Symbols {
         LoadingUtils_getMergedSpreadsheetDataForMod = methodList(loadingUtilsNode).byDesc("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/json/JSONArray;").get();
         Tesselator_renderAsPolygon = methodList(tesselatorNode).byDesc("(L" + Bounds.name + ";FFF)V").get();
         HullSpecStore_addHullSpec = methodList(HullSpecStore).byDesc("(Ljava/lang/String;L" + ShipHullSpec.name + ";)V").get();
+        HullSpecStore_removeHullSpec = methodList(HullSpecStore).byDesc("(Ljava/lang/String;)V").get();
         WeaponSpecStore_addWeaponSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Lcom/fs/starfarer/loading/specs/BaseWeaponSpec;)V").get();
         WeaponSpecStore_addProjectileSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Ljava/lang/Object;)V").get();
         final MethodNode FontRenderer_renderGlyphsOuter = methodList(FontRenderer).byDesc("(FFZ)V").get();
