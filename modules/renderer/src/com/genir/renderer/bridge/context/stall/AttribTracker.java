@@ -26,8 +26,6 @@ public class AttribTracker {
     private final Stack<AttribState.Snapshot> stateStack = new Stack<>();
 
     // Values not being a part of attributes stack.
-    private int framebufferBinding = 0;
-    private int vertexArrayBinding = 0;
     private int currentProgram = 0;
 
     public AttribTracker(Executor exec) {
@@ -137,34 +135,6 @@ public class AttribTracker {
         return result;
     }
 
-    public int getFramebufferBinding() {
-        record AttribTracker$assertFramebufferBinding(int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
-                Debug.asertEqual(expected, actual, this);
-            }
-        }
-
-        int result = framebufferBinding;
-        exec.execute(new AttribTracker$assertFramebufferBinding(result));
-        return result;
-    }
-
-    public int getVertexArrayBinding() {
-        record AttribTracker$assertVertexArrayBinding(int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
-                Debug.asertEqual(expected, actual, this);
-            }
-        }
-
-        int result = vertexArrayBinding;
-        exec.execute(new AttribTracker$assertVertexArrayBinding(result));
-        return result;
-    }
-
     public AttribState.Box getViewport() {
         record AttribTracker$assertViewport(AttribState.Box expected) implements GLCommand {
             @Override
@@ -264,14 +234,6 @@ public class AttribTracker {
 
     public void glLineWidth(float width) {
         state.glLineWidth(width);
-    }
-
-    public void glBindFramebuffer(int target, int framebuffer) {
-        framebufferBinding = framebuffer;
-    }
-
-    public void glBindVertexArray(int array) {
-        vertexArrayBinding = array;
     }
 
     public void glViewport(int x, int y, int width, int height) {

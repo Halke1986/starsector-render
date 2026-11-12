@@ -1308,9 +1308,9 @@ public class GL11 {
             case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
                 return context.attribTracker.getCurrentProgram();
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
-                return context.attribTracker.getFramebufferBinding();
+                return context.bufferTracker.getBoundFramebuffer();
             case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
-                return context.attribTracker.getVertexArrayBinding();
+                return context.bufferTracker.getBoundVertexArray();
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
             case NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:

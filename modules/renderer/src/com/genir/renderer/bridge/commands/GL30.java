@@ -91,7 +91,6 @@ public class GL30 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.attribTracker.glBindFramebuffer(target, framebuffer);
         context.bufferTracker.glBindFramebuffer(target, framebuffer);
         context.exec.execute(new glBindFramebuffer(target, framebuffer));
     }
@@ -155,7 +154,7 @@ public class GL30 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.attribTracker.glBindVertexArray(array);
+        context.bufferTracker.glBindVertexArray(array);
         context.exec.execute(new glBindVertexArray(array));
     }
 

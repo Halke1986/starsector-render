@@ -2,18 +2,27 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.debug.Debug;
 import org.lwjgl.opengl.*;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.genir.renderer.debug.Debug.asertEqual;
-
 public class BufferTracker {
+    private final Executor exec;
+
     private final Set<Integer> buffers = ConcurrentHashMap.newKeySet();
     private final Set<Integer> framebuffers = ConcurrentHashMap.newKeySet();
     private final Set<Integer> renderbuffers = ConcurrentHashMap.newKeySet();
+
+    private int framebufferBinding = 0;
+    private int vertexArrayBinding = 0;
+
+    public BufferTracker(Executor exec) {
+        this.exec = exec;
+    }
 
     //
     // GL CALLS
@@ -55,6 +64,10 @@ public class BufferTracker {
         buffers.add(buffer);
     }
 
+    public void glBindVertexArray(int array) {
+        vertexArrayBinding = array;
+    }
+
     public void glBindFramebuffer(int target, int framebuffer) {
         switch (target) {
             case GL30.GL_DRAW_FRAMEBUFFER:
@@ -71,6 +84,8 @@ public class BufferTracker {
         if (framebuffer < 0) {
             return;
         }
+
+        framebufferBinding = framebuffer;
 
         // Unbinding a buffer.
         if (framebuffer == 0) {
@@ -117,50 +132,82 @@ public class BufferTracker {
     }
 
     public boolean glIsBuffer(int buffer) {
-        record BufferTracker$glIsBuffer(int buffer, boolean expected) implements GLCommand {
+        record BufferTracker$assertIsBuffer(int buffer, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL15.glIsBuffer(buffer);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         boolean result = buffers.contains(buffer);
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new BufferTracker$glIsBuffer(buffer, result));
+        context.exec.execute(new BufferTracker$assertIsBuffer(buffer, result));
         return result;
     }
 
     public boolean glIsFramebuffer(int framebuffer) {
-        record BufferTracker$glIsFramebuffer(int framebuffer, boolean expected) implements GLCommand {
+        record BufferTracker$assertIsFramebuffer(int framebuffer, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL30.glIsFramebuffer(framebuffer);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         boolean result = framebuffers.contains(framebuffer);
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new BufferTracker$glIsFramebuffer(framebuffer, result));
+        context.exec.execute(new BufferTracker$assertIsFramebuffer(framebuffer, result));
         return result;
     }
 
     public boolean glIsRenderbuffer(int renderbuffer) {
-        record BufferTracker$glIsRenderbuffer(int renderbuffer, boolean expected) implements GLCommand {
+        record BufferTracker$assertIsRenderbuffer(int renderbuffer, boolean expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL30.glIsRenderbuffer(renderbuffer);
-                asertEqual(expected, actual, this);
+                Debug.asertEqual(expected, actual, this);
             }
         }
 
         boolean result = renderbuffers.contains(renderbuffer);
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new BufferTracker$glIsRenderbuffer(renderbuffer, result));
+        context.exec.execute(new BufferTracker$assertIsRenderbuffer(renderbuffer, result));
+        return result;
+    }
+
+    //
+    // Getters.
+    //
+
+    public int getBoundFramebuffer() {
+        record BufferTracker$assertGetBoundFramebuffer(int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
+                Debug.asertEqual(expected, actual, this);
+            }
+        }
+
+        int result = framebufferBinding;
+        exec.execute(new BufferTracker$assertGetBoundFramebuffer(result));
+        return result;
+    }
+
+    public int getBoundVertexArray() {
+        record BufferTracker$assertGetBoundVertexArray(int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
+                Debug.asertEqual(expected, actual, this);
+            }
+        }
+
+        int result = vertexArrayBinding;
+        exec.execute(new BufferTracker$assertGetBoundVertexArray(result));
         return result;
     }
 }
