@@ -7,6 +7,8 @@ import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.debug.Debug;
 import org.lwjgl.opengl.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +23,8 @@ public class BufferTracker {
     private int boundVertexArray = 0;
     private int boundUniformBuffer = 0;
     private int boundShaderStorageBuffer = 0;
+    private final Map<Integer, Integer> boundUniformBufferIndexed = new HashMap<>();
+    private final Map<Integer, Integer> boundShaderStorageBufferIndexed = new HashMap<>();
 
     public BufferTracker(Executor exec) {
         this.exec = exec;
@@ -31,9 +35,51 @@ public class BufferTracker {
     //
 
     public void glBindBuffer(int target, int buffer) {
+        if (!glBindBufferCheck(target, buffer)) {
+            return;
+        }
+
+        switch (target) {
+            case GL31.GL_UNIFORM_BUFFER:
+                boundUniformBuffer = buffer;
+                break;
+
+            case GL43.GL_SHADER_STORAGE_BUFFER:
+                boundShaderStorageBuffer = buffer;
+                break;
+        }
+
+        if (buffer != 0) {
+            buffers.add(buffer);
+        }
+    }
+
+    public void glBindBufferBase(int target, int index, int buffer) {
+        if (!glBindBufferCheck(target, buffer)) {
+            return;
+        }
+
+        switch (target) {
+            case GL31.GL_UNIFORM_BUFFER:
+                boundUniformBuffer = buffer;
+                boundUniformBufferIndexed.put(index, buffer);
+                break;
+
+            case GL43.GL_SHADER_STORAGE_BUFFER:
+                boundShaderStorageBuffer = buffer;
+                boundShaderStorageBufferIndexed.put(index, buffer);
+                break;
+        }
+
+        if (buffer != 0) {
+            buffers.add(buffer);
+        }
+    }
+
+    private boolean glBindBufferCheck(int target, int buffer) {
         // Out of bounds.
         if (buffer < 0) {
-            return;
+            return false;
         }
 
         switch (target) {
@@ -46,28 +92,19 @@ public class BufferTracker {
             case GL31.GL_COPY_WRITE_BUFFER:
             case GL31.GL_TEXTURE_BUFFER:
             case GL31.GL_UNIFORM_BUFFER:
-                boundUniformBuffer = buffer;
-                break;
             case GL40.GL_DRAW_INDIRECT_BUFFER:
             case GL42.GL_ATOMIC_COUNTER_BUFFER:
             case GL43.GL_DISPATCH_INDIRECT_BUFFER:
             case GL43.GL_SHADER_STORAGE_BUFFER:
-                boundShaderStorageBuffer = buffer;
-                break;
             case GL44.GL_QUERY_BUFFER:
                 break;
 
             // Unknown buffer type.
             default:
-                return;
+                return false;
         }
 
-        // Unbinding a buffer.
-        if (buffer == 0) {
-            return;
-        }
-
-        buffers.add(buffer);
+        return true;
     }
 
     public void glBindVertexArray(int array) {
@@ -207,9 +244,21 @@ public class BufferTracker {
         return result;
     }
 
+    public int getBoundUniformBuffer(int index) {
+        int result = boundUniformBufferIndexed.getOrDefault(index, 0);
+        assertBoundBuffer(result, GL31.GL_UNIFORM_BUFFER_BINDING, index);
+        return result;
+    }
+
     public int getBoundShaderStorageBuffer() {
         int result = boundShaderStorageBuffer;
         assertBoundBuffer(result, GL43.GL_SHADER_STORAGE_BUFFER_BINDING);
+        return result;
+    }
+
+    public int getBoundShaderStorageBuffer(int index) {
+        int result = boundShaderStorageBufferIndexed.getOrDefault(index, 0);;
+        assertBoundBuffer(result, GL43.GL_SHADER_STORAGE_BUFFER_BINDING, index);
         return result;
     }
 
@@ -223,5 +272,17 @@ public class BufferTracker {
         }
 
         exec.execute(new BufferTracker$assertBoundBuffer(expected, pname));
+    }
+
+    private void assertBoundBuffer(int expected, int index, int pname) {
+        record BufferTracker$assertBoundBuffer(int expected, int index, int pname) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                int actual = org.lwjgl.opengl.GL30.glGetInteger(pname, index);
+                Debug.asertEqual(expected, actual, this);
+            }
+        }
+
+        exec.execute(new BufferTracker$assertBoundBuffer(expected, index, pname));
     }
 }

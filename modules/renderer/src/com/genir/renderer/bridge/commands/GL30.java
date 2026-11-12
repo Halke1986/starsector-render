@@ -4,6 +4,8 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import org.lwjgl.opengl.ATIMeminfo;
+import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -183,6 +185,7 @@ public class GL30 {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.bufferTracker.glBindBufferBase(target, index, buffer);
         context.exec.execute(new glBindBufferBase(target, index, buffer));
     }
 
@@ -206,6 +209,15 @@ public class GL30 {
     }
 
     public static int glGetInteger(int value, int index) {
+        // Values simulated on the client thread.
+        final Context context = ContextManager.getThreadContext();
+        switch (value) {
+            case org.lwjgl.opengl.GL31.GL_UNIFORM_BUFFER_BINDING:
+                return context.bufferTracker.getBoundUniformBuffer(index);
+            case org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BUFFER_BINDING:
+                return context.bufferTracker.getBoundShaderStorageBuffer(index);
+        }
+
         record glGetInteger(int value, int index) implements GLGetter<Integer> {
             @Override
             public Integer call(Context context) {
@@ -213,7 +225,7 @@ public class GL30 {
             }
         }
 
-        final Context context = ContextManager.getThreadContext();
+        // Fallback to blocking GL call.
         return context.exec.get(new glGetInteger(value, index));
     }
 
