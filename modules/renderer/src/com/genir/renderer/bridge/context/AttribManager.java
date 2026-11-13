@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.AttribState;
+import com.genir.renderer.debug.Debug;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
@@ -9,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
-
-import static com.genir.renderer.debug.Debug.asertEqual;
 
 /**
  * AttribTracker optimizes state changes by filtering out redundant calls
@@ -45,7 +44,7 @@ public class AttribManager {
     public void applyDrawAttribs() {
         applyStencil(expected.enableStencilTest);
         applyAlpha(expected.enableAlphaTest);
-        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0, false);
+        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0);
         applyBlend(expected.enableBlend, expected.blend, expected.blendEquation, expected.blendi, expected.blendEquationi);
         applyLighting(expected.enableLighting);
         applyScissor(expected.enableScissorTest);
@@ -141,25 +140,23 @@ public class AttribManager {
     // Attrib application.
     //
 
-    private void applyStencil(boolean enable) {
-        if (actual.enableStencilTest != enable) {
-            actual.enableStencilTest = enable;
-            execGlEnableDisable(GL11.GL_STENCIL_TEST, enable);
+    private void applyStencil(boolean expected) {
+        if (actual.enableStencilTest != expected) {
+            actual.enableStencilTest = expected;
+            execGlEnableDisable(GL11.GL_STENCIL_TEST, expected);
         }
     }
 
-    private void applyAlpha(boolean enable) {
-        if (actual.enableAlphaTest != enable) {
-            actual.enableAlphaTest = enable;
-            execGlEnableDisable(GL11.GL_ALPHA_TEST, enable);
+    private void applyAlpha(boolean expected) {
+        if (actual.enableAlphaTest != expected) {
+            actual.enableAlphaTest = expected;
+            execGlEnableDisable(GL11.GL_ALPHA_TEST, expected);
         }
     }
 
-    public void applyTexture(boolean enable, int texture, boolean applyExact) {
-        boolean syncTexture = enable || applyExact;
-
+    public void applyTexture(boolean enable, int texture) {
         // No changes required.
-        if ((actual.enableTexture2DUnit0 == enable) && (!syncTexture || actual.texture2DUnit0 == texture)) {
+        if ((actual.enableTexture2DUnit0 == enable) && (!enable || actual.texture2DUnit0 == texture)) {
             return;
         }
 
@@ -173,7 +170,7 @@ public class AttribManager {
             execGlEnableDisable(GL11.GL_TEXTURE_2D, enable);
         }
 
-        if (syncTexture) {
+        if (enable) {
             if (actual.texture2DUnit0 != texture) {
                 actual.texture2DUnit0 = texture;
                 org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
@@ -181,7 +178,7 @@ public class AttribManager {
         }
 
         // Cleanup texture unit.
-        asertEqual(actual.activeTexture, expected.activeTexture, null);
+        Debug.asertEqual(actual.activeTexture, expected.activeTexture, null);
         if (actual.activeTexture != GL13.GL_TEXTURE0) {
             org.lwjgl.opengl.GL13.glActiveTexture(actual.activeTexture);
         }
@@ -246,17 +243,17 @@ public class AttribManager {
         }
     }
 
-    private void applyLighting(boolean enable) {
-        if (actual.enableLighting != enable) {
-            actual.enableLighting = enable;
-            execGlEnableDisable(GL11.GL_LIGHTING, enable);
+    private void applyLighting(boolean expected) {
+        if (actual.enableLighting != expected) {
+            actual.enableLighting = expected;
+            execGlEnableDisable(GL11.GL_LIGHTING, expected);
         }
     }
 
-    private void applyScissor(boolean enable) {
-        if (actual.enableScissorTest != enable) {
-            actual.enableScissorTest = enable;
-            execGlEnableDisable(GL11.GL_SCISSOR_TEST, enable);
+    private void applyScissor(boolean expected) {
+        if (actual.enableScissorTest != expected) {
+            actual.enableScissorTest = expected;
+            execGlEnableDisable(GL11.GL_SCISSOR_TEST, expected);
         }
     }
 
