@@ -1295,21 +1295,16 @@ public class GL11 {
         // Values simulated on the client thread.
         final Context context = ContextManager.getThreadContext();
         switch (pname) {
-            // TODO simulate all values overriden by AttribManager!
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
-                return context.attribTracker.getBoundTexture(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
-                return context.attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
-                return context.attribTracker.getActiveTexture();
             case org.lwjgl.opengl.GL14.GL_BLEND_EQUATION:
-                return context.attribTracker.getBlendEquation();
+            case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
+                return context.attribTracker.glGetInteger(pname);
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
                 return context.clientAttribTracker.getArrayBufferBinding();
             case org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING:
                 return context.clientAttribTracker.getElementArrayBufferBinding();
-            case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
-                return context.attribTracker.getCurrentProgram();
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
                 return context.bufferTracker.getBoundFramebuffer();
             case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
@@ -1563,17 +1558,12 @@ public class GL11 {
 
         switch (pname) {
             case org.lwjgl.opengl.GL11.GL_STENCIL_TEST:
-                return context.attribTracker.getEnableStencilTest();
             case org.lwjgl.opengl.GL11.GL_ALPHA_TEST:
-                return context.attribTracker.getEnableAlphaTest();
             case org.lwjgl.opengl.GL11.GL_TEXTURE_2D:
-                return context.attribTracker.getEnableTexture2D();
             case org.lwjgl.opengl.GL11.GL_BLEND:
-                return context.attribTracker.getEnableBlend();
             case org.lwjgl.opengl.GL11.GL_LIGHTING:
-                return context.attribTracker.getEnableLighting();
             case org.lwjgl.opengl.GL11.GL_SCISSOR_TEST:
-                return context.attribTracker.getEnableScissorTest();
+                return context.attribTracker.glIsEnabled(pname);
         }
 
         record glIsEnabled(int pname) implements GLGetter<Boolean> {

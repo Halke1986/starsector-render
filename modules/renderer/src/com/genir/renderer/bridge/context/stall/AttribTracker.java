@@ -34,44 +34,37 @@ public class AttribTracker {
 
     //
     // Getters.
-    // No assertion possible. Client and server state are allowed to diverge.
+    //
+    // For parameters overriden by AttribManager no assertion is possible
+    // because client and server states are allowed to diverge.
     //
 
-    public boolean getEnableStencilTest() {
-        return state.enableStencilTest;
+    public int glGetInteger(int pname) {
+        return switch (pname) {
+            case GL11.GL_TEXTURE_BINDING_2D -> getBoundTexture(GL11.GL_TEXTURE_2D);
+            case GL11.GL_MATRIX_MODE -> state.matrixMode;
+            case GL13.GL_ACTIVE_TEXTURE -> getActiveTexture();
+            case GL14.GL_BLEND_EQUATION -> state.blendEquation;
+            case GL20.GL_CURRENT_PROGRAM -> getCurrentProgram();
+            default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
+        };
     }
 
-    public boolean getEnableAlphaTest() {
-        return state.enableAlphaTest;
-    }
-
-    public boolean getEnableTexture2D() {
-        return state.getEnableTexture2D();
-    }
-
-    public boolean getEnableBlend() {
-        return state.enableBlend;
-    }
-
-    public boolean getEnableLighting() {
-        return state.enableLighting;
-    }
-
-    public boolean getEnableScissorTest() {
-        return state.enableScissorTest;
+    public boolean glIsEnabled(int pname) {
+        return switch (pname) {
+            case GL11.GL_STENCIL_TEST -> state.enableStencilTest;
+            case GL11.GL_ALPHA_TEST -> state.enableAlphaTest;
+            case GL11.GL_TEXTURE_2D -> state.getEnableTexture2D();
+            case GL11.GL_BLEND -> state.enableBlend;
+            case GL11.GL_LIGHTING -> state.enableLighting;
+            case GL11.GL_SCISSOR_TEST -> state.enableScissorTest;
+            default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
+        };
     }
 
     public int getMatrixMode() {
         return state.matrixMode;
     }
-
-    public int getBlendEquation() {
-        return state.blendEquation;
-    }
-
-    //
-    // Getters.
-    //
 
     public int getBoundTexture(int target) {
         record AttribTracker$assertTextureBinding(int target, int expected) implements GLCommand {
