@@ -5,6 +5,8 @@ Loading bar render in a separate thread?
 
 getAllVariantIds
 
+pause terminal after crash
+
 
 bugs:
 
@@ -22,6 +24,12 @@ GLCommand in Executor mutated to a different type again
 
 https://fractalsoftworks.com/forum/index.php?msg=534327
 early crash
+
+
+getting some strange effects in FR 1.0 in 0.98.5, in battle damage numbers are washed out and combat speed slows down a lot even when running at 60FPS
+
+
+black screen with game activity sounds after changing resource generator in mael modpack
 
 
 ************************************ waiting for stuff to happen

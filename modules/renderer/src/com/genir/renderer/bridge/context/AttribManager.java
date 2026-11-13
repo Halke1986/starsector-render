@@ -156,10 +156,10 @@ public class AttribManager {
     }
 
     public void applyTexture(boolean enable, int texture, boolean applyExact) {
-        boolean syncTextrue = enable || applyExact;
+        boolean syncTexture = enable || applyExact;
 
         // No changes required.
-        if ((actual.enableTexture2DUnit0 == enable) && (!syncTextrue || actual.texture2DUnit0 == texture)) {
+        if ((actual.enableTexture2DUnit0 == enable) && (!syncTexture || actual.texture2DUnit0 == texture)) {
             return;
         }
 
@@ -173,7 +173,7 @@ public class AttribManager {
             execGlEnableDisable(GL11.GL_TEXTURE_2D, enable);
         }
 
-        if (syncTextrue) {
+        if (syncTexture) {
             if (actual.texture2DUnit0 != texture) {
                 actual.texture2DUnit0 = texture;
                 org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
