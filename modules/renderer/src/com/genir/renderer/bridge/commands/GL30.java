@@ -173,7 +173,8 @@ public class GL30 {
     }
 
     public static int glGenVertexArrays() {
-        return ContextManager.getThreadContext().arrayGenerator.get();
+        final Context context = ContextManager.getThreadContext();
+        return context.arrayGenerator.get();
     }
 
     public static void glBindBufferBase(int target, int index, int buffer) {

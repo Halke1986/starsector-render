@@ -250,11 +250,13 @@ public class GL11 {
      * Client attributes.
      */
     public static void glEnableClientState(int cap) {
-        ContextManager.getThreadContext().clientAttribTracker.glEnableClientState(cap);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glEnableClientState(cap);
     }
 
     public static void glDisableClientState(int cap) {
-        ContextManager.getThreadContext().clientAttribTracker.glDisableClientState(cap);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glDisableClientState(cap);
     }
 
     public static void glPushClientAttrib(int mask) {
@@ -286,28 +288,34 @@ public class GL11 {
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        ContextManager.getThreadContext().clientAttribTracker.glVertexPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glVertexPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     public static void glVertexPointer(int size, int type, int stride, ByteBuffer pointer) {
-        ContextManager.getThreadContext().clientAttribTracker.glVertexPointer(size, stride, type, pointer);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glVertexPointer(size, stride, type, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
+        final Context context = ContextManager.getThreadContext();
         int type = unsigned ? org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE : org.lwjgl.opengl.GL11.GL_BYTE;
-        ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, type, stride, pointer);
+        context.clientAttribTracker.glColorPointer(size, type, stride, pointer);
     }
 
     public static void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
-        ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, type, stride, pointer);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glColorPointer(size, type, stride, pointer);
     }
 
     public static void glColorPointer(int size, int stride, FloatBuffer pointer) {
-        ContextManager.getThreadContext().clientAttribTracker.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        ContextManager.getThreadContext().clientAttribTracker.glTexCoordPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glTexCoordPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     /**
@@ -1440,11 +1448,13 @@ public class GL11 {
     }
 
     public static void glGenTextures(IntBuffer textures) {
-        ContextManager.getThreadContext().texGenerator.get(textures);
+        final Context context = ContextManager.getThreadContext();
+        context.texGenerator.get(textures);
     }
 
     public static int glGenTextures() {
-        return ContextManager.getThreadContext().texGenerator.get();
+        final Context context = ContextManager.getThreadContext();
+        return context.texGenerator.get();
     }
 
     public static void glReadPixels(int x, int y, int width, int height, int format, int type, FloatBuffer pixels) {

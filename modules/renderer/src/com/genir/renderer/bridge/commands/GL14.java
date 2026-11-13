@@ -30,7 +30,8 @@ public class GL14 {
             }
         }
 
-        ContextManager.getThreadContext().exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
     }
 
     public static void glMultiDrawArrays(int mode, IntBuffer piFirst, IntBuffer piCount) {

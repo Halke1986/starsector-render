@@ -17,12 +17,14 @@ import java.nio.ShortBuffer;
 
 public class GL15 {
     public static int glGenBuffers() {
-        return ContextManager.getThreadContext().bufferGenerator.get();
+        final Context context = ContextManager.getThreadContext();
+        return context.bufferGenerator.get();
     }
 
     public static void glGenBuffers(IntBuffer buffers) {
         while (buffers.remaining() > 0) {
-            buffers.put(ContextManager.getThreadContext().bufferGenerator.get());
+            final Context context = ContextManager.getThreadContext();
+            buffers.put(context.bufferGenerator.get());
         }
     }
 
