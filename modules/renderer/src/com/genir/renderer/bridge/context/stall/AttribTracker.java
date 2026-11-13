@@ -34,49 +34,44 @@ public class AttribTracker {
 
     //
     // Getters.
+    // No assertion possible. Client and server state are allowed to diverge.
     //
 
     public boolean getEnableStencilTest() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.enableStencilTest;
     }
 
     public boolean getEnableAlphaTest() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.enableAlphaTest;
     }
 
     public boolean getEnableTexture2D() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.getEnableTexture2D();
     }
 
     public boolean getEnableBlend() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.enableBlend;
     }
 
     public boolean getEnableLighting() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.enableLighting;
     }
 
     public boolean getEnableScissorTest() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.enableScissorTest;
     }
 
     public int getMatrixMode() {
-        // No assertion required. Client and
-        // server state are allowed to diverge.
         return state.matrixMode;
     }
+
+    public int getBlendEquation() {
+        return state.blendEquation;
+    }
+
+    //
+    // Getters.
+    //
 
     public int getBoundTexture(int target) {
         record AttribTracker$assertTextureBinding(int target, int expected) implements GLCommand {

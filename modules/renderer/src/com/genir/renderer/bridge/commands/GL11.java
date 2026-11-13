@@ -1295,12 +1295,15 @@ public class GL11 {
         // Values simulated on the client thread.
         final Context context = ContextManager.getThreadContext();
         switch (pname) {
+            // TODO simulate all values overriden by AttribManager!
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
                 return context.attribTracker.getBoundTexture(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
                 return context.attribTracker.getMatrixMode();
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
                 return context.attribTracker.getActiveTexture();
+            case org.lwjgl.opengl.GL14.GL_BLEND_EQUATION:
+                return context.attribTracker.getBlendEquation();
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
                 return context.clientAttribTracker.getArrayBufferBinding();
             case org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING:
