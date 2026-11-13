@@ -4,8 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import org.lwjgl.opengl.ATIMeminfo;
-import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
