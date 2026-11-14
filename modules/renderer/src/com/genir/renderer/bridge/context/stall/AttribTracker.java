@@ -44,7 +44,7 @@ public class AttribTracker {
             case GL11.GL_TEXTURE_BINDING_2D -> getBoundTexture(GL11.GL_TEXTURE_2D);
             case GL11.GL_MATRIX_MODE -> state.matrixMode;
             case GL13.GL_ACTIVE_TEXTURE -> getActiveTexture();
-            case GL14.GL_BLEND_EQUATION -> state.blendEquation;
+            case GL14.GL_BLEND_EQUATION -> state.blendEquation.modeRGB; // TODO take into account indexed calls
             case GL20.GL_CURRENT_PROGRAM -> getCurrentProgram();
             default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
         };
@@ -55,7 +55,7 @@ public class AttribTracker {
             case GL11.GL_STENCIL_TEST -> state.enableStencilTest;
             case GL11.GL_ALPHA_TEST -> state.enableAlphaTest;
             case GL11.GL_TEXTURE_2D -> state.getEnableTexture2D();
-            case GL11.GL_BLEND -> state.enableBlend;
+            case GL11.GL_BLEND -> state.enableBlend; // TODO take into account indexed calls
             case GL11.GL_LIGHTING -> state.enableLighting;
             case GL11.GL_SCISSOR_TEST -> state.enableScissorTest;
             default -> throw new UnsupportedOperationException("unsupported pname: " + pname);

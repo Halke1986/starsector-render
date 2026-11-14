@@ -13,15 +13,17 @@ import java.util.Map;
 public class AttribState {
     // Number of know texture types (targets).
     private static final int TEXTURE_TARGETS_NUM = 11;
-    private static final int TEXTURE_UNITS_NUM = 32;
 
     // GL_COLOR_BUFFER_BIT
     public boolean enableAlphaTest = false;   // GL11.GL_ALPHA_TEST, also GL_ENABLE_BIT
-    public boolean enableBlend = false;       // GL11.GL_BLEND, also GL_ENABLE_BIT
-    public int blendEquation = GL14.GL_FUNC_ADD;
-    public BlendFactors blend = new BlendFactors();
-    public Map<Integer, BlendFactors> blendi = null;
-    public Map<Integer, Integer> blendEquationi = null;
+    // Non-indexed settings.
+    public boolean enableBlend = false;
+    public final BlendEquation blendEquation = new BlendEquation();
+    public final BlendFunction blendFunction = new BlendFunction();
+    // Indexed, per draw buffer settings.
+    public final Map<Integer, BlendEnable> enableBlendi = new HashMap<>();
+    public final Map<Integer, BlendEquation> blendEquationi = new HashMap<>();
+    public final Map<Integer, BlendFunction> blendFunctioni = new HashMap<>();
 
     // GL_LIGHTING_BIT
     public boolean enableLighting = false;    // GL11.GL_LIGHTING, also GL_ENABLE_BIT
@@ -146,42 +148,27 @@ public class AttribState {
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        blend.sfactorRGB = sfactorRGB;
-        blend.dfactorRGB = dfactorRGB;
-        blend.sfactorAlpha = sfactorAlpha;
-        blend.dfactorAlpha = dfactorAlpha;
+        blendFunction.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
 
-        // glBlendFuncSeparate overwrites buffer-specific glBlendFuncSeparatei values.
-        blendi = null;
+        // Overwrite indexed settings.
+        blendFunctioni.clear();
     }
 
     public void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
-        if (blendi == null) {
-            blendi = new HashMap<>();
-        }
-
-        BlendFactors blend = new BlendFactors();
-        blend.sfactorRGB = srcRGB;
-        blend.dfactorRGB = dstRGB;
-        blend.sfactorAlpha = srcAlpha;
-        blend.dfactorAlpha = dstAlpha;
-
-        blendi.put(buf, blend);
+        blendFunctioni.computeIfAbsent(buf, k -> new BlendFunction())
+                .glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
     }
 
-    public void glBlendEquation(int mode) {
-        blendEquation = mode;
+    public void glBlendEquationSeparate(int modeRGB, int modeAlpha) {
+        blendEquation.glBlendEquationSeparate(modeRGB, modeAlpha);
 
-        // glBlendEquation overwrites buffer-specific glBlendEquationi values.
-        blendEquationi = null;
+        // Overwrite indexed settings.
+        blendEquationi.clear();
     }
 
-    public void glBlendEquationi(int buf, int mode) {
-        if (blendEquationi == null) {
-            blendEquationi = new HashMap<>();
-        }
-
-        blendEquationi.put(buf, mode);
+    public void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
+        blendEquationi.computeIfAbsent(buf, k -> new BlendEquation())
+                .glBlendEquationSeparate(modeRGB, modeAlpha);
     }
 
     public void glViewport(int x, int y, int width, int height) {
@@ -192,6 +179,7 @@ public class AttribState {
         scissorBox = new Box(x, y, width, height);
     }
 
+    // TODO setEnablei for blend and scissor
     private void setEnable(int cap, boolean value) {
         switch (cap) {
             case GL11.GL_STENCIL_TEST:
@@ -205,6 +193,7 @@ public class AttribState {
                 break;
             case GL11.GL_BLEND:
                 enableBlend = value;
+                enableBlendi.clear();
                 break;
             case GL11.GL_LIGHTING:
                 enableLighting = value;
@@ -326,9 +315,16 @@ public class AttribState {
         enableAlphaTest = source.enableAlphaTest;
         enableTexture2DUnit0 = source.enableTexture2DUnit0;
         enableTexture2DOther = Arrays.copyOf(source.enableTexture2DOther, source.enableTexture2DOther.length);
-        enableBlend = source.enableBlend;
         enableLighting = source.enableLighting;
         enableScissorTest = source.enableScissorTest;
+
+        enableBlend = source.enableBlend;
+        enableBlendi.clear();
+        for (Map.Entry<Integer, BlendEnable> entry : source.enableBlendi.entrySet()) {
+            BlendEnable enable = new BlendEnable();
+            enable.overwriteWith(entry.getValue());
+            enableBlendi.put(entry.getKey(), enable);
+        }
     }
 
     private void overwriteTextureBit(AttribState source) {
@@ -339,33 +335,32 @@ public class AttribState {
 
     private void overwriteColorBufferBit(AttribState source) {
         enableAlphaTest = source.enableAlphaTest;
+
+        // Blend enable.
         enableBlend = source.enableBlend;
-        blendEquation = source.blendEquation;
-
-        blend.overwriteWith(source.blend);
-
-        if (source.blendi != null) {
-            if (blendi == null) {
-                blendi = new HashMap<>();
-            } else {
-                blendi.clear();
-            }
-
-            for (Map.Entry<Integer, BlendFactors> entry : source.blendi.entrySet()) {
-                BlendFactors blend = new BlendFactors();
-                blend.overwriteWith(entry.getValue());
-                blendi.put(entry.getKey(), blend);
-            }
+        enableBlendi.clear();
+        for (Map.Entry<Integer, BlendEnable> entry : source.enableBlendi.entrySet()) {
+            BlendEnable enable = new BlendEnable();
+            enable.overwriteWith(entry.getValue());
+            enableBlendi.put(entry.getKey(), enable);
         }
 
-        if (source.blendEquationi != null) {
-            if (blendEquationi == null) {
-                blendEquationi = new HashMap<>();
-            } else {
-                blendEquationi.clear();
-            }
+        // Blend equation.
+        blendEquation.overwriteWith(source.blendEquation);
+        blendEquationi.clear();
+        for (Map.Entry<Integer, BlendEquation> entry : source.blendEquationi.entrySet()) {
+            BlendEquation equation = new BlendEquation();
+            equation.overwriteWith(entry.getValue());
+            blendEquationi.put(entry.getKey(), equation);
+        }
 
-            blendEquationi.putAll(source.blendEquationi);
+        // Blend function.
+        blendFunction.overwriteWith(source.blendFunction);
+        blendFunctioni.clear();
+        for (Map.Entry<Integer, BlendFunction> entry : source.blendFunctioni.entrySet()) {
+            BlendFunction function = new BlendFunction();
+            function.overwriteWith(entry.getValue());
+            blendFunctioni.put(entry.getKey(), function);
         }
     }
 
@@ -398,17 +393,66 @@ public class AttribState {
         };
     }
 
-    public static class BlendFactors {
-        public int sfactorRGB = 0;
-        public int dfactorRGB = 0;
-        public int sfactorAlpha = 0;
-        public int dfactorAlpha = 0;
+    public static class BlendEnable {
+        public boolean enable = false;
 
-        void overwriteWith(BlendFactors source) {
-            sfactorRGB = source.sfactorRGB;
-            dfactorRGB = source.dfactorRGB;
-            sfactorAlpha = source.sfactorAlpha;
-            dfactorAlpha = source.dfactorAlpha;
+        public void overwriteWith(BlendEnable source) {
+            this.enable = source.enable;
+        }
+    }
+
+    public static class BlendFunction {
+        public int srcRGB = GL11.GL_ONE;
+        public int dstRGB = GL11.GL_ZERO;
+        public int srcAlpha = GL11.GL_ONE;
+        public int dstAlpha = GL11.GL_ZERO;
+
+        public void overwriteWith(BlendFunction source) {
+            this.srcRGB = source.srcRGB;
+            this.dstRGB = source.dstRGB;
+            this.srcAlpha = source.srcAlpha;
+            this.dstAlpha = source.dstAlpha;
+        }
+
+        void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
+            this.srcRGB = sfactorRGB;
+            this.dstRGB = dfactorRGB;
+            this.srcAlpha = sfactorAlpha;
+            this.dstAlpha = dfactorAlpha;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof BlendFunction o)) return false;
+
+            return this.srcRGB == o.srcRGB
+                    && this.dstRGB == o.dstRGB
+                    && this.srcAlpha == o.srcAlpha
+                    && this.dstAlpha == o.dstAlpha;
+        }
+    }
+
+    public static class BlendEquation {
+        public int modeRGB = GL14.GL_FUNC_ADD;
+        public int modeAlpha = GL14.GL_FUNC_ADD;
+
+        public void overwriteWith(BlendEquation source) {
+            this.modeRGB = source.modeRGB;
+            this.modeAlpha = source.modeAlpha;
+        }
+
+        public void glBlendEquationSeparate(int modeRGB, int modeAlpha) {
+            this.modeRGB = modeRGB;
+            this.modeAlpha = modeAlpha;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof BlendEquation o)) return false;
+
+            return this.modeRGB == o.modeRGB && this.modeAlpha == o.modeAlpha;
         }
     }
 

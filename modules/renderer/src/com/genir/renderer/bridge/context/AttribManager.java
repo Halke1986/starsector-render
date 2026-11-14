@@ -6,9 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 import java.nio.IntBuffer;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -45,7 +43,7 @@ public class AttribManager {
         applyStencil(expected.enableStencilTest);
         applyAlpha(expected.enableAlphaTest);
         applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0);
-        applyBlend(expected.enableBlend, expected.blend, expected.blendEquation, expected.blendi, expected.blendEquationi);
+        applyBlend();
         applyLighting(expected.enableLighting);
         applyScissor(expected.enableScissorTest);
     }
@@ -125,11 +123,11 @@ public class AttribManager {
     }
 
     public void glBlendEquation(int mode) {
-        expected.glBlendEquation(mode);
+        expected.glBlendEquationSeparate(mode, mode);
     }
 
     public void glBlendEquationi(int buf, int mode) {
-        expected.glBlendEquationi(buf, mode);
+        expected.glBlendEquationSeparatei(buf, mode, mode);
     }
 
     public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
@@ -184,62 +182,234 @@ public class AttribManager {
         }
     }
 
-    private void applyBlend(
-            boolean enable,
-            AttribState.BlendFactors blendFactors,
-            int blendEquation,
-            Map<Integer, AttribState.BlendFactors> blendi,
-            Map<Integer, Integer> blendEquationi
-    ) {
-        if (actual.enableBlend != enable) {
-            actual.enableBlend = enable;
-            execGlEnableDisable(GL11.GL_BLEND, enable);
+    private void applyBlend() {
+        if (expected.enableBlendi.isEmpty() && actual.enableBlendi.isEmpty()
+                && expected.blendEquationi.isEmpty() && actual.blendEquationi.isEmpty()
+                && expected.blendFunctioni.isEmpty() && actual.blendFunctioni.isEmpty()
+        ) {
+            applyBlendFast();
+        } else {
+            applyBlendEnable();
+            applyBlendFunction();
+            applyBlendEquation();
+        }
+    }
+
+    private void applyBlendFast() {
+        // Enable.
+        if (actual.enableBlend != expected.enableBlend) {
+            actual.enableBlend = expected.enableBlend;
+            execGlEnableDisable(GL11.GL_BLEND, expected.enableBlend);
         }
 
-        if (enable) {
-            if (actual.blend.sfactorRGB != blendFactors.sfactorRGB ||
-                    actual.blend.dfactorRGB != blendFactors.dfactorRGB ||
-                    actual.blend.sfactorAlpha != blendFactors.sfactorAlpha ||
-                    actual.blend.dfactorAlpha != blendFactors.dfactorAlpha) {
-                actual.blend.sfactorRGB = blendFactors.sfactorRGB;
-                actual.blend.dfactorRGB = blendFactors.dfactorRGB;
-                actual.blend.sfactorAlpha = blendFactors.sfactorAlpha;
-                actual.blend.dfactorAlpha = blendFactors.dfactorAlpha;
+        // No need to apply expected changes to a disabled blend.
+        if (!expected.enableBlend) {
+            return;
+        }
 
-                org.lwjgl.opengl.GL14.glBlendFuncSeparate(blendFactors.sfactorRGB, blendFactors.dfactorRGB, blendFactors.sfactorAlpha, blendFactors.dfactorAlpha);
+        // Function.
+        if (!actual.blendFunction.equals(expected.blendFunction)) {
+            actual.blendFunction.overwriteWith(expected.blendFunction);
+
+            org.lwjgl.opengl.GL14.glBlendFuncSeparate(
+                    expected.blendFunction.srcRGB,
+                    expected.blendFunction.dstRGB,
+                    expected.blendFunction.srcAlpha,
+                    expected.blendFunction.dstAlpha
+            );
+        }
+
+        // Equation.
+        if (!actual.blendEquation.equals(expected.blendEquation)) {
+            actual.blendEquation.overwriteWith(expected.blendEquation);
+
+            if (expected.blendEquation.modeRGB == expected.blendEquation.modeAlpha) {
+                org.lwjgl.opengl.GL14.glBlendEquation(expected.blendEquation.modeRGB);
+            } else {
+                org.lwjgl.opengl.GL20.glBlendEquationSeparate(expected.blendEquation.modeRGB, expected.blendEquation.modeAlpha);
+            }
+        }
+    }
+
+    private void applyBlendEnable() {
+        // Apply global changes.
+        if (actual.enableBlend != expected.enableBlend) {
+            actual.enableBlend = expected.enableBlend;
+            execGlEnableDisable(GL11.GL_BLEND, expected.enableBlend);
+
+            // Overwrite indexed settings.
+            actual.enableBlendi.clear();
+        }
+
+        // Apply indexed changes.
+        for (Map.Entry<Integer, AttribState.BlendEnable> expectedEntry : expected.enableBlendi.entrySet()) {
+            int index = expectedEntry.getKey();
+            AttribState.BlendEnable expectedValue = expectedEntry.getValue();
+
+            // Read actual value. If not cached, assume the value is same as global.
+            AttribState.BlendEnable actualValue = actual.enableBlendi.computeIfAbsent(index, k -> {
+                AttribState.BlendEnable value = new AttribState.BlendEnable();
+                value.enable = expected.enableBlend;
+                return value;
+            });
+
+            if (actualValue.enable != expectedValue.enable) {
+                actualValue.enable = expectedValue.enable;
+
+                if (expectedValue.enable) {
+                    org.lwjgl.opengl.GL30.glEnablei(GL11.GL_BLEND, index);
+                } else {
+                    org.lwjgl.opengl.GL30.glDisablei(GL11.GL_BLEND, index);
+                }
+            }
+        }
+
+        // Restore removed indexed overrides.
+        var iterator = actual.enableBlendi.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            int index = entry.getKey();
+
+            if (expected.enableBlendi.containsKey(index)) {
+                continue;
             }
 
-            if (actual.blendEquation != blendEquation) {
-                actual.blendEquation = blendEquation;
-
-                org.lwjgl.opengl.GL14.glBlendEquation(blendEquation);
-            }
-
-            // Apply the buffer-specific blend settings.
-            if (blendi != null) {
-                // No comparison with the actual state is performed for simplicity
-                // and because the buffer-specific settings are not in the hot path.
-                for (Map.Entry<Integer, AttribState.BlendFactors> entry : blendi.entrySet()) {
-                    AttribState.BlendFactors blend = entry.getValue();
-                    org.lwjgl.opengl.GL40.glBlendFuncSeparatei(entry.getKey(), blend.sfactorRGB, blend.dfactorRGB, blend.sfactorAlpha, blend.dfactorAlpha);
+            if (entry.getValue().enable != actual.enableBlend) {
+                if (actual.enableBlend) {
+                    org.lwjgl.opengl.GL30.glEnablei(GL11.GL_BLEND, index);
+                } else {
+                    org.lwjgl.opengl.GL30.glDisablei(GL11.GL_BLEND, index);
                 }
             }
 
-            if (blendEquationi != null) {
-                if (actual.blendEquationi == null) {
-                    actual.blendEquationi = new HashMap<>();
-                }
+            iterator.remove();
+        }
+    }
 
-                for (Map.Entry<Integer, Integer> entry : blendEquationi.entrySet()) {
-                    Integer key = entry.getKey();
-                    Integer value = entry.getValue();
+    private void applyBlendFunction() {
+        // Apply global changes.
+        if (!actual.blendFunction.equals(expected.blendFunction)) {
+            actual.blendFunction.overwriteWith(expected.blendFunction);
 
-                    if (!Objects.equals(actual.blendEquationi.get(key), value)) {
-                        actual.blendEquationi.put(key, value);
-                        org.lwjgl.opengl.GL40.glBlendEquationi(key, value);
-                    }
-                }
+            org.lwjgl.opengl.GL14.glBlendFuncSeparate(
+                    expected.blendFunction.srcRGB,
+                    expected.blendFunction.dstRGB,
+                    expected.blendFunction.srcAlpha,
+                    expected.blendFunction.dstAlpha
+            );
+
+            // Overwrite indexed settings.
+            actual.blendFunctioni.clear();
+        }
+
+        // Apply indexed changes.
+        for (Map.Entry<Integer, AttribState.BlendFunction> expectedEntry : expected.blendFunctioni.entrySet()) {
+            int index = expectedEntry.getKey();
+            AttribState.BlendFunction expectedValue = expectedEntry.getValue();
+
+            // Read actual value. If not cached, assume the value is same as global.
+            AttribState.BlendFunction actualValue = actual.blendFunctioni.computeIfAbsent(index, k -> {
+                AttribState.BlendFunction value = new AttribState.BlendFunction();
+                value.overwriteWith(expected.blendFunction);
+                return value;
+            });
+
+            if (!actualValue.equals(expectedValue)) {
+                actualValue.overwriteWith(expectedValue);
+
+                org.lwjgl.opengl.GL40.glBlendFuncSeparatei(
+                        index,
+                        expectedValue.srcRGB,
+                        expectedValue.dstRGB,
+                        expectedValue.srcAlpha,
+                        expectedValue.dstAlpha
+                );
             }
+        }
+
+        // Restore removed indexed overrides.
+        var iterator = actual.blendFunctioni.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            int index = entry.getKey();
+            AttribState.BlendFunction expectedValue = entry.getValue();
+
+            if (expected.blendFunctioni.containsKey(index)) {
+                continue;
+            }
+
+            if (!expectedValue.equals(actual.blendFunction)) {
+                org.lwjgl.opengl.GL40.glBlendFuncSeparatei(
+                        index,
+                        actual.blendFunction.srcRGB,
+                        actual.blendFunction.dstRGB,
+                        actual.blendFunction.srcAlpha,
+                        actual.blendFunction.dstAlpha
+                );
+            }
+
+            iterator.remove();
+        }
+    }
+
+    private void applyBlendEquation() {
+        // Apply global changes.
+        if (!actual.blendEquation.equals(expected.blendEquation)) {
+            actual.blendEquation.overwriteWith(expected.blendEquation);
+
+            if (expected.blendEquation.modeRGB == expected.blendEquation.modeAlpha) {
+                org.lwjgl.opengl.GL14.glBlendEquation(expected.blendEquation.modeRGB);
+            } else {
+                org.lwjgl.opengl.GL20.glBlendEquationSeparate(expected.blendEquation.modeRGB, expected.blendEquation.modeAlpha);
+            }
+
+            // Overwrite indexed settings.
+            actual.blendEquationi.clear();
+        }
+
+        // Apply indexed changes.
+        for (Map.Entry<Integer, AttribState.BlendEquation> expectedEntry : expected.blendEquationi.entrySet()) {
+            int index = expectedEntry.getKey();
+            AttribState.BlendEquation expectedValue = expectedEntry.getValue();
+
+            // Read actual value. If not cached, assume the value is same as global.
+            AttribState.BlendEquation actualValue = actual.blendEquationi.computeIfAbsent(index, k -> {
+                AttribState.BlendEquation value = new AttribState.BlendEquation();
+                value.overwriteWith(expected.blendEquation);
+                return value;
+            });
+
+            if (!actualValue.equals(expectedValue)) {
+                actualValue.overwriteWith(expectedValue);
+
+                org.lwjgl.opengl.GL40.glBlendEquationSeparatei(
+                        index,
+                        expectedValue.modeRGB,
+                        expectedValue.modeAlpha
+                );
+            }
+        }
+
+        // Restore removed indexed overrides.
+        var iterator = actual.blendEquationi.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            int index = entry.getKey();
+            AttribState.BlendEquation expectedValue = entry.getValue();
+
+            if (expected.blendEquationi.containsKey(index)) {
+                continue;
+            }
+
+            if (!expectedValue.equals(actual.blendEquation)) {
+                org.lwjgl.opengl.GL40.glBlendEquationSeparatei(
+                        index,
+                        actual.blendEquation.modeRGB,
+                        actual.blendEquation.modeAlpha
+                );
+            }
+
+            iterator.remove();
         }
     }
 
