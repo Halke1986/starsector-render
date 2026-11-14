@@ -44,9 +44,29 @@ public class AttribTracker {
             case GL11.GL_TEXTURE_BINDING_2D -> getBoundTexture(GL11.GL_TEXTURE_2D);
             case GL11.GL_MATRIX_MODE -> state.matrixMode;
             case GL13.GL_ACTIVE_TEXTURE -> getActiveTexture();
-            case GL14.GL_BLEND_EQUATION -> state.blendEquation.modeRGB; // TODO take into account indexed calls
+
+            // non-indexed blend queries return the state for draw buffer 0.
+            case GL14.GL_BLEND_SRC_RGB -> state.blendFunctioni.getOrDefault(0, state.blendFunction).srcRGB;
+            case GL14.GL_BLEND_DST_RGB -> state.blendFunctioni.getOrDefault(0, state.blendFunction).dstRGB;
+            case GL14.GL_BLEND_SRC_ALPHA -> state.blendFunctioni.getOrDefault(0, state.blendFunction).srcAlpha;
+            case GL14.GL_BLEND_DST_ALPHA -> state.blendFunctioni.getOrDefault(0, state.blendFunction).dstAlpha;
+            case GL20.GL_BLEND_EQUATION_RGB -> state.blendEquationi.getOrDefault(0, state.blendEquation).modeRGB;
+            case GL20.GL_BLEND_EQUATION_ALPHA -> state.blendEquationi.getOrDefault(0, state.blendEquation).modeAlpha;
+
             case GL20.GL_CURRENT_PROGRAM -> getCurrentProgram();
             default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
+        };
+    }
+
+    public int glGetInteger(int value, int index) {
+        return switch (value) {
+            case GL14.GL_BLEND_SRC_RGB -> state.blendFunctioni.getOrDefault(index, state.blendFunction).srcRGB;
+            case GL14.GL_BLEND_DST_RGB -> state.blendFunctioni.getOrDefault(index, state.blendFunction).dstRGB;
+            case GL14.GL_BLEND_SRC_ALPHA -> state.blendFunctioni.getOrDefault(index, state.blendFunction).srcAlpha;
+            case GL14.GL_BLEND_DST_ALPHA -> state.blendFunctioni.getOrDefault(index, state.blendFunction).dstAlpha;
+            case GL20.GL_BLEND_EQUATION_RGB -> state.blendEquationi.getOrDefault(index, state.blendEquation).modeRGB;
+            case GL20.GL_BLEND_EQUATION_ALPHA -> state.blendEquationi.getOrDefault(index, state.blendEquation).modeAlpha;
+            default -> throw new UnsupportedOperationException("unsupported value: " + value);
         };
     }
 
@@ -55,7 +75,7 @@ public class AttribTracker {
             case GL11.GL_STENCIL_TEST -> state.enableStencilTest;
             case GL11.GL_ALPHA_TEST -> state.enableAlphaTest;
             case GL11.GL_TEXTURE_2D -> state.getEnableTexture2D();
-            case GL11.GL_BLEND -> state.enableBlend; // TODO take into account indexed calls
+            case GL11.GL_BLEND -> state.enableBlendi.containsKey(0) ? state.enableBlendi.get(0).enable : state.enableBlend;
             case GL11.GL_LIGHTING -> state.enableLighting;
             case GL11.GL_SCISSOR_TEST -> state.enableScissorTest;
             default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
@@ -238,5 +258,21 @@ public class AttribTracker {
 
     public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
         state.glBindTextures(first, count, textures, targets);
+    }
+
+    public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
+        state.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+    }
+
+    public void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
+        state.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+    }
+
+    public void glBlendEquationSeparate(int modeRGB, int modeAlpha) {
+        state.glBlendEquationSeparate(modeRGB, modeAlpha);
+    }
+
+    public void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
+        state.glBlendEquationSeparatei(buf, modeRGB, modeAlpha);
     }
 }

@@ -166,6 +166,7 @@ public class Sprite {
 
         context.attribTracker.glEnable(GL11.GL_TEXTURE_2D);
         context.attribTracker.glDisable(GL11.GL_BLEND);
+        context.attribTracker.glBlendFuncSeparate(blendSrc, blendDest, blendSrc, blendDest);
 
         context.exec.execute(command);
     }

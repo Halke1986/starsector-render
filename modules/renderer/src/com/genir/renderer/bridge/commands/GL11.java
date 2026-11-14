@@ -13,6 +13,8 @@ import com.genir.renderer.bridge.pool.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.pool.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
 import org.lwjgl.opengl.ATIMeminfo;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
 import java.nio.ByteBuffer;
@@ -693,6 +695,7 @@ public class GL11 {
 
     public static void glBlendFunc(int sfactorRGB, int dfactorRGB) {
         final Context context = ContextManager.getThreadContext();
+        context.attribTracker.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorRGB, dfactorRGB);
         context.exec.execute(glBlendFuncCommand, Float.intBitsToFloat(sfactorRGB), Float.intBitsToFloat(dfactorRGB), 0, 0);
     }
 
@@ -1306,8 +1309,13 @@ public class GL11 {
             case org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D:
             case org.lwjgl.opengl.GL11.GL_MATRIX_MODE:
             case org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE:
-            case org.lwjgl.opengl.GL14.GL_BLEND_EQUATION:
             case org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM:
+            case org.lwjgl.opengl.GL14.GL_BLEND_SRC_RGB:
+            case org.lwjgl.opengl.GL14.GL_BLEND_DST_RGB:
+            case org.lwjgl.opengl.GL14.GL_BLEND_SRC_ALPHA:
+            case org.lwjgl.opengl.GL14.GL_BLEND_DST_ALPHA:
+            case org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_RGB:
+            case org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_ALPHA:
                 return context.attribTracker.glGetInteger(pname);
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
                 return context.clientAttribTracker.getArrayBufferBinding();

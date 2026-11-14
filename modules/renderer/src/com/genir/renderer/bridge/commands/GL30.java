@@ -211,6 +211,13 @@ public class GL30 {
         // Values simulated on the client thread.
         final Context context = ContextManager.getThreadContext();
         switch (value) {
+            case org.lwjgl.opengl.GL14.GL_BLEND_SRC_RGB:
+            case org.lwjgl.opengl.GL14.GL_BLEND_DST_RGB:
+            case org.lwjgl.opengl.GL14.GL_BLEND_SRC_ALPHA:
+            case org.lwjgl.opengl.GL14.GL_BLEND_DST_ALPHA:
+            case org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_RGB:
+            case org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_ALPHA:
+                return context.attribTracker.glGetInteger(value, index);
             case org.lwjgl.opengl.GL31.GL_UNIFORM_BUFFER_BINDING:
                 return context.bufferTracker.getBoundUniformBuffer(index);
             case org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BUFFER_BINDING:

@@ -19,6 +19,7 @@ public class GL14 {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.attribTracker.glBlendEquationSeparate(mode, mode);
         context.exec.execute(new glBlendEquation(mode));
     }
 
@@ -31,6 +32,7 @@ public class GL14 {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.attribTracker.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
         context.exec.execute(new glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha));
     }
 
