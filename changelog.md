@@ -1,3 +1,5 @@
+v1.0.1rc1
+
 - Fixed a number of crashes when using Shadowverse/szb combat wheel menu. Reported by 下北泽远野.
 - Fixed an asynchronous pipeline stall crash when using Red Stripe DisintegratorBean (no typo). Reported by cxw920.
 - Optimized game startup time.
