@@ -211,6 +211,7 @@ public class Transformations {
                 entry("com/genir/renderer/overrides/Tesselator", "com/fs/starfarer/util/Tesselator"),
                 entry("com/genir/renderer/overrides/TitleScreenState", "com/fs/starfarer/title/TitleScreenState"),
                 entry("com/genir/renderer/overrides/StarfarerSettings", "com/fs/starfarer/settings/StarfarerSettings"),
+                entry("com/genir/renderer/overrides/StarfarerSettings$SettingsAPIImpl", symbols.StarfarerSettings$SettingsAPIImpl.name),
                 entry("com/genir/renderer/overrides/loading/textures/TextureRepository", symbols.TextureRepository.name),
                 entry("com/genir/renderer/overrides/render/font/FontRenderer", symbols.FontRenderer.name),
                 entry("com/genir/renderer/overrides/Expression", symbols.Expression.name),

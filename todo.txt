@@ -37,7 +37,7 @@ black screen with game activity sounds after changing resource generator in mael
 https://discord.com/channels/187635036525166592/1567620641451147284
 glDrawArrays EXCEPTION_ACCESS_VIOLATION
 waiting for log file
-player can't reproduce anymore (that wording, lol)
+player can't reproduce anymore
 
 
 https://discord.com/channels/187635036525166592/1402763865913036831/1563882402676473957

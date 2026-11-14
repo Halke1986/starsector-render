@@ -59,6 +59,6 @@ public class HullSpecStore {
      * ADDED METHOD
      */
     public static List<ShipHullSpecAPI> getAllShipHullSpecs() {
-        return hullsList;
+        return new ArrayList<>(hullsList);
     }
 }

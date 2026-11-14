@@ -19,7 +19,6 @@ public class WeaponSpecStore {
     private static Map<String, Object> WeaponSpecStore_projectiles;
 
     private static List<WeaponSpecAPI> weaponsList;
-    private static List<WeaponSpecAPI> allWeaponsList;
 
     /**
      * REPLACED METHOD
@@ -33,14 +32,10 @@ public class WeaponSpecStore {
         } else {
             if (weaponsList == null) {
                 weaponsList = new ArrayList<>();
-                allWeaponsList = new ArrayList<>();
             }
 
             WeaponSpecAPI specAPI = (WeaponSpecAPI) weaponSpec;
-            allWeaponsList.add(specAPI);
-            if (!specAPI.getAIHints().contains(WeaponAPI.AIHints.SYSTEM) && specAPI.getType() != WeaponAPI.WeaponType.SYSTEM) {
-                weaponsList.add((WeaponSpecAPI) weaponSpec);
-            }
+            weaponsList.add(specAPI);
 
             WeaponSpecStore_weapons.put(name, weaponSpec);
         }
@@ -68,11 +63,9 @@ public class WeaponSpecStore {
         if (removedSpec != null) {
             if (weaponsList == null) {
                 weaponsList = new ArrayList<>();
-                allWeaponsList = new ArrayList<>();
             }
 
             weaponsList.remove((WeaponSpecAPI) removedSpec);
-            allWeaponsList.remove((WeaponSpecAPI) removedSpec);
         }
     }
 
@@ -80,13 +73,23 @@ public class WeaponSpecStore {
      * ADDED METHOD
      */
     public static List<WeaponSpecAPI> getAllWeaponSpecs() {
-        return weaponsList;
+        List<WeaponSpecAPI> result = new ArrayList<>(weaponsList.size());
+
+        // Do not attempt to store a list of filtered weapons. The tags are
+        // changed at runtime, making the stored list incorrect.
+        for (WeaponSpecAPI weapon : weaponsList) {
+            if (!weapon.getAIHints().contains(WeaponAPI.AIHints.SYSTEM) && weapon.getType() != WeaponAPI.WeaponType.SYSTEM) {
+                result.add(weapon);
+            }
+        }
+
+        return result;
     }
 
     /**
      * ADDED METHOD
      */
     public static List<WeaponSpecAPI> getActuallyAllWeaponSpecs() {
-        return allWeaponsList;
+        return new ArrayList<>(weaponsList);
     }
 }
