@@ -1,6 +1,7 @@
 - Fixed a number of crashes when using Shadowverse/szb combat wheel menu. Reported by 下北泽远野.
 - Fixed an asynchronous pipeline stall crash when using Red Stripe DisintegratorBean (no typo). Reported by cxw920.
 - Optimized game startup time.
+- fr.bat terminal stays opened if the game crashes. Suggested by wing.
 
 v1.0.0
 

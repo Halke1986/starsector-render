@@ -5,9 +5,6 @@ Loading bar render in a separate thread?
 
 getAllVariantIds
 
-pause terminal after crash
-
-
 bugs:
 
 
