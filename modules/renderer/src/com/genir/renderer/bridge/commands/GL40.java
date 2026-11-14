@@ -60,16 +60,20 @@ public class GL40 {
         context.exec.execute(new glPatchParameteri(pname, value));
     }
 
-    public static void glBlendEquationi(int buf, int mode) {
-        record glBlendEquationi(int buf, int mode) implements GLCommand {
+    public static void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
+        record glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.attribManager.glBlendEquationi(buf, mode);
+                context.attribManager.glBlendEquationSeparatei(buf, modeRGB, modeAlpha);
             }
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.exec.execute(new glBlendEquationi(buf, mode));
+        context.exec.execute(new glBlendEquationSeparatei(buf, modeRGB, modeAlpha));
+    }
+
+    public static void glBlendEquationi(int buf, int mode) {
+        glBlendEquationSeparatei(buf, mode, mode);
     }
 
     public static void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {

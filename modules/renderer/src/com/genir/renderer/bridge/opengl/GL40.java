@@ -11,7 +11,7 @@ public final class GL40 {
     }
 
     public static void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL40.glBlendEquationSeparatei(int, int, int)");
+        com.genir.renderer.bridge.commands.GL40.glBlendEquationSeparatei(buf, modeRGB, modeAlpha);
     }
 
     public static void glBlendFunci(int buf, int src, int dst) {

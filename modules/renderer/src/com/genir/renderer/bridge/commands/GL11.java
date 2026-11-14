@@ -677,7 +677,7 @@ public class GL11 {
             int sfactorRGB = Float.floatToRawIntBits(args[argsOffset + 0]);
             int dfactorRGB = Float.floatToRawIntBits(args[argsOffset + 1]);
 
-            context.attribManager.glBlendFunc(sfactorRGB, dfactorRGB);
+            context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorRGB, dfactorRGB);
         }
 
         @Override

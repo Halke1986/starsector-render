@@ -110,10 +110,6 @@ public class AttribManager {
         actual.glMatrixMode(mode);
     }
 
-    public void glBlendFunc(int sfactorRGB, int dfactorRGB) {
-        expected.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorRGB, dfactorRGB);
-    }
-
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
         expected.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
     }
@@ -122,12 +118,12 @@ public class AttribManager {
         expected.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
     }
 
-    public void glBlendEquation(int mode) {
-        expected.glBlendEquationSeparate(mode, mode);
+    public void glBlendEquationSeparate(int modeRGB, int modeAlpha) {
+        expected.glBlendEquationSeparate(modeRGB, modeAlpha);
     }
 
-    public void glBlendEquationi(int buf, int mode) {
-        expected.glBlendEquationSeparatei(buf, mode, mode);
+    public void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
+        expected.glBlendEquationSeparatei(buf, modeRGB, modeAlpha);
     }
 
     public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {

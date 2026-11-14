@@ -63,6 +63,28 @@ public class AttribState {
         setEnable(cap, false);
     }
 
+    public void glEnablei(int target, int index) {
+        switch (target) {
+            case GL11.GL_BLEND:
+                enableBlendi.computeIfAbsent(index, k -> new BlendEnable()).enable = true;
+                break;
+            case GL11.GL_SCISSOR_TEST:
+                // TODO
+                break;
+        }
+    }
+
+    public void glDisablei(int target, int index) {
+        switch (target) {
+            case GL11.GL_BLEND:
+                enableBlendi.computeIfAbsent(index, k -> new BlendEnable()).enable = false;
+                break;
+            case GL11.GL_SCISSOR_TEST:
+                // TODO
+                break;
+        }
+    }
+
     public void glBindTexture(int target, int texture) {
         glBindTexture(activeTexture, target, texture);
     }
@@ -179,7 +201,6 @@ public class AttribState {
         scissorBox = new Box(x, y, width, height);
     }
 
-    // TODO setEnablei for blend and scissor
     private void setEnable(int cap, boolean value) {
         switch (cap) {
             case GL11.GL_STENCIL_TEST:
