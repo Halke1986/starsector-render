@@ -13,8 +13,6 @@ import com.genir.renderer.bridge.pool.BufferPool.ByteBufferSnapshot;
 import com.genir.renderer.bridge.pool.BufferPool.FloatBufferSnapshot;
 import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
 import org.lwjgl.opengl.ATIMeminfo;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.NVXGpuMemoryInfo;
 
 import java.nio.ByteBuffer;
@@ -1371,17 +1369,10 @@ public class GL11 {
                 putIfPossible(outBuffer, scissorBox.width());
                 putIfPossible(outBuffer, scissorBox.height());
                 return;
-        }
 
-        // Fallback to blocking GL call.
-        record glGetInteger(int pname, IntBuffer params) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                org.lwjgl.opengl.GL11.glGetInteger(pname, params);
-            }
+            default:
+                throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glGetInteger(" + pname + ", params)");
         }
-
-        context.exec.wait(new glGetInteger(pname, outBuffer));
     }
 
     public static String glGetString(int name) {
