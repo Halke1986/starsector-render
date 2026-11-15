@@ -1,3 +1,5 @@
+v1.0.1
+
 - Fixed particle flickering during combat with Shrouded Dweller. Reported by Pyroball.
 - Temporarily disabled improved frame synchronization after it caused slowdowns in Starsector 0.98.5a. Reported by Slubernoob and Le Lemming.
 
