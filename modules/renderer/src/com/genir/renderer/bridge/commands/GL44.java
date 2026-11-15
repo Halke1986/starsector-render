@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.pool.BufferPool;
 import com.genir.renderer.bridge.pool.BufferPool.ByteBufferSnapshot;
@@ -54,14 +55,46 @@ public class GL44 {
     }
 
     public static void glBindTextures(int first, int count, IntBuffer textures) {
-        record glBindTextures(int first, int count, IntBufferSnapshot textures, int[] targets) implements GLCommand {
+        record glBindTextures(int first, int count, IntBufferSnapshot textures, int[] targets) implements GLCommand, DebugString {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glBindTextures(first, count, textures.buffer, targets);
 
                 org.lwjgl.opengl.GL44.glBindTextures(first, count, textures.buffer);
 
-                textures.release();
+                // Leave the buffer allocated in case the debug log requires it.
+                // GL44.glBindTextures call is infrequent enough that it should
+                // not lead to a noticeable allocation pressure.
+            }
+
+            @Override
+            public String debugString(Context context, float[] args, int argsOffset) {
+                StringBuilder builder = new StringBuilder();
+
+                builder.append("glBindTextures[");
+                builder.append("first=").append(first).append(", ");
+                builder.append("count=").append(count).append(", ");
+
+                builder.append("textures=[");
+                IntBuffer reader = textures.buffer.duplicate();
+                for (int i = 0; i < count; i++) {
+                    builder.append(reader.get());
+                    if (i != count - 1) {
+                        builder.append(", ");
+                    }
+                }
+                builder.append("], ");
+
+                builder.append("targets=[");
+                for (int i = 0; i < count; i++) {
+                    builder.append(targets[i]);
+                    if (i != count - 1) {
+                        builder.append(", ");
+                    }
+                }
+                builder.append("]");
+
+                return builder.toString();
             }
         }
 

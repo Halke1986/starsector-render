@@ -8,7 +8,8 @@ getAllVariantIds
 bugs:
 
 
-Fossic stuff
+https://www.fossic.org/thread-20956-1-1.html
+ShadowverseDynamicPortraits slowdown
 
 
 campaign radar line (another one) and radar transparency
@@ -47,8 +48,3 @@ https://discord.com/channels/187635036525166592/1402763865913036831/156470677309
 (QoL's shield status triggers the crash)
 betatester can't reproduce
 added more logs in case this happens again
-
-
-https://discord.com/channels/187635036525166592/1402763865913036831/1570308284714459216
-missing salvage entities
-waiting for confirmation the issue happens only with FR enabled
