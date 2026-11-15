@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.render.particle;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
@@ -69,19 +70,20 @@ public class SmoothParticle extends BaseParticle {
 
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
-                    setBlend();
+                    setBlendFunc();
+                    org.lwjgl.opengl.GL14.glBlendEquation(GL14.GL_FUNC_ADD);
                     org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
                 },
 
                 // Post-batch
                 (Context ctx) -> {
                     org.lwjgl.opengl.GL11.glPopAttrib();
-                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D,  ctx.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D));
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, ctx.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D));
                 }
         );
     }
 
-    protected void setBlend() {
+    protected void setBlendFunc() {
         org.lwjgl.opengl.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
     }
 }

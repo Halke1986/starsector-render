@@ -1,3 +1,5 @@
+- Fixed particle flickering during combat with Shrouded Dweller. Reported by Pyroball.
+
 v1.0.1rc1
 
 - Fixed a number of crashes when using Shadowverse/szb combat wheel menu. Reported by 下北泽远野.

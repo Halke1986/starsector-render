@@ -57,10 +57,10 @@ public class NegativeParticle extends BaseParticle {
 
                     org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
 
-                    org.lwjgl.opengl.GL14.glBlendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
                     org.lwjgl.opengl.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+                    org.lwjgl.opengl.GL14.glBlendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
                     org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
                 },
 

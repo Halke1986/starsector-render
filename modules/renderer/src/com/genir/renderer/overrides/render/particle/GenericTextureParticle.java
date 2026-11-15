@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.render.particle;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
@@ -73,6 +74,7 @@ public class GenericTextureParticle extends BaseParticle {
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
                     org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
                     org.lwjgl.opengl.GL11.glBlendFunc(src, dst);
+                    org.lwjgl.opengl.GL14.glBlendEquation(GL14.GL_FUNC_ADD);
                     org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
                 },
 
