@@ -11,6 +11,9 @@ import java.nio.FloatBuffer;
  * OVERRIDES com.fs.graphics.font.FontRenderer
  */
 public class FontRenderer {
+    /**
+     * STUBS
+     */
     private Font FontRenderer_font;
     private float FontRenderer_textSize;
     private Color FontRenderer_color;

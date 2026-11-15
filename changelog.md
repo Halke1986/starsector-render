@@ -1,3 +1,5 @@
+- Fixed an issue that caused some text to appear washed out. Reported by Slubernoob.
+
 v1.0.1
 
 - Fixed particle flickering during combat with Shrouded Dweller. Reported by Pyroball.

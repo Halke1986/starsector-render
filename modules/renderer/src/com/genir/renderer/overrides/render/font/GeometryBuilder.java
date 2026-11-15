@@ -122,7 +122,7 @@ public class GeometryBuilder {
         }
 
         if (params.outlineSize > 0) {
-            for (float outlineLayer = 1.0F; outlineLayer < params.outlineExpansion + 1; outlineLayer++) {
+            for (float outlineLayer = 1.0F; outlineLayer < params.outlineSize + 1; outlineLayer++) {
                 float layerExpansion = outlineLayer * params.outlineExpansion;
                 float horizontalExpansion = layerExpansion;
                 float verticalExpansion = layerExpansion;

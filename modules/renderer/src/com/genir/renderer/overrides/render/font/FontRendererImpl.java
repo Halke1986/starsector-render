@@ -25,11 +25,13 @@ public class FontRendererImpl {
             float textSize,
             Color color,
             float colorAlpha,
+
             boolean applyHighlight,
             int highlightStart,
             int highlightEnd,
             Color highlightColor,
             float highlightColorAlpha,
+
             int outlineSize,
             float outlineExpansion,
             int renderPassCount
