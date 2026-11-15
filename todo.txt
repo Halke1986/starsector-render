@@ -48,3 +48,8 @@ https://discord.com/channels/187635036525166592/1402763865913036831/156470677309
 (QoL's shield status triggers the crash)
 betatester can't reproduce
 added more logs in case this happens again
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1571573652615340273
+another texture binding assertion error
+added more logs to GL44.glBindTextures
