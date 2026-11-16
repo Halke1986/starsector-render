@@ -58,8 +58,6 @@ public class GL44 {
         record glBindTextures(int first, int count, IntBufferSnapshot textures, int[] targets) implements GLCommand, DebugString {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.attribManager.glBindTextures(first, count, textures.buffer, targets);
-
                 org.lwjgl.opengl.GL44.glBindTextures(first, count, textures.buffer);
 
                 // Leave the buffer allocated in case the debug log requires it.

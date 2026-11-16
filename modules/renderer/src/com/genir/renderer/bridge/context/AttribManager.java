@@ -89,6 +89,10 @@ public class AttribManager {
         throw new UnsupportedOperationException();
     }
 
+    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
+        throw new UnsupportedOperationException();
+    }
+
     public void glActiveTexture(int mode) {
         // Texture unit is not permanently overriden.
         expected.glActiveTexture(mode);
@@ -115,10 +119,6 @@ public class AttribManager {
 
     public void glBlendEquationSeparatei(int buf, int modeRGB, int modeAlpha) {
         expected.glBlendEquationSeparatei(buf, modeRGB, modeAlpha);
-    }
-
-    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
-        expected.glBindTextures(first, count, textures, targets);
     }
 
     //

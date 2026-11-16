@@ -3,8 +3,8 @@ package com.genir.renderer.bridge.context;
 import org.lwjgl.opengl.GL13;
 
 public class TextureUnit {
-    public static int getIndex(int activeTexture) {
-        return switch (activeTexture) {
+    public static int getIndex(int textureUnitEnum) {
+        return switch (textureUnitEnum) {
             case GL13.GL_TEXTURE0 -> 0;
             case GL13.GL_TEXTURE1 -> 1;
             case GL13.GL_TEXTURE2 -> 2;
@@ -42,8 +42,8 @@ public class TextureUnit {
         };
     }
 
-    public static int getEnum(int unitKey) {
-        return switch (unitKey) {
+    public static int getEnum(int textureUnitIndex) {
+        return switch (textureUnitIndex) {
             case 0 -> GL13.GL_TEXTURE0;
             case 1 -> GL13.GL_TEXTURE1;
             case 2 -> GL13.GL_TEXTURE2;
