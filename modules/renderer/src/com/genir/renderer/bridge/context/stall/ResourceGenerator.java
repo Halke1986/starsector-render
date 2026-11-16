@@ -1,6 +1,9 @@
 package com.genir.renderer.bridge.context.stall;
 
+import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.executor.Executor;
+import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.bridge.interfaces.GLGetter;
 
 import java.nio.IntBuffer;
 import java.util.Stack;
@@ -22,9 +25,21 @@ public class ResourceGenerator {
         this.generatorFn = generate;
     }
 
+    // Pre-generate an expected amount of resources without increasing the cache size.
+    public void reserve(int size) {
+        record ResourceGenerator$reserve(ResourceGenerator parent, int size) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                parent.fillCache(size);
+            }
+        }
+
+        exec.wait(new ResourceGenerator$reserve(this, size));
+    }
+
     public int get() { // Main thread
         // Synchronize only this block. Otherwise,
-        // a deadlock on executor.get may ensue.
+        // a deadlock on executor.get may happen.
         synchronized (this) {
             if (!cache.isEmpty()) {
                 return cache.pop();
@@ -36,17 +51,17 @@ public class ResourceGenerator {
             expectedCacheSize = Math.max(1, expectedCacheSize * 2);
         }
 
+        record ResourceGenerator$get(ResourceGenerator parent, int expectedCacheSize) implements GLGetter<Integer> {
+            @Override
+            public Integer call(Context context) {
+                parent.fillCache(expectedCacheSize);
+                return parent.cache.pop();
+            }
+        }
+
         // If cache is empty, fall back to generating
         // the resource using an actual OpenGL call.
-        return exec.get(context -> {
-            fillCache();
-
-            try {
-                return generatorFn.call();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        return exec.get(new ResourceGenerator$get(this, expectedCacheSize));
     }
 
     public void get(IntBuffer buffer) {
@@ -57,12 +72,12 @@ public class ResourceGenerator {
     }
 
     synchronized public void update() { // Render thread
-        fillCache();
+        fillCache(expectedCacheSize);
     }
 
-    private void fillCache() {
+    private void fillCache(int expectedSize) {
         try {
-            while (cache.size() < expectedCacheSize) {
+            while (cache.size() < expectedSize) {
                 cache.push(generatorFn.call());
             }
         } catch (Exception e) {
