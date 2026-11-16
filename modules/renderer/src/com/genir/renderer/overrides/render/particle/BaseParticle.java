@@ -1,6 +1,7 @@
 package com.genir.renderer.overrides.render.particle;
 
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.ContextManager;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
@@ -125,6 +126,14 @@ public abstract class BaseParticle {
      * ADDED METHOD
      */
     public void renderBase(int textureID, int blendSfactor, int blendDfactor, int blendMode) {
+        // Profiling suggests that issuing glBindTexture as a separate bridge call
+        // substantially increases CPU time in particle rendering. The cause is unknown,
+        // and the result may be a profiling artifact. To reduce this overhead, the
+        // required OpenGL calls are bundled into a single bridge call.
+        // These calls bypass the caller-side GL simulator, so any state changes must
+        // either be restored or explicitly reflected in the simulator.
+
+        // Bind each texture through the bridge on first use to trigger lazy DDS upload.
         if (!knownTextures.contains(textureID)) {
             knownTextures.add(textureID);
             com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
@@ -146,9 +155,15 @@ public abstract class BaseParticle {
 
                 // Post-batch
                 (Context ctx) -> {
+                    // GL_TEXTURE_BIT is omitted from glPushAttrib because profiling
+                    // indicates substantial CPU overhead. Reset the binding explicitly.
                     org.lwjgl.opengl.GL11.glPopAttrib();
-                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, ctx.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D));
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
                 }
         );
+
+        // Update the caller-side simulator to reflect the post-batch texture binding.
+        final Context context = ContextManager.getThreadContext();
+        context.attribTracker.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 }
