@@ -73,15 +73,19 @@ public class GL44 {
                 builder.append("first=").append(first).append(", ");
                 builder.append("count=").append(count).append(", ");
 
-                builder.append("textures=[");
-                IntBuffer reader = textures.buffer.duplicate();
-                for (int i = 0; i < count; i++) {
-                    builder.append(reader.get());
-                    if (i != count - 1) {
-                        builder.append(", ");
+                if (textures.buffer == null) {
+                    builder.append("textures=null, ");
+                } else {
+                    builder.append("textures=[");
+                    IntBuffer reader = textures.buffer.duplicate();
+                    for (int i = 0; i < count; i++) {
+                        builder.append(reader.get());
+                        if (i != count - 1) {
+                            builder.append(", ");
+                        }
                     }
+                    builder.append("], ");
                 }
-                builder.append("], ");
 
                 builder.append("targets=[");
                 for (int i = 0; i < count; i++) {
