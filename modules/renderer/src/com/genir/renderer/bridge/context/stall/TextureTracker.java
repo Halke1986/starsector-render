@@ -4,7 +4,6 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import org.lwjgl.opengl.*;
 
-import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,7 +77,7 @@ public class TextureTracker { // Context-shared object.
             }
         }
 
-        // Attempting to re-bind an existing texture with different target.
+        // Attempting to re-bind an existing texture with a different target.
         asert(boundTextures[texture] != target && boundTextures[texture] != 0);
         return false;
     }
@@ -99,31 +98,21 @@ public class TextureTracker { // Context-shared object.
     }
 
     synchronized private boolean glIsTextureImpl(int texture) {
-        return texture >= 0 && texture < textureTargets.length && textureTargets[texture] != 0;
+        return texture > 0 && texture < textureTargets.length && textureTargets[texture] != 0;
     }
 
     synchronized public void glDeleteTextures(int texture) {
-        if (texture >= 0 && texture < textureTargets.length) {
+        if (texture > 0 && texture < textureTargets.length) {
             textureTargets[texture] = 0;
         }
     }
 
-    synchronized public int[] getTextureTargets(int count, IntBuffer textures) {
-        int[] targets = new int[count];
-        if (textures == null) {
-            return targets;
+    synchronized public int getTextureTarget(int texture) {
+        if (texture > 0 && texture < textureTargets.length) {
+            return textureTargets[texture];
         }
 
-        IntBuffer reader = textures.duplicate();
-        for (int i = 0; i < count; i++) {
-            int texture = reader.get();
-
-            if (texture >= 0 && texture < textureTargets.length) {
-                targets[i] = textureTargets[texture];
-            }
-        }
-
-        return targets;
+        return 0;
     }
 
     public void updateTextureData(int texture, int level, int internalformat, int width, int height) {

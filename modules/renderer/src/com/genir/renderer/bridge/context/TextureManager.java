@@ -8,7 +8,6 @@ import com.genir.renderer.overrides.loading.textures.TextureData;
 import org.apache.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,24 +82,6 @@ public class TextureManager {
         logger.info("Loading DDS texture " + loadedNumber + "/" + managedNumber + " [" + path + "]");
 
         uploadTexture(context, texture, loaders);
-    }
-
-    public void glBindTextures(Context context, int count, int[] targets, IntBuffer textures) {
-        if (textures == null) {
-            return;
-        }
-
-        IntBuffer reader = textures.duplicate();
-        for (int u = 0; u < count; u++) {
-            int target = targets[u];
-            int texture = reader != null ? reader.get() : 0;
-
-            if (texture == 0 || target == 0) {
-                continue;
-            }
-
-            glBindTexture(context, target, texture);
-        }
     }
 
     private void uploadTexture(Context context, int texture, TextureCallbacks loaders) {

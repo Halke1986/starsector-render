@@ -256,8 +256,12 @@ public class AttribTracker {
         currentProgram = program;
     }
 
-    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
-        state.glBindTextures(first, count, textures, targets);
+    public void glBindTexture(int textureUnit, int target, int texture) {
+        state.glBindTexture(textureUnit, target, texture);
+    }
+
+    public void unbindAllTextures(int textureUnit) {
+        state.unbindAllTextures(textureUnit);
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {

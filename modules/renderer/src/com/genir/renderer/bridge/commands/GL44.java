@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.TextureUnit;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.pool.BufferPool;
@@ -101,11 +102,30 @@ public class GL44 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final int[] targets = context.textureTracker.getTextureTargets(count, textures);
-        final IntBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(textures);
+        final int[] targets = new int[count];
 
-        context.attribTracker.glBindTextures(first, count, textures, targets);
-        context.textureManager.glBindTextures(context, count, targets, textures);
+        IntBuffer reader = textures == null ? null : textures.duplicate();
+        for (int u = 0; u < count; u++) {
+            int texture = reader == null ? 0 : reader.get();
+            int target = context.textureTracker.getTextureTarget(texture);
+            int textureUnit = TextureUnit.getEnum(u + first);
+
+            targets[u] = target;
+
+            if (texture == 0) {
+                context.attribTracker.unbindAllTextures(textureUnit);
+            } else {
+                // Use texture tracker to assert the correctness of binding request.
+                // Act only on correct requests.
+                if (context.textureTracker.glBindTexture(target, texture)) {
+                    context.attribTracker.glBindTexture(textureUnit, target, texture);
+                }
+
+                context.textureManager.glBindTexture(context, target, texture);
+            }
+        }
+
+        final IntBufferSnapshot snapshot = BufferPool.bufferPool.snapshot(textures);
         context.exec.execute(new glBindTextures(first, count, snapshot, targets));
     }
 }

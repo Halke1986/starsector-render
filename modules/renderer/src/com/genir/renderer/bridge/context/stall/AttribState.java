@@ -3,7 +3,6 @@ package com.genir.renderer.bridge.context.stall;
 import com.genir.renderer.bridge.context.TextureUnit;
 import org.lwjgl.opengl.*;
 
-import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class AttribState {
         glBindTexture(activeTexture, target, texture);
     }
 
-    private void glBindTexture(int textureUnit, int target, int texture) {
+    public void glBindTexture(int textureUnit, int target, int texture) {
         if (target == GL11.GL_TEXTURE_2D && textureUnit == GL13.GL_TEXTURE0) {
             texture2DUnit0 = texture;
             return;
@@ -109,39 +108,22 @@ public class AttribState {
         textureOther[key] = texture;
     }
 
-    public void glBindTextures(int first, int count, IntBuffer textures, int[] targets) {
-        IntBuffer reader = textures != null ? textures.duplicate() : null;
+    // Unbind all targets in the given unit.
+    public void unbindAllTextures(int textureUnit) {
+        if (textureUnit == GL13.GL_TEXTURE0) {
+            texture2DUnit0 = 0;
+        }
 
-        for (int u = 0; u < count; u++) {
-            int texture = reader != null ? reader.get() : 0;
-            int target = targets[u];
-            int textureUnitIndex = u + first;
-            int textureUnit = TextureUnit.getEnum(textureUnitIndex);
+        int textureUnitIndex = TextureUnit.getIndex(textureUnit);
+        int unitOffset = textureUnitIndex * TEXTURE_TARGETS_NUM;
+        for (int i = 0; i < TEXTURE_TARGETS_NUM; i++) {
+            int key = unitOffset + i;
 
-            if (texture != 0) {
-                // Skip incorrect binding.
-                if (target == 0) {
-                    continue;
-                }
-
-                glBindTexture(textureUnit, target, texture);
-            } else {
-                // Unbind all targets in the given unit.
-                if (textureUnit == GL13.GL_TEXTURE0) {
-                    texture2DUnit0 = 0;
-                }
-
-                int unitOffset = textureUnitIndex * TEXTURE_TARGETS_NUM;
-                for (int i = 0; i < TEXTURE_TARGETS_NUM; i++) {
-                    int key = unitOffset + i;
-
-                    if (key >= textureOther.length) {
-                        break;
-                    }
-
-                    textureOther[key] = 0;
-                }
+            if (key >= textureOther.length) {
+                break;
             }
+
+            textureOther[key] = 0;
         }
     }
 
