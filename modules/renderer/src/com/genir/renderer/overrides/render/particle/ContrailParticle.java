@@ -22,9 +22,10 @@ public class ContrailParticle extends SmoothParticle {
     }
 
     @Override
-    protected void setBlendFunc() {
-        // Override SmoothParticle blend function.
-        int dfactorRGB = (mode == EngineSlot.BlendMode.SMOKE) ? GL11.GL_ONE_MINUS_SRC_ALPHA : GL11.GL_ONE;
-        org.lwjgl.opengl.GL11.glBlendFunc(GL11.GL_SRC_ALPHA, dfactorRGB);
+    protected int[] getBlendFunc() {
+        return new int[]{
+                GL11.GL_SRC_ALPHA,
+                (mode == EngineSlot.BlendMode.SMOKE) ? GL11.GL_ONE_MINUS_SRC_ALPHA : GL11.GL_ONE
+        };
     }
 }

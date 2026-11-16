@@ -1,5 +1,8 @@
 package com.genir.renderer.overrides.render.particle;
 
+import com.genir.renderer.bridge.context.Context;
+import org.lwjgl.opengl.GL11;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +14,7 @@ public abstract class BaseParticle {
      * ADDED FIELDS
      */
     protected static ParticleRenderer renderer;
-    protected static Set<Integer> knownTextures;
+    private static Set<Integer> knownTextures;
 
     protected static float groupPosX;
     protected static float groupPosY;
@@ -116,5 +119,36 @@ public abstract class BaseParticle {
 
         groupPosX = posX;
         groupPosY = posY;
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    public void renderBase(int textureID, int blendSfactor, int blendDfactor, int blendMode) {
+        if (!knownTextures.contains(textureID)) {
+            knownTextures.add(textureID);
+            com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        }
+
+        renderer.render(
+                // Pre-batch
+                (Context ctx) -> {
+                    ctx.attribManager.applyDrawAttribs();
+
+                    org.lwjgl.opengl.GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
+
+                    org.lwjgl.opengl.GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    org.lwjgl.opengl.GL11.glEnable(GL11.GL_BLEND);
+                    org.lwjgl.opengl.GL11.glBlendFunc(blendSfactor, blendDfactor);
+                    org.lwjgl.opengl.GL14.glBlendEquation(blendMode);
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+                },
+
+                // Post-batch
+                (Context ctx) -> {
+                    org.lwjgl.opengl.GL11.glPopAttrib();
+                    org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, ctx.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D));
+                }
+        );
     }
 }
