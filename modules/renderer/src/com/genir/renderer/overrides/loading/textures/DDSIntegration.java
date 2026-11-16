@@ -60,12 +60,11 @@ public class DDSIntegration {
         return cache.get(path.normalize());
     }
 
-    public static int commitTexture(TextureData texData) {
+    public static void commitTexture(int textureID, TextureData texData) {
         final Context context = ContextManager.getThreadContext();
 
         int target = GL11.GL_TEXTURE_2D;
         int internalFormat = GL42.GL_COMPRESSED_RGBA_BPTC_UNORM;
-        int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
 
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
@@ -97,8 +96,6 @@ public class DDSIntegration {
 
         // Notify texture tracker of the texture definition.
         context.textureTracker.updateTextureData(textureID, 0, internalFormat, texData.width, texData.height);
-
-        return textureID;
     }
 
     // uploadTextureLazy runs on rendering thread to allow asynchronous texture file loading

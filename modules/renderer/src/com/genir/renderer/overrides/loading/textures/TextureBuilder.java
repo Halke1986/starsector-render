@@ -1,6 +1,5 @@
 package com.genir.renderer.overrides.loading.textures;
 
-import com.genir.renderer.bridge.context.Context;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -12,28 +11,20 @@ import java.awt.image.Raster;
 import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
-    public static int commitTexture(TextureData texData) {
-        int currentTexture = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
-
-        int textureID = org.lwjgl.opengl.GL11.glGenTextures();
-        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+    public static void commitTexture(int textureID, TextureData texData) {
+        com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         int internalFormat = GL11.GL_RGBA;
 
         // Starsector does not generate mipmaps if either texture dimension exceeds 1024 pixels.
         // The rationale is undocumented, and Fast Rendering does not apply this restriction.
-        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        com.genir.renderer.bridge.commands.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
 
-        org.lwjgl.opengl.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        org.lwjgl.opengl.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
-
-        // Binding cleanup. Required to not desynchronize client GL state simulation.
-        org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, currentTexture);
-
-        return textureID;
+        com.genir.renderer.bridge.commands.GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+        com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
     }
 
     public static TextureData readAndAnalyzeImage(BufferedImage image, boolean doNotModify) {
