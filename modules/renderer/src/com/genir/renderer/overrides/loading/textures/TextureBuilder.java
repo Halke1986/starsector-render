@@ -12,8 +12,8 @@ import java.awt.image.Raster;
 import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
-    public static int commitTexture(Context context, String path, TextureData texData) {
-        int currentTexture = context.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D);
+    public static int commitTexture(TextureData texData) {
+        int currentTexture = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
 
         int textureID = org.lwjgl.opengl.GL11.glGenTextures();
         org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);

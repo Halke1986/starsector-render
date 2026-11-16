@@ -227,7 +227,7 @@ public class TextureLoader {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             try {
-                int textureID = TextureBuilder.commitTexture(context, path, texData);
+                int textureID = TextureBuilder.commitTexture(texData);
                 TextureHandler handler = texLoader.newVanillaTextureHandler(name, path, texData, textureID);
 
                 if (name != null) {

@@ -703,8 +703,6 @@ public class GL11 {
             int target = Float.floatToRawIntBits(args[argsOffset + 0]);
             int texture = Float.floatToRawIntBits(args[argsOffset + 1]);
 
-            context.attribManager.glBindTexture(target, texture);
-
             org.lwjgl.opengl.GL11.glBindTexture(target, texture);
         }
 
@@ -723,7 +721,6 @@ public class GL11 {
         record glBindTextureDebug(int target, int texture, String name) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.attribManager.glBindTexture(target, texture);
                 org.lwjgl.opengl.GL11.glBindTexture(target, texture);
             }
         }
@@ -1142,7 +1139,6 @@ public class GL11 {
         record glDeleteTextures(int texture) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.attribManager.glDeleteTextures(texture);
                 org.lwjgl.opengl.GL11.glDeleteTextures(texture);
             }
         }

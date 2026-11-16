@@ -34,15 +34,11 @@ public class AttribManager {
         return expected.matrixMode;
     }
 
-    public int getBoundTexture(int target) {
-        return expected.getBoundTexture(target);
-    }
-
     // Apply server-side attributes selected by the client.
     public void applyDrawAttribs() {
         applyStencil(expected.enableStencilTest);
         applyAlpha(expected.enableAlphaTest);
-        applyTexture(expected.enableTexture2DUnit0, expected.texture2DUnit0);
+        applyTexture(expected.enableTexture2DUnit0);
         applyBlend();
         applyLighting(expected.enableLighting);
         applyScissor(expected.enableScissorTest);
@@ -88,14 +84,9 @@ public class AttribManager {
     }
 
     public void glBindTexture(int target, int texture) {
-        // Texture binding is not permanently overriden.
-        expected.glBindTexture(target, texture);
-        actual.glBindTexture(target, texture);
-    }
-
-    public void glDeleteTextures(int texture) {
-        expected.glDeleteTextures(texture);
-        actual.glDeleteTextures(texture);
+        // Do not track texture binding in AttribManager,
+        // as the state synchronization is difficult to maintain.
+        throw new UnsupportedOperationException();
     }
 
     public void glActiveTexture(int mode) {
@@ -148,9 +139,9 @@ public class AttribManager {
         }
     }
 
-    public void applyTexture(boolean enable, int texture) {
+    public void applyTexture(boolean enable) {
         // No changes required.
-        if ((actual.enableTexture2DUnit0 == enable) && (!enable || actual.texture2DUnit0 == texture)) {
+        if (actual.enableTexture2DUnit0 == enable) {
             return;
         }
 
@@ -162,13 +153,6 @@ public class AttribManager {
         if (actual.enableTexture2DUnit0 != enable) {
             actual.enableTexture2DUnit0 = enable;
             execGlEnableDisable(GL11.GL_TEXTURE_2D, enable);
-        }
-
-        if (enable) {
-            if (actual.texture2DUnit0 != texture) {
-                actual.texture2DUnit0 = texture;
-                org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
-            }
         }
 
         // Cleanup texture unit.

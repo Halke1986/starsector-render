@@ -206,7 +206,6 @@ public class Sprite {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             if (bind) {
-                context.attribManager.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
                 org.lwjgl.opengl.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
             }
 

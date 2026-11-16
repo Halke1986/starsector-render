@@ -161,7 +161,7 @@ public class TextureManager {
         public void run(Context context, float[] args, int argsOffset) {
             long start = System.nanoTime();
             try {
-                int currentTexture = context.attribManager.getBoundTexture(GL11.GL_TEXTURE_2D);
+                int currentTexture = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
 
                 byte[] bytes = bufferFuture.get();
                 loaders.commitFn.accept(bytes);
