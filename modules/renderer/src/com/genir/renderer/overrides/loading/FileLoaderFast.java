@@ -25,6 +25,7 @@ public class FileLoaderFast {
 
     private final List<FileLoader.ResourceLocation> allLocations;
     private final Map<String, List<ResourceHandle>> cachedFiles = new HashMap<>();
+    private final Map<String, AtomicInteger> fileCount = new HashMap<>();
 
     public FileLoaderFast(List<FileLoader.ResourceLocation> locations) {
         // Assume location list does not change during resource loading.
@@ -179,6 +180,27 @@ public class FileLoaderFast {
         };
     }
 
+    public int getImageFileCount() {
+        int imageCount = 0;
+
+        for (Map.Entry<String, AtomicInteger> entry : fileCount.entrySet()) {
+            String extension = entry.getKey();
+            boolean isImage = switch (extension) {
+                case "png" -> true;
+                case "jpg" -> true;
+                case "jpeg" -> true;
+                case "webp" -> true;
+                default -> false;
+            };
+
+            if (isImage) {
+                imageCount += entry.getValue().get();
+            }
+        }
+
+        return imageCount;
+    }
+
     private boolean isExcludedLocation(FileLoader.ResourceLocation location) {
         if (location.ResourceLocation_type.toString().equals(CLASSPATH)) {
             return true;
@@ -234,7 +256,6 @@ public class FileLoaderFast {
     private class DirectoryCrawler {
         private final List<Object> collector = new ArrayList<>();
         private final List<Runnable> tasks = new ArrayList<>();
-        private final Map<String, AtomicInteger> fileCount = new HashMap<>();
 
         private static final AsyncException asyncException = new AsyncException();
 

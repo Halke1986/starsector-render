@@ -116,6 +116,10 @@ public class ResourceLoaderState {
 
         initFileLoaders();
 
+        final Context context = ContextManager.getThreadContext();
+        int imageCount = FileLoader.FileLoader_getInstance().getFastLoader().getImageFileCount();
+        context.texGenerator.reserve(imageCount);
+
         // Init spec store. This triggers most of the game asset loading.
         initSpecStore(session);
 
