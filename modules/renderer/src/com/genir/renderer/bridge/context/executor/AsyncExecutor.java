@@ -221,9 +221,11 @@ public class AsyncExecutor implements Executor {
 
         // Run all scheduled commands.
         for (int i = 0; i < frame.getCommandsSize(); i++) {
+            Object command = null;
             try {
                 // logCommand(context, args, i * Frame.ARGS_NUM, commands[i]);
-                commands[i].run(context, args, i * Frame.ARGS_NUM);
+                command = commands[i];
+                ((GLCommand) command).run(context, args, i * Frame.ARGS_NUM);
             } catch (AssertionError e) {
                 // Do not interrupt application graceful shutdown with
                 // assertion errors, as this could lead to a permanent freeze.
@@ -231,7 +233,10 @@ public class AsyncExecutor implements Executor {
                     continue;
                 }
 
-                logFrame(frame, i + 1);
+                logAssertionError(frame, i + 1);
+                throw e;
+            } catch (IncompatibleClassChangeError | ClassCastException e) {
+                logIncompatibleClassChangeError(commands, frame.getCommandsSize(), i, command);
                 throw e;
             }
         }
@@ -242,7 +247,7 @@ public class AsyncExecutor implements Executor {
         execActual.shutdown();
     }
 
-    private void logFrame(Frame frame, int logCount) {
+    private void logAssertionError(Frame frame, int logCount) {
         GLCommand[] commands = frame.getCommands();
         float[] args = frame.getArgs();
 
@@ -285,6 +290,46 @@ public class AsyncExecutor implements Executor {
         }
 
         logger.info(builder.toString());
+    }
+
+    private void logIncompatibleClassChangeError(Object commands, int commandsNum, int commandIdx, Object command) {
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            if (commands instanceof Object[] commandsArray) {
+                for (int i = 0; i < commandsArray.length; i++) {
+                    builder.append(System.lineSeparator());
+                    builder.append(i);
+                    builder.append(": ");
+                    builder.append(commandsArray[i] == command);
+                    builder.append("  ");
+                    builder.append(logObject(commandsArray[i]));
+                }
+            }
+        } catch (Throwable t) {
+            logger.info(t);
+        }
+
+        try {
+            logger.info(builder.toString());
+        } catch (Throwable t) {
+            logger.info(t);
+        }
+
+        try {
+            logger.info("commands: " + logObject(commands));
+            logger.info("commandsNum: " + commandsNum);
+            logger.info("commandIdx: " + commandIdx);
+            logger.info("command: " + logObject(command));
+        } catch (Throwable t) {
+            logger.info(t);
+        }
+    }
+
+    private static String logObject(Object value) {
+        return value == null
+                ? "null"
+                : value.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(value));
     }
 
     private void logCommand(Context context, float[] args, int argsOffset, GLCommand command) {
