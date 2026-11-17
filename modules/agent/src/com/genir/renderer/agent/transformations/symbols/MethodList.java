@@ -1,5 +1,6 @@
 package com.genir.renderer.agent.transformations.symbols;
 
+import org.apache.log4j.Logger;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -64,6 +65,17 @@ public class MethodList {
 
     public MethodList byIsCalled(MethodNode caller) {
         return by((method) -> isCalledBy(method, caller));
+    }
+
+    public MethodList byIsCalled(MethodNode... callers) {
+        return by((method) -> {
+            for (MethodNode caller : callers) {
+                if (!isCalledBy(method, caller)) {
+                    return false;
+                }
+            }
+            return true;
+        });
     }
 
     public MethodList byIndex(int index) {

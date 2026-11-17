@@ -23,6 +23,17 @@ public class StarfarerSettings {
     }
 
     /**
+     * REPLACED METHOD
+     * <p>
+     * Starsector VSYNC synchronization interferes with FR frame
+     * synchronization, leading to game slowdown without FPS decrease.
+     * Disable Starsector VSYNC synchronization by returning 0.
+     */
+    public static float StarfarerSettings_getVSYNCOffset() {
+        return 0;
+    }
+
+    /**
      * OVERRIDES com.fs.starfarer.loading.StarfarerSettings$SettingsAPIImpl
      * <p>
      * Optimized for performance.

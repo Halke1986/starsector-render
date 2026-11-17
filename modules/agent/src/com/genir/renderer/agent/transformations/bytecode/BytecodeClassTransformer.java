@@ -211,6 +211,10 @@ public class BytecodeClassTransformer implements ClassFileTransformer {
             transformer.removeMethod("getActuallyAllWeaponSpecs", "()Ljava/util/List;");
             transformer.mergeClass("com/genir/renderer/overrides/StarfarerSettings$SettingsAPIImpl");
 
+        } else if (className.equals("com/fs/starfarer/settings/StarfarerSettings")) {
+            transformer.removeMethod(symbols.StarfarerSettings_getVSYNCOffset);
+            transformer.mergeClass("com/genir/renderer/overrides/StarfarerSettings");
+
         } else {
             return null;
         }

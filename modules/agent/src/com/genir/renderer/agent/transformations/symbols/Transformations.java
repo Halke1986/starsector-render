@@ -86,6 +86,7 @@ public class Transformations {
                 entry("FontRepository_defineFont", symbols.FontRepository_defineFont.name),
                 entry("StarfarerSettings_getFloatValue", symbols.StarfarerSettings_getFloatValue.name),
                 entry("StarfarerSettings_getBooleanValue", symbols.StarfarerSettings_getBooleanValue.name),
+                entry("StarfarerSettings_getVSYNCOffset", symbols.StarfarerSettings_getVSYNCOffset != null ? symbols.StarfarerSettings_getVSYNCOffset.name : "StarfarerSettings_getVSYNCOffset"),
                 entry("ScriptStore_getScriptList", symbols.ScriptStore_getScriptList.name),
                 entry("ScriptStore_getPluginSet", symbols.ScriptStore_getPluginSet.name),
                 entry("ScriptStore_startScriptLoadingThread", symbols.ScriptStore_startScriptLoadingThread.name),

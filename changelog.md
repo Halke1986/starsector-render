@@ -1,3 +1,5 @@
+- Fixed and re-enabled improved frame synchronization. Animation should be smooth again, with stable frame rates. 
+
 v1.0.2rc1
 
 - Fixed an issue that caused some text to appear washed out. Reported by Slubernoob.

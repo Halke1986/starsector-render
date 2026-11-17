@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class Symbols {
     public final ClassNode TextureHandler;
@@ -51,6 +52,8 @@ public class Symbols {
     public final MethodNode TextureRepository_getTextureLoader;
     public final MethodNode FontRepository_defineFont;
     public final MethodNode StarfarerSettings_getFloatValue;
+    public final MethodNode StarfarerSettings_getBooleanValue;
+    public final MethodNode StarfarerSettings_getVSYNCOffset; // Since Starsector 0.98.5a
     public final MethodNode ScriptStore_getScriptList;
     public final MethodNode ScriptStore_getPluginSet;
     public final MethodNode ScriptStore_startScriptLoadingThread;
@@ -86,7 +89,6 @@ public class Symbols {
     public final MethodNode AtmosphereRenderer_init;
     public final MethodNode ScreenshotUtil_init;
     public final MethodNode ShipArrowRenderer_init;
-    public final MethodNode StarfarerSettings_getBooleanValue;
     public final MethodNode ImpactSound_init;
     public final MethodNode LoadingUtils_filesWithExtensionInDirectory;
     public final MethodNode LoadingUtils_filesWithExtensionInDirectoryAbsolute;
@@ -157,6 +159,7 @@ public class Symbols {
     public Symbols() {
         final ClassNode baseGameStateNode = readClassNode("com/fs/starfarer/BaseGameState");
         final ClassNode combatEngineNode = readClassNode("com/fs/starfarer/combat/CombatEngine");
+        final ClassNode combatStateNode = readClassNode("com/fs/starfarer/combat/CombatState");
         final ClassNode versionNode = readClassNode("com/fs/starfarer/Version");
         final ClassNode spriteNode = readClassNode("com/fs/graphics/Sprite");
         final ClassNode soundNode = readClassNode("sound/Sound");
@@ -179,25 +182,25 @@ public class Symbols {
 
         // Classes
         TextureHandler = fieldList(spriteNode).byName("texture").getTypeClass();
-        TextureRepository = onwerClass(methodInstructionsByOwner(methodList(glLauncherNode).byName("cleanup").get(), "com/fs/graphics").get(0));
+        TextureRepository = ownerClass(methodInstructionsByOwner(methodList(glLauncherNode).byName("cleanup").get(), "com/fs/graphics").get(0));
         Fps = fieldList(baseGameStateNode).byName("fps").getTypeClass();
         FloatingTextManager = methodList(combatEngineNode).byName("getFloatingTextManager").getReturnTypeClass();
-        FontRepository = onwerClass(methodInstructionsByOwner(methodList(versionNode).byName("<init>").get(), null).get(1));
+        FontRepository = ownerClass(methodInstructionsByOwner(methodList(versionNode).byName("<init>").get(), null).get(1));
         FontRenderer = fieldList(Fps).byDesc("Lcom/fs/graphics").getTypeClass();
         Font = fieldList(FontRepository).byDesc("Ljava/util/HashMap;").getGenericParametersClass(1);
         Glyph = methodList(Font).byDesc("(I)Lcom/fs/graphics").getReturnTypeClass();
         Kerning = methodList(Font).byDesc("(II)").getReturnTypeClass();
-        SoundStore = onwerClass(methodInstructionsByOwner(methodList(soundNode).byName("<init>").byDesc("(Ljava/lang/String;)").get(), "sound").get(0));
+        SoundStore = ownerClass(methodInstructionsByOwner(methodList(soundNode).byName("<init>").byDesc("(Ljava/lang/String;)").get(), "sound").get(0));
         final MethodNode loadOggSoundtrack = methodList(SoundStore).byDesc("(Ljava/lang/String;Ljava/io/InputStream;)").byIndex(2).get();
         SoundTrack = returnTypeClass(loadOggSoundtrack);
-        OggLoader = onwerClass(methodInstructionsByOwner(loadOggSoundtrack, "sound").get(1));
+        OggLoader = ownerClass(methodInstructionsByOwner(loadOggSoundtrack, "sound").get(1));
         SoundBuffer = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)").getReturnTypeClass();
         final MethodNode resourceLoaderStateInit = methodList(resourceLoaderStateNode).byName("init").get();
         final List<MethodInsnNode> rendereresList = methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/renderers");
-        AtmosphereRenderer = onwerClass(rendereresList.get(0));
-        ShipArrowRenderer = onwerClass(rendereresList.get(1));
-        ScreenshotUtil = onwerClass(methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/util").get(0));
-        ImpactSound = onwerClass(methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/combat/entities/ship").get(0));
+        AtmosphereRenderer = ownerClass(rendereresList.get(0));
+        ShipArrowRenderer = ownerClass(rendereresList.get(1));
+        ScreenshotUtil = ownerClass(methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/util").get(0));
+        ImpactSound = ownerClass(methodInstructionsByOwner(resourceLoaderStateInit, "com/fs/starfarer/combat/entities/ship").get(0));
         ResourceLoaderState$ResourceType = argumentTypeClass(methodList(resourceLoaderStateNode).byName("queueResource").get(), 0);
         final ClassNode ruleNode = methodList(rulesNode).byDesc("(Ljava/lang/String;Ljava/lang/String;Lcom/fs/starfarer/api/campaign/InteractionDialogAPI;Ljava/util/Map;)Lcom/fs/starfarer/campaign/rules").getReturnTypeClass();
         Expression = getGenericParametersClass(Type.getReturnType(methodList(ruleNode).byName("getConditions").get().signature), 0);
@@ -207,15 +210,15 @@ public class Symbols {
         DeploymentManager$ReinforcementType = fieldList(DeploymentManager).bySignature("Ljava/util/List<Lcom/fs/starfarer/combat/ai/admiral").byIndex(ANY).getGenericParametersClass(0);
         Bounds = fieldList(shipNode).byName("visualBounds").getTypeClass();
         BoundsSegment = fieldList(Bounds).bySignature("Ljava/util/List<Lcom/fs/starfarer/combat").byIndex(ANY).getGenericParametersClass(0);
-        FileLoader = onwerClass(methodInstructionsByOwner(methodList(glLauncherNode).byName("loadSound").get(), "com/fs/util").get(0));
+        FileLoader = ownerClass(methodInstructionsByOwner(methodList(glLauncherNode).byName("loadSound").get(), "com/fs/util").get(0));
         FileLoader$ResourceLocation = fieldList(FileLoader).bySignature("Ljava/util/List<Lcom/fs/util").getGenericParametersClass(0);
         FileLoader$ResourceType = fieldList(FileLoader$ResourceLocation).byDesc("Lcom/fs/util").getTypeClass();
-        HullSpecStore = onwerClass(methodInstructionsByOwner(methodList(hullVariantSpecNode).byName("createEmptyVariant").get(), "com/fs/starfarer/loading").get(0));
-        WeaponSpecStore = onwerClass(methodInstructionsByOwner(methodList(missileNode).byName("setWeaponSpec").get(), "com/fs/starfarer/loading").get(0));
+        HullSpecStore = ownerClass(methodInstructionsByOwner(methodList(hullVariantSpecNode).byName("createEmptyVariant").get(), "com/fs/starfarer/loading").get(0));
+        WeaponSpecStore = ownerClass(methodInstructionsByOwner(methodList(missileNode).byName("setWeaponSpec").get(), "com/fs/starfarer/loading").get(0));
         SecureClassLoader = fieldList(scriptStoreNode).byDesc("Lcom/fs/starfarer/loading/scripts").getTypeClass();
-        JavaSourceFinder = onwerClass(methodInstructionsByOwner(methodList(scriptStoreNode).byDesc("(Ljava/lang/ClassLoader;)V").get(), "com/fs/starfarer/loading").get(0));
+        JavaSourceFinder = ownerClass(methodInstructionsByOwner(methodList(scriptStoreNode).byDesc("(Ljava/lang/ClassLoader;)V").get(), "com/fs/starfarer/loading").get(0));
         ShipHullSpec = methodList(shipNode).byName("getHullSpec").byDesc("()Lcom/fs/starfarer/loading/specs").getReturnTypeClass();
-        ShutdownException = onwerClass(methodInstructionsBy(methodList(baseGameStateNode).byName("traverse").get(), "com/fs/starfarer", "<init>").get(0));
+        ShutdownException = ownerClass(methodInstructionsBy(methodList(baseGameStateNode).byName("traverse").get(), "com/fs/starfarer", "<init>").get(0));
         StarfarerSettings$SettingsAPIImpl = readClassNode(starfarerSettingsNode.innerClasses.stream().filter((innerClassNode) -> innerClassNode.access == 0).findFirst().get().name);
 
         // Methods
@@ -224,6 +227,9 @@ public class Symbols {
         FontRepository_defineFont = methodList(FontRepository).byDesc("(Ljava/lang/String;Ljava/lang/String;)V").get();
         StarfarerSettings_getFloatValue = methodList(starfarerSettingsNode).byDesc("(Ljava/lang/String;)F").byInstructionOwner("java/util/Map").get();
         StarfarerSettings_getBooleanValue = methodList(starfarerSettingsNode).byDesc("(Ljava/lang/String;)Z").byInstructionOwner("java/util/Map").get();
+        final MethodNode baseGameState_traverse = methodList(baseGameStateNode).byName("traverse").get();
+        final MethodNode combatState_traverse = methodList(combatStateNode).byName("traverse").get();
+        StarfarerSettings_getVSYNCOffset = optional(() -> methodList(starfarerSettingsNode).byDesc("()F").byIsCalled(combatState_traverse, baseGameState_traverse).byIndex(0).get());
         ScriptStore_getScriptList = methodList(scriptStoreNode).bySignature("()Ljava/util/List<Ljava/lang/String;>;").get();
         ScriptStore_getPluginSet = methodList(scriptStoreNode).bySignature("()Ljava/util/Set<Ljava/lang/String;>;").get();
         ScriptStore_startScriptLoadingThread = methodList(scriptStoreNode).byDesc("()V").byInstructionOwner("java/lang/Thread").byInstructionOwner("com/fs/starfarer/loading/scripts").get();
@@ -364,6 +370,14 @@ public class Symbols {
         return new FieldList(classNode);
     }
 
+    private MethodNode optional(Supplier<MethodNode> supplier) {
+        try {
+            return supplier.get();
+        } catch (AssertionError e) {
+            return null;
+        }
+    }
+
     /**
      * METHODS
      */
@@ -397,7 +411,7 @@ public class Symbols {
         return inst;
     }
 
-    private ClassNode onwerClass(MethodInsnNode inst) {
+    private ClassNode ownerClass(MethodInsnNode inst) {
         return readClassNode(inst.owner);
     }
 
@@ -413,7 +427,7 @@ public class Symbols {
         String generic = signature.substring(signature.indexOf('<') + 1);
         generic = generic.substring(0, generic.indexOf('>'));
 
-        // Disgiuse generic parameters as method descriptor to use existing Type functionality.
+        // Disguise generic parameters as method descriptor to use existing Type functionality.
         return Type.getMethodType("(" + generic + ")V").getArgumentTypes();
     }
 }

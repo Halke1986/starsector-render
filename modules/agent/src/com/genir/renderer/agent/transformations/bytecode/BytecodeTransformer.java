@@ -23,7 +23,9 @@ public class BytecodeTransformer {
     }
 
     public void renameMethod(MethodNode method, String newName) {
-        renameMethod(method.name, newName, method.desc);
+        if (method != null) {
+            renameMethod(method.name, newName, method.desc);
+        }
     }
 
     public void renameMethod(String oldName, String newName, String descriptor) {
@@ -31,7 +33,9 @@ public class BytecodeTransformer {
     }
 
     public void removeMethod(MethodNode method) {
-        removeMethod(method.name, method.desc);
+        if (method != null) {
+            removeMethod(method.name, method.desc);
+        }
     }
 
     public void removeMethod(String methodName, String descriptor) {
