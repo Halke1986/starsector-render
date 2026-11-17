@@ -1,5 +1,8 @@
+v1.0.2rc1
+
 - Fixed an issue that caused some text to appear washed out. Reported by Slubernoob.
 - Added logs for debugging certain rare crashes.
+- Fixed an assertion error that could occur when entering BoxUtil test mission. Reported by alice.
 
 v1.0.1
 

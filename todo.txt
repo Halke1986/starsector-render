@@ -42,12 +42,6 @@ betatester can't reproduce
 added more logs in case this happens again
 
 
-https://discord.com/channels/187635036525166592/1402763865913036831/1571573652615340273
-another texture binding assertion error
-added more logs to GL44.glBindTextures
-added fixes, not sure if good enough
-
-
 https://fractalsoftworks.com/forum/index.php?msg=534327
 early crash
 not sure what to do, waiting for response
