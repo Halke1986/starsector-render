@@ -374,7 +374,16 @@ public class GL11 {
             }
         }
 
+        if (count == 0) {
+            return;
+        }
+
         final Context context = ContextManager.getThreadContext();
+
+        // Catch array bounds errors early, before they cause
+        // difficult-to-debug driver crashes or visual errors.
+        context.clientAttribTracker.assertArrayPointersCapacity(first, count);
+
         final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawArrays(mode, first, count, snapshot));
     }
