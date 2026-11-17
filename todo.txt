@@ -16,14 +16,6 @@ campaign radar line (another one) and radar transparency
 champion silhouette also has lines?
 
 
-https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
-GLCommand in Executor mutated to a different type again
-
-
-https://fractalsoftworks.com/forum/index.php?msg=534327
-early crash
-
-
 getting some strange effects in FR 1.0 in 0.98.5, in battle damage numbers are washed out and combat speed slows down a lot even when running at 60FPS
 
 
@@ -53,3 +45,14 @@ added more logs in case this happens again
 https://discord.com/channels/187635036525166592/1402763865913036831/1571573652615340273
 another texture binding assertion error
 added more logs to GL44.glBindTextures
+added fixes, not sure if good enough
+
+
+https://fractalsoftworks.com/forum/index.php?msg=534327
+early crash
+not sure what to do, waiting for response
+
+
+https://discord.com/channels/187635036525166592/1402763865913036831/1566179239739523122
+GLCommand in Executor mutated to a different type again
+added logging
