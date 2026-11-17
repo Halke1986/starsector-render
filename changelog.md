@@ -1,4 +1,5 @@
 - Fixed an issue that caused some text to appear washed out. Reported by Slubernoob.
+- Added logs for debugging certain rare crashes.
 
 v1.0.1
 
