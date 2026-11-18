@@ -22,23 +22,14 @@ public class TextureBuilder {
         com.genir.renderer.bridge.commands.GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, texData.width, texData.height, 0, colorType, GL11.GL_UNSIGNED_BYTE, texData.buffer);
     }
 
-    public static TextureData readAndAnalyzeImage(BufferedImage image, boolean doNotModify) {
+    public static TextureData readAndAnalyzeImage(BufferedImage image) {
         ImageAnalyzer analyzer = new ImageAnalyzer();
         TextureData texData = new TextureData();
 
         texData.imageWidth = image.getWidth();
         texData.imageHeight = image.getHeight();
-
-        if (doNotModify) {
-            // Use vanilla power-of-two texture sizes.
-            texData.width = 1;
-            texData.height = 1;
-            while (texData.width < texData.imageWidth) texData.width *= 2;
-            while (texData.height < texData.imageHeight) texData.height *= 2;
-        } else {
-            texData.width = texData.imageWidth;
-            texData.height = texData.imageHeight;
-        }
+        texData.width = texData.imageWidth;
+        texData.height = texData.imageHeight;
 
         texData.hasAlpha = image.getColorModel().hasAlpha();
 

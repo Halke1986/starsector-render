@@ -130,10 +130,8 @@ public class TextureLoader {
                 throw new NullPointerException();
             }
 
-            boolean useVanillaLogic = Blacklist.doNotModify(path);
-
             // Load texture DDS override.
-            if (!useVanillaLogic && resource instanceof ResourceHandleAdapter handle) {
+            if (resource instanceof ResourceHandleAdapter handle) {
                 TextureData texData = DDSIntegration.getTexture(handle.getFilePath());
                 if (texData != null) {
                     return texData;
@@ -152,7 +150,7 @@ public class TextureLoader {
                 image = alphaAdderApply(image);
             }
 
-            return TextureBuilder.readAndAnalyzeImage(image, useVanillaLogic);
+            return TextureBuilder.readAndAnalyzeImage(image);
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
         }
