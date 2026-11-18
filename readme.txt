@@ -5,6 +5,7 @@ STARSECTOR PERFORMANCE OVERHAUL
 
 BUGFIXES AND IMPROVEMENTS TO VANILLA GAME ENGINE
 
+- Fixed texture edge artifacts, such as the bottom row of pixels appearing at the top of a portrait.
 - Fixed the game window not being responsive during loading. It is possible to Alt+Tab in and out or close the window at any time.
 - Fixed multiple race conditions that could cause random crashes at game startup.
 - Fixed all instances of background flickering when saving and loading the game.
