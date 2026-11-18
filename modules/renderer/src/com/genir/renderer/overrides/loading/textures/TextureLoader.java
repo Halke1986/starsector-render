@@ -170,9 +170,9 @@ public class TextureLoader {
 
             synchronized (ResourceLoaderLock.executorLock) {
                 if (texData.isDDS()) {
-                    DDSIntegration.commitTexture(textureID, texData);
+                    DDSIntegration.commitTexture(path, textureID, texData);
                 } else {
-                    TextureBuilder.commitTexture(textureID, texData);
+                    TextureBuilder.commitTexture(path, textureID, texData);
                 }
 
                 context.exec.swapFrames();

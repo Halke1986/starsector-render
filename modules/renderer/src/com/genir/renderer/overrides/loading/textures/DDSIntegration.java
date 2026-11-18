@@ -59,7 +59,7 @@ public class DDSIntegration {
         return cache.get(path.normalize());
     }
 
-    public static void commitTexture(int textureID, TextureData texData) {
+    public static void commitTexture(String vanillaPath, int textureID, TextureData texData) {
         final Context context = ContextManager.getThreadContext();
 
         int target = GL11.GL_TEXTURE_2D;
@@ -72,15 +72,15 @@ public class DDSIntegration {
         // around the upload from restoring outdated parameters.
         // Since VRAM Optimizer 1.0.46.
         if (hasSetDDSTextureParameters() && texData.mipCount != -1) {
-            record setTextureParameters(int textureID, int mipCount) implements GLCommand {
+            record setTextureParameters(String vanillaPath, int textureID, int mipCount) implements GLCommand {
                 @Override
                 public void run(Context context, float[] args, int argsOffset) {
                     setDDSTextureParameters(textureID, mipCount, false);
-                    TextureSetup.configureOnServer();
+                    TextureSetup.configureOnServer(vanillaPath);
                 }
             }
 
-            context.exec.execute(new setTextureParameters(textureID, texData.mipCount));
+            context.exec.execute(new setTextureParameters(vanillaPath, textureID, texData.mipCount));
         }
 
         // Schedule the texture for upload.
@@ -90,7 +90,7 @@ public class DDSIntegration {
                 textureID,
                 texData,
                 () -> readTextureBytes(texData),
-                (bytes) -> uploadTextureLazy(texData, textureID, bytes)
+                (bytes) -> uploadTextureLazy(vanillaPath, textureID, bytes)
         );
 
         // Notify texture tracker of the texture definition.
@@ -99,7 +99,7 @@ public class DDSIntegration {
 
     // uploadTextureLazy runs on rendering thread to allow asynchronous texture file loading
     // before the rendering thread processes the commit method.
-    private static void uploadTextureLazy(TextureData texData, int textureID, byte[] bytes) {
+    private static void uploadTextureLazy(String vanillaPath, int textureID, byte[] bytes) {
         int err = uploadDDSTexture(textureID, bytes);
         if (err != 0) {
             throw new RuntimeException(String.valueOf(err));
@@ -110,7 +110,7 @@ public class DDSIntegration {
         // code re-defines the texture with uncompressed data, this results in
         // compressed/uncompressed mismatch for mipmap levels and subsequently,
         // failure to draw the texture.
-        TextureSetup.configureOnServer();
+        TextureSetup.configureOnServer(vanillaPath);
     }
 
     public static byte[] readTextureBytes(TextureData texData) {

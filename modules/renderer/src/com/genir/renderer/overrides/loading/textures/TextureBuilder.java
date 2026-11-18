@@ -10,10 +10,10 @@ import java.awt.image.Raster;
 import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
-    public static void commitTexture(int textureID, TextureData texData) {
+    public static void commitTexture(String vanillaPath, int textureID, TextureData texData) {
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
-        TextureSetup.configureOnClient();
+        TextureSetup.configureOnClient(vanillaPath);
 
         int colorType = texData.hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
         int internalFormat = GL11.GL_RGBA;
