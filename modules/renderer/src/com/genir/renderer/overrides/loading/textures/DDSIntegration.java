@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL42;
 
 import java.awt.*;
@@ -77,7 +76,7 @@ public class DDSIntegration {
                 @Override
                 public void run(Context context, float[] args, int argsOffset) {
                     setDDSTextureParameters(textureID, mipCount, false);
-                    configureVanillaTexture();
+                    TextureSetup.configureOnServer();
                 }
             }
 
@@ -111,15 +110,7 @@ public class DDSIntegration {
         // code re-defines the texture with uncompressed data, this results in
         // compressed/uncompressed mismatch for mipmap levels and subsequently,
         // failure to draw the texture.
-        configureVanillaTexture();
-    }
-
-    private static void configureVanillaTexture() {
-        // Vanilla does not generate mipmaps if either texture dimension exceeds 1024 pixels.
-        // The rationale is undocumented, and Fast Rendering does not apply this restriction.
-        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-        org.lwjgl.opengl.GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, 1);
+        TextureSetup.configureOnServer();
     }
 
     public static byte[] readTextureBytes(TextureData texData) {
