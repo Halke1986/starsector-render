@@ -12,13 +12,6 @@ https://www.fossic.org/thread-20956-1-1.html
 ShadowverseDynamicPortraits slowdown
 
 
-campaign radar line (another one) and radar transparency
-champion silhouette also has lines?
-
-
-getting some strange effects in FR 1.0 in 0.98.5, in battle damage numbers are washed out and combat speed slows down a lot even when running at 60FPS
-
-
 black screen with game activity sounds after changing resource generator in mael modpack
 
 ************************************ waiting for stuff to happen
