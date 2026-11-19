@@ -123,7 +123,7 @@ public class AsyncExecutor implements Executor {
      */
     @Override
     public void swapFrames() {
-        // Assume all commands issued before the producer thread was notified
+        // Assume all commands issued before the client thread was notified
         // of the exception are invalid and must not be executed.
         rethrowAndClearException();
 

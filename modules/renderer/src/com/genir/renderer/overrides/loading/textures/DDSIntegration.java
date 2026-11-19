@@ -72,7 +72,7 @@ public class DDSIntegration {
         // around the upload from restoring outdated parameters.
         // Since VRAM Optimizer 1.0.46.
         if (hasSetDDSTextureParameters() && texData.mipCount != -1) {
-            record setTextureParameters(String vanillaPath, int textureID, int mipCount) implements GLCommand {
+            record DDSIntegration$setTextureParameters(String vanillaPath, int textureID, int mipCount) implements GLCommand {
                 @Override
                 public void run(Context context, float[] args, int argsOffset) {
                     setDDSTextureParameters(textureID, mipCount, false);
@@ -80,7 +80,7 @@ public class DDSIntegration {
                 }
             }
 
-            context.exec.execute(new setTextureParameters(vanillaPath, textureID, texData.mipCount));
+            context.exec.execute(new DDSIntegration$setTextureParameters(vanillaPath, textureID, texData.mipCount));
         }
 
         // Schedule the texture for upload.

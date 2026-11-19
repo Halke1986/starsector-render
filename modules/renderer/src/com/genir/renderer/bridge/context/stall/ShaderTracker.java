@@ -20,7 +20,7 @@ public class ShaderTracker { // Context-shared object.
     }
 
     synchronized public int glGetUniformLocation(int program, CharSequence name) {
-        record ShaderTracker$glGetUniformLocation(int program, String name, int expected) implements GLCommand, GLGetter<Integer> {
+        record ShaderTracker$assertUniformLocation(int program, String name, int expected) implements GLCommand, GLGetter<Integer> {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -46,17 +46,17 @@ public class ShaderTracker { // Context-shared object.
 
         Integer expected = locations.get(nameStr);
         if (expected == null) {
-            int result = context.exec.get(new ShaderTracker$glGetUniformLocation(program, nameStr, 0));
+            int result = context.exec.get(new ShaderTracker$assertUniformLocation(program, nameStr, 0));
             locations.put(nameStr, result);
             return result;
         }
 
-        context.exec.execute(new ShaderTracker$glGetUniformLocation(program, nameStr, expected));
+        context.exec.execute(new ShaderTracker$assertUniformLocation(program, nameStr, expected));
         return expected;
     }
 
     synchronized public int glGetProgrami(int program, int pname) {
-        record ShaderTracker$glGetProgrami(int program, int pname, int expected) implements GLCommand, GLGetter<Integer> {
+        record ShaderTracker$assertProgrami(int program, int pname, int expected) implements GLCommand, GLGetter<Integer> {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
@@ -78,12 +78,12 @@ public class ShaderTracker { // Context-shared object.
 
         Integer expected = parameters.get(pname);
         if (expected == null) {
-            int result = context.exec.get(new ShaderTracker$glGetProgrami(program, pname, 0));
+            int result = context.exec.get(new ShaderTracker$assertProgrami(program, pname, 0));
             parameters.put(pname, result);
             return result;
         }
 
-        context.exec.execute(new ShaderTracker$glGetProgrami(program, pname, expected));
+        context.exec.execute(new ShaderTracker$assertProgrami(program, pname, expected));
         return expected;
     }
 }
