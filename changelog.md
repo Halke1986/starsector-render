@@ -1,3 +1,5 @@
+v1.0.3
+
 - Added compatibility with Weapon Tooltip Preview. Incompatibility reported by wing.
 - Fixed an assertion error that could occur when a mod issued an incorrect shader query. Reported by alice.
 
