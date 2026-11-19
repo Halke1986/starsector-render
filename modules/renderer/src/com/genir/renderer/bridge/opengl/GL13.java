@@ -3,12 +3,12 @@ package com.genir.renderer.bridge.opengl;
 import java.nio.*;
 
 public final class GL13 {
-      public static void glActiveTexture(int texture) {
+    public static void glActiveTexture(int texture) {
         com.genir.renderer.bridge.commands.GL13.glActiveTexture(texture);
     }
 
     public static void glClientActiveTexture(int texture) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL13.glClientActiveTexture(int)");
+        com.genir.renderer.bridge.commands.GL13.glClientActiveTexture(texture);
     }
 
     public static void glCompressedTexImage1D(int target, int level, int internalformat, int width, int border, ByteBuffer data) {

@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.ArrayPointer;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 public class ClientAttribState {
     public boolean enableVertexArray = false;
@@ -12,6 +13,8 @@ public class ClientAttribState {
     public ArrayPointer texCoordPointer = null;
     public ArrayPointer colorPointer = null;
 
+    public int activeTexture = GL13.GL_TEXTURE0;
+
     public int arrayBuffer = 0;
     public int elementArrayBuffer = 0;
 
@@ -20,6 +23,8 @@ public class ClientAttribState {
             enableVertexArray = source.enableVertexArray;
             enableTexCoordArray = source.enableTexCoordArray;
             enableColorArray = source.enableColorArray;
+
+            activeTexture = source.activeTexture;
 
             vertexPointer = source.vertexPointer;
             texCoordPointer = source.texCoordPointer;

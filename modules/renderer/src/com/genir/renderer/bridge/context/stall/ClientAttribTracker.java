@@ -175,6 +175,10 @@ public class ClientAttribTracker {
         }
     }
 
+    public void glClientActiveTexture(int texture) {
+        state.activeTexture = texture;
+    }
+
     private void setState(int cap, boolean value) {
         switch (cap) {
             case GL11.GL_VERTEX_ARRAY:

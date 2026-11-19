@@ -2,8 +2,10 @@ package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.TextureUnit;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.pool.BufferPool;
+import com.genir.renderer.debug.Debug;
 
 import java.nio.ByteBuffer;
 
@@ -63,5 +65,17 @@ public class GL13 {
             default:
                 throw new UnsupportedOperationException("glMultiTexCoord2f target > 1");
         }
+    }
+
+    public static void glClientActiveTexture(int texture) {
+        // At present, the supported operation has no effect.
+        Debug.asert(texture == org.lwjgl.opengl.GL13.GL_TEXTURE0);
+
+        if (TextureUnit.getIndex(texture) == -1) {
+            return;
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glClientActiveTexture(texture);
     }
 }
