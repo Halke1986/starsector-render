@@ -20,17 +20,19 @@ public class ShaderTracker { // Context-shared object.
     }
 
     synchronized public int glGetUniformLocation(int program, CharSequence name) {
-        record ShaderTracker$assertUniformLocation(int program, String name, int expected) implements GLCommand, GLGetter<Integer> {
+        record ShaderTracker$glGetUniformLocation(int program, String name, int expected) implements GLGetter<Integer> {
+            @Override
+            public Integer call(Context context) {
+                return org.lwjgl.opengl.GL20.glGetUniformLocation(program, name);
+            }
+        }
+
+        record ShaderTracker$assertUniformLocation(int program, String name, int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 int actual = org.lwjgl.opengl.GL20.glGetUniformLocation(program, name);
                 asertEqual(expected, actual, this);
-            }
-
-            @Override
-            public Integer call(Context context) {
-                return org.lwjgl.opengl.GL20.glGetUniformLocation(program, name);
             }
         }
 
@@ -46,7 +48,7 @@ public class ShaderTracker { // Context-shared object.
 
         Integer expected = locations.get(nameStr);
         if (expected == null) {
-            int result = context.exec.get(new ShaderTracker$assertUniformLocation(program, nameStr, 0));
+            int result = context.exec.get(new ShaderTracker$glGetUniformLocation(program, nameStr, 0));
             locations.put(nameStr, result);
             return result;
         }
@@ -56,17 +58,23 @@ public class ShaderTracker { // Context-shared object.
     }
 
     synchronized public int glGetProgrami(int program, int pname) {
-        record ShaderTracker$assertProgrami(int program, int pname, int expected) implements GLCommand, GLGetter<Integer> {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                // Assert the simulated value reflects the OpenGL state.
-                int actual = org.lwjgl.opengl.GL20.glGetProgrami(program, pname);
-                asertEqual(expected, actual, this);
-            }
-
+        record ShaderTracker$glGetProgrami(int program, int pname, int expected) implements GLGetter<Integer> {
             @Override
             public Integer call(Context context) {
                 return org.lwjgl.opengl.GL20.glGetProgrami(program, pname);
+            }
+        }
+
+        record ShaderTracker$assertProgrami(int program, int pname, int expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                // Skip the return-value assertion when program == 0 because glGetProgrami
+                // can return a stale value from LWJGL's scratch buffer. Still issue the
+                // call so OpenGL generates GL_INVALID_VALUE.
+                int actual = org.lwjgl.opengl.GL20.glGetProgrami(program, pname);
+                if (program != 0) {
+                    asertEqual(expected, actual, this);
+                }
             }
         }
 
@@ -78,7 +86,7 @@ public class ShaderTracker { // Context-shared object.
 
         Integer expected = parameters.get(pname);
         if (expected == null) {
-            int result = context.exec.get(new ShaderTracker$assertProgrami(program, pname, 0));
+            int result = context.exec.get(new ShaderTracker$glGetProgrami(program, pname, 0));
             parameters.put(pname, result);
             return result;
         }
