@@ -89,7 +89,12 @@ public class AsyncExecutor implements Executor {
     public void wait(GLCommand command) {
         long start = System.nanoTime();
 
-        context.stallDetector.detectStall();
+        if (context.stallDetector.detectStall()) {
+            // Assume non-heap optimized command, but pass args just in case.
+            logCommand(context, new float[Frame.ARGS_NUM], 0, command);
+
+            throw new RuntimeException("Asynchronous pipeline stall");
+        }
 
         execute(command);
         swapFrames();

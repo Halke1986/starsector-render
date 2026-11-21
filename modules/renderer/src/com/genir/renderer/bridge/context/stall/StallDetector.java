@@ -33,14 +33,17 @@ public class StallDetector {
         }
     }
 
-    public void detectStall() {
+    public boolean detectStall() {
         if (stallDetectionEnabled) {
             stallLastFrame = true;
         }
 
         if (stallThresholdExceeded) {
             stallThresholdExceeded = false;
-            throw new RuntimeException("Asynchronous pipeline stall");
+
+            return true;
         }
+
+        return false;
     }
 }

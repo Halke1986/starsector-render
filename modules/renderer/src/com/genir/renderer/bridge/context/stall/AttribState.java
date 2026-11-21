@@ -50,6 +50,9 @@ public class AttribState {
     // GL_VIEWPORT_BIT
     public Box viewport = new Box(0, 0, 0, 0);
 
+    // GL_ENABLE_BIT
+    public boolean enableCullFace = false;
+
     //
     // GL Setters
     //
@@ -204,6 +207,9 @@ public class AttribState {
             case GL11.GL_SCISSOR_TEST:
                 enableScissorTest = value;
                 break;
+            case GL11.GL_CULL_FACE:
+                enableCullFace = value;
+                break;
         }
     }
 
@@ -320,6 +326,7 @@ public class AttribState {
         enableTexture2DOther = Arrays.copyOf(source.enableTexture2DOther, source.enableTexture2DOther.length);
         enableLighting = source.enableLighting;
         enableScissorTest = source.enableScissorTest;
+        enableCullFace = source.enableCullFace;
 
         enableBlend = source.enableBlend;
         enableBlendi.clear();

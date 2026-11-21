@@ -1577,6 +1577,7 @@ public class GL11 {
             case org.lwjgl.opengl.GL11.GL_BLEND:
             case org.lwjgl.opengl.GL11.GL_LIGHTING:
             case org.lwjgl.opengl.GL11.GL_SCISSOR_TEST:
+            case org.lwjgl.opengl.GL11.GL_CULL_FACE:
                 return context.attribTracker.glIsEnabled(pname);
         }
 

@@ -71,6 +71,14 @@ public class AttribTracker {
     }
 
     public boolean glIsEnabled(int pname) {
+        record AttribTracker$assertIsEnabled(int pname, boolean expected) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                boolean actual = org.lwjgl.opengl.GL11.glIsEnabled(pname);
+                Debug.asertEqual(expected, actual, this);
+            }
+        }
+
         return switch (pname) {
             case GL11.GL_STENCIL_TEST -> state.enableStencilTest;
             case GL11.GL_ALPHA_TEST -> state.enableAlphaTest;
@@ -78,6 +86,10 @@ public class AttribTracker {
             case GL11.GL_BLEND -> state.enableBlendi.containsKey(0) ? state.enableBlendi.get(0).enable : state.enableBlend;
             case GL11.GL_LIGHTING -> state.enableLighting;
             case GL11.GL_SCISSOR_TEST -> state.enableScissorTest;
+            case GL11.GL_CULL_FACE -> {
+                exec.execute(new AttribTracker$assertIsEnabled(pname, state.enableCullFace));
+                yield state.enableCullFace;
+            }
             default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
         };
     }
