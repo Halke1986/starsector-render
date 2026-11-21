@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 public class ClientAttribState {
+    // GL11.GL_CLIENT_VERTEX_ARRAY_BIT
     public boolean enableVertexArray = false;
     public boolean enableTexCoordArray = false;
     public boolean enableColorArray = false;
@@ -17,6 +18,9 @@ public class ClientAttribState {
 
     public int arrayBuffer = 0;
     public int elementArrayBuffer = 0;
+
+    // GL11.GL_CLIENT_PIXEL_STORE_BIT
+    public int pixelUnpackAlignment = 4;
 
     public void overwriteWith(ClientAttribState source, int attribMask) {
         if ((attribMask & GL11.GL_CLIENT_VERTEX_ARRAY_BIT) != 0) {
@@ -32,6 +36,10 @@ public class ClientAttribState {
 
             arrayBuffer = source.arrayBuffer;
             elementArrayBuffer = source.elementArrayBuffer;
+        }
+
+        if ((attribMask & GL11.GL_CLIENT_PIXEL_STORE_BIT) != 0) {
+            pixelUnpackAlignment = source.pixelUnpackAlignment;
         }
     }
 }

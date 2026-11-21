@@ -63,31 +63,24 @@ public class ClientAttribTracker {
         }
     }
 
-    public int getArrayBufferBinding() {
-        record ClientAttribTracker$assertBufferBinding(int expected) implements GLCommand {
+    public int glGetInteger(int pname) {
+        record ClientAttribTracker$assertGetInteger(int pname, int expected) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
+                int actual = org.lwjgl.opengl.GL11.glGetInteger(pname);
                 Assert.glValue(expected, actual, this);
             }
         }
 
-        int result = state.arrayBuffer;
-        exec.execute(new ClientAttribTracker$assertBufferBinding(result));
-        return result;
-    }
+        int result = switch (pname) {
+            case org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT -> state.pixelUnpackAlignment;
+            case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING -> state.arrayBuffer;
+            case org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING -> state.elementArrayBuffer;
 
-    public int getElementArrayBufferBinding() {
-        record ClientAttribTracker$assertArrayBufferBinding(int expected) implements GLCommand {
-            @Override
-            public void run(Context context, float[] args, int argsOffset) {
-                int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING);
-                Assert.glValue(expected, actual, this);
-            }
-        }
+            default -> throw new UnsupportedOperationException("unsupported pname: " + pname);
+        };
 
-        int result = state.elementArrayBuffer;
-        exec.execute(new ClientAttribTracker$assertArrayBufferBinding(result));
+        exec.execute(new ClientAttribTracker$assertGetInteger(pname, result));
         return result;
     }
 
@@ -175,6 +168,14 @@ public class ClientAttribTracker {
 
     public void glClientActiveTexture(int texture) {
         state.activeTexture = texture;
+    }
+
+    public void glPixelStorei(int pname, int param) {
+        switch (pname) {
+            case GL11.GL_UNPACK_ALIGNMENT:
+                state.pixelUnpackAlignment = param;
+                break;
+        }
     }
 
     private void setState(int cap, boolean value) {

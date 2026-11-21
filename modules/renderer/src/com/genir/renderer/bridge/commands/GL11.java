@@ -1263,6 +1263,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
+        context.clientAttribTracker.glPixelStorei(pname, param);
         context.exec.execute(new glPixelStorei(pname, param));
     }
 
@@ -1320,10 +1321,12 @@ public class GL11 {
             case org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_RGB:
             case org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_ALPHA:
                 return context.attribTracker.glGetInteger(pname);
+
+            case org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT:
             case org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER_BINDING:
-                return context.clientAttribTracker.getArrayBufferBinding();
             case org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING:
-                return context.clientAttribTracker.getElementArrayBufferBinding();
+                return context.clientAttribTracker.glGetInteger(pname);
+
             case org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_BINDING:
                 return context.bufferTracker.getBoundFramebuffer();
             case org.lwjgl.opengl.GL30.GL_VERTEX_ARRAY_BINDING:
