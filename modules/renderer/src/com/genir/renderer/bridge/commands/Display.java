@@ -240,4 +240,8 @@ public class Display {
     public static void setLocation(int new_x, int new_y) {
         org.lwjgl.opengl.Display.setLocation(new_x, new_y);
     }
+
+    public static boolean isCreated() {
+        return org.lwjgl.opengl.Display.isCreated();
+    }
 }

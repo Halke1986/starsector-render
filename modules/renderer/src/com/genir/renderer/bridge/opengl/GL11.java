@@ -724,7 +724,7 @@ public final class GL11 {
     }
 
     public static void glPolygonMode(int face, int mode) {
-        throw new UnsupportedOperationException("UnsupportedOperationException: GL11.glPolygonMode(int, int)");
+        com.genir.renderer.bridge.commands.GL11.glPolygonMode(face, mode);
     }
 
     public static void glPointSize(float size) {

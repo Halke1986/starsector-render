@@ -129,7 +129,6 @@ public class ClientAttribTracker {
     }
 
     public void glTexCoordPointer(int size, int type, int stride, Buffer pointer) {
-        Assert.supported(size, 2, "glTexCoordPointer$size");
         Assert.supported(stride, 0, "glTexCoordPointer$stride");
         Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
 

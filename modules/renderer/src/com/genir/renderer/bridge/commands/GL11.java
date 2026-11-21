@@ -1303,6 +1303,18 @@ public class GL11 {
         context.exec.execute(new glClearDepth(depth));
     }
 
+    public static void glPolygonMode(int face, int mode) {
+        record glPolygonMode(int face, int mode) implements GLCommand {
+            @Override
+            public void run(Context context, float[] args, int argsOffset) {
+                org.lwjgl.opengl.GL11.glPolygonMode(face, mode);
+            }
+        }
+
+        final Context context = ContextManager.getThreadContext();
+        context.exec.execute(new glPolygonMode(face, mode));
+    }
+
     /**
      * Blocking.
      */
