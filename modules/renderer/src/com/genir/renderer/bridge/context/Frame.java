@@ -2,7 +2,7 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.debug.Debug;
+import com.genir.renderer.debug.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +58,7 @@ public class Frame {
     }
 
     private void resizeArrays() {
-        Debug.asert(commands.length <= commandsSize);
+        Assert.invariant(commands.length <= commandsSize);
 
         commands = Arrays.copyOf(commands, commands.length * 2);
         args = Arrays.copyOf(args, args.length * 2);

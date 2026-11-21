@@ -215,30 +215,6 @@ public class Debug {
         log("Viewport = " + x + " " + y + " " + width + " " + height);
     }
 
-    public static void asert(boolean val) {
-        if (!val) {
-            throw new AssertionError("false");
-        }
-    }
-
-    public static void asertEqual(boolean expected, boolean actual, Object details) {
-        if (expected != actual) {
-            throw new AssertionError(expected + "!=" + actual + ", details: " + details);
-        }
-    }
-
-    public static void asertEqual(int expected, int actual, Object details) {
-        if (expected != actual) {
-            throw new AssertionError(expected + "!=" + actual + ", details: " + details);
-        }
-    }
-
-    public static void asertEqual(float expected, float actual, Object details) {
-        if (expected != actual) {
-            throw new AssertionError(expected + "!=" + actual + ", details: " + details);
-        }
-    }
-
     public static void log(Class<?> user, Object msg) {
         Logger.getLogger(user).info(msg);
     }

@@ -4,7 +4,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.debug.Debug;
+import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.*;
 
 import java.util.HashMap;
@@ -180,7 +180,7 @@ public class BufferTracker {
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL15.glIsBuffer(buffer);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -196,7 +196,7 @@ public class BufferTracker {
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL30.glIsFramebuffer(framebuffer);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -212,7 +212,7 @@ public class BufferTracker {
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL30.glIsRenderbuffer(renderbuffer);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -267,7 +267,7 @@ public class BufferTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(pname);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -279,7 +279,7 @@ public class BufferTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL30.glGetInteger(pname, index);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 

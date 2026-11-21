@@ -1,9 +1,9 @@
 package com.genir.renderer.bridge.context;
 
+import com.genir.renderer.debug.Assert;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.genir.renderer.debug.Debug.asert;
 
 /**
  * ContextManager manages virtual OpenGL contexts.
@@ -52,7 +52,7 @@ public class ContextManager {
         final Context context = new Context(mainContext, drawable);
 
         Context prevValue = auxContexts.put(Thread.currentThread(), context);
-        asert(prevValue == null);
+        Assert.invariant(prevValue == null);
 
         return context;
     }

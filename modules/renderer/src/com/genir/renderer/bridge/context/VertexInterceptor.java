@@ -1,6 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
+import com.genir.renderer.debug.Assert;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -10,8 +11,6 @@ import org.lwjgl.opengl.OpenGLException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
-
-import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class VertexInterceptor {
     public static final int VERTEX_SIZE = 3;
@@ -116,7 +115,7 @@ public class VertexInterceptor {
     }
 
     public void glMultiTexCoord2f(int target, float s, float t) {
-        asertEqual(GL13.GL_TEXTURE1, target, null);
+        Assert.supported(target, GL13.GL_TEXTURE1, "glMultiTexCoord2f$target");
 
         this.texS1 = s;
         this.texT1 = t;

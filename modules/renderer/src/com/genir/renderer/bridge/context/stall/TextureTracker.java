@@ -2,14 +2,12 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.*;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.genir.renderer.debug.Debug.asert;
-import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class TextureTracker { // Context-shared object.
     // TODO re-bind textures on glPopAttrib.
@@ -78,7 +76,6 @@ public class TextureTracker { // Context-shared object.
         }
 
         // Attempting to re-bind an existing texture with a different target.
-        asert(boundTextures[texture] != target && boundTextures[texture] != 0);
         return false;
     }
 
@@ -88,7 +85,7 @@ public class TextureTracker { // Context-shared object.
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 boolean actual = org.lwjgl.opengl.GL11.glIsTexture(texture);
-                asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -125,7 +122,9 @@ public class TextureTracker { // Context-shared object.
             return;
         }
 
-        asert(glIsTextureImpl(texture));
+        if (!glIsTextureImpl(texture)) {
+            return;
+        }
 
         TexData data = new TexData(internalformat, width, height);
         parameterCache.put(texture, data);
@@ -137,7 +136,7 @@ public class TextureTracker { // Context-shared object.
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 int actual = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(target, level, pname);
-                asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 

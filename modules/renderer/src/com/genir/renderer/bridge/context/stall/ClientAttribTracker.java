@@ -6,14 +6,12 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Releasable;
+import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import java.nio.Buffer;
 import java.util.Stack;
-
-import static com.genir.renderer.debug.Debug.asert;
-import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class ClientAttribTracker {
     private final Executor exec;
@@ -70,7 +68,7 @@ public class ClientAttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
-                asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -84,7 +82,7 @@ public class ClientAttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ELEMENT_ARRAY_BUFFER_BINDING);
-                asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -115,39 +113,39 @@ public class ClientAttribTracker {
     }
 
     public void glEnableClientState(int cap) {
-        asert(cap == GL11.GL_VERTEX_ARRAY ||
+        Assert.supported(cap, cap == GL11.GL_VERTEX_ARRAY ||
                 cap == GL11.GL_TEXTURE_COORD_ARRAY ||
-                cap == GL11.GL_COLOR_ARRAY);
+                cap == GL11.GL_COLOR_ARRAY, "glEnableClientState$cap");
 
         setState(cap, true);
     }
 
     public void glDisableClientState(int cap) {
-        asert(cap == GL11.GL_VERTEX_ARRAY ||
+        Assert.supported(cap, cap == GL11.GL_VERTEX_ARRAY ||
                 cap == GL11.GL_TEXTURE_COORD_ARRAY ||
-                cap == GL11.GL_COLOR_ARRAY);
+                cap == GL11.GL_COLOR_ARRAY, "glDisableClientState$cap");
 
         setState(cap, false);
     }
 
     public void glColorPointer(int size, int type, int stride, Buffer pointer) {
-        asert(stride == 0);
-        asert(pointer.position() == 0);
+        Assert.supported(stride, 0, "glColorPointer$stride");
+        Assert.supported(pointer.position(), 0, "glColorPointer$position");
 
         state.colorPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
     public void glTexCoordPointer(int size, int type, int stride, Buffer pointer) {
-        asert(size == 2);
-        asert(stride == 0);
-        asert(pointer.position() == 0);
+        Assert.supported(size, 2, "glTexCoordPointer$size");
+        Assert.supported(stride, 0, "glTexCoordPointer$stride");
+        Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
 
         state.texCoordPointer = new ArrayPointer(size, type, stride, pointer);
     }
 
     public void glVertexPointer(int size, int type, int stride, Buffer pointer) {
-        asert(stride == 0);
-        asert(pointer.position() == 0);
+        Assert.supported(stride, 0, "glVertexPointer$stride");
+        Assert.supported(pointer.position(), 0, "glVertexPointer$position");
 
         state.vertexPointer = new ArrayPointer(size, type, stride, pointer);
     }

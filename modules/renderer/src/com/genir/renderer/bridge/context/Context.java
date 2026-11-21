@@ -4,12 +4,11 @@ import com.genir.renderer.bridge.context.executor.AsyncExecutor;
 import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.debug.Assert;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.overrides.render.Renderers;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
-
-import static com.genir.renderer.debug.Debug.asert;
 
 public class Context {
     // Debug fields
@@ -92,7 +91,7 @@ public class Context {
     public void update() {
         // Runs on rendering thread.
 
-        asert(!isDestroyed);
+        Assert.invariant(!isDestroyed);
 
         if (org.lwjgl.opengl.Display.isCreated()) {
             stallDetector.update();
@@ -112,7 +111,7 @@ public class Context {
     public void restoreCurrent() {
         // Runs on rendering thread.
 
-        asert(!isDestroyed);
+        Assert.invariant(!isDestroyed);
 
         try {
             if (isMain) {
@@ -128,7 +127,7 @@ public class Context {
     public void destroy() {
         // Runs on rendering thread.
 
-        asert(!isDestroyed);
+        Assert.invariant(!isDestroyed);
 
         try {
             if (isMain) {

@@ -1,7 +1,7 @@
 package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.stall.AttribState;
-import com.genir.renderer.debug.Debug;
+import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
@@ -156,7 +156,7 @@ public class AttribManager {
         }
 
         // Cleanup texture unit.
-        Debug.asertEqual(actual.activeTexture, expected.activeTexture, null);
+        Assert.invariant(actual.activeTexture == expected.activeTexture);
         if (actual.activeTexture != GL13.GL_TEXTURE0) {
             org.lwjgl.opengl.GL13.glActiveTexture(actual.activeTexture);
         }

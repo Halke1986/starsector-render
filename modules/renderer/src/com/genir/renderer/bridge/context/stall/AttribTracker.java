@@ -3,7 +3,7 @@ package com.genir.renderer.bridge.context.stall;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.debug.Debug;
+import com.genir.renderer.debug.Assert;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
@@ -75,7 +75,7 @@ public class AttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 boolean actual = org.lwjgl.opengl.GL11.glIsEnabled(pname);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -118,7 +118,7 @@ public class AttribTracker {
                 };
 
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(pname);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -132,7 +132,7 @@ public class AttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -146,7 +146,7 @@ public class AttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 float actual = org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_LINE_WIDTH);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -162,10 +162,10 @@ public class AttribTracker {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
                 org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_VIEWPORT, actual);
 
-                Debug.asertEqual(expected.x(), actual.get(), this);
-                Debug.asertEqual(expected.y(), actual.get(), this);
-                Debug.asertEqual(expected.width(), actual.get(), this);
-                Debug.asertEqual(expected.height(), actual.get(), this);
+                Assert.glValue(expected.x(), actual.get(), this);
+                Assert.glValue(expected.y(), actual.get(), this);
+                Assert.glValue(expected.width(), actual.get(), this);
+                Assert.glValue(expected.height(), actual.get(), this);
             }
         }
 
@@ -181,10 +181,10 @@ public class AttribTracker {
                 IntBuffer actual = BufferUtils.createIntBuffer(16);
                 org.lwjgl.opengl.GL11.glGetInteger(GL11.GL_SCISSOR_BOX, actual);
 
-                Debug.asertEqual(expected.x(), actual.get(), this);
-                Debug.asertEqual(expected.y(), actual.get(), this);
-                Debug.asertEqual(expected.width(), actual.get(), this);
-                Debug.asertEqual(expected.height(), actual.get(), this);
+                Assert.glValue(expected.x(), actual.get(), this);
+                Assert.glValue(expected.y(), actual.get(), this);
+                Assert.glValue(expected.width(), actual.get(), this);
+                Assert.glValue(expected.height(), actual.get(), this);
             }
         }
 
@@ -198,7 +198,7 @@ public class AttribTracker {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 int actual = org.lwjgl.opengl.GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
-                Debug.asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 

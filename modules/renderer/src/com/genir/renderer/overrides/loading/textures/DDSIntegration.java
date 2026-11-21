@@ -5,6 +5,7 @@ import com.fs.starfarer.api.ModSpecAPI;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.debug.Assert;
 import com.genir.renderer.overrides.loading.ScriptStore;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -23,8 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
-
-import static com.genir.renderer.debug.Debug.asert;
 
 /**
  * DDSIntegration provides integration with VRAM Optimizer mod. When VRAM Optimizer is enabled,
@@ -55,7 +54,7 @@ public class DDSIntegration {
             return null;
         }
 
-        asert(path.isAbsolute());
+        Assert.invariant(path.isAbsolute());
         return cache.get(path.normalize());
     }
 
@@ -115,8 +114,8 @@ public class DDSIntegration {
 
     public static byte[] readTextureBytes(TextureData texData) {
         try {
-            asert(texData.isDDS());
-            asert(texData.buffer == null);
+            Assert.invariant(texData.isDDS());
+            Assert.invariant(texData.buffer == null);
 
             return Files.readAllBytes(texData.ddsImagePath);
         } catch (Exception e) {

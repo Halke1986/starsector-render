@@ -4,11 +4,10 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.debug.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.genir.renderer.debug.Debug.asertEqual;
 
 public class ShaderTracker { // Context-shared object.
     private final Map<Integer, Map<String, Integer>> uniformLocations = new HashMap<>();
@@ -32,7 +31,7 @@ public class ShaderTracker { // Context-shared object.
             public void run(Context context, float[] args, int argsOffset) {
                 // Assert the simulated value reflects the OpenGL state.
                 int actual = org.lwjgl.opengl.GL20.glGetUniformLocation(program, name);
-                asertEqual(expected, actual, this);
+                Assert.glValue(expected, actual, this);
             }
         }
 
@@ -73,7 +72,7 @@ public class ShaderTracker { // Context-shared object.
                 // call so OpenGL generates GL_INVALID_VALUE.
                 int actual = org.lwjgl.opengl.GL20.glGetProgrami(program, pname);
                 if (program != 0) {
-                    asertEqual(expected, actual, this);
+                    Assert.glValue(expected, actual, this);
                 }
             }
         }

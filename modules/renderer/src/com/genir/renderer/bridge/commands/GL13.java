@@ -5,7 +5,7 @@ import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.TextureUnit;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.pool.BufferPool;
-import com.genir.renderer.debug.Debug;
+import com.genir.renderer.debug.Assert;
 
 import java.nio.ByteBuffer;
 
@@ -69,7 +69,7 @@ public class GL13 {
 
     public static void glClientActiveTexture(int texture) {
         // At present, the supported operation has no effect.
-        Debug.asert(texture == org.lwjgl.opengl.GL13.GL_TEXTURE0);
+        Assert.supported(texture, org.lwjgl.opengl.GL13.GL_TEXTURE0, "glClientActiveTexture$texture");
 
         if (TextureUnit.getIndex(texture) == -1) {
             return;

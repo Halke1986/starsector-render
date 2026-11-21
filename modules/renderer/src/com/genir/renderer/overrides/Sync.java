@@ -4,12 +4,11 @@ import com.genir.renderer.bridge.commands.Display;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
+import com.genir.renderer.debug.Assert;
 import com.genir.renderer.debug.Profiler;
 import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.debug.Watchdog;
 import org.lwjgl.opengl.DisplayMode;
-
-import static com.genir.renderer.debug.Debug.asert;
 
 public class Sync {
     static long prevUpdateTimestamp = 0;
@@ -21,7 +20,7 @@ public class Sync {
         Watchdog.update();
 
         Context context = ContextManager.getThreadContext();
-        asert(context.isMain);
+        Assert.invariant(context.isMain);
 
         // Update the profiler before Display.update(), which may block a critical section
         // shared with keyboard state and stall the profiler's keyboard queries.
