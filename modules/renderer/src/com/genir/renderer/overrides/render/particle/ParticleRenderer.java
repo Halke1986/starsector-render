@@ -74,7 +74,7 @@ public class ParticleRenderer {
     ) implements GLCommand {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
-            float[] vertexScratchpad = context.vertexInterceptor.getVertexScratchpad(numParticles * 4);
+            float[] vertexScratchpad = context.vertexInterceptor.borrowVertexScratchpad(numParticles * 4);
 
             for (int i = 0; i < numParticles; i++) {
                 int readOffset = i * PARTICLE_SIZE;

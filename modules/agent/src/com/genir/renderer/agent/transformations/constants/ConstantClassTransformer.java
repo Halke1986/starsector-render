@@ -86,6 +86,10 @@ public class ConstantClassTransformer implements ClassFileTransformer {
                     Map.ofEntries(entry("Starsector 0.98.5a-RC9", "Starsector 0.98.5a-RC9 " + frVersionShort))
             );
 
+        } else if (name.equals("com.fs.starfarer.combat.entities.terrain.Planet")) {
+            return new ConstantReplacer(starfarerTransformer.getTransforms(),
+                    Map.ofEntries(entry("org/lwjgl/util/glu/Sphere", "com/genir/renderer/overrides/render/Sphere")));
+
         } else if (name.equals("com.fs.starfarer.BaseGameState") || name.equals("com.fs.starfarer.combat.CombatState")) {
             // Override methods related to frame update.
             return new ConstantReplacer(starfarerTransformer.getTransforms(), transformations.sync);
