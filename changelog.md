@@ -1,3 +1,5 @@
+- Added compatibility with Starsector Marines. Incompatibility reported by Dokuro.
+
 v1.0.3
 
 - Added compatibility with Weapon Tooltip Preview. Incompatibility reported by wing.
