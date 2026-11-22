@@ -1,4 +1,6 @@
 - Added compatibility with Starsector Marines. Incompatibility reported by Dokuro.
+- Optimized planet rendering performance.
+- Added fr.exe launcher.
 
 v1.0.3
 

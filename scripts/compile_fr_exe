@@ -1,0 +1,1 @@
+$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:winexe /win32icon:FR_SS.ico /reference:System.Windows.Forms.dll /out:fr.exe .\fr.cs

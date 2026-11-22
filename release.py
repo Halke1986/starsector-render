@@ -3,7 +3,7 @@ import subprocess
 import zipfile
 
 # List of files and directories to be compressed
-files_and_directories = ["jars/compile/fr.jar", "fr.bat", "fr.noterminal.bat", "readme.txt", "fr.version.txt", "fr.vmparams", "FR_SS.ico"]
+files_and_directories = ["jars/compile/fr.jar", "fr.bat", "readme.txt", "fr.version.txt", "fr.vmparams", "fr.exe"]
 archive_names = {"jars/compile/fr.jar": "fr.jar", "readme.txt": "fr.readme.txt"}
 
 # Function to get the latest Git tag
