@@ -257,7 +257,7 @@ public class VertexInterceptor {
         return pointer.flip();
     }
 
-    public float[] getVertexScratchpad(int vertices) {
+    public float[] borrowVertexScratchpad(int vertices) {
         while (vertexScratchpad.length <= vertices * STRIDE) {
             vertexScratchpad = Arrays.copyOf(vertexScratchpad, vertexScratchpad.length * 2);
         }
