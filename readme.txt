@@ -24,8 +24,9 @@ MOD INTEGRATION
 
 INCOMPATIBLE MODS
 
-- BoxUtil versions 1.6.0 and later are compatible only on a GPU that supports OpenGL 4.5.
-- Particle Engine may rarely crash in very large battles. The issue is difficult to trigger and can be safely ignored for typical gameplay.
+- BoxUtil: Version 1.6.0 and later require a GPU that supports OpenGL 4.5 when used with Fast Rendering.
+- Particle Engine: In very large battles, the game can crash on rare occasions. Typical gameplay is unlikely to be affected.
+- 影之诗动态头像包 Shadowverse Dynamic Portraits: Portraits from this pack appear as static images.
 
 BYTECODE MODIFICATION DISCLOSURE
 
