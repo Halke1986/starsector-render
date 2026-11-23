@@ -8,6 +8,10 @@ getAllVariantIds
 bugs:
 
 
+
+- Added compatibility with Starsector Marines. Incompatibility reported by Dokuro.
+
+
 https://www.fossic.org/thread-20956-1-1.html
 ShadowverseDynamicPortraits slowdown
 
