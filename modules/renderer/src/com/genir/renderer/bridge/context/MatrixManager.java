@@ -16,7 +16,7 @@ public class MatrixManager {
     // Allocation avoidance.
     private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private final float[] matrixArray = new float[16];
-    private final Matrix identity = new Matrix();
+    protected final Matrix identity = new Matrix();
 
     public MatrixManager() {
         this.identity.glLoadIdentity();
@@ -160,18 +160,6 @@ public class MatrixManager {
 
         if (shouldDelegate()) {
             org.lwjgl.opengl.GL11.glLoadMatrix(m);
-        }
-    }
-
-    public void glLoadMatrix(Matrix m) {
-        if (current != null) {
-            current.glLoadMatrix(m);
-        }
-
-        if (shouldDelegate()) {
-            m.storeTranspose(matrixArray);
-            matrixBuffer.put(0, matrixArray, 0, 16);
-            org.lwjgl.opengl.GL11.glLoadMatrix(matrixBuffer);
         }
     }
 
