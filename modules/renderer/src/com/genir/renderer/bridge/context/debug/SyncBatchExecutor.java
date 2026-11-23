@@ -2,6 +2,7 @@ package com.genir.renderer.bridge.context.debug;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.context.Context;
+import com.genir.renderer.bridge.context.Executor;
 import com.genir.renderer.bridge.context.Frame;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
@@ -14,14 +15,12 @@ import java.util.concurrent.Future;
 /**
  * Runs commands in batched on caller thread.
  */
-public class SyncBatchExecutor implements ExecutorAPI {
-    private final Context context;
-
+public class SyncBatchExecutor extends Executor {
     private final Frame frame = new Frame();
     private static final Object execMutex = new Object();
 
     public SyncBatchExecutor(Context context) {
-        this.context = context;
+        super(context);
     }
 
     @Override

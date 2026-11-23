@@ -3,7 +3,6 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
-import com.genir.renderer.bridge.context.debug.ExecutorAPI;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
@@ -15,9 +14,9 @@ import java.util.concurrent.*;
 /**
  * Default implementation. Runs commands in batched on a dedicated thread.
  */
-public class Executor implements ExecutorAPI {
+public class Executor {
     private final Logger logger = Logger.getLogger(Executor.class);
-    private final Context context;
+    protected final Context context;
 
     private Frame currentFrame = new Frame();
     private final Pool framePool = new Pool();
@@ -40,17 +39,14 @@ public class Executor implements ExecutorAPI {
     /**
      * Queue command for execution.
      */
-    @Override
     public void execute(GLCommand command) {
         currentFrame.add(command);
     }
 
-    @Override
     public void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3) {
         currentFrame.add(command, arg0, arg1, arg2, arg3);
     }
 
-    @Override
     public void executeFence(GLCommand command, GLSync fence) {
         currentFrame.add(command, fence);
     }
@@ -59,7 +55,6 @@ public class Executor implements ExecutorAPI {
      * Execute callable and block until it returns a value.
      * This method stalls the concurrent pipeline.
      */
-    @Override
     public <T> T get(GLGetter<T> task) {
         final Object[] result = new Object[1];
 
@@ -84,7 +79,6 @@ public class Executor implements ExecutorAPI {
      * Execute command and block until it returns.
      * This method stalls the concurrent pipeline.
      */
-    @Override
     public void wait(GLCommand command) {
         long start = System.nanoTime();
 
@@ -113,7 +107,6 @@ public class Executor implements ExecutorAPI {
      * Wait until PREVIOUS frame is completed. This allows producer
      * and consumer threads to overlap with maximum flexibility.
      */
-    @Override
     public void swapFramesAndSync() {
         Future<?> prevSwapFuture = currentSwapFuture;
 
@@ -125,7 +118,6 @@ public class Executor implements ExecutorAPI {
     /**
      * Execute queued commands.
      */
-    @Override
     public void swapFrames() {
         // Assume all commands issued before the client thread was notified
         // of the exception are invalid and must not be executed.
@@ -188,7 +180,6 @@ public class Executor implements ExecutorAPI {
      * Queue a privileged command for execution.
      * The command will be executed between frames.
      */
-    @Override
     public Future<Object> injectOutOfOrder(Callable<Object> command) {
         return execActual.submit(command);
     }
@@ -246,7 +237,6 @@ public class Executor implements ExecutorAPI {
         }
     }
 
-    @Override
     public void shutdown() {
         execActual.shutdown();
     }
