@@ -322,6 +322,7 @@ public class VertexInterceptor {
                 VertexInterceptor.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
             }
         }
 
