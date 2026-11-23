@@ -76,28 +76,28 @@ public class Sphere extends Quadric {
                         int offset = (i * slices + (j - 1)) * 4;
 
                         int v0 = (offset + 0) * VertexInterceptor.STRIDE;
-                        vertexScratchpad[v0 + 0] = x1;
-                        vertexScratchpad[v0 + 1] = y1;
-                        vertexScratchpad[v0 + 2] = z1;
+                        vertexScratchpad[v0 + 0] = x0;
+                        vertexScratchpad[v0 + 1] = y0;
+                        vertexScratchpad[v0 + 2] = z0;
                         vertexScratchpad[v0 + 7] = s0;
-                        vertexScratchpad[v0 + 8] = t - dt;
+                        vertexScratchpad[v0 + 8] = t;
                         vertexScratchpad[v0 + 9] = 0;
                         vertexScratchpad[v0 + 10] = 1;
-                        vertexScratchpad[v0 + 13] = x1;
-                        vertexScratchpad[v0 + 14] = y1;
-                        vertexScratchpad[v0 + 15] = z1;
+                        vertexScratchpad[v0 + 13] = x0;
+                        vertexScratchpad[v0 + 14] = y0;
+                        vertexScratchpad[v0 + 15] = z0;
 
                         int v1 = (offset + 1) * VertexInterceptor.STRIDE;
-                        vertexScratchpad[v1 + 0] = x0;
-                        vertexScratchpad[v1 + 1] = y0;
-                        vertexScratchpad[v1 + 2] = z0;
+                        vertexScratchpad[v1 + 0] = x1;
+                        vertexScratchpad[v1 + 1] = y1;
+                        vertexScratchpad[v1 + 2] = z1;
                         vertexScratchpad[v1 + 7] = s0;
-                        vertexScratchpad[v1 + 8] = t;
+                        vertexScratchpad[v1 + 8] = t - dt;
                         vertexScratchpad[v1 + 9] = 0;
                         vertexScratchpad[v1 + 10] = 1;
-                        vertexScratchpad[v1 + 13] = x0;
-                        vertexScratchpad[v1 + 14] = y0;
-                        vertexScratchpad[v1 + 15] = z0;
+                        vertexScratchpad[v1 + 13] = x1;
+                        vertexScratchpad[v1 + 14] = y1;
+                        vertexScratchpad[v1 + 15] = z1;
 
                         float s1 = ds * (float) j;
 
@@ -114,28 +114,28 @@ public class Sphere extends Quadric {
                         z1 = cosDRho;
 
                         int v2 = (offset + 2) * VertexInterceptor.STRIDE;
-                        vertexScratchpad[v2 + 0] = x0;
-                        vertexScratchpad[v2 + 1] = y0;
-                        vertexScratchpad[v2 + 2] = z0;
+                        vertexScratchpad[v2 + 0] = x1;
+                        vertexScratchpad[v2 + 1] = y1;
+                        vertexScratchpad[v2 + 2] = z1;
                         vertexScratchpad[v2 + 7] = s1;
-                        vertexScratchpad[v2 + 8] = t;
+                        vertexScratchpad[v2 + 8] = t - dt;
                         vertexScratchpad[v2 + 9] = 0;
                         vertexScratchpad[v2 + 10] = 1;
-                        vertexScratchpad[v2 + 13] = x0;
-                        vertexScratchpad[v2 + 14] = y0;
-                        vertexScratchpad[v2 + 15] = z0;
+                        vertexScratchpad[v2 + 13] = x1;
+                        vertexScratchpad[v2 + 14] = y1;
+                        vertexScratchpad[v2 + 15] = z1;
 
                         int v3 = (offset + 3) * VertexInterceptor.STRIDE;
-                        vertexScratchpad[v3 + 0] = x1;
-                        vertexScratchpad[v3 + 1] = y1;
-                        vertexScratchpad[v3 + 2] = z1;
+                        vertexScratchpad[v3 + 0] = x0;
+                        vertexScratchpad[v3 + 1] = y0;
+                        vertexScratchpad[v3 + 2] = z0;
                         vertexScratchpad[v3 + 7] = s1;
-                        vertexScratchpad[v3 + 8] = t - dt;
+                        vertexScratchpad[v3 + 8] = t;
                         vertexScratchpad[v3 + 9] = 0;
                         vertexScratchpad[v3 + 10] = 1;
-                        vertexScratchpad[v3 + 13] = x1;
-                        vertexScratchpad[v3 + 14] = y1;
-                        vertexScratchpad[v3 + 15] = z1;
+                        vertexScratchpad[v3 + 13] = x0;
+                        vertexScratchpad[v3 + 14] = y0;
+                        vertexScratchpad[v3 + 15] = z0;
                     }
                 }
 
