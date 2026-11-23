@@ -1,4 +1,4 @@
-package com.genir.renderer.debug;
+package com.genir.renderer.bridge.context.debug;
 
 import java.util.ArrayList;
 import java.util.List;

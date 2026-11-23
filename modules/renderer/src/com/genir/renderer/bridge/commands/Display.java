@@ -2,9 +2,9 @@ package com.genir.renderer.bridge.commands;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.bridge.context.debug.DebugMode;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
-import com.genir.renderer.debug.DebugMode;
 import com.genir.renderer.overrides.loading.ResourceLoaderLock;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;

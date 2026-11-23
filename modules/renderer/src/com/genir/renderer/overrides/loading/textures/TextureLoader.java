@@ -3,7 +3,7 @@ package com.genir.renderer.overrides.loading.textures;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.debug.DebugMode;
+import com.genir.renderer.bridge.context.debug.DebugMode;
 import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
