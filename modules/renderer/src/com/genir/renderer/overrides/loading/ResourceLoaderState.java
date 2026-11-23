@@ -20,6 +20,7 @@ import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.debug.DebugMode;
 import com.genir.renderer.debug.SamplerRunner;
 import com.genir.renderer.debug.Watchdog;
 import com.genir.renderer.overrides.GameState;
@@ -265,6 +266,12 @@ public class ResourceLoaderState {
         }
 
         heavyFuture.get(); // Drain exceptions.
+
+        if (DebugMode.singleThread) {
+            for (Runnable task : DebugMode.deferredAsyncTasks) {
+                task.run();
+            }
+        }
     }
 
     /**

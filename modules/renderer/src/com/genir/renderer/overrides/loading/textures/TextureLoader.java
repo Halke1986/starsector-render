@@ -3,6 +3,7 @@ package com.genir.renderer.overrides.loading.textures;
 import com.fs.graphics.TextureHandler;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
+import com.genir.renderer.debug.DebugMode;
 import com.genir.renderer.debug.DebugTextureRepository;
 import com.genir.renderer.overrides.GameState;
 import com.genir.renderer.overrides.loading.FileLoader;
@@ -99,7 +100,7 @@ public class TextureLoader {
         // Upload textures from different threads, leveraging the fact
         // that during asset loading all GL calls are intercepted by
         // the main simulated context.
-        commitTexture(path, path, texData);
+        commitTexture(path, path, texData, true);
     }
 
     /**
@@ -115,7 +116,7 @@ public class TextureLoader {
         }
 
         TextureData texData = loadTextureData("", path);
-        return commitTexture(null, path, texData);
+        return commitTexture(null, path, texData, false);
     }
 
     /**
@@ -161,19 +162,18 @@ public class TextureLoader {
      * <p>
      * Commit texture to GPU and store a TextureHandler in TextureRepository.
      */
-    private TextureHandler commitTexture(String name, String path, TextureData texData) {
+    private TextureHandler commitTexture(String name, String path, TextureData texData, boolean async) {
         try {
             final Context context = ContextManager.getThreadContext();
             int textureID = com.genir.renderer.bridge.commands.GL11.glGenTextures();
 
             synchronized (ResourceLoaderLock.executorLock) {
-                if (texData.isDDS()) {
-                    DDSIntegration.commitTexture(path, textureID, texData);
+                if (DebugMode.singleThread && async) {
+                    DebugMode.deferredAsyncTasks.add(() -> uploadTexture(textureID, path, texData));
                 } else {
-                    TextureBuilder.commitTexture(path, textureID, texData);
+                    uploadTexture(textureID, path, texData);
+                    context.exec.swapFrames();
                 }
-
-                context.exec.swapFrames();
             }
 
             TextureHandler handler = newVanillaTextureHandler(name, path, texData, textureID);
@@ -188,6 +188,17 @@ public class TextureLoader {
             return handler;
         } catch (Exception e) {
             throw new RuntimeException("Image with filename [" + path + "] not found or failed to load", e);
+        }
+    }
+
+    /**
+     * ADDED METHOD
+     */
+    private void uploadTexture(int textureID, String path, TextureData texData) {
+        if (texData.isDDS()) {
+            DDSIntegration.uploadTexture(path, textureID, texData);
+        } else {
+            TextureBuilder.uploadTexture(path, textureID, texData);
         }
     }
 

@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
+import com.genir.renderer.debug.DebugMode;
 import com.genir.renderer.overrides.loading.ResourceLoaderLock;
 import org.apache.log4j.Logger;
 import org.lwjgl.LWJGLException;
@@ -108,9 +109,11 @@ public class Display {
 
         // Starsector code calls setVSyncEnabled during
         // asset loading, which reqiures synchronization.
-        synchronized (ResourceLoaderLock.executorLock) {
-            final Context context = ContextManager.getThreadContext();
-            context.exec.wait(new Display$setVSyncEnabled(sync));
+        if (!DebugMode.singleThread) {
+            synchronized (ResourceLoaderLock.executorLock) {
+                final Context context = ContextManager.getThreadContext();
+                context.exec.wait(new Display$setVSyncEnabled(sync));
+            }
         }
     }
 

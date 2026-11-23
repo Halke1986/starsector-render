@@ -58,7 +58,7 @@ public class DDSIntegration {
         return cache.get(path.normalize());
     }
 
-    public static void commitTexture(String vanillaPath, int textureID, TextureData texData) {
+    public static void uploadTexture(String vanillaPath, int textureID, TextureData texData) {
         final Context context = ContextManager.getThreadContext();
 
         int target = GL11.GL_TEXTURE_2D;

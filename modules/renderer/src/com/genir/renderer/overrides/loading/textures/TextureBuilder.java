@@ -10,7 +10,7 @@ import java.awt.image.Raster;
 import static java.awt.image.BufferedImage.*;
 
 public class TextureBuilder {
-    public static void commitTexture(String vanillaPath, int textureID, TextureData texData) {
+    public static void uploadTexture(String vanillaPath, int textureID, TextureData texData) {
         com.genir.renderer.bridge.commands.GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 
         TextureSetup.configureOnClient(vanillaPath);

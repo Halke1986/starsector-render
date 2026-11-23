@@ -84,8 +84,11 @@ public class SyncBatchExecutor implements Executor {
 
     @Override
     public Future<Object> injectOutOfOrder(Callable<Object> command) {
-        // There's no command ordering to bypass. Do nothing.
-        return CompletableFuture.completedFuture(null);
+        try {
+            return CompletableFuture.completedFuture(command.call());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void executeCommands() {
