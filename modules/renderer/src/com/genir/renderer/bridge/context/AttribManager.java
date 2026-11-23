@@ -20,7 +20,7 @@ public class AttribManager {
     private final Stack<AttribState.Snapshot> expectedStack = new Stack<>();
     private final Stack<AttribState.Snapshot> actualStack = new Stack<>();
 
-    public boolean interceptEnable(int cap) {
+    private boolean interceptEnable(int cap) {
         return (cap == GL11.GL_STENCIL_TEST
                 || cap == GL11.GL_ALPHA_TEST
                 || (cap == GL11.GL_TEXTURE_2D && expected.activeTexture == GL13.GL_TEXTURE0)
@@ -49,14 +49,24 @@ public class AttribManager {
     //
 
     public void glEnable(int cap) {
-        expected.glEnable(cap);
+        if (interceptEnable(cap)) {
+            expected.glEnable(cap);
+        } else {
+            org.lwjgl.opengl.GL11.glEnable(cap);
+        }
     }
 
     public void glDisable(int cap) {
-        expected.glDisable(cap);
+        if (interceptEnable(cap)) {
+            expected.glDisable(cap);
+        } else {
+            org.lwjgl.opengl.GL11.glDisable(cap);
+        }
     }
 
     public void glPushAttrib(int mask) {
+        org.lwjgl.opengl.GL11.glPushAttrib(mask);
+
         // Save expected state.
         AttribState expectedSnapshot = new AttribState();
         expectedSnapshot.overwriteWith(expected, mask);
@@ -69,6 +79,8 @@ public class AttribManager {
     }
 
     public void glPopAttrib() {
+        org.lwjgl.opengl.GL11.glPopAttrib();
+
         // GL_STACK_UNDERFLOW
         if (expectedStack.isEmpty()) {
             return;
@@ -95,14 +107,22 @@ public class AttribManager {
 
     public void glActiveTexture(int mode) {
         // Texture unit is not permanently overriden.
+        org.lwjgl.opengl.GL13.glActiveTexture(mode);
+
         expected.glActiveTexture(mode);
         actual.glActiveTexture(mode);
     }
 
     public void glMatrixMode(int mode) {
         // Matrix mode is not permanently overriden.
+        org.lwjgl.opengl.GL11.glMatrixMode(mode);
+
         expected.glMatrixMode(mode);
         actual.glMatrixMode(mode);
+    }
+
+    public void glBlendFunc(int sfactorRGB, int dfactorRGB) {
+        glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorRGB, dfactorRGB);
     }
 
     public void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
@@ -111,6 +131,10 @@ public class AttribManager {
 
     public void glBlendFuncSeparatei(int buf, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
         expected.glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+    }
+
+    public void glBlendEquation(int mode) {
+        glBlendEquationSeparate(mode, mode);
     }
 
     public void glBlendEquationSeparate(int modeRGB, int modeAlpha) {
@@ -139,7 +163,7 @@ public class AttribManager {
         }
     }
 
-    public void applyTexture(boolean enable) {
+    private void applyTexture(boolean enable) {
         // No changes required.
         if (actual.enableTexture2DUnit0 == enable) {
             return;

@@ -17,7 +17,6 @@ public class GL13 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glActiveTexture(mode);
-                org.lwjgl.opengl.GL13.glActiveTexture(mode);
             }
         }
 

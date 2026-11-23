@@ -431,7 +431,6 @@ public class GL11 {
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glMatrixMode(mode);
                 context.matrixManager.glMatrixMode(mode);
-                org.lwjgl.opengl.GL11.glMatrixMode(mode);
             }
         }
 
@@ -632,11 +631,8 @@ public class GL11 {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             int cap = Float.floatToRawIntBits(args[argsOffset]);
-            if (context.attribManager.interceptEnable(cap)) {
-                context.attribManager.glEnable(cap);
-            } else {
-                org.lwjgl.opengl.GL11.glEnable(cap);
-            }
+
+            context.attribManager.glEnable(cap);
         }
 
         @Override
@@ -659,11 +655,8 @@ public class GL11 {
         @Override
         public void run(Context context, float[] args, int argsOffset) {
             int cap = Float.floatToRawIntBits(args[argsOffset]);
-            if (context.attribManager.interceptEnable(cap)) {
-                context.attribManager.glDisable(cap);
-            } else {
-                org.lwjgl.opengl.GL11.glDisable(cap);
-            }
+
+            context.attribManager.glDisable(cap);
         }
 
         @Override
@@ -686,7 +679,7 @@ public class GL11 {
             int sfactorRGB = Float.floatToRawIntBits(args[argsOffset + 0]);
             int dfactorRGB = Float.floatToRawIntBits(args[argsOffset + 1]);
 
-            context.attribManager.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorRGB, dfactorRGB);
+            context.attribManager.glBlendFunc(sfactorRGB, dfactorRGB);
         }
 
         @Override
@@ -752,7 +745,6 @@ public class GL11 {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glPushAttrib(mask);
-                org.lwjgl.opengl.GL11.glPushAttrib(mask);
             }
         }
 
@@ -767,7 +759,6 @@ public class GL11 {
             public void run(Context context, float[] args, int argsOffset) {
                 context.attribManager.glPopAttrib();
                 context.matrixManager.glMatrixMode(context.attribManager.getMatrixMode());
-                org.lwjgl.opengl.GL11.glPopAttrib();
             }
         }
 

@@ -14,7 +14,7 @@ public class GL14 {
         record glBlendEquation(int mode) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.attribManager.glBlendEquationSeparate(mode, mode);
+                context.attribManager.glBlendEquation(mode);
             }
         }
 

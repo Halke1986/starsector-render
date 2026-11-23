@@ -225,7 +225,7 @@ public class Sprite {
 
             context.attribManager.glEnable(GL11.GL_TEXTURE_2D);
             context.attribManager.glEnable(GL11.GL_BLEND);
-            context.attribManager.glBlendFuncSeparate(blendSrc, blendDest, blendSrc, blendDest);
+            context.attribManager.glBlendFunc(blendSrc, blendDest);
 
             context.vertexInterceptor.glColor4f(
                     (r & 0xFF) / 255f,
