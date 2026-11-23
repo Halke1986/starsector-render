@@ -1,4 +1,4 @@
-package com.genir.renderer.bridge.context.executor;
+package com.genir.renderer.bridge.context.debug;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.interfaces.GLCommand;
@@ -7,7 +7,7 @@ import com.genir.renderer.bridge.interfaces.GLGetter;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-public interface Executor {
+public interface ExecutorAPI {
     void execute(GLCommand command);
 
     void execute(GLCommand command, float arg0, float arg1, float arg2, float arg3);

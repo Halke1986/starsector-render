@@ -2,7 +2,7 @@ package com.genir.renderer.bridge.context.stall;
 
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.executor.Executor;
+import com.genir.renderer.bridge.context.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.*;
@@ -257,7 +257,7 @@ public class BufferTracker {
     }
 
     public int getBoundShaderStorageBuffer(int index) {
-        int result = boundShaderStorageBufferIndexed.getOrDefault(index, 0);;
+        int result = boundShaderStorageBufferIndexed.getOrDefault(index, 0);
         assertBoundBuffer(result, GL43.GL_SHADER_STORAGE_BUFFER_BINDING, index);
         return result;
     }

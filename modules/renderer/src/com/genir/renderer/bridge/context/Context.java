@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.context.executor.AsyncExecutor;
-import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.debug.Assert;
@@ -62,7 +60,7 @@ public class Context {
 
     // Infrastructure. Spans main and rendering threads.
     public final StallDetector stallDetector = new StallDetector();
-    public final Executor exec = new AsyncExecutor(this);
+    public final Executor exec = new Executor(this);
     public final StateCache glStateCache = new StateCache();
     public final Renderers renderers = new Renderers();
 

@@ -1,8 +1,7 @@
-package com.genir.renderer.bridge.context.executor.debug;
+package com.genir.renderer.bridge.context.debug;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.Future;
 /**
  * Runs commands immediately on caller thread.
  */
-public class SyncExecutor implements Executor {
+public class SyncExecutor implements ExecutorAPI {
     private final Context context;
     private final float[] args = new float[4];
 

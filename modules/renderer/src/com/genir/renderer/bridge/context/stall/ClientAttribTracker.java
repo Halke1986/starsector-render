@@ -3,7 +3,7 @@ package com.genir.renderer.bridge.context.stall;
 import com.genir.renderer.bridge.context.ArrayPointer;
 import com.genir.renderer.bridge.context.ArraySnapshot;
 import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.executor.Executor;
+import com.genir.renderer.bridge.context.Executor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.Releasable;
 import com.genir.renderer.debug.Assert;

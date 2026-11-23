@@ -1,9 +1,8 @@
-package com.genir.renderer.bridge.context.executor.debug;
+package com.genir.renderer.bridge.context.debug;
 
 import com.genir.renderer.bridge.commands.GLSync;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.Frame;
-import com.genir.renderer.bridge.context.executor.Executor;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
@@ -15,7 +14,7 @@ import java.util.concurrent.Future;
 /**
  * Runs commands in batched on caller thread.
  */
-public class SyncBatchExecutor implements Executor {
+public class SyncBatchExecutor implements ExecutorAPI {
     private final Context context;
 
     private final Frame frame = new Frame();

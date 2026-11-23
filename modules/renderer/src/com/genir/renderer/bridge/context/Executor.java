@@ -1,10 +1,9 @@
-package com.genir.renderer.bridge.context.executor;
+package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.async.AsyncException;
 import com.genir.renderer.async.ExecutorFactory;
 import com.genir.renderer.bridge.commands.GLSync;
-import com.genir.renderer.bridge.context.Context;
-import com.genir.renderer.bridge.context.Frame;
+import com.genir.renderer.bridge.context.debug.ExecutorAPI;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
@@ -16,8 +15,8 @@ import java.util.concurrent.*;
 /**
  * Default implementation. Runs commands in batched on a dedicated thread.
  */
-public class AsyncExecutor implements Executor {
-    private final Logger logger = Logger.getLogger(AsyncExecutor.class);
+public class Executor implements ExecutorAPI {
+    private final Logger logger = Logger.getLogger(Executor.class);
     private final Context context;
 
     private Frame currentFrame = new Frame();
@@ -34,7 +33,7 @@ public class AsyncExecutor implements Executor {
     private final ExecutorService execActual = ExecutorFactory.newExecutorSingleThread("FR-Render", exceptionHandler);
     private static final Object execMutex = new Object();
 
-    public AsyncExecutor(Context context) {
+    public Executor(Context context) {
         this.context = context;
     }
 
