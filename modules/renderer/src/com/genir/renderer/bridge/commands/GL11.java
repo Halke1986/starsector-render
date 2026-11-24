@@ -366,7 +366,7 @@ public class GL11 {
         record glDrawArrays(int mode, int first, int count, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
+                context.clientArrayManager.drawRecordedArrays(this::runDraw, snapshot);
 
                 snapshot.release();
             }
@@ -394,7 +394,7 @@ public class GL11 {
         record glDrawElements(int mode, IntBufferSnapshot indices, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
+                context.clientArrayManager.drawRecordedArrays(this::runDraw, snapshot);
 
                 indices.release();
                 snapshot.release();

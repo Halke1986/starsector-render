@@ -65,12 +65,12 @@ public class Context {
     public final Executor exec = new Executor(this);
     public final StateCache glStateCache = new StateCache();
     public final Renderers renderers = new Renderers();
+    public final ClientArrayManager clientArrayManager = new ClientArrayManager(matrixManager, attribManager, vertexInterceptor, exec);
 
     // Context-local client state. Runs on main thread.
     public final AttribTracker attribTracker = new AttribTracker(exec);
     public final MatrixTracker matrixTracker = new MatrixTracker();
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(exec);
-    public final ClientArrayManager clientArrayManager = new ClientArrayManager(exec);
     public final BufferManager bufferManager = new BufferManager();
     public final ColorTracker colorTracker = new ColorTracker();
     public final BufferTracker bufferTracker = new BufferTracker(exec);

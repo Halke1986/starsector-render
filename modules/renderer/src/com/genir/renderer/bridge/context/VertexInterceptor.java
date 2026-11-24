@@ -57,11 +57,6 @@ public class VertexInterceptor {
     private float[] vertexScratchpad = new float[STRIDE];
     private FloatBuffer primaryVertexPointer = BufferUtils.createFloatBuffer(STRIDE);
 
-    // Recorded array draw buffers.
-    private ByteBuffer texCoordPointer = BufferUtils.createByteBuffer(0);
-    private ByteBuffer vertexPointer = BufferUtils.createByteBuffer(0);
-    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
-
     public VertexInterceptor(AttribManager attribManager, MatrixManager matrixManager) {
         this.attribManager = attribManager;
         this.matrixManager = matrixManager;
@@ -182,77 +177,6 @@ public class VertexInterceptor {
     //
     // Draw.
     //
-
-    public void drawRecordedArrays(Runnable drawArraysCommand, ClientArrayManager.ArrayPointersSnapshot snapshot) {
-        arraysTouched();
-
-        // Vertex array.
-        final ArraySnapshot vs = snapshot.vertex();
-        if (vs != null) {
-            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-
-            if (vs.snapshot() != null) {
-                vertexPointer = restoreSnapshot(vs, vertexPointer);
-                ClientArray.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
-            }
-        } else {
-            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        }
-
-        // Texture array.
-        final ArraySnapshot ts = snapshot.texCoord();
-        if (ts != null) {
-            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-
-            if (ts.snapshot() != null) {
-                texCoordPointer = restoreSnapshot(ts, texCoordPointer);
-                ClientArray.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
-            }
-        } else {
-            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        }
-
-        // Color array.
-        final ArraySnapshot cs = snapshot.color();
-        if (cs != null) {
-            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-
-            if (cs.snapshot() != null) {
-                colorPointer = restoreSnapshot(cs, colorPointer);
-                ClientArray.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
-            }
-        } else {
-            // Define color if GL_COLOR_ARRAY is disabled.
-            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
-        }
-
-        // Normal array.
-        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
-
-        // Move model transformation from CPU to GPU.
-        // The vertex array is stored in object/local space rather than pre-transformed
-        // into model space, since the model matrix can change every time the array is drawn.
-        // Applying the transformation on the GPU avoids repeatedly un-packing the array,
-        // transforming vertices on the CPU, and re-packing the data for each draw call.
-        matrixManager.setGPUMode();
-
-        // Draw.
-        attribManager.applyDrawAttribs();
-        drawArraysCommand.run();
-
-        // Move model transformation back to CPU.
-        matrixManager.setCPUMode();
-    }
-
-    private ByteBuffer restoreSnapshot(ArraySnapshot snapshot, ByteBuffer pointer) {
-        if (pointer.capacity() < snapshot.bytes()) {
-            pointer = BufferUtils.createByteBuffer(snapshot.bytes());
-        }
-
-        snapshot.store(pointer.clear());
-        return pointer.flip();
-    }
 
     public float[] borrowVertexScratchpad(int vertices) {
         while (vertexScratchpad.length <= vertices * STRIDE) {

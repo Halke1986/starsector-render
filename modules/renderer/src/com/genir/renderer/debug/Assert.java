@@ -13,6 +13,12 @@ public class Assert {
         }
     }
 
+    public static void supported(long value, long supported, String valueName) {
+        if (value != supported) {
+            throw new UnsupportedOperationException("unsupported " + valueName + ": " + value);
+        }
+    }
+
     public static void invariant(boolean correct) {
         if (!correct) {
             throw new AssertionError("Fast Rendering internal logic error");

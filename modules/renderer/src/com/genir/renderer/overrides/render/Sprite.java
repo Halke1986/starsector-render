@@ -106,10 +106,10 @@ public class Sprite {
         command.centerY = centerY;
         command.angle = angle;
 
-        command.r = (byte) color.getRed();
-        command.g = (byte) color.getGreen();
-        command.b = (byte) color.getBlue();
-        command.a = (byte) ((int) ((float) color.getAlpha() * alphaMult));
+        command.r = ((byte) color.getRed() & 0xFF) / 255f;
+        command.g = ((byte) color.getGreen() & 0xFF) / 255f;
+        command.b = ((byte) color.getBlue() & 0xFF) / 255f;
+        command.a = ((byte) ((int) ((float) color.getAlpha() * alphaMult)) & 0xFF) / 255f;
 
         command.quadX = regionFractionX * width;
         command.quadY = regionFractionY * height;
@@ -182,10 +182,10 @@ public class Sprite {
         public float centerY;
         public float angle;
 
-        public byte r;
-        public byte g;
-        public byte b;
-        public byte a;
+        public float r;
+        public float g;
+        public float b;
+        public float a;
 
         public float quadX;
         public float quadY;
@@ -227,12 +227,8 @@ public class Sprite {
             context.attribManager.glEnable(GL11.GL_BLEND);
             context.attribManager.glBlendFunc(blendSrc, blendDest);
 
-            context.vertexInterceptor.glColor4f(
-                    (r & 0xFF) / 255f,
-                    (g & 0xFF) / 255f,
-                    (b & 0xFF) / 255f,
-                    (a & 0xFF) / 255f
-            );
+            context.clientArrayManager.glColor4f(r, g, b, a);
+            context.vertexInterceptor.glColor4f(r, g, b, a);
 
             context.vertexInterceptor.glBegin(GL11.GL_QUADS);
             context.vertexInterceptor.glTexCoord4f(texX, texY, 0, 1);

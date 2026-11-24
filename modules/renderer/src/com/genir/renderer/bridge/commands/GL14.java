@@ -40,7 +40,7 @@ public class GL14 {
         record glMultiDrawArrays(int mode, IntBufferSnapshot piFirst, IntBufferSnapshot piCount, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
+                context.clientArrayManager.drawRecordedArrays(this::runDraw, snapshot);
 
                 piFirst.release();
                 piCount().release();

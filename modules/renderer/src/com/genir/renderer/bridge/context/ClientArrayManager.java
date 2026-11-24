@@ -2,18 +2,43 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.interfaces.Releasable;
 import com.genir.renderer.debug.Assert;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Stack;
 
 public class ClientArrayManager {
+    // GL State.
+    private final MatrixManager matrixManager;
+    private final AttribManager attribManager;
+    private final VertexInterceptor vertexInterceptor;
     private final Executor exec;
 
     private final ClientArrayAttribState state = new ClientArrayAttribState();
-    private final Stack<Snapshot> stateStack = new Stack<>();
+    private final Stack<AttribSnapshot> stateStack = new Stack<>();
 
-    public ClientArrayManager(Executor exec) {
+    // Color.
+    private float red;
+    private float green;
+    private float blue;
+    private float alpha;
+
+    // Recorded array draw buffers.
+    private ByteBuffer texCoordPointer = BufferUtils.createByteBuffer(0);
+    private ByteBuffer vertexPointer = BufferUtils.createByteBuffer(0);
+    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
+
+    public ClientArrayManager(
+            MatrixManager matrixManager,
+            AttribManager attribManager,
+            VertexInterceptor vertexInterceptor,
+            Executor exec
+    ) {
+        this.matrixManager = matrixManager;
+        this.attribManager = attribManager;
+        this.vertexInterceptor = vertexInterceptor;
         this.exec = exec;
     }
 
@@ -61,11 +86,18 @@ public class ClientArrayManager {
     // GL calls.
     //
 
+    public void glColor4f(float red, float green, float blue, float alpha) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
+    }
+
     public void glPushClientAttrib(int mask) {
         // Save expected state.
         ClientArrayAttribState stateSnapshot = new ClientArrayAttribState();
         stateSnapshot.overwriteWith(state, mask);
-        stateStack.push(new Snapshot(stateSnapshot, mask));
+        stateStack.push(new AttribSnapshot(stateSnapshot, mask));
     }
 
     public void glPopClientAttrib() {
@@ -74,7 +106,7 @@ public class ClientArrayManager {
             return;
         }
 
-        Snapshot snapshot = stateStack.pop();
+        AttribSnapshot snapshot = stateStack.pop();
         state.overwriteWith(snapshot.state(), snapshot.attribMask());
     }
 
@@ -116,14 +148,23 @@ public class ClientArrayManager {
     }
 
     public void glColorPointer(int size, int type, int stride, Long pointer) {
+        Assert.supported(stride, 0, "glColorPointer$stride");
+        Assert.supported(pointer, 0, "glColorPointer$pointer");
+
         state.colorPointer = new ArrayPointer(size, type, stride, null);
     }
 
     public void glTexCoordPointer(int size, int type, int stride, Long pointer) {
+        Assert.supported(stride, 0, "glTexCoordPointer$stride");
+        Assert.supported(pointer, 0, "glTexCoordPointer$pointer");
+
         state.texCoordPointer = new ArrayPointer(size, type, stride, null);
     }
 
     public void glVertexPointer(int size, int type, int stride, Long pointer) {
+        Assert.supported(stride, 0, "glVertexPointer$stride");
+        Assert.supported(pointer, 0, "glVertexPointer$pointer");
+
         state.vertexPointer = new ArrayPointer(size, type, stride, null);
     }
 
@@ -141,6 +182,81 @@ public class ClientArrayManager {
         }
     }
 
+    //
+    // Draw.
+    //
+
+    public void drawRecordedArrays(Runnable drawArraysCommand, ClientArrayManager.ArrayPointersSnapshot snapshot) {
+        vertexInterceptor.arraysTouched();
+
+        // Vertex array.
+        final ArraySnapshot vs = snapshot.vertex();
+        if (vs != null) {
+            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+
+            if (vs.snapshot() != null) {
+                vertexPointer = restoreSnapshot(vs, vertexPointer);
+                ClientArray.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
+            }
+        } else {
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        }
+
+        // Texture array.
+        final ArraySnapshot ts = snapshot.texCoord();
+        if (ts != null) {
+            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+            if (ts.snapshot() != null) {
+                texCoordPointer = restoreSnapshot(ts, texCoordPointer);
+                ClientArray.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
+            }
+        } else {
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        }
+
+        // Color array.
+        final ArraySnapshot cs = snapshot.color();
+        if (cs != null) {
+            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+
+            if (cs.snapshot() != null) {
+                colorPointer = restoreSnapshot(cs, colorPointer);
+                ClientArray.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
+            }
+        } else {
+            // Define color if GL_COLOR_ARRAY is disabled.
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
+        }
+
+        // Normal array.
+        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+
+        // Move model transformation from CPU to GPU.
+        // The vertex array is stored in object/local space rather than pre-transformed
+        // into model space, since the model matrix can change every time the array is drawn.
+        // Applying the transformation on the GPU avoids repeatedly un-packing the array,
+        // transforming vertices on the CPU, and re-packing the data for each draw call.
+        matrixManager.setGPUMode();
+
+        // Draw.
+        attribManager.applyDrawAttribs();
+        drawArraysCommand.run();
+
+        // Move model transformation back to CPU.
+        matrixManager.setCPUMode();
+    }
+
+    private ByteBuffer restoreSnapshot(ArraySnapshot snapshot, ByteBuffer pointer) {
+        if (pointer.capacity() < snapshot.bytes()) {
+            pointer = BufferUtils.createByteBuffer(snapshot.bytes());
+        }
+
+        snapshot.store(pointer.clear());
+        return pointer.flip();
+    }
+
     public record ArrayPointersSnapshot(ArraySnapshot vertex, ArraySnapshot texCoord, ArraySnapshot color) implements Releasable {
         @Override
         public void release() {
@@ -150,7 +266,7 @@ public class ClientArrayManager {
         }
     }
 
-    private record Snapshot(ClientArrayAttribState state, int attribMask) {
+    private record AttribSnapshot(ClientArrayAttribState state, int attribMask) {
     }
 
     private static class ClientArrayAttribState {
