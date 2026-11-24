@@ -1,0 +1,16 @@
+
+Disabling Features:
+
+AttribManager || MatrixManager
+
+    FontRender && ParticleRender && Sphere (disable in agent)
+
+        VertexInterceptor
+
+            ClientArrayInterceptor (unimplemented)
+
+Disabling Asynchronous pipeline:
+
+DebugMode.singleThread = true
+
+    Switch Executor
