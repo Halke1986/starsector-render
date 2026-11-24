@@ -4,8 +4,6 @@ import com.genir.renderer.debug.Assert;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.OpenGLException;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -195,7 +193,7 @@ public class VertexInterceptor {
 
             if (vs.snapshot() != null) {
                 vertexPointer = restoreSnapshot(vs, vertexPointer);
-                VertexInterceptor.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
+                ClientArray.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
             }
         } else {
             org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
@@ -208,7 +206,7 @@ public class VertexInterceptor {
 
             if (ts.snapshot() != null) {
                 texCoordPointer = restoreSnapshot(ts, texCoordPointer);
-                VertexInterceptor.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
+                ClientArray.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
             }
         } else {
             org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -221,7 +219,7 @@ public class VertexInterceptor {
 
             if (cs.snapshot() != null) {
                 colorPointer = restoreSnapshot(cs, colorPointer);
-                VertexInterceptor.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
+                ClientArray.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
             }
         } else {
             // Define color if GL_COLOR_ARRAY is disabled.
@@ -309,7 +307,7 @@ public class VertexInterceptor {
         if (wasResized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                VertexInterceptor.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
+                ClientArray.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
             }
@@ -318,7 +316,7 @@ public class VertexInterceptor {
         if (wasResized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                VertexInterceptor.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
+                ClientArray.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
                 org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
@@ -331,7 +329,7 @@ public class VertexInterceptor {
 
             if ((requiredFlags & TEX_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                VertexInterceptor.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+                ClientArray.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
@@ -345,7 +343,7 @@ public class VertexInterceptor {
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                VertexInterceptor.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
+                ClientArray.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
@@ -356,90 +354,10 @@ public class VertexInterceptor {
         if (wasResized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                VertexInterceptor.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
+                ClientArray.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }
         }
-    }
-
-    private static void glVertexPointer(int size, int type, int stride, ByteBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer));
-        }
-    }
-
-    private static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glVertexPointer(size, stride, pointer));
-        }
-    }
-
-    private static void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer));
-        }
-    }
-
-    private static void glColorPointer(int size, int stride, FloatBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glColorPointer(size, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glColorPointer(size, stride, pointer));
-        }
-    }
-
-    private static void glTexCoordPointer(int size, int type, int stride, ByteBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer));
-        }
-    }
-
-    private static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glTexCoordPointer(size, stride, pointer));
-        }
-    }
-
-    private static void glNormalPointer(int type, int stride, ByteBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glNormalPointer(type, stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glNormalPointer(type, stride, pointer));
-        }
-    }
-
-    private static void glNormalPointer(int stride, FloatBuffer pointer) {
-        try {
-            org.lwjgl.opengl.GL11.glNormalPointer(stride, pointer);
-        } catch (OpenGLException e) {
-            handleBufferException(e, () -> org.lwjgl.opengl.GL11.glNormalPointer(stride, pointer));
-        }
-    }
-
-    private static void handleBufferException(OpenGLException e, Runnable command) {
-        // CMUtils may leave an array buffer bound during game initialization.
-        // Unbind it and retry vertex pointer setup.
-        // This rarely occurs, so handle it through exception handling rather
-        // than tracking OpenGL state, keeping the code simpler.
-        int bufferBinding = org.lwjgl.opengl.GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
-        if (bufferBinding == 0) {
-            // Unknown exception.
-            throw e;
-        }
-
-        org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        command.run();
-        org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, bufferBinding);
     }
 }
