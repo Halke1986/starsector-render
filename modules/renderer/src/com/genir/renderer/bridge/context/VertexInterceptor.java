@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.debug.Assert;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -186,7 +185,7 @@ public class VertexInterceptor {
     // Draw.
     //
 
-    public void drawRecordedArrays(Runnable drawArraysCommand, ClientAttribTracker.ArrayPointersSnapshot snapshot) {
+    public void drawRecordedArrays(Runnable drawArraysCommand, ClientArrayManager.ArrayPointersSnapshot snapshot) {
         arraysTouched();
 
         // Vertex array.

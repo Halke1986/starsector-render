@@ -2,7 +2,6 @@ package com.genir.renderer.bridge.context;
 
 import com.genir.renderer.bridge.context.debug.AttribManagerNoop;
 import com.genir.renderer.bridge.context.debug.MatrixManagerNoop;
-import com.genir.renderer.bridge.context.debug.SyncExecutor;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.debug.Assert;
@@ -71,6 +70,7 @@ public class Context {
     public final AttribTracker attribTracker = new AttribTracker(exec);
     public final MatrixTracker matrixTracker = new MatrixTracker();
     public final ClientAttribTracker clientAttribTracker = new ClientAttribTracker(exec);
+    public final ClientArrayManager clientArrayManager = new ClientArrayManager(exec);
     public final BufferManager bufferManager = new BufferManager();
     public final ColorTracker colorTracker = new ColorTracker();
     public final BufferTracker bufferTracker = new BufferTracker(exec);

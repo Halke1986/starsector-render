@@ -1,8 +1,8 @@
 package com.genir.renderer.bridge.commands;
 
+import com.genir.renderer.bridge.context.ClientArrayManager;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
-import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.pool.BufferPool;
 import com.genir.renderer.bridge.pool.BufferPool.IntBufferSnapshot;
@@ -37,7 +37,7 @@ public class GL14 {
     }
 
     public static void glMultiDrawArrays(int mode, IntBuffer piFirst, IntBuffer piCount) {
-        record glMultiDrawArrays(int mode, IntBufferSnapshot piFirst, IntBufferSnapshot piCount, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand {
+        record glMultiDrawArrays(int mode, IntBufferSnapshot piFirst, IntBufferSnapshot piCount, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
@@ -53,7 +53,7 @@ public class GL14 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
+        final ClientArrayManager.ArrayPointersSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
         final IntBufferSnapshot piFirstSnapshot = BufferPool.bufferPool.snapshot(piFirst);
         final IntBufferSnapshot piCountSnapshot = BufferPool.bufferPool.snapshot(piCount);
         context.exec.execute(new glMultiDrawArrays(mode, piFirstSnapshot, piCountSnapshot, snapshot));

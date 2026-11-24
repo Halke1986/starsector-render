@@ -1,10 +1,10 @@
 package com.genir.renderer.bridge.commands;
 
+import com.genir.renderer.bridge.context.ClientArrayManager;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.context.stall.AttribState;
-import com.genir.renderer.bridge.context.stall.ClientAttribTracker;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
 import com.genir.renderer.bridge.interfaces.GLGetter;
@@ -251,12 +251,12 @@ public class GL11 {
      */
     public static void glEnableClientState(int cap) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glEnableClientState(cap);
+        context.clientArrayManager.glEnableClientState(cap);
     }
 
     public static void glDisableClientState(int cap) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glDisableClientState(cap);
+        context.clientArrayManager.glDisableClientState(cap);
     }
 
     public static void glPushClientAttrib(int mask) {
@@ -270,6 +270,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         context.clientAttribTracker.glPushClientAttrib(mask);
+        context.clientArrayManager.glPushClientAttrib(mask);
         context.exec.execute(new glPushClientAttrib(mask));
     }
 
@@ -284,38 +285,39 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         context.clientAttribTracker.glPopClientAttrib();
+        context.clientArrayManager.glPopClientAttrib();
         context.exec.execute(new glPopClientAttrib());
     }
 
     public static void glVertexPointer(int size, int stride, FloatBuffer pointer) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glVertexPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+        context.clientArrayManager.glVertexPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     public static void glVertexPointer(int size, int type, int stride, ByteBuffer pointer) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glVertexPointer(size, stride, type, pointer);
+        context.clientArrayManager.glVertexPointer(size, stride, type, pointer);
     }
 
     public static void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer pointer) {
         final Context context = ContextManager.getThreadContext();
         int type = unsigned ? org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE : org.lwjgl.opengl.GL11.GL_BYTE;
-        context.clientAttribTracker.glColorPointer(size, type, stride, pointer);
+        context.clientArrayManager.glColorPointer(size, type, stride, pointer);
     }
 
     public static void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glColorPointer(size, type, stride, pointer);
+        context.clientArrayManager.glColorPointer(size, type, stride, pointer);
     }
 
     public static void glColorPointer(int size, int stride, FloatBuffer pointer) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+        context.clientArrayManager.glColorPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     public static void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glTexCoordPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
+        context.clientArrayManager.glTexCoordPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
     /**
@@ -330,7 +332,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
+        context.clientArrayManager.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
         context.exec.execute(new glTexCoordPointer(size, type, stride, pointer_buffer_offset));
     }
 
@@ -343,7 +345,7 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glColorPointer(size, type, stride, pointer_buffer_offset);
+        context.clientArrayManager.glColorPointer(size, type, stride, pointer_buffer_offset);
         context.exec.execute(new glColorPointer(size, type, stride, pointer_buffer_offset));
     }
 
@@ -356,12 +358,12 @@ public class GL11 {
         }
 
         final Context context = ContextManager.getThreadContext();
-        context.clientAttribTracker.glVertexPointer(size, type, stride, pointer_buffer_offset);
+        context.clientArrayManager.glVertexPointer(size, type, stride, pointer_buffer_offset);
         context.exec.execute(new glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        record glDrawArrays(int mode, int first, int count, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand {
+        record glDrawArrays(int mode, int first, int count, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
@@ -382,14 +384,14 @@ public class GL11 {
 
         // Catch array bounds errors early, before they cause
         // difficult-to-debug driver crashes or visual errors.
-        context.clientAttribTracker.assertArrayPointersCapacity(first, count);
+        context.clientArrayManager.assertArrayPointersCapacity(first, count);
 
-        final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
+        final ClientArrayManager.ArrayPointersSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawArrays(mode, first, count, snapshot));
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        record glDrawElements(int mode, IntBufferSnapshot indices, ClientAttribTracker.ArrayPointersSnapshot snapshot) implements GLCommand {
+        record glDrawElements(int mode, IntBufferSnapshot indices, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.vertexInterceptor.drawRecordedArrays(this::runDraw, snapshot);
@@ -405,7 +407,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         final IntBufferSnapshot indicesSnapshot = BufferPool.bufferPool.snapshot(indices);
-        final ClientAttribTracker.ArrayPointersSnapshot snapshot = context.clientAttribTracker.makeArrayPointersSnapshot();
+        final ClientArrayManager.ArrayPointersSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawElements(mode, indicesSnapshot, snapshot));
     }
 
