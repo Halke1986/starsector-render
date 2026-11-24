@@ -1,7 +1,5 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.context.debug.AttribManagerNoop;
-import com.genir.renderer.bridge.context.debug.MatrixManagerNoop;
 import com.genir.renderer.bridge.context.stall.*;
 import com.genir.renderer.bridge.interfaces.GLGetter;
 import com.genir.renderer.debug.Assert;
@@ -55,8 +53,8 @@ public class Context {
     }
 
     // Server state. Runs on rendering thread.
-    public final AttribManager attribManager = new AttribManagerNoop();
-    public final MatrixManager matrixManager = new MatrixManagerNoop();
+    public final AttribManager attribManager = new AttribManager();
+    public final MatrixManager matrixManager = new MatrixManager();
     public final VertexInterceptor vertexInterceptor = new VertexInterceptor(attribManager, matrixManager);
     public final TextureReadManager textureReadManager = new TextureReadManager();
 
