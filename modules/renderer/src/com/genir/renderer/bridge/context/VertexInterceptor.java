@@ -11,30 +11,34 @@ import java.util.Arrays;
 public class VertexInterceptor {
     public static final int VERTEX_SIZE = 3;
     public static final int COLOR_SIZE = 4;
-    public static final int TEX_SIZE = 4;
+    public static final int TEX0_SIZE = 2;
+    public static final int TEX0_SEPARATE_SIZE = 4;
     public static final int TEX1_SIZE = 2;
     public static final int NORMAL_SIZE = 3;
-    public static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE + NORMAL_SIZE;
+    public static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE + TEX1_SIZE + NORMAL_SIZE;
 
     public static final int VERTEX_FLAG = 1;
     public static final int COLOR_FLAG = 2;
-    public static final int TEX_FLAG = 4;
-    public static final int TEX1_FLAG = 8;
-    public static final int NORMAL_FLAG = 16;
+    public static final int TEX0_FLAG = 4;
+    public static final int TEX0_SEPARATE_FLAG = 8;
+    public static final int TEX1_FLAG = 16;
+    public static final int NORMAL_FLAG = 32;
 
     // GL State.
     private final MatrixManager matrixManager;
     private final AttribManager attribManager;
 
-    private int arrayFlags = 0;
-
     // State.
     private int mode = 0;
+    private int arrayFlags = 0;
+    private int currentFlags = 0;
+
     // Color.
     private float red;
     private float green;
     private float blue;
     private float alpha;
+
     // Texture.
     private float texS;
     private float texT;
@@ -42,12 +46,11 @@ public class VertexInterceptor {
     private float texQ;
     private float texS1;
     private float texT1;
-    private boolean hasTexture1 = false;
+
     // Normal.
     private float nx;
     private float ny;
     private float nz;
-    private boolean hasNormal = false;
 
     // Total number of vertices since glBegin.
     private int cachedVertices = 0;
@@ -75,8 +78,7 @@ public class VertexInterceptor {
 
     public void glBegin(int mode) {
         this.mode = mode;
-        this.hasNormal = false;
-        this.hasTexture1 = false;
+        this.currentFlags = VERTEX_FLAG | COLOR_FLAG;
     }
 
     public void glEnd() {
@@ -103,6 +105,11 @@ public class VertexInterceptor {
         this.texT = t;
         this.texR = r;
         this.texQ = q;
+
+        this.currentFlags |= TEX0_FLAG;
+        if (r != 0f || q != 1f) {
+            this.currentFlags = TEX0_SEPARATE_FLAG;
+        }
     }
 
     public void glMultiTexCoord2f(int target, float s, float t) {
@@ -110,14 +117,16 @@ public class VertexInterceptor {
 
         this.texS1 = s;
         this.texT1 = t;
-        this.hasTexture1 = true;
+
+        this.currentFlags |= TEX1_FLAG;
     }
 
     public void glNormal3f(float nx, float ny, float nz) {
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
-        this.hasNormal = true;
+
+        this.currentFlags |= NORMAL_FLAG;
     }
 
     public void glVertex3f(float x, float y, float z) {
@@ -155,7 +164,7 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 11] = texS1;
         vertexScratchpad[offset + 12] = texT1;
 
-        if (hasNormal) {
+        if ((currentFlags & NORMAL_FLAG) != 0) {
             // Transform normals.
             // Assume model view is just rotations and translations, no shear or scale.
             // Otherwise, the upper left 3x3 part of transformation matrix would have
@@ -196,11 +205,7 @@ public class VertexInterceptor {
      * Draw vertices recorded in glBegin/glEnd block using glDrawArrays command.
      */
     private void drawAsArray(int count) {
-        int flags = VERTEX_FLAG | COLOR_FLAG | TEX_FLAG;
-        if (hasTexture1) flags |= TEX1_FLAG;
-        if (hasNormal) flags |= NORMAL_FLAG;
-
-        prepareVertexPointers(count, flags);
+        prepareVertexPointers(count, currentFlags);
         primaryVertexPointer.put(0, vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyDrawAttribs();
@@ -227,6 +232,7 @@ public class VertexInterceptor {
     private void prepareVertexPointersGL(boolean wasResized, int requiredFlags) {
         FloatBuffer p = primaryVertexPointer;
 
+        // Vertex.
         if (wasResized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
@@ -236,6 +242,7 @@ public class VertexInterceptor {
             }
         }
 
+        // Color.
         if (wasResized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
@@ -246,13 +253,15 @@ public class VertexInterceptor {
             }
         }
 
-        if (wasResized || (arrayFlags & TEX_FLAG) != (requiredFlags & TEX_FLAG)) {
+        // Texture Unit 0. Using only the required texture coordinate size prevents visual artifacts in certain rare scenarios.
+        if (wasResized || (arrayFlags & TEX0_FLAG) != (requiredFlags & TEX0_FLAG) || (arrayFlags & TEX0_SEPARATE_FLAG) != (requiredFlags & TEX0_SEPARATE_FLAG)) {
             int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 
-            if ((requiredFlags & TEX_FLAG) != 0) {
+            if ((requiredFlags & TEX0_FLAG) != 0 || (requiredFlags & TEX0_SEPARATE_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                ClientArray.glTexCoordPointer(TEX_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+                int size = (requiredFlags & TEX0_SEPARATE_FLAG) != 0 ? TEX0_SEPARATE_SIZE : TEX0_SIZE;
+                ClientArray.glTexCoordPointer(size, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
@@ -260,13 +269,14 @@ public class VertexInterceptor {
             org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
+        // Texture Unit 1.
         if (wasResized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
             int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                ClientArray.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE));
+                ClientArray.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
@@ -274,10 +284,11 @@ public class VertexInterceptor {
             org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
+        // Normal.
         if (wasResized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                ClientArray.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX_SIZE + TEX1_SIZE));
+                ClientArray.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE + TEX1_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }

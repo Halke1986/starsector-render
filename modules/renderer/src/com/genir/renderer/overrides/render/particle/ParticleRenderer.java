@@ -168,7 +168,7 @@ public class ParticleRenderer {
 
             preBatch.accept(context);
 
-            int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.COLOR_FLAG | VertexInterceptor.TEX_FLAG;
+            int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.COLOR_FLAG | VertexInterceptor.TEX0_FLAG;
             context.vertexInterceptor.drawExternalArray(GL11.GL_QUADS, vertexScratchpad, numParticles * 4, flags);
 
             postBatch.accept(context);

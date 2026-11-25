@@ -34,7 +34,7 @@ public class Sphere extends Quadric {
                     cache.put(slices, vertices);
                 }
 
-                int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.TEX_FLAG | VertexInterceptor.NORMAL_FLAG;
+                int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.TEX0_FLAG | VertexInterceptor.NORMAL_FLAG;
                 context.attribManager.applyDrawAttribs();
                 context.vertexInterceptor.drawExternalArray(GL11.GL_QUADS, vertices, slices * stacks * 4, flags);
 

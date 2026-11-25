@@ -109,7 +109,7 @@ public class FontRendererImpl {
 
             context.attribManager.applyDrawAttribs();
 
-            int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.COLOR_FLAG | VertexInterceptor.TEX_FLAG;
+            int flags = VertexInterceptor.VERTEX_FLAG | VertexInterceptor.COLOR_FLAG | VertexInterceptor.TEX0_FLAG;
             context.vertexInterceptor.drawExternalArray(GL11.GL_QUADS, geometry.vertexScratchpad(), geometry.glyphsNum() * 4, flags);
 
             context.matrixManager.setCPUMode();

@@ -132,13 +132,6 @@ public class ClientArrayManager {
         state.colorPointer = new ArrayPointerFloat(size, type, stride, pointer);
     }
 
-    public void glColorPointer(int size, int type, int stride, Long pointer) {
-        Assert.supported(stride, 0, "glColorPointer$stride");
-        Assert.supported(pointer, 0, "glColorPointer$pointer");
-
-        state.colorPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
-    }
-
     public void glTexCoordPointer(int size, int type, int stride, ByteBuffer pointer) {
         Assert.supported(stride, 0, "glTexCoordPointer$stride");
         Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
@@ -151,13 +144,6 @@ public class ClientArrayManager {
         Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
 
         state.texCoordPointer = new ArrayPointerFloat(size, type, stride, pointer);
-    }
-
-    public void glTexCoordPointer(int size, int type, int stride, Long pointer) {
-        Assert.supported(stride, 0, "glTexCoordPointer$stride");
-        Assert.supported(pointer, 0, "glTexCoordPointer$pointer");
-
-        state.texCoordPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
     }
 
     public void glVertexPointer(int size, int type, int stride, ByteBuffer pointer) {
@@ -174,10 +160,15 @@ public class ClientArrayManager {
         state.vertexPointer = new ArrayPointerFloat(size, type, stride, pointer);
     }
 
-    public void glVertexPointer(int size, int type, int stride, Long pointer) {
-        Assert.supported(stride, 0, "glVertexPointer$stride");
-        Assert.supported(pointer, 0, "glVertexPointer$pointer");
+    public void glColorPointer(int size, int type, int stride, Long pointer) {
+        state.colorPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
+    }
 
+    public void glTexCoordPointer(int size, int type, int stride, Long pointer) {
+        state.texCoordPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
+    }
+
+    public void glVertexPointer(int size, int type, int stride, Long pointer) {
         state.vertexPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
     }
 

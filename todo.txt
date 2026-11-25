@@ -7,13 +7,7 @@ getAllVariantIds
 
 bugs:
 
-
-
-- Added compatibility with Starsector Marines. Incompatibility reported by Dokuro.
-
-
-https://www.fossic.org/thread-20956-1-1.html
-ShadowverseDynamicPortraits slowdown
+// TODO proper pointer restore, based on a native pointer.
 
 
 black screen with game activity sounds after changing resource generator in mael modpack
