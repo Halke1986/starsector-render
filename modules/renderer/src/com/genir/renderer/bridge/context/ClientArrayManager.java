@@ -239,7 +239,7 @@ public class ClientArrayManager {
         } else if (snapshot instanceof ArraySnapshotFloat floats) {
             ClientArray.glVertexPointer(floats.size, floats.stride, floats.snapshot.buffer);
         } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
-            // TODO
+            // TODO proper pointer restore, based on a native pointer.
         } else {
             throw new UnsupportedOperationException();
         }
@@ -258,7 +258,7 @@ public class ClientArrayManager {
         } else if (snapshot instanceof ArraySnapshotFloat floats) {
             ClientArray.glTexCoordPointer(floats.size, floats.stride, floats.snapshot.buffer);
         } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
-            // TODO
+            // TODO proper pointer restore, based on a native pointer.
         } else {
             throw new UnsupportedOperationException();
         }
@@ -279,7 +279,7 @@ public class ClientArrayManager {
         } else if (snapshot instanceof ArraySnapshotFloat floats) {
             ClientArray.glColorPointer(floats.size, floats.stride, floats.snapshot.buffer);
         } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
-            // TODO
+            // TODO proper pointer restore, based on a native pointer.
         } else {
             throw new UnsupportedOperationException();
         }

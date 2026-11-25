@@ -228,7 +228,7 @@ public class Executor {
                     continue;
                 }
 
-                logAssertionError(frame, i + 1);
+                logFrame(frame, i + 1);
                 throw e;
             } catch (IncompatibleClassChangeError | ClassCastException e) {
                 logIncompatibleClassChangeError(commands, frame.getCommandsSize(), i, command);
@@ -241,7 +241,7 @@ public class Executor {
         execActual.shutdown();
     }
 
-    private void logAssertionError(Frame frame, int logCount) {
+    private void logFrame(Frame frame, int logCount) {
         GLCommand[] commands = frame.getCommands();
         float[] args = frame.getArgs();
 
