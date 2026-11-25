@@ -3,6 +3,7 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.array.*;
 import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -13,7 +14,6 @@ public class ClientArrayManager {
     private final MatrixManager matrixManager;
     private final AttribManager attribManager;
     private final VertexInterceptor vertexInterceptor;
-    private final Executor exec;
 
     private final ClientArrayAttribState state = new ClientArrayAttribState();
     private final Stack<AttribSnapshot> stateStack = new Stack<>();
@@ -27,13 +27,11 @@ public class ClientArrayManager {
     public ClientArrayManager(
             MatrixManager matrixManager,
             AttribManager attribManager,
-            VertexInterceptor vertexInterceptor,
-            Executor exec
+            VertexInterceptor vertexInterceptor
     ) {
         this.matrixManager = matrixManager;
         this.attribManager = attribManager;
         this.vertexInterceptor = vertexInterceptor;
-        this.exec = exec;
     }
 
     //
@@ -208,8 +206,11 @@ public class ClientArrayManager {
         restoreTextureSnapshot(snapshot.texCoord());
         restoreColorSnapshot(snapshot.color());
 
-        // Normal array.
+        // Cleanup state potentially left by VertexInterceptor.
         org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+        org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
+        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 
         // Move model transformation from CPU to GPU.
         // The vertex array is stored in object/local space rather than pre-transformed

@@ -1,3 +1,5 @@
+- Fixed OpenGL state corruption involving the client texture coordinate array for texture unit 1. Reported by Dokuro.
+
 v1.0.4rc1
 
 - Optimized planet rendering performance.

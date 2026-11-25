@@ -663,7 +663,9 @@ public class GL11 {
 
         @Override
         public String debugString(Context context, float[] args, int argsOffset) {
-            return "glDisable[]";
+            int cap = Float.floatToRawIntBits(args[argsOffset]);
+
+            return "glDisable[cap=" + cap + "]";
         }
     }
 
