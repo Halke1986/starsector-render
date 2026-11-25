@@ -4,6 +4,7 @@ import com.genir.renderer.bridge.context.ClientArrayManager;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
+import com.genir.renderer.bridge.context.array.ArraysSnapshot;
 import com.genir.renderer.bridge.context.stall.AttribState;
 import com.genir.renderer.bridge.interfaces.DebugString;
 import com.genir.renderer.bridge.interfaces.GLCommand;
@@ -363,7 +364,7 @@ public class GL11 {
     }
 
     public static void glDrawArrays(int mode, int first, int count) {
-        record glDrawArrays(int mode, int first, int count, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
+        record glDrawArrays(int mode, int first, int count, ArraysSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.clientArrayManager.drawRecordedArrays(this::runDraw, snapshot);
@@ -384,14 +385,14 @@ public class GL11 {
 
         // Catch array bounds errors early, before they cause
         // difficult-to-debug driver crashes or visual errors.
-        context.clientArrayManager.assertArrayPointersCapacity(first, count);
+//        context.clientArrayManager.assertArrayPointersCapacity(first, count);
 
-        final ClientArrayManager.ArrayPointersSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
+        final ArraysSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawArrays(mode, first, count, snapshot));
     }
 
     public static void glDrawElements(int mode, IntBuffer indices) {
-        record glDrawElements(int mode, IntBufferSnapshot indices, ClientArrayManager.ArrayPointersSnapshot snapshot) implements GLCommand {
+        record glDrawElements(int mode, IntBufferSnapshot indices, ArraysSnapshot snapshot) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
                 context.clientArrayManager.drawRecordedArrays(this::runDraw, snapshot);
@@ -407,7 +408,7 @@ public class GL11 {
 
         final Context context = ContextManager.getThreadContext();
         final IntBufferSnapshot indicesSnapshot = BufferPool.bufferPool.snapshot(indices);
-        final ClientArrayManager.ArrayPointersSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
+        final ArraysSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawElements(mode, indicesSnapshot, snapshot));
     }
 

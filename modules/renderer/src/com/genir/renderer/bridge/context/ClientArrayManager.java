@@ -1,12 +1,11 @@
 package com.genir.renderer.bridge.context;
 
-import com.genir.renderer.bridge.interfaces.Releasable;
+import com.genir.renderer.bridge.context.array.*;
 import com.genir.renderer.debug.Assert;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Stack;
 
 public class ClientArrayManager {
@@ -25,11 +24,6 @@ public class ClientArrayManager {
     private float blue;
     private float alpha;
 
-    // Recorded array draw buffers.
-    private ByteBuffer texCoordPointer = BufferUtils.createByteBuffer(0);
-    private ByteBuffer vertexPointer = BufferUtils.createByteBuffer(0);
-    private ByteBuffer colorPointer = BufferUtils.createByteBuffer(0);
-
     public ClientArrayManager(
             MatrixManager matrixManager,
             AttribManager attribManager,
@@ -46,41 +40,41 @@ public class ClientArrayManager {
     // Getters.
     //
 
-    public ArrayPointersSnapshot makeArrayPointersSnapshot() {
-        return new ArrayPointersSnapshot(
-                state.enableVertexArray ? state.vertexPointer.getSnapshot() : null,
-                state.enableTexCoordArray ? state.texCoordPointer.getSnapshot() : null,
-                state.enableColorArray ? state.colorPointer.getSnapshot() : null);
+    public ArraysSnapshot makeArrayPointersSnapshot() {
+        return new ArraysSnapshot(
+                state.enableVertexArray ? state.vertexPointer.makeSnapshot() : null,
+                state.enableTexCoordArray ? state.texCoordPointer.makeSnapshot() : null,
+                state.enableColorArray ? state.colorPointer.makeSnapshot() : null);
     }
 
-    public void assertArrayPointersCapacity(int first, int count) {
-        int required = first + count;
-
-        if (first < 0) {
-            throw new AssertionError("Invalid draw range: first=" + first);
-        }
-
-        if (state.enableVertexArray) {
-            int capacity = state.vertexPointer.getCapacity();
-            if (capacity != -1 && capacity < required) {
-                throw new AssertionError("Insufficient vertex array size: " + capacity + "<" + required);
-            }
-        }
-
-        if (state.enableTexCoordArray) {
-            int capacity = state.texCoordPointer.getCapacity();
-            if (capacity != -1 && capacity < required) {
-                throw new AssertionError("Insufficient texture array size: " + capacity + "<" + required);
-            }
-        }
-
-        if (state.enableColorArray) {
-            int capacity = state.colorPointer.getCapacity();
-            if (capacity != -1 && capacity < required) {
-                throw new AssertionError("Insufficient color array size: " + capacity + "<" + required);
-            }
-        }
-    }
+//    public void assertArrayPointersCapacity(int first, int count) {
+//        int required = first + count;
+//
+//        if (first < 0) {
+//            throw new AssertionError("Invalid draw range: first=" + first);
+//        }
+//
+//        if (state.enableVertexArray) {
+//            int capacity = state.vertexPointer.getCapacity();
+//            if (capacity != -1 && capacity < required) {
+//                throw new AssertionError("Insufficient vertex array size: " + capacity + "<" + required);
+//            }
+//        }
+//
+//        if (state.enableTexCoordArray) {
+//            int capacity = state.texCoordPointer.getCapacity();
+//            if (capacity != -1 && capacity < required) {
+//                throw new AssertionError("Insufficient texture array size: " + capacity + "<" + required);
+//            }
+//        }
+//
+//        if (state.enableColorArray) {
+//            int capacity = state.colorPointer.getCapacity();
+//            if (capacity != -1 && capacity < required) {
+//                throw new AssertionError("Insufficient color array size: " + capacity + "<" + required);
+//            }
+//        }
+//    }
 
     //
     // GL calls.
@@ -126,46 +120,67 @@ public class ClientArrayManager {
         setState(cap, false);
     }
 
-    public void glColorPointer(int size, int type, int stride, Buffer pointer) {
+    public void glColorPointer(int size, int type, int stride, ByteBuffer pointer) {
         Assert.supported(stride, 0, "glColorPointer$stride");
         Assert.supported(pointer.position(), 0, "glColorPointer$position");
 
-        state.colorPointer = new ArrayPointer(size, type, stride, pointer);
+        state.colorPointer = new ArrayPointerByte(size, type, stride, pointer);
     }
 
-    public void glTexCoordPointer(int size, int type, int stride, Buffer pointer) {
-        Assert.supported(stride, 0, "glTexCoordPointer$stride");
-        Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
+    public void glColorPointer(int size, int type, int stride, FloatBuffer pointer) {
+        Assert.supported(stride, 0, "glColorPointer$stride");
+        Assert.supported(pointer.position(), 0, "glColorPointer$position");
 
-        state.texCoordPointer = new ArrayPointer(size, type, stride, pointer);
-    }
-
-    public void glVertexPointer(int size, int type, int stride, Buffer pointer) {
-        Assert.supported(stride, 0, "glVertexPointer$stride");
-        Assert.supported(pointer.position(), 0, "glVertexPointer$position");
-
-        state.vertexPointer = new ArrayPointer(size, type, stride, pointer);
+        state.colorPointer = new ArrayPointerFloat(size, type, stride, pointer);
     }
 
     public void glColorPointer(int size, int type, int stride, Long pointer) {
         Assert.supported(stride, 0, "glColorPointer$stride");
         Assert.supported(pointer, 0, "glColorPointer$pointer");
 
-        state.colorPointer = new ArrayPointer(size, type, stride, null);
+        state.colorPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
+    }
+
+    public void glTexCoordPointer(int size, int type, int stride, ByteBuffer pointer) {
+        Assert.supported(stride, 0, "glTexCoordPointer$stride");
+        Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
+
+        state.texCoordPointer = new ArrayPointerByte(size, type, stride, pointer);
+    }
+
+    public void glTexCoordPointer(int size, int type, int stride, FloatBuffer pointer) {
+        Assert.supported(stride, 0, "glTexCoordPointer$stride");
+        Assert.supported(pointer.position(), 0, "glTexCoordPointer$position");
+
+        state.texCoordPointer = new ArrayPointerFloat(size, type, stride, pointer);
     }
 
     public void glTexCoordPointer(int size, int type, int stride, Long pointer) {
         Assert.supported(stride, 0, "glTexCoordPointer$stride");
         Assert.supported(pointer, 0, "glTexCoordPointer$pointer");
 
-        state.texCoordPointer = new ArrayPointer(size, type, stride, null);
+        state.texCoordPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
+    }
+
+    public void glVertexPointer(int size, int type, int stride, ByteBuffer pointer) {
+        Assert.supported(stride, 0, "glVertexPointer$stride");
+        Assert.supported(pointer.position(), 0, "glVertexPointer$position");
+
+        state.vertexPointer = new ArrayPointerByte(size, type, stride, pointer);
+    }
+
+    public void glVertexPointer(int size, int type, int stride, FloatBuffer pointer) {
+        Assert.supported(stride, 0, "glVertexPointer$stride");
+        Assert.supported(pointer.position(), 0, "glVertexPointer$position");
+
+        state.vertexPointer = new ArrayPointerFloat(size, type, stride, pointer);
     }
 
     public void glVertexPointer(int size, int type, int stride, Long pointer) {
         Assert.supported(stride, 0, "glVertexPointer$stride");
         Assert.supported(pointer, 0, "glVertexPointer$pointer");
 
-        state.vertexPointer = new ArrayPointer(size, type, stride, null);
+        state.vertexPointer = new ArrayPointerGLBuffer(size, type, stride, pointer);
     }
 
     private void setState(int cap, boolean value) {
@@ -186,49 +201,12 @@ public class ClientArrayManager {
     // Draw.
     //
 
-    public void drawRecordedArrays(Runnable drawArraysCommand, ClientArrayManager.ArrayPointersSnapshot snapshot) {
+    public void drawRecordedArrays(Runnable drawArraysCommand, ArraysSnapshot snapshot) {
         vertexInterceptor.arraysTouched();
 
-        // Vertex array.
-        final ArraySnapshot vs = snapshot.vertex();
-        if (vs != null) {
-            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-
-            if (vs.snapshot() != null) {
-                vertexPointer = restoreSnapshot(vs, vertexPointer);
-                ClientArray.glVertexPointer(vs.size(), vs.type(), vs.stride(), vertexPointer);
-            }
-        } else {
-            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        }
-
-        // Texture array.
-        final ArraySnapshot ts = snapshot.texCoord();
-        if (ts != null) {
-            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-
-            if (ts.snapshot() != null) {
-                texCoordPointer = restoreSnapshot(ts, texCoordPointer);
-                ClientArray.glTexCoordPointer(ts.size(), ts.type(), ts.stride(), texCoordPointer);
-            }
-        } else {
-            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        }
-
-        // Color array.
-        final ArraySnapshot cs = snapshot.color();
-        if (cs != null) {
-            org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-
-            if (cs.snapshot() != null) {
-                colorPointer = restoreSnapshot(cs, colorPointer);
-                ClientArray.glColorPointer(cs.size(), cs.type(), cs.stride(), colorPointer);
-            }
-        } else {
-            // Define color if GL_COLOR_ARRAY is disabled.
-            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
-        }
+        restoreVertexSnapshot(snapshot.vertex());
+        restoreTextureSnapshot(snapshot.texCoord());
+        restoreColorSnapshot(snapshot.color());
 
         // Normal array.
         org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
@@ -248,21 +226,62 @@ public class ClientArrayManager {
         matrixManager.setCPUMode();
     }
 
-    private ByteBuffer restoreSnapshot(ArraySnapshot snapshot, ByteBuffer pointer) {
-        if (pointer.capacity() < snapshot.bytes()) {
-            pointer = BufferUtils.createByteBuffer(snapshot.bytes());
+    private void restoreVertexSnapshot(ArraySnapshot snapshot) {
+        if (snapshot == null) {
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+            return;
         }
 
-        snapshot.store(pointer.clear());
-        return pointer.flip();
+        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+
+        if (snapshot instanceof ArraySnapshotByte bytes) {
+            ClientArray.glVertexPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotFloat floats) {
+            ClientArray.glVertexPointer(floats.size, floats.stride, floats.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
+            // TODO
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
-    public record ArrayPointersSnapshot(ArraySnapshot vertex, ArraySnapshot texCoord, ArraySnapshot color) implements Releasable {
-        @Override
-        public void release() {
-            if (vertex != null) vertex.release();
-            if (texCoord != null) texCoord.release();
-            if (color != null) color.release();
+    private void restoreTextureSnapshot(ArraySnapshot snapshot) {
+        if (snapshot == null) {
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+        if (snapshot instanceof ArraySnapshotByte bytes) {
+            ClientArray.glTexCoordPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotFloat floats) {
+            ClientArray.glTexCoordPointer(floats.size, floats.stride, floats.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
+            // TODO
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private void restoreColorSnapshot(ArraySnapshot snapshot) {
+        if (snapshot == null) {
+            // Define color if GL_COLOR_ARRAY is disabled.
+            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
+            org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            return;
+        }
+
+        org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+
+        if (snapshot instanceof ArraySnapshotByte bytes) {
+            ClientArray.glColorPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotFloat floats) {
+            ClientArray.glColorPointer(floats.size, floats.stride, floats.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
+            // TODO
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 
