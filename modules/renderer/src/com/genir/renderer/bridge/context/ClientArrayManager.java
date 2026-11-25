@@ -47,34 +47,34 @@ public class ClientArrayManager {
                 state.enableColorArray ? state.colorPointer.makeSnapshot() : null);
     }
 
-//    public void assertArrayPointersCapacity(int first, int count) {
-//        int required = first + count;
-//
-//        if (first < 0) {
-//            throw new AssertionError("Invalid draw range: first=" + first);
-//        }
-//
-//        if (state.enableVertexArray) {
-//            int capacity = state.vertexPointer.getCapacity();
-//            if (capacity != -1 && capacity < required) {
-//                throw new AssertionError("Insufficient vertex array size: " + capacity + "<" + required);
-//            }
-//        }
-//
-//        if (state.enableTexCoordArray) {
-//            int capacity = state.texCoordPointer.getCapacity();
-//            if (capacity != -1 && capacity < required) {
-//                throw new AssertionError("Insufficient texture array size: " + capacity + "<" + required);
-//            }
-//        }
-//
-//        if (state.enableColorArray) {
-//            int capacity = state.colorPointer.getCapacity();
-//            if (capacity != -1 && capacity < required) {
-//                throw new AssertionError("Insufficient color array size: " + capacity + "<" + required);
-//            }
-//        }
-//    }
+    public void assertArrayPointersCapacity(int first, int count) {
+        int required = first + count;
+
+        if (first < 0) {
+            throw new AssertionError("Invalid draw range: first=" + first);
+        }
+
+        if (state.enableVertexArray) {
+            int capacity = state.vertexPointer.getCapacity();
+            if (capacity != -1 && capacity < required) {
+                throw new AssertionError("Insufficient vertex array size: " + capacity + "<" + required);
+            }
+        }
+
+        if (state.enableTexCoordArray) {
+            int capacity = state.texCoordPointer.getCapacity();
+            if (capacity != -1 && capacity < required) {
+                throw new AssertionError("Insufficient texture array size: " + capacity + "<" + required);
+            }
+        }
+
+        if (state.enableColorArray) {
+            int capacity = state.colorPointer.getCapacity();
+            if (capacity != -1 && capacity < required) {
+                throw new AssertionError("Insufficient color array size: " + capacity + "<" + required);
+            }
+        }
+    }
 
     //
     // GL calls.

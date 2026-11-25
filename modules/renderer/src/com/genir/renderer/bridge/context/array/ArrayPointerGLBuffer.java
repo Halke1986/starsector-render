@@ -13,4 +13,9 @@ public class ArrayPointerGLBuffer extends ArrayPointer {
     public ArraySnapshot makeSnapshot() {
         return new ArraySnapshotGLBuffer(this);
     }
+
+    public int getCapacity() {
+        // TODO
+        return -1;
+    }
 }

@@ -15,4 +15,21 @@ public class ArrayPointerByte extends ArrayPointer {
     public ArraySnapshot makeSnapshot() {
         return new ArraySnapshotByte(this);
     }
+
+
+    public int getCapacity() {
+        if (size <= 0 || stride < 0) {
+            throw new IllegalArgumentException("Invalid array layout: size=" + size + " stride=" + stride);
+        }
+
+        int elementBytes = size * getTypeBytes(type);
+        int strideBytes = stride == 0 ? elementBytes : stride;
+        int bytesRemaining = pointer.remaining();
+
+        if (bytesRemaining < elementBytes) {
+            return 0;
+        }
+
+        return 1 + (bytesRemaining - elementBytes) / strideBytes;
+    }
 }

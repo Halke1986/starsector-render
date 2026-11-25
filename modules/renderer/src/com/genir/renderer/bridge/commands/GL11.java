@@ -1,6 +1,5 @@
 package com.genir.renderer.bridge.commands;
 
-import com.genir.renderer.bridge.context.ClientArrayManager;
 import com.genir.renderer.bridge.context.Context;
 import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
@@ -385,7 +384,7 @@ public class GL11 {
 
         // Catch array bounds errors early, before they cause
         // difficult-to-debug driver crashes or visual errors.
-//        context.clientArrayManager.assertArrayPointersCapacity(first, count);
+        context.clientArrayManager.assertArrayPointersCapacity(first, count);
 
         final ArraysSnapshot snapshot = context.clientArrayManager.makeArrayPointersSnapshot();
         context.exec.execute(new glDrawArrays(mode, first, count, snapshot));
