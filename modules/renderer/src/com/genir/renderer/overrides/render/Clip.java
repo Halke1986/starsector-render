@@ -1,4 +1,4 @@
-package com.genir.renderer.overrides.render.core;
+package com.genir.renderer.overrides.render;
 
 import com.genir.renderer.bridge.context.Matrix;
 

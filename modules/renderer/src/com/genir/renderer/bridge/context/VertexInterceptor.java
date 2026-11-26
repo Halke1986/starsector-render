@@ -31,7 +31,7 @@ public class VertexInterceptor {
     // State.
     private int mode = 0;
     private int arrayFlags = 0;
-    private int currentFlags = 0;
+    private int expectedArrayFlags = 0;
 
     // Color.
     private float red;
@@ -78,7 +78,7 @@ public class VertexInterceptor {
 
     public void glBegin(int mode) {
         this.mode = mode;
-        this.currentFlags = VERTEX_FLAG | COLOR_FLAG;
+        this.expectedArrayFlags = VERTEX_FLAG | COLOR_FLAG;
     }
 
     public void glEnd() {
@@ -106,9 +106,9 @@ public class VertexInterceptor {
         this.texR = r;
         this.texQ = q;
 
-        this.currentFlags |= TEX0_FLAG;
+        this.expectedArrayFlags |= TEX0_FLAG;
         if (r != 0f || q != 1f) {
-            this.currentFlags = TEX0_SEPARATE_FLAG;
+            this.expectedArrayFlags = TEX0_SEPARATE_FLAG;
         }
     }
 
@@ -118,7 +118,7 @@ public class VertexInterceptor {
         this.texS1 = s;
         this.texT1 = t;
 
-        this.currentFlags |= TEX1_FLAG;
+        this.expectedArrayFlags |= TEX1_FLAG;
     }
 
     public void glNormal3f(float nx, float ny, float nz) {
@@ -126,7 +126,7 @@ public class VertexInterceptor {
         this.ny = ny;
         this.nz = nz;
 
-        this.currentFlags |= NORMAL_FLAG;
+        this.expectedArrayFlags |= NORMAL_FLAG;
     }
 
     public void glVertex3f(float x, float y, float z) {
@@ -164,7 +164,7 @@ public class VertexInterceptor {
         vertexScratchpad[offset + 11] = texS1;
         vertexScratchpad[offset + 12] = texT1;
 
-        if ((currentFlags & NORMAL_FLAG) != 0) {
+        if ((expectedArrayFlags & NORMAL_FLAG) != 0) {
             // Transform normals.
             // Assume model view is just rotations and translations, no shear or scale.
             // Otherwise, the upper left 3x3 part of transformation matrix would have
@@ -205,7 +205,7 @@ public class VertexInterceptor {
      * Draw vertices recorded in glBegin/glEnd block using glDrawArrays command.
      */
     private void drawAsArray(int count) {
-        prepareVertexPointers(count, currentFlags);
+        prepareVertexPointers(count, expectedArrayFlags);
         primaryVertexPointer.put(0, vertexScratchpad, 0, count * STRIDE);
 
         attribManager.applyDrawAttribs();

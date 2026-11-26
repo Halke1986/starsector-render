@@ -6,7 +6,7 @@ import com.genir.renderer.bridge.context.ContextManager;
 import com.genir.renderer.bridge.context.Matrix;
 import com.genir.renderer.bridge.context.VertexInterceptor;
 import com.genir.renderer.bridge.interfaces.GLCommand;
-import com.genir.renderer.overrides.render.core.Clip;
+import com.genir.renderer.overrides.render.Clip;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
