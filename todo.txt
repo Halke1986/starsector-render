@@ -2,12 +2,17 @@
 
 Loading bar render in a separate thread?
 
+// TODO proper pointer restore, based on a native pointer.
 
 getAllVariantIds
 
+finish starsector marines compat, mainly night mission
+
+
+
 bugs:
 
-// TODO proper pointer restore, based on a native pointer.
+rat abbys text on sector map looks weird and changes color
 
 
 black screen with game activity sounds after changing resource generator in mael modpack
