@@ -23,6 +23,8 @@ public class ClientAttribTracker {
     // Getters.
     //
 
+    // TODO handle glBindVertexArray
+
     public int glGetInteger(int pname) {
         record ClientAttribTracker$assertGetInteger(int pname, int expected) implements GLCommand {
             @Override

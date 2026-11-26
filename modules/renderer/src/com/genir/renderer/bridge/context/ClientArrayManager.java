@@ -3,7 +3,6 @@ package com.genir.renderer.bridge.context;
 import com.genir.renderer.bridge.context.array.*;
 import com.genir.renderer.debug.Assert;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -191,17 +190,13 @@ public class ClientArrayManager {
     //
 
     public void drawRecordedArrays(Runnable drawArraysCommand, ArraysSnapshot snapshot) {
-        vertexInterceptor.arraysTouched();
+        vertexInterceptor.yieldClientState();
+
+        org.lwjgl.opengl.GL11.glPushClientAttrib(GL11.GL_CLIENT_VERTEX_ARRAY_BIT);
 
         restoreVertexSnapshot(snapshot.vertex());
         restoreTextureSnapshot(snapshot.texCoord());
         restoreColorSnapshot(snapshot.color());
-
-        // Cleanup state potentially left by VertexInterceptor.
-        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
-        org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
-        org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 
         // Move model transformation from CPU to GPU.
         // The vertex array is stored in object/local space rather than pre-transformed
@@ -216,6 +211,8 @@ public class ClientArrayManager {
 
         // Move model transformation back to CPU.
         matrixManager.setCPUMode();
+
+        org.lwjgl.opengl.GL11.glPopClientAttrib();
     }
 
     private void restoreVertexSnapshot(ArraySnapshot snapshot) {

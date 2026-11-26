@@ -263,7 +263,7 @@ public class GL11 {
         record glPushClientAttrib(int mask) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.vertexInterceptor.arraysTouched();
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL11.glPushClientAttrib(mask);
             }
         }
@@ -278,7 +278,7 @@ public class GL11 {
         record glPopClientAttrib() implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
-                context.vertexInterceptor.arraysTouched();
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL11.glPopClientAttrib();
             }
         }
@@ -320,13 +320,11 @@ public class GL11 {
         context.clientArrayManager.glTexCoordPointer(size, org.lwjgl.opengl.GL11.GL_FLOAT, stride, pointer);
     }
 
-    /**
-     * Array draw.
-     */
     public static void glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) {
         record glTexCoordPointer(int size, int type, int stride, long pointer_buffer_offset) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL11.glTexCoordPointer(size, type, stride, pointer_buffer_offset);
             }
         }
@@ -340,6 +338,7 @@ public class GL11 {
         record glColorPointer(int size, int type, int stride, long pointer_buffer_offset) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL11.glColorPointer(size, type, stride, pointer_buffer_offset);
             }
         }
@@ -353,6 +352,7 @@ public class GL11 {
         record glVertexPointer(int size, int type, int stride, long pointer_buffer_offset) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL11.glVertexPointer(size, type, stride, pointer_buffer_offset);
             }
         }
@@ -362,6 +362,9 @@ public class GL11 {
         context.exec.execute(new glVertexPointer(size, type, stride, pointer_buffer_offset));
     }
 
+    /**
+     * Array draw.
+     */
     public static void glDrawArrays(int mode, int first, int count) {
         record glDrawArrays(int mode, int first, int count, ArraysSnapshot snapshot) implements GLCommand {
             @Override

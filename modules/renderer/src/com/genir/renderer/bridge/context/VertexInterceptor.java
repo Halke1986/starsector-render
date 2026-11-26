@@ -17,12 +17,13 @@ public class VertexInterceptor {
     public static final int NORMAL_SIZE = 3;
     public static final int STRIDE = VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE + TEX1_SIZE + NORMAL_SIZE;
 
-    public static final int VERTEX_FLAG = 1;
-    public static final int COLOR_FLAG = 2;
-    public static final int TEX0_FLAG = 4;
-    public static final int TEX0_SEPARATE_FLAG = 8;
-    public static final int TEX1_FLAG = 16;
-    public static final int NORMAL_FLAG = 32;
+    public static final int STATE_OWNERSHIP_FLAG = 1;
+    public static final int VERTEX_FLAG = 2;
+    public static final int COLOR_FLAG = 4;
+    public static final int TEX0_FLAG = 8;
+    public static final int TEX0_SEPARATE_FLAG = 16;
+    public static final int TEX1_FLAG = 32;
+    public static final int NORMAL_FLAG = 64;
 
     // GL State.
     private final MatrixManager matrixManager;
@@ -65,11 +66,29 @@ public class VertexInterceptor {
     }
 
     public void update() {
-        arraysTouched();
+        yieldClientState();
     }
 
-    public void arraysTouched() {
-        arrayFlags = 0;
+    /**
+     * Should be called whenever the client makes changes to state controlled with:
+     * glEnableClientState/glDisableClientState,
+     * glClientActiveTexture, gl*Pointer
+     */
+    public void yieldClientState() {
+        if ((arrayFlags & STATE_OWNERSHIP_FLAG) != 0) {
+            org.lwjgl.opengl.GL11.glPopClientAttrib();
+            arrayFlags = 0;
+        }
+    }
+
+    private void acquireClientState() {
+        if ((arrayFlags & STATE_OWNERSHIP_FLAG) == 0) {
+            org.lwjgl.opengl.GL11.glPushClientAttrib(GL11.GL_CLIENT_VERTEX_ARRAY_BIT);
+            arrayFlags = STATE_OWNERSHIP_FLAG;
+
+            org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
+            prepareVertexPointersGL(true, arrayFlags);
+        }
     }
 
     //
@@ -213,6 +232,8 @@ public class VertexInterceptor {
     }
 
     private void prepareVertexPointers(int count, int requiredFlags) {
+        acquireClientState();
+
         boolean wasResized = false;
         int capacityRequired = count * STRIDE;
         if (primaryVertexPointer.capacity() < capacityRequired) {
@@ -226,14 +247,14 @@ public class VertexInterceptor {
 
         prepareVertexPointersGL(wasResized, requiredFlags);
 
-        arrayFlags = requiredFlags;
+        arrayFlags = requiredFlags | STATE_OWNERSHIP_FLAG;
     }
 
-    private void prepareVertexPointersGL(boolean wasResized, int requiredFlags) {
+    private void prepareVertexPointersGL(boolean forceReset, int requiredFlags) {
         FloatBuffer p = primaryVertexPointer;
 
         // Vertex.
-        if (wasResized || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
+        if (forceReset || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
                 ClientArray.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
@@ -243,7 +264,7 @@ public class VertexInterceptor {
         }
 
         // Color.
-        if (wasResized || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
+        if (forceReset || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
                 ClientArray.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
@@ -254,10 +275,7 @@ public class VertexInterceptor {
         }
 
         // Texture Unit 0. Using only the required texture coordinate size prevents visual artifacts in certain rare scenarios.
-        if (wasResized || (arrayFlags & TEX0_FLAG) != (requiredFlags & TEX0_FLAG) || (arrayFlags & TEX0_SEPARATE_FLAG) != (requiredFlags & TEX0_SEPARATE_FLAG)) {
-            int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
-            org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
-
+        if (forceReset || (arrayFlags & TEX0_FLAG) != (requiredFlags & TEX0_FLAG) || (arrayFlags & TEX0_SEPARATE_FLAG) != (requiredFlags & TEX0_SEPARATE_FLAG)) {
             if ((requiredFlags & TEX0_FLAG) != 0 || (requiredFlags & TEX0_SEPARATE_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 int size = (requiredFlags & TEX0_SEPARATE_FLAG) != 0 ? TEX0_SEPARATE_SIZE : TEX0_SIZE;
@@ -265,13 +283,10 @@ public class VertexInterceptor {
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
-
-            org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
         }
 
         // Texture Unit 1.
-        if (wasResized || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
-            int prevActiveTex = org.lwjgl.opengl.GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
+        if (forceReset || (arrayFlags & TEX1_FLAG) != (requiredFlags & TEX1_FLAG)) {
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
@@ -281,11 +296,11 @@ public class VertexInterceptor {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
 
-            org.lwjgl.opengl.GL13.glClientActiveTexture(prevActiveTex);
+            org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
         }
 
         // Normal.
-        if (wasResized || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
+        if (forceReset || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 ClientArray.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE + TEX1_SIZE));

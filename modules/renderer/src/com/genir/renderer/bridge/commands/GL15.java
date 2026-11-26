@@ -52,6 +52,7 @@ public class GL15 {
         record glBindBuffer(int target, int buffer) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL15.glBindBuffer(target, buffer);
             }
         }

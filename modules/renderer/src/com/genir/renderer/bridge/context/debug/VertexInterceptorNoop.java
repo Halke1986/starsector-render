@@ -12,7 +12,7 @@ public class VertexInterceptorNoop extends VertexInterceptor {
     public void update() {
     }
 
-    public void arraysTouched() {
+    public void yieldClientState() {
     }
 
     public void glBegin(int mode) {

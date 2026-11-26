@@ -149,6 +149,7 @@ public class GL30 {
         record glBindVertexArray(int array) implements GLCommand {
             @Override
             public void run(Context context, float[] args, int argsOffset) {
+                context.vertexInterceptor.yieldClientState();
                 org.lwjgl.opengl.GL30.glBindVertexArray(array);
             }
         }
