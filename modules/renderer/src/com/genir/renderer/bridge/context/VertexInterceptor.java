@@ -21,9 +21,8 @@ public class VertexInterceptor {
     public static final int VERTEX_FLAG = 2;
     public static final int COLOR_FLAG = 4;
     public static final int TEX0_FLAG = 8;
-    public static final int TEX0_SEPARATE_FLAG = 16;
-    public static final int TEX1_FLAG = 32;
-    public static final int NORMAL_FLAG = 64;
+    public static final int TEX1_FLAG = 16;
+    public static final int NORMAL_FLAG = 32;
 
     // GL State.
     private final MatrixManager matrixManager;
@@ -126,9 +125,6 @@ public class VertexInterceptor {
         this.texQ = q;
 
         this.expectedArrayFlags |= TEX0_FLAG;
-        if (r != 0f || q != 1f) {
-            this.expectedArrayFlags = TEX0_SEPARATE_FLAG;
-        }
     }
 
     public void glMultiTexCoord2f(int target, float s, float t) {
@@ -274,12 +270,11 @@ public class VertexInterceptor {
             }
         }
 
-        // Texture Unit 0. Using only the required texture coordinate size prevents visual artifacts in certain rare scenarios.
-        if (forceReset || (arrayFlags & TEX0_FLAG) != (requiredFlags & TEX0_FLAG) || (arrayFlags & TEX0_SEPARATE_FLAG) != (requiredFlags & TEX0_SEPARATE_FLAG)) {
-            if ((requiredFlags & TEX0_FLAG) != 0 || (requiredFlags & TEX0_SEPARATE_FLAG) != 0) {
+        // Texture Unit 0.
+        if (forceReset || (arrayFlags & TEX0_FLAG) != (requiredFlags & TEX0_FLAG)) {
+            if ((requiredFlags & TEX0_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                int size = (requiredFlags & TEX0_SEPARATE_FLAG) != 0 ? TEX0_SEPARATE_SIZE : TEX0_SIZE;
-                ClientArray.glTexCoordPointer(size, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+                ClientArray.glTexCoordPointer(TEX0_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
