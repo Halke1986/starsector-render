@@ -36,7 +36,22 @@ public class FieldList {
         return by((field) -> isCalledBy(field, caller));
     }
 
-    public FieldList byIndex(int index) {
+    public FieldList byIsCalled(MethodNode... callers) {
+        return by((field) -> {
+            for (MethodNode caller : callers) {
+                if (!isCalledBy(field, caller)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    public FieldList byIndex(int index, int assertSize) {
+        if (fields.size() != assertSize) {
+            throw new AssertionError("Unexpected method list size");
+        }
+
         if (fields.size() == 1) {
             throw new AssertionError("Unnecessary byIndex selector");
         }

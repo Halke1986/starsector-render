@@ -1,6 +1,5 @@
 package com.genir.renderer.agent.transformations.symbols;
 
-import org.apache.log4j.Logger;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -78,7 +77,11 @@ public class MethodList {
         });
     }
 
-    public MethodList byIndex(int index) {
+    public MethodList byIndex(int index, int assertSize) {
+        if (methods.size() != assertSize) {
+            throw new AssertionError("Unexpected method list size");
+        }
+
         if (methods.size() == 1) {
             throw new AssertionError("Unnecessary byIndex selector");
         }
