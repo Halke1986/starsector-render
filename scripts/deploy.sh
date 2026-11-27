@@ -1,4 +1,4 @@
-SS_VERSION="Starsector985a"
+SS_VERSION="Starsector98"
 
 rm -rf                    "$SS_PATH/$SS_VERSION/starsector-core/fr.jar"
 rm -rf                    "$SS_PATH/$SS_VERSION/starsector-core/fr.bat"

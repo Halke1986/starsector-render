@@ -146,7 +146,7 @@ public class Symbols {
     public final FieldNode FontRenderer_outlineExpansion;
     public final FieldNode FontRenderer_highlightStart;
     public final FieldNode FontRenderer_highlightEnd;
-    public final FieldNode FontRenderer_enableWordWrap;
+    public final FieldNode FontRenderer_enableWordWrap; // Since Starsector 0.98.5a
     public final FieldNode ResourceLocation_type;
     public final FieldNode ResourceLocation_path;
     public final FieldNode ResourceLocation_isMod;
@@ -181,7 +181,6 @@ public class Symbols {
         final ClassNode CampaignFloatingText = readClassNode("com/fs/starfarer/campaign/fleet/CampaignFloatingText");
         final ClassNode StandardTooltipV2 = readClassNode("com/fs/starfarer/ui/impl/StandardTooltipV2");
         final ClassNode FleetMemberView = readClassNode("com/fs/starfarer/campaign/ui/fleet/FleetMemberView");
-        final ClassNode FleetActionMenu = readClassNode("com/fs/starfarer/coreui/refit/auto/FleetActionMenu");
 
         // Classes
         TextureHandler = fieldList(Sprite).byName("texture").getTypeClass();
@@ -232,7 +231,9 @@ public class Symbols {
         StarfarerSettings_getBooleanValue = methodList(StarfarerSettings).byDesc("(Ljava/lang/String;)Z").byInstructionOwner("java/util/Map").get();
         final MethodNode BaseGameState_traverse = methodList(BaseGameState).byName("traverse").get();
         final MethodNode CombatState_traverse = methodList(CombatState).byName("traverse").get();
-        StarfarerSettings_getVSYNCOffset = optional(() -> methodList(StarfarerSettings).byDesc("()F").byIsCalled(CombatState_traverse, BaseGameState_traverse).byIndex(0, 1).get());
+        StarfarerSettings_getVSYNCOffset = optionalMethod(() -> { // Since Starsector 0.98.5a
+            return methodList(StarfarerSettings).byDesc("()F").byIsCalled(CombatState_traverse, BaseGameState_traverse).byIndex(0, 1).get();
+        });
         ScriptStore_getScriptList = methodList(ScriptStore).bySignature("()Ljava/util/List<Ljava/lang/String;>;").get();
         ScriptStore_getPluginSet = methodList(ScriptStore).bySignature("()Ljava/util/Set<Ljava/lang/String;>;").get();
         ScriptStore_startScriptLoadingThread = methodList(ScriptStore).byDesc("()V").byInstructionOwner("java/lang/Thread").byInstructionOwner("com/fs/starfarer/loading/scripts").get();
@@ -330,11 +331,9 @@ public class Symbols {
         final MethodNode FontRenderer_setHighlightColor = methodList(FontRenderer).byDesc("(Ljava/awt/Color;)V").byIsCalled(StandardTooltipV2_makeExpandable).get();
         final MethodNode FontRenderer_setHighlight = methodList(FontRenderer).byDesc("(II)V").byIsCalled(Label_setHighlight).get();
         final ClassNode Button = methodList(FleetMemberView).byName("getButton").getReturnTypeClass();
-        final MethodNode FleetActionMenu_sizeChanged = methodList(FleetActionMenu).byName("sizeChanged").get();
-        final MethodNode Button_setShortcut = methodList(Button).byName("setShortcut").byIsCalled(FleetActionMenu_sizeChanged).get();
+        final ClassNode ControlAction = methodList(Button).byName("getShortcut").getReturnTypeClass();
+        final MethodNode Button_setShortcut = methodList(Button).byName("setShortcut").byDesc("(L" + ControlAction.name + ";Z)V").get();
         final MethodNode FontRenderer_setUnderlineEnabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(Button_setShortcut).get();
-        final MethodNode FontRenderer_setFont = methodList(FontRenderer).byDesc("(L" + Font.name + ";)V").byNotName("<init>").get();
-        final MethodNode FontRenderer_setWordWrapEnabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(FontRenderer_setFont).get();
         FontRenderer_textSize = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_getTextSize).get();
         FontRenderer_font = fieldList(FontRenderer).byDesc("L" + Font.name + ";").get();
         FontRenderer_text = fieldList(FontRenderer).byDesc("Ljava/lang/String;").byIsCalled(FontRenderer_renderGlyphs).get();
@@ -350,7 +349,11 @@ public class Symbols {
         FontRenderer_highlightStart = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_setHighlight).byIndex(0, 2).get();
         FontRenderer_highlightEnd = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_setHighlight).byIndex(1, 2).get();
         FontRenderer_highlightDisabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setHighlightDisabled).get();
-        FontRenderer_enableWordWrap = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setWordWrapEnabled).get();
+        FontRenderer_enableWordWrap = optionalField(() -> { // Since Starsector 0.98.5a
+            final MethodNode FontRenderer_setFont = methodList(FontRenderer).byDesc("(L" + Font.name + ";)V").byNotName("<init>").get();
+            final MethodNode FontRenderer_setWordWrapEnabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(FontRenderer_setFont).get();
+            return fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setWordWrapEnabled).get();
+        });
         ResourceLocation_type = fieldList(FileLoader$ResourceLocation).byDesc("L" + FileLoader$ResourceType.name + ";").get();
         ResourceLocation_path = fieldList(FileLoader$ResourceLocation).byDesc("Ljava/lang/String;").get();
         ResourceLocation_isMod = fieldList(FileLoader$ResourceLocation).byDesc("Z").get();
@@ -382,7 +385,15 @@ public class Symbols {
         return new FieldList(classNode);
     }
 
-    private MethodNode optional(Supplier<MethodNode> supplier) {
+    private MethodNode optionalMethod(Supplier<MethodNode> supplier) {
+        try {
+            return supplier.get();
+        } catch (AssertionError e) {
+            return null;
+        }
+    }
+
+    private FieldNode optionalField(Supplier<FieldNode> supplier) {
         try {
             return supplier.get();
         } catch (AssertionError e) {
