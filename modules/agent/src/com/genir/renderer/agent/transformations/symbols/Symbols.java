@@ -179,6 +179,8 @@ public class Symbols {
         final ClassNode Tesselator = readClassNode("com/fs/starfarer/util/Tesselator");
         final ClassNode CampaignFloatingText = readClassNode("com/fs/starfarer/campaign/fleet/CampaignFloatingText");
         final ClassNode StandardTooltipV2 = readClassNode("com/fs/starfarer/ui/impl/StandardTooltipV2");
+        final ClassNode FleetMemberView = readClassNode("com/fs/starfarer/campaign/ui/fleet/FleetMemberView");
+        final ClassNode FleetActionMenu = readClassNode("com/fs/starfarer/coreui/refit/auto/FleetActionMenu");
 
         // Classes
         TextureHandler = fieldList(Sprite).byName("texture").getTypeClass();
@@ -321,9 +323,15 @@ public class Symbols {
         final MethodNode Label_setHighlight = methodList(Label).byDesc("(II)V").byName("setHighlight").get();
         final MethodNode FontRenderer_getTextSize = methodList(FontRenderer).byDesc("()F").byIsCalled(Label_pop).get();
         final MethodNode FontRenderer_setColor = methodList(FontRenderer).byDesc("(Ljava/awt/Color;)V").byIsCalled(Label_setColor).get();
+        final MethodNode Label_render = methodList(Label).byName("render").get();
+        final MethodNode FontRenderer_setHighlightDisabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(Label_render).get();
         final MethodNode StandardTooltipV2_makeExpandable = methodList(StandardTooltipV2).byName("makeExpandable").get();
         final MethodNode FontRenderer_setHighlightColor = methodList(FontRenderer).byDesc("(Ljava/awt/Color;)V").byIsCalled(StandardTooltipV2_makeExpandable).get();
         final MethodNode FontRenderer_setHighlight = methodList(FontRenderer).byDesc("(II)V").byIsCalled(Label_setHighlight).get();
+        final ClassNode Button = methodList(FleetMemberView).byName("getButton").getReturnTypeClass();
+        final MethodNode FleetActionMenu_sizeChanged = methodList(FleetActionMenu).byName("sizeChanged").get();
+        final MethodNode Button_setShortcut = methodList(Button).byName("setShortcut").byIsCalled(FleetActionMenu_sizeChanged).get();
+        final MethodNode FontRenderer_setUnderlineEnabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(Button_setShortcut).get();
         FontRenderer_textSize = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_getTextSize).get();
         FontRenderer_font = fieldList(FontRenderer).byDesc("L" + Font.name + ";").get();
         FontRenderer_text = fieldList(FontRenderer).byDesc("Ljava/lang/String;").byIsCalled(FontRenderer_renderGlyphs).get();
@@ -333,12 +341,12 @@ public class Symbols {
         FontRenderer_highlightColorAlpha = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_renderGlyphs).byIndex(2, 3).get();
         FontRenderer_highlightColors = fieldList(FontRenderer).byDesc("[Ljava/awt/Color;").get();
         FontRenderer_highlightByChar = fieldList(FontRenderer).byDesc("[I").get();
-        FontRenderer_underlineEnabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs).byIndex(1,3).get();
+        FontRenderer_underlineEnabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setUnderlineEnabled).get();
         FontRenderer_outlineSize = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_renderGlyphWithOutline).get();
         FontRenderer_outlineExpansion = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_renderGlyphWithOutline).get();
         FontRenderer_highlightStart = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_setHighlight).byIndex(0, 2).get();
         FontRenderer_highlightEnd = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_setHighlight).byIndex(1, 2).get();
-        FontRenderer_highlightDisabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs).byIndex(2,3).get();
+        FontRenderer_highlightDisabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setHighlightDisabled).get();
         ResourceLocation_type = fieldList(FileLoader$ResourceLocation).byDesc("L" + FileLoader$ResourceType.name + ";").get();
         ResourceLocation_path = fieldList(FileLoader$ResourceLocation).byDesc("Ljava/lang/String;").get();
         ResourceLocation_isMod = fieldList(FileLoader$ResourceLocation).byDesc("Z").get();
