@@ -2,8 +2,6 @@
 
 Loading bar render in a separate thread?
 
-// TODO proper pointer restore, based on a native pointer.
-
 getAllVariantIds
 
 finish starsector marines compat, mainly night mission

@@ -224,11 +224,11 @@ public class ClientArrayManager {
         org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
         if (snapshot instanceof ArraySnapshotByte bytes) {
-            ClientArray.glVertexPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
+            org.lwjgl.opengl.GL11.glVertexPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
         } else if (snapshot instanceof ArraySnapshotFloat floats) {
-            ClientArray.glVertexPointer(floats.size, floats.stride, floats.snapshot.buffer);
-        } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
-            // TODO proper pointer restore, based on a native pointer.
+            org.lwjgl.opengl.GL11.glVertexPointer(floats.size, floats.stride, floats.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotGLBuffer) {
+            // Array data is already stored in GL buffer.
         } else {
             throw new UnsupportedOperationException();
         }
@@ -243,11 +243,11 @@ public class ClientArrayManager {
         org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
         if (snapshot instanceof ArraySnapshotByte bytes) {
-            ClientArray.glTexCoordPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
+            org.lwjgl.opengl.GL11.glTexCoordPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
         } else if (snapshot instanceof ArraySnapshotFloat floats) {
-            ClientArray.glTexCoordPointer(floats.size, floats.stride, floats.snapshot.buffer);
-        } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
-            // TODO proper pointer restore, based on a native pointer.
+            org.lwjgl.opengl.GL11.glTexCoordPointer(floats.size, floats.stride, floats.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotGLBuffer) {
+            // Array data is already stored in GL buffer.
         } else {
             throw new UnsupportedOperationException();
         }
@@ -264,11 +264,11 @@ public class ClientArrayManager {
         org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
         if (snapshot instanceof ArraySnapshotByte bytes) {
-            ClientArray.glColorPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
+            org.lwjgl.opengl.GL11.glColorPointer(bytes.size, bytes.type, bytes.stride, bytes.snapshot.buffer);
         } else if (snapshot instanceof ArraySnapshotFloat floats) {
-            ClientArray.glColorPointer(floats.size, floats.stride, floats.snapshot.buffer);
-        } else if (snapshot instanceof ArraySnapshotGLBuffer glBuffer) {
-            // TODO proper pointer restore, based on a native pointer.
+            org.lwjgl.opengl.GL11.glColorPointer(floats.size, floats.stride, floats.snapshot.buffer);
+        } else if (snapshot instanceof ArraySnapshotGLBuffer) {
+            // Array data is already stored in GL buffer.
         } else {
             throw new UnsupportedOperationException();
         }
