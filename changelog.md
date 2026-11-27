@@ -1,4 +1,6 @@
-- Fixed OpenGL state corruption involving the client texture coordinate array for texture unit 1. Reported by Dokuro.
+v1.0.4rc2
+
+- Fixed an issue where some stars were not being rendered. Reported by Voidwitch, Raccoon AltCat and kadra,  I AIN'T SHIT.
 
 v1.0.4rc1
 

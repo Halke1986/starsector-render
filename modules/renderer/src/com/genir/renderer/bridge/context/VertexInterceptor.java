@@ -4,6 +4,7 @@ import com.genir.renderer.debug.Assert;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
@@ -84,6 +85,9 @@ public class VertexInterceptor {
         if ((arrayFlags & STATE_OWNERSHIP_FLAG) == 0) {
             org.lwjgl.opengl.GL11.glPushClientAttrib(GL11.GL_CLIENT_VERTEX_ARRAY_BIT);
             arrayFlags = STATE_OWNERSHIP_FLAG;
+
+            // CMUtils may leave an array buffer bound during game initialization.
+            org.lwjgl.opengl.GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
             org.lwjgl.opengl.GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
             prepareVertexPointersGL(true, arrayFlags);
@@ -253,7 +257,7 @@ public class VertexInterceptor {
         if (forceReset || (arrayFlags & VERTEX_FLAG) != (requiredFlags & VERTEX_FLAG)) {
             if ((requiredFlags & VERTEX_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                ClientArray.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
+                org.lwjgl.opengl.GL11.glVertexPointer(VERTEX_SIZE, STRIDE * Float.BYTES, p.position(0));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
             }
@@ -263,7 +267,7 @@ public class VertexInterceptor {
         if (forceReset || (arrayFlags & COLOR_FLAG) != (requiredFlags & COLOR_FLAG)) {
             if ((requiredFlags & COLOR_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                ClientArray.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
+                org.lwjgl.opengl.GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
                 org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
@@ -274,7 +278,7 @@ public class VertexInterceptor {
         if (forceReset || (arrayFlags & TEX0_FLAG) != (requiredFlags & TEX0_FLAG)) {
             if ((requiredFlags & TEX0_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                ClientArray.glTexCoordPointer(TEX0_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
+                org.lwjgl.opengl.GL11.glTexCoordPointer(TEX0_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
@@ -286,7 +290,7 @@ public class VertexInterceptor {
 
             if ((requiredFlags & TEX1_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                ClientArray.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE));
+                org.lwjgl.opengl.GL11.glTexCoordPointer(TEX1_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
@@ -298,7 +302,7 @@ public class VertexInterceptor {
         if (forceReset || (arrayFlags & NORMAL_FLAG) != (requiredFlags & NORMAL_FLAG)) {
             if ((requiredFlags & NORMAL_FLAG) != 0) {
                 org.lwjgl.opengl.GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                ClientArray.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE + TEX1_SIZE));
+                org.lwjgl.opengl.GL11.glNormalPointer(STRIDE * Float.BYTES, p.position(VERTEX_SIZE + COLOR_SIZE + TEX0_SEPARATE_SIZE + TEX1_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }
