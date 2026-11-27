@@ -234,6 +234,11 @@ public class VertexInterceptor {
     private void prepareVertexPointers(int count, int requiredFlags) {
         acquireClientState();
 
+        // Use the default color when color array is disabled.
+        if ((requiredFlags & COLOR_FLAG) == 0) {
+            org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
+        }
+
         boolean wasResized = false;
         int capacityRequired = count * STRIDE;
         if (primaryVertexPointer.capacity() < capacityRequired) {
@@ -270,7 +275,6 @@ public class VertexInterceptor {
                 org.lwjgl.opengl.GL11.glColorPointer(COLOR_SIZE, STRIDE * Float.BYTES, p.position(VERTEX_SIZE));
             } else {
                 org.lwjgl.opengl.GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-                org.lwjgl.opengl.GL11.glColor4f(red, green, blue, alpha);
             }
         }
 

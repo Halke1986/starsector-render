@@ -99,6 +99,7 @@ public class GL11 {
             float blue = args[argsOffset + 2];
             float alpha = args[argsOffset + 3];
 
+            context.clientArrayManager.glColor4f(red, green, blue, alpha);
             context.vertexInterceptor.glColor4f(red, green, blue, alpha);
         }
 
