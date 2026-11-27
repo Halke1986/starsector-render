@@ -1,6 +1,7 @@
 v1.0.4rc2
 
 - Fixed an issue where some stars were not being rendered. Reported by Voidwitch, Raccoon AltCat and kadra,  I AIN'T SHIT.
+- Fixed a number of issues related to text rendering. Reported by kadra,  I AIN'T SHIT.
 
 v1.0.4rc1
 

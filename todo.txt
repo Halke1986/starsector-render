@@ -10,9 +10,6 @@ finish starsector marines compat, mainly night mission
 
 bugs:
 
-rat abbys text on sector map looks weird and changes color
-
-
 black screen with game activity sounds after changing resource generator in mael modpack
 
 ************************************ waiting for stuff to happen
