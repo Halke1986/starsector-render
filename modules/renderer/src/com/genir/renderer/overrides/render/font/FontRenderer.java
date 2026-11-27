@@ -31,6 +31,7 @@ public class FontRenderer {
     protected FloatBuffer FontRenderer_transformMatrix;
     private int FontRenderer_outlineSize;
     private float FontRenderer_outlineExpansion;
+    private boolean FontRenderer_enableWordWrap;
 
     /**
      * STUB
@@ -69,6 +70,8 @@ public class FontRenderer {
                 this.FontRenderer_font,
                 this.FontRenderer_text,
                 this.FontRenderer_textSize,
+                this.FontRenderer_multiPassFont ? 3 : 1,
+                this.FontRenderer_enableWordWrap,
 
                 this.FontRenderer_color,
                 this.FontRenderer_colorAlpha,
@@ -80,9 +83,7 @@ public class FontRenderer {
                 this.FontRenderer_highlightColorAlpha,
 
                 this.FontRenderer_outlineSize,
-                this.FontRenderer_outlineExpansion,
-
-                this.FontRenderer_multiPassFont ? 3 : 1
+                this.FontRenderer_outlineExpansion
         );
     }
 }

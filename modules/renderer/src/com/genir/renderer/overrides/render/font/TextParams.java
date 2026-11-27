@@ -7,7 +7,8 @@ public class TextParams {
     public Font font;
     public String text;
     public float textSize;
-    int renderPasses;
+    public int renderPasses;
+    public boolean enableWordWrap;
 
     // Color.
     public float red;
@@ -25,8 +26,8 @@ public class TextParams {
     public float highlightAlpha;
 
     // Outline.
-    int outlineSize;
-    float outlineExpansion;
+    public int outlineSize;
+    public float outlineExpansion;
 
     public TextParams clone() {
         TextParams c = new TextParams();
@@ -35,6 +36,7 @@ public class TextParams {
         c.text = text;
         c.textSize = textSize;
         c.renderPasses = renderPasses;
+        c.enableWordWrap = enableWordWrap;
 
         c.red = red;
         c.green = green;
@@ -65,6 +67,7 @@ public class TextParams {
         h = 31 * h + System.identityHashCode(text);
         h = 31 * h + Float.floatToIntBits(textSize);
         h = 31 * h + renderPasses;
+        h = 31 * h + (enableWordWrap ? 1 : 0);
 
         h = 31 * h + Float.floatToIntBits(red);
         h = 31 * h + Float.floatToIntBits(green);
@@ -98,9 +101,10 @@ public class TextParams {
         }
 
         return font == o.font
-                && text == o.text
+                && text == o.text // == instead of equals() for performance reasons
                 && textSize == o.textSize
                 && renderPasses == o.renderPasses
+                && enableWordWrap == o.enableWordWrap
                 && red == o.red
                 && green == o.green
                 && blue == o.blue

@@ -181,6 +181,7 @@ public class Transformations {
                 entry("FontRenderer_outlineExpansion", symbols.FontRenderer_outlineExpansion.name),
                 entry("FontRenderer_highlightStart", symbols.FontRenderer_highlightStart.name),
                 entry("FontRenderer_highlightEnd", symbols.FontRenderer_highlightEnd.name),
+                entry("FontRenderer_enableWordWrap", symbols.FontRenderer_enableWordWrap.name),
                 entry("ResourceLocation_type", symbols.ResourceLocation_type.name),
                 entry("ResourceLocation_path", symbols.ResourceLocation_path.name),
                 entry("ResourceLocation_isMod", symbols.ResourceLocation_isMod.name),

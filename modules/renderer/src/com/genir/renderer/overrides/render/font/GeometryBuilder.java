@@ -82,6 +82,9 @@ public class GeometryBuilder {
 
                 // Advance pen position.
                 penX += fontScale * glyph.Glyph_getXAdvance();
+                if (params.enableWordWrap) {
+                    penX -= fontScale * glyph.Glyph_getXOffset();
+                }
             } else {
                 // Handle line break.
                 if (penX == 0.0F && params.textSize == 18.0F && previousCharId == 10) {

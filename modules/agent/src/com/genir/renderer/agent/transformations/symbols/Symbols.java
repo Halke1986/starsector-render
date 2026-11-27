@@ -146,6 +146,7 @@ public class Symbols {
     public final FieldNode FontRenderer_outlineExpansion;
     public final FieldNode FontRenderer_highlightStart;
     public final FieldNode FontRenderer_highlightEnd;
+    public final FieldNode FontRenderer_enableWordWrap;
     public final FieldNode ResourceLocation_type;
     public final FieldNode ResourceLocation_path;
     public final FieldNode ResourceLocation_isMod;
@@ -332,6 +333,8 @@ public class Symbols {
         final MethodNode FleetActionMenu_sizeChanged = methodList(FleetActionMenu).byName("sizeChanged").get();
         final MethodNode Button_setShortcut = methodList(Button).byName("setShortcut").byIsCalled(FleetActionMenu_sizeChanged).get();
         final MethodNode FontRenderer_setUnderlineEnabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(Button_setShortcut).get();
+        final MethodNode FontRenderer_setFont = methodList(FontRenderer).byDesc("(L" + Font.name + ";)V").byNotName("<init>").get();
+        final MethodNode FontRenderer_setWordWrapEnabled = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(FontRenderer_setFont).get();
         FontRenderer_textSize = fieldList(FontRenderer).byDesc("F").byIsCalled(FontRenderer_getTextSize).get();
         FontRenderer_font = fieldList(FontRenderer).byDesc("L" + Font.name + ";").get();
         FontRenderer_text = fieldList(FontRenderer).byDesc("Ljava/lang/String;").byIsCalled(FontRenderer_renderGlyphs).get();
@@ -347,6 +350,7 @@ public class Symbols {
         FontRenderer_highlightStart = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_setHighlight).byIndex(0, 2).get();
         FontRenderer_highlightEnd = fieldList(FontRenderer).byDesc("I").byIsCalled(FontRenderer_setHighlight).byIndex(1, 2).get();
         FontRenderer_highlightDisabled = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setHighlightDisabled).get();
+        FontRenderer_enableWordWrap = fieldList(FontRenderer).byDesc("Z").byIsCalled(FontRenderer_renderGlyphs, FontRenderer_setWordWrapEnabled).get();
         ResourceLocation_type = fieldList(FileLoader$ResourceLocation).byDesc("L" + FileLoader$ResourceType.name + ";").get();
         ResourceLocation_path = fieldList(FileLoader$ResourceLocation).byDesc("Ljava/lang/String;").get();
         ResourceLocation_isMod = fieldList(FileLoader$ResourceLocation).byDesc("Z").get();

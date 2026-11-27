@@ -23,6 +23,9 @@ public class FontRendererImpl {
             Font font,
             String text,
             float textSize,
+            int renderPassCount,
+            boolean enableWordWrap,
+
             Color color,
             float colorAlpha,
 
@@ -33,8 +36,7 @@ public class FontRendererImpl {
             float highlightColorAlpha,
 
             int outlineSize,
-            float outlineExpansion,
-            int renderPassCount
+            float outlineExpansion
     ) {
         final Context context = ContextManager.getThreadContext();
 
@@ -42,6 +44,7 @@ public class FontRendererImpl {
         key.text = text;
         key.textSize = textSize;
         key.renderPasses = renderPassCount;
+        key.enableWordWrap = enableWordWrap;
         key.outlineSize = outlineSize;
         key.outlineExpansion = outlineExpansion;
 
