@@ -77,13 +77,18 @@ public class MethodList {
         });
     }
 
+    // Required to filter out methods added by the Chinese localization team's "startup-optimized" (启动优化) build.
+    public MethodList byIsObfuscated() {
+        return by((method) -> Symbols.isObfuscated(method.name));
+    }
+
     public MethodList byIndex(int index, int assertSize) {
         if (methods.size() != assertSize) {
-            throw new AssertionError("Unexpected method list size");
+            throw new AssertionError("Unexpected method list size: size=[" + assertSize + "] " + makeAssertionErrorDetails());
         }
 
         if (methods.size() == 1) {
-            throw new AssertionError("Unnecessary byIndex selector");
+            throw new AssertionError("Unnecessary byIndex selector: " + makeAssertionErrorDetails());
         }
 
         methods = List.of(methods.get(index));
@@ -96,14 +101,12 @@ public class MethodList {
     }
 
     public MethodNode get() {
+        if (methods.isEmpty()) {
+            throw new AssertionError("Method not found: " + makeAssertionErrorDetails());
+        }
+
         if (methods.size() != 1) {
-            for (MethodNode method : methods) {
-                List<MethodInsnNode> methodsInst = getMethodInstructions(method);
-
-                int x = 0;
-            }
-
-            throw new AssertionError("Ambiguous methods");
+            throw new AssertionError("Ambiguous methods: " + makeAssertionErrorDetails());
         }
 
         return methods.get(0);
@@ -158,5 +161,22 @@ public class MethodList {
         }
 
         return instructions;
+    }
+
+    private String makeAssertionErrorDetails() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("class=[").append(classNode.name).append("]");
+
+        builder.append(", methods=[");
+        for (int i = 0; i < methods.size(); i++) {
+            builder.append(methods.get(i).name).append(methods.get(i).desc);
+            if (i < methods.size() - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append("]");
+
+        return builder.toString();
     }
 }

@@ -8,8 +8,7 @@ import org.objectweb.asm.tree.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class Symbols {
@@ -196,7 +195,7 @@ public class Symbols {
         final MethodNode SoundStore_loadOggSoundtrack = methodList(SoundStore).byDesc("(Ljava/lang/String;Ljava/io/InputStream;)").byIndex(2, 3).get();
         SoundTrack = returnTypeClass(SoundStore_loadOggSoundtrack);
         OggLoader = ownerClass(methodInstructionsByOwner(SoundStore_loadOggSoundtrack, "sound").get(1));
-        SoundBuffer = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)").getReturnTypeClass();
+        SoundBuffer = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)").byIsObfuscated().getReturnTypeClass();
         final MethodNode ResourceLoaderState_init = methodList(ResourceLoaderState).byName("init").get();
         final List<MethodInsnNode> rendereresList = methodInstructionsByOwner(ResourceLoaderState_init, "com/fs/starfarer/renderers");
         AtmosphereRenderer = ownerClass(rendereresList.get(0));
@@ -266,12 +265,13 @@ public class Symbols {
         SoundStore_getInstance = methodList(SoundStore).byDesc("()Lsound").get();
         SoundStore_loadWav = methodList(SoundStore).byDesc("(Ljava/lang/String;Ljava/io/InputStream;)Lsound").byIndex(1, 3).get();
         SoundStore_getIsInitialized = methodList(SoundStore).byDesc("()Z").byIndex(2, 3).get();
-        OggLoader_load = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)Lsound").get();
+        OggLoader_load = methodList(OggLoader).byDesc("(Ljava/io/InputStream;)Lsound").byIsObfuscated().get();
         AtmosphereRenderer_init = methodList(AtmosphereRenderer).byDesc("()V").byNotName("<init>").get();
         ScreenshotUtil_init = methodList(ScreenshotUtil).byDesc("()V").byInstructionOwner("com/fs/starfarer/settings/StarfarerSettings").byNotInstructionOwner("org/lwjgl/opengl/GL11").get();
         ShipArrowRenderer_init = methodList(ShipArrowRenderer).byDesc("()V").byNotName("<init>", "<clinit>").get();
         ImpactSound_init = methodList(ImpactSound).byDesc("()V").byNotName("<init>", "<clinit>").get();
-        LoadingUtils_readStreamAsString = methodList(LoadingUtils).byDesc("(Ljava/io/InputStream;)Ljava/lang/String;").byInstructionOwner("java/lang/StringBuffer").get();
+        final MethodNode SettingsAPIImpl_readTextFileFromCommon = methodList(StarfarerSettings$SettingsAPIImpl).byName("readTextFileFromCommon").get();
+        LoadingUtils_readStreamAsString = methodList(LoadingUtils).byDesc("(Ljava/io/InputStream;)Ljava/lang/String;").byIsCalled(SettingsAPIImpl_readTextFileFromCommon).get();
         LoadingUtils_filesWithExtensionInDirectory = methodList(LoadingUtils).bySignature("(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List<Ljava/lang/String;>;").byIsCalled(SpecStore).get();
         LoadingUtils_filesWithExtensionInDirectoryAbsolute = methodList(LoadingUtils).bySignature("(Ljava/lang/String;Ljava/lang/String;)Ljava/util/List<Ljava/lang/String;>;").byIsCalled(ScriptStore).get();
         LoadingUtils_readPathAsString = methodList(LoadingUtils).byDesc("(Ljava/lang/String;)Ljava/lang/String;").byNotInstructionOwner("java/lang/String").get();
@@ -284,7 +284,7 @@ public class Symbols {
         WeaponSpecStore_addProjectileSpec = methodList(WeaponSpecStore).byDesc("(Ljava/lang/String;Ljava/lang/Object;)V").get();
         final MethodNode FontRenderer_renderGlyphsOuter = methodList(FontRenderer).byDesc("(FFZ)V").get();
         final MethodNode FontRenderer_setFontSize = methodList(FontRenderer).byDesc("(L" + Font.name + ";)V").byNotName("<init>").get();
-        final MethodNode FontRenderer_renderGlyphWithOutline = methodList(FontRenderer).byDesc("(FFL" + Glyph.name + ";FZ)V").get();
+        final MethodNode FontRenderer_renderGlyphWithOutline = methodList(FontRenderer).byIsObfuscated().byDesc("(FFL" + Glyph.name + ";FZ)V").get();
         FontRenderer_renderGlyphs = methodList(FontRenderer).byDesc("(Z)V").byIsCalled(FontRenderer_renderGlyphsOuter).get();
         FontRenderer_refreshFontFlags = methodList(FontRenderer).byDesc("()V").byIsCalled(FontRenderer_renderGlyphs).get();
         final MethodNode GlLauncher_createActivationCodeUI = methodList(GlLauncher).byName("createActivationCodeUI").get();
@@ -452,5 +452,41 @@ public class Symbols {
 
         // Disguise generic parameters as method descriptor to use existing Type functionality.
         return Type.getMethodType("(" + generic + ")V").getArgumentTypes();
+    }
+
+    private final static Set<String> javaKeywords = new HashSet<>(Arrays.asList(
+            "byte", "short", "int", "long", "float", "double", "char", "boolean", "void",
+            "if", "else", "switch", "case", "default", "while", "do", "for", "break", "continue", "return",
+            "try", "catch", "finally", "throw", "throws",
+            "public", "private", "protected", "static", "final", "abstract", "synchronized", "volatile", "transient", "native", "strictfp",
+            "class", "interface", "extends", "implements", "this", "super", "new",
+            "package", "import",
+            "instanceof", "enum", "assert", "goto", "const",
+            "true", "false", "null"
+    ));
+
+    // Is method or field name obfuscated.
+    // NOTE: Does not correctly match obfuscated class names.
+    public static boolean isObfuscated(String name) {
+        if (name.length() <= 2) {
+            return true;
+        }
+
+        if (name.length() == 6 && name.endsWith("00")) {
+            return true;
+        }
+        if (name.contains(".")) {
+            return true;
+        }
+
+        if (javaKeywords.contains(name)) {
+            return true;
+        }
+
+        if (name.equals("Object") || name.equals("String")) {
+            return true;
+        }
+
+        return false;
     }
 }

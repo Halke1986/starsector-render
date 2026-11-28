@@ -49,11 +49,11 @@ public class FieldList {
 
     public FieldList byIndex(int index, int assertSize) {
         if (fields.size() != assertSize) {
-            throw new AssertionError("Unexpected method list size");
+            throw new AssertionError("Unexpected field list size: size=[" + assertSize + "] " + makeAssertionErrorDetails());
         }
 
         if (fields.size() == 1) {
-            throw new AssertionError("Unnecessary byIndex selector");
+            throw new AssertionError("Unnecessary byIndex selector: " + makeAssertionErrorDetails());
         }
 
         fields = List.of(fields.get(index));
@@ -67,11 +67,11 @@ public class FieldList {
 
     public FieldNode get() {
         if (fields.isEmpty()) {
-            throw new AssertionError("Field not found");
+            throw new AssertionError("Field not found: " + makeAssertionErrorDetails());
         }
 
         if (fields.size() != 1) {
-            throw new AssertionError("Ambiguous fields");
+            throw new AssertionError("Ambiguous fields: " + makeAssertionErrorDetails());
         }
 
         return fields.get(0);
@@ -104,5 +104,22 @@ public class FieldList {
         }
 
         return instructions;
+    }
+
+    private String makeAssertionErrorDetails() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("class=[").append(classNode.name).append("]");
+
+        builder.append(", fields=[");
+        for (int i = 0; i < fields.size(); i++) {
+            builder.append(fields.get(i).name).append("(").append(fields.get(i).desc).append(")");
+            if (i < fields.size() - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append("]");
+
+        return builder.toString();
     }
 }
